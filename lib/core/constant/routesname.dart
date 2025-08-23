@@ -1,0 +1,20 @@
+class AppRoutesname {
+  static const String login = "/login";
+  static const String onBoarding = "/onboarding";
+  static const String sginin = "/sginin";
+  static const String forgetpassword = "/forgotpassword";
+  static const String verFiyCode = "/verFiyCode";
+  static const String verFiyCodeSignUp = "/verFiyCodeSignUp";
+  static const String resetPassWord = "/resetPassWord";
+  static const String successReset = "/successReset";
+  static const String successsginup = "/successsginup";
+  // static const String checkEmail = "/checkEmail";
+
+  // Home
+  static const String homepage = "/homepage";
+  static const String homepage1 = "/homepage1";
+  static const String detelspage = "/detelspage";
+  static const String shearchname = "/Shearchname";
+  static const String favoritescreen = "/FavoriteScreen";
+  static const String cartscreen = "/cartscreen";
+}

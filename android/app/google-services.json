@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "612566346205",
+    "project_id": "todo-bbca0",
+    "storage_bucket": "todo-bbca0.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:612566346205:android:934971bff2d18325f46e34",
+        "android_client_info": {
+          "package_name": "com.example.e_comerece"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB7Z6I6_fCFBAXocinu-9WLjV0q9-rlSPI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:612566346205:android:d0d0bfeef3ce8eeaf46e34",
+        "android_client_info": {
+          "package_name": "com.example.todo_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB7Z6I6_fCFBAXocinu-9WLjV0q9-rlSPI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

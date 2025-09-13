@@ -5,26 +5,26 @@ class MyTrenslition extends Translations {
   Map<String, Map<String, String>> get keys => {
     "ar": {
       "chooseLang": "اختر اللغة",
-      "onboardingTitle1": "طلبك يصل إليك سريعاً",
-      "onboardingTitle2": "منتجات العالم بين يديك",
-      "onboardingTitle3": "أضف المنتجات بلمسة واحدة",
+      "onboardingTitle1": "مرحبا بك في متجرنا",
+      "onboardingTitle2": "استكشف المنتجات",
+      "onboardingTitle3": "جاهز للتسوق",
       "onboardingTitle4": "توصيل سريع",
       "onboardingBody1":
-          "نحن نهتم بتوصيل طلباتك بسرعة وأمان إلى باب منزلك.\n استمتع بتجربة تسوق متكاملة من الاختيار حتى الاستلام.",
+          "اكتشف آلاف المنتجات الفريدة من أكبر المتاجر العالمية بأسعار لا تُصدق",
+
       "onboardingBody2":
-          "استكشف ملايين المنتجات من أكبر الموردين العالميين\n فكرتك التجارية تبدأ من هنا، بفرص لا حصر لها.",
+          " من الأزياء إلى الإلكترونيات والمستلزمات المنزلية، مجموعات لا حصر لها بانتظارك",
       "onboardingBody3":
-          "بأدوات بسيطة وواجهة سهل\n، يمكنك اختيار المنتجات التي تناسب علامتك التجارية وإضافتها إلى متجرك فوراً.",
+          " تسوق بسهولة من AliExpress وAlibaba وShein والمزيد في مكان واحد.",
       "onboardingBody4": "توصيل سريع وموثوق \n إلى باب منزلك",
       "continue": "متابعة",
-      "loginTitle": "أهلاً بعودتك",
-      "loginBody":
-          "سجل الدخول باستخدام بريدك الإلكتروني وكلمة المرور أو استمر باستخدام  جوجول مباشرة",
+      "loginTitle": " تسجيل الدخول",
+      "loginBody": "يسعدني رؤيتك مرة أخرى!",
       "emailHint": "ادخل بريدك الالكتروني",
       "VerifycodesignuplHint": "ادخل الكود",
       "passwordHint": "ادخل كلمة المرور",
       "forgotPassword": "هل نسيت كلمة المرور",
-      "login": "تسجيل الدخول",
+      "Next": "التالي",
       "noAccount": "ليس لديك حساب؟ ",
       "Orsigninwith": "او سجل ب جوجل",
       "signUp": "إنشاء حساب",
@@ -53,26 +53,25 @@ class MyTrenslition extends Translations {
     },
     "en": {
       "chooseLang": "Choose Language",
-      "onboardingTitle1": "Your Order Arrives Quickly",
-      "onboardingTitle2": "The World's Products in Your Hands",
-      "onboardingTitle3": "Add Products with a Single Touch",
+      "onboardingTitle1": "Hello, Beautiful!",
+      "onboardingTitle2": "Find Your Styles",
+      "onboardingTitle3": "Ready to Shop?",
       "onboardingTitle4": "Fast Delivery",
       "onboardingBody1":
-          "We care about delivering your orders quickly and safely to your doorstep.\n Enjoy a complete shopping experience from selection to delivery.",
+          "Discover thousands of unique products from top global stores at unbelievable prices.",
       "onboardingBody2":
-          "Explore millions of products from the biggest global suppliers\n Your business idea starts here, with countless opportunities",
+          "From fashion to electronics and home essentials, endless collections await you",
       "onboardingBody3":
-          "With simple tools and an easy interface,\n you can choose the products that fit your brand and add them to your store instantly.",
+          "Shop effortlessly from AliExpress, Alibaba, Shein, and more, all in one place.",
       "onboardingBody4": "Fast and reliable delivery \n to your doorstep",
       "continue": "Continue",
-      "loginTitle": "Welcome Back",
-      "loginBody":
-          "Sign In With Your Email And Password OR Continue With Social Media",
+      "loginTitle": "Login",
+      "loginBody": "Good to see you back!",
       "emailHint": "Enter Your Email",
       "VerifycodesignuplHint": "Enter Your Code",
       "passwordHint": "Enter Your Password",
       "forgotPassword": "Forgot Password",
-      "login": "Login",
+      "Next": "Next",
       "noAccount": "Don't have an account? ",
       "signUp": "Sign Up",
       "signUpTitle": "Sign Up",
@@ -96,7 +95,8 @@ class MyTrenslition extends Translations {
       "successSignUpTitle": "Success",
       "successSignUpBody": "Account has been created successfully",
       "verifyCodeTitle": "Verification Code",
-      "verifyCodeBody": "Please Enter The 5 Digit Code Sent To",
+      "verifyCodeBody":
+          "Enter 5-digits code we sent you\n on your phone number",
     },
   };
 }

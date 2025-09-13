@@ -13,14 +13,17 @@ class CuststockInfo extends StatelessWidget {
       children: [
         Text(
           'Available Stock:',
-          style: Theme.of(context).textTheme.titleMedium,
+          style: Theme.of(
+            context,
+          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
         ),
         const SizedBox(width: 8),
         Text(
           '$stock',
-          style: Theme.of(
-            context,
-          ).textTheme.titleMedium?.copyWith(color: Colors.green),
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+            color: Colors.green,
+            fontFamily: 'asian',
+          ),
         ),
       ],
     );

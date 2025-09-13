@@ -9,7 +9,11 @@ class HotProductsData {
 
   getData(int pageIndex) async {
     var response = await crud.getData(
-      AliaxpressApi.hotProductsData(pageIndex: pageIndex, lang: enOrAr()),
+      AliaxpressApi.hotProductsData(
+        Kword: "phone",
+        pageIndex: pageIndex,
+        lang: enOrAr(),
+      ),
       headers: AliaxpressApi.rapidApiHeaders,
     );
 

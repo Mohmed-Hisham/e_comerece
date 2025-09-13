@@ -22,7 +22,11 @@ class Custombuttonauth extends StatelessWidget {
         onPressed: onPressed,
         child: Text(
           inputtext,
-          style: TextStyle(color: Appcolor.white, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            color: Appcolor.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
+          ),
         ),
       ),
     );

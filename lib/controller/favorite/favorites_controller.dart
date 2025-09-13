@@ -1,5 +1,7 @@
 import 'package:e_comerece/core/servises/serviese.dart';
+import 'package:e_comerece/core/shared/widget_shared/likeanimationpage.dart';
 import 'package:e_comerece/data/datasource/remote/favorite/favorite_data.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class FavoritesController extends GetxController {
@@ -19,7 +21,7 @@ class FavoritesController extends GetxController {
       List favoritesList = response['data'];
       isFavorite.clear();
       for (var item in favoritesList) {
-        isFavorite[item['productId'].toString()] = true;
+        isFavorite[item['productId']] = true;
       }
     }
     update();
@@ -48,12 +50,35 @@ class FavoritesController extends GetxController {
       setFavorite(productId, true);
       await favoriteData.addfavorite(
         userId: id,
-        productid: productId,
+        productid: productId.toString(),
         producttitle: productTitle,
         productimage: productImage,
         productprice: productPrice,
         platform: platform,
       );
+      if (Get.isDialogOpen ?? false) return;
+
+      // show dialog
+      Get.dialog(
+        Center(
+          child: FavoriteAnimatedWidget(
+            size: 110,
+            onEnd: () {
+              if (Get.isDialogOpen ?? false) Get.back();
+            },
+          ),
+        ),
+
+        barrierDismissible: false,
+        barrierColor: Colors.transparent,
+      );
+      await FavoriteAnimationController.to.play();
+
+      // Future.delayed(Duration(milliseconds: 100), () {
+      //   if (Get.isDialogOpen ?? false) {
+      //     Get.back();
+      //   }
+      // });
     }
   }
 

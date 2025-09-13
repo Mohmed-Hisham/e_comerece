@@ -12,4 +12,12 @@ class ViewFavoriteData {
     });
     return response.fold((l) => l, (r) => r);
   }
+
+  getViweFavoritePlatform(String userId, String favoritePlatform) async {
+    var response = await crud.postData(Appapi.viewFavoriteplaform, {
+      "user_id": userId,
+      "favorite_platform": favoritePlatform,
+    });
+    return response.fold((l) => l, (r) => r);
+  }
 }

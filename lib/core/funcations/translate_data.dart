@@ -13,8 +13,13 @@ translateData(columnen, columnar) {
 String enOrAr() {
   MyServises myServises = Get.find();
   if (myServises.sharedPreferences.getString("lang") == "ar") {
-    return "ar";
+    return "ar_MA";
   } else {
-    return "en";
+    return "en_US";
   }
+}
+
+String detectLangFromQuery(String query) {
+  final hasArabic = RegExp(r'[\u0600-\u06FF]').hasMatch(query);
+  return hasArabic ? 'ar_MA' : 'en_US';
 }

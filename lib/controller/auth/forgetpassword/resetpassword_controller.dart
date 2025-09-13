@@ -6,7 +6,8 @@ import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 
 abstract class ResetcodeController extends GetxController {
-  ckeckemail();
+  resetPassword();
+  goback() => Get.back();
 }
 
 class ResetpasswordIemeent extends ResetcodeController {
@@ -21,7 +22,7 @@ class ResetpasswordIemeent extends ResetcodeController {
   String? email;
 
   @override
-  ckeckemail() async {
+  resetPassword() async {
     var formdate = formState.currentState!;
     if (formdate.validate()) {
       if (passWord.text != repassWord.text) {

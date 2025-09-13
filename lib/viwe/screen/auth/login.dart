@@ -1,13 +1,12 @@
 import 'package:e_comerece/controller/auth/login_controller.dart';
 import 'package:e_comerece/core/class/handlingdataviwe.dart';
-import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/constant/imagesassets.dart';
-import 'package:e_comerece/core/funcations/exitdiloge.dart';
+import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/funcations/validate.dart';
+import 'package:e_comerece/viwe/widget/Positioned/login_step_one/positioned_left_3.dart';
+import 'package:e_comerece/viwe/widget/Positioned/login_step_one/positioned_left_4.dart';
 import 'package:e_comerece/viwe/widget/auth/custombuttonauth.dart';
-import 'package:e_comerece/viwe/widget/auth/customtextbody.dart';
-import 'package:e_comerece/viwe/widget/auth/customtexttitleauth.dart';
 import 'package:e_comerece/viwe/widget/auth/custtextfeld.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -18,47 +17,66 @@ class Login extends StatelessWidget {
   Widget build(BuildContext context) {
     Get.put(LoginControllerimplment());
     return Scaffold(
-      body: PopScope(
-        canPop: false,
-        onPopInvokedWithResult: (bool didPop, dynamic result) {
-          if (didPop) return;
-          exitDiloge();
-        },
-        child: SafeArea(
-          child: GetBuilder<LoginControllerimplment>(
-            builder: (controller) => HandlingdatRequest(
-              statusrequest: controller.statusrequest,
-              widget: Form(
-                key: controller.formState,
-                child: SingleChildScrollView(
-                  child: Column(
-                    spacing: 10,
-                    children: [
-                      SizedBox(height: 20),
-                      Customtexttitleauth(text: "loginTitle".tr),
-                      Customtextbody(text: "loginBody".tr),
-                      SizedBox(
-                        height: 120,
-                        child: Image.asset(AppImagesassets.logo),
+      body: GetBuilder<LoginControllerimplment>(
+        builder: (controller) => Stack(
+          children: [
+            PositionedLeft3(),
+            PositionedLeft4(),
+
+            Form(
+              key: controller.formState,
+              child: SingleChildScrollView(
+                child: Column(
+                  spacing: 10,
+                  children: [
+                    SizedBox(height: 150),
+
+                    Container(
+                      height: 80,
+                      width: 80,
+                      padding: EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                        color: Appcolor.white,
+                        borderRadius: BorderRadius.circular(100),
                       ),
-                      Custtextfeld(
-                        controller: controller.email,
-                        hint: "emailHint".tr,
-                        suffixIcon: Icon(
-                          Icons.email_outlined,
-                          color: Appcolor.gray,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(100),
+                        child: Image.asset(
+                          height: 40,
+                          width: 40,
+                          AppImagesassets.avatar,
+                          fit: BoxFit.cover,
                         ),
-                        validator: (val) {
-                          return vlidateInPut(
-                            val: val!,
-                            min: 6,
-                            max: 100,
-                            type: 'email',
-                          );
-                        },
                       ),
-                      GetBuilder<LoginControllerimplment>(
-                        builder: (cont) => Custtextfeld(
+                    ),
+
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Hello,".tr,
+
+                          style: Theme.of(context).textTheme.headlineLarge!
+                              .copyWith(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 25,
+                              ),
+                        ),
+                        Text(
+                          " ${controller.name}!!",
+                          style: Theme.of(context).textTheme.headlineLarge!
+                              .copyWith(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 25,
+                              ),
+                        ),
+                      ],
+                    ),
+
+                    GetBuilder<LoginControllerimplment>(
+                      builder: (cont) => Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 30),
+                        child: Custtextfeld(
                           obscureText: controller.visibility,
                           controller: controller.passowrd,
                           hint: "passwordHint".tr,
@@ -85,62 +103,59 @@ class Login extends StatelessWidget {
                           },
                         ),
                       ),
-
-                      InkWell(
-                        onTap: () {
-                          controller.goToForgetpassword();
-                        },
-                        child: Text("forgotPassword".tr),
-                      ),
-                      Custombuttonauth(
-                        inputtext: "login".tr,
-                        onPressed: () {
-                          controller.login();
-                        },
-                      ),
-
-                      Text("Orsigninwith".tr),
-                      Container(
-                        height: 40,
-                        width: double.infinity,
-                        margin: EdgeInsets.symmetric(horizontal: 20),
-                        decoration: BoxDecoration(
-                          color: Appcolor.somgray,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: MaterialButton(
-                          onPressed: () {},
-                          child: Text(
-                            "Google",
-                            style: TextStyle(
+                    ),
+                    SizedBox(height: 50),
+                    InkWell(
+                      onTap: () {
+                        controller.goToForgetpassword();
+                      },
+                      child: Text("forgotPassword".tr),
+                    ),
+                    Custombuttonauth(
+                      inputtext: "Next".tr,
+                      onPressed: () {
+                        controller.login();
+                      },
+                    ),
+                    SizedBox(height: 3),
+                    InkWell(
+                      onTap: () {
+                        Get.offAllNamed(AppRoutesname.loginStepOne);
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            height: 35,
+                            width: 35,
+                            decoration: BoxDecoration(
                               color: Appcolor.primrycolor,
-                              fontWeight: FontWeight.bold,
+                              borderRadius: BorderRadius.circular(100),
+                            ),
+                            child: Icon(
+                              Icons.arrow_back,
+                              color: Appcolor.white,
+                              size: 20,
                             ),
                           ),
-                        ),
+                          SizedBox(width: 5),
+
+                          Text(
+                            " Not you?",
+                            style: Theme.of(context).textTheme.headlineSmall!
+                                .copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15,
+                                ),
+                          ),
+                        ],
                       ),
-                      SizedBox(height: 10),
-                      InkWell(
-                        onTap: () {
-                          controller.goToSginup();
-                        },
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text("noAccount".tr),
-                            Text(
-                              "signUp".tr,
-                              style: TextStyle(color: Appcolor.primrycolor),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),
-          ),
+          ],
         ),
       ),
     );

@@ -1,160 +1,293 @@
-import 'dart:convert';
+class SearchFromCatModel {
+  Result? result;
 
-class ShearchNameModel {
-  int? pageIndex;
-  String? pageSize;
-  int? totalCount;
-  List<ItemList>? itemList;
+  SearchFromCatModel({this.result});
 
-  ShearchNameModel({
-    this.pageIndex,
-    this.pageSize,
-    this.totalCount,
-    this.itemList,
-  });
+  SearchFromCatModel.fromJson(Map<String, dynamic> json) {
+    result = json['result'] != null
+        ? new Result.fromJson(json['result'])
+        : null;
+  }
 
-  ShearchNameModel.fromJson(Map<String, dynamic> json) {
-    pageIndex = json['pageIndex'];
-    pageSize = json['pageSize'];
-    totalCount = json['totalCount'];
-    if (json['itemList'] != null) {
-      itemList = <ItemList>[];
-      json['itemList'].forEach((v) {
-        itemList!.add(ItemList.fromJson(v));
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    if (this.result != null) {
+      data['result'] = this.result!.toJson();
+    }
+    return data;
+  }
+}
+
+class Result {
+  Status? status;
+  Settings? settings;
+  Base? base;
+  List<ResultList>? resultList;
+
+  Result({this.status, this.settings, this.base, this.resultList});
+
+  Result.fromJson(Map<String, dynamic> json) {
+    status = json['status'] != null
+        ? new Status.fromJson(json['status'])
+        : null;
+    settings = json['settings'] != null
+        ? new Settings.fromJson(json['settings'])
+        : null;
+    base = json['base'] != null ? new Base.fromJson(json['base']) : null;
+    if (json['resultList'] != null) {
+      resultList = <ResultList>[];
+      json['resultList'].forEach((v) {
+        resultList!.add(new ResultList.fromJson(v));
       });
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['pageIndex'] = pageIndex;
-    data['pageSize'] = pageSize;
-    data['totalCount'] = totalCount;
-    if (itemList != null) {
-      data['itemList'] = itemList!.map((v) => v.toJson()).toList();
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    if (this.status != null) {
+      data['status'] = this.status!.toJson();
+    }
+    if (this.settings != null) {
+      data['settings'] = this.settings!.toJson();
+    }
+    if (this.base != null) {
+      data['base'] = this.base!.toJson();
+    }
+    if (this.resultList != null) {
+      data['resultList'] = this.resultList!.map((v) => v.toJson()).toList();
     }
     return data;
   }
 }
 
-class ItemList {
-  String? originalPrice;
-  String? originalPriceCurrency;
-  String? salePrice;
-  String? discount;
-  String? itemMainPic;
-  String? title;
-  String? type;
-  String? score;
-  String? itemId;
-  String? targetSalePrice;
-  String? cateId;
-  String? targetOriginalPriceCurrency;
-  OriginMinPrice? originMinPrice; // <<-- تم تغيير النوع
-  String? evaluateRate;
-  String? salePriceFormat;
-  String? orders;
-  String? targetOriginalPrice;
-  String? salePriceCurrency;
+class Status {
+  int? code;
+  String? data;
+  String? executionTime;
+  String? requestTime;
+  String? requestId;
+  String? endpoint;
+  String? apiVersion;
+  String? functionsVersion;
+  String? la;
+  int? pmu;
+  int? mu;
 
-  ItemList({
-    this.originalPrice,
-    this.originalPriceCurrency,
-    this.salePrice,
-    this.discount,
-    this.itemMainPic,
-    this.title,
-    this.type,
-    this.score,
-    this.itemId,
-    this.targetSalePrice,
-    this.cateId,
-    this.targetOriginalPriceCurrency,
-    this.originMinPrice,
-    this.evaluateRate,
-    this.salePriceFormat,
-    this.orders,
-    this.targetOriginalPrice,
-    this.salePriceCurrency,
+  Status({
+    this.code,
+    this.data,
+    this.executionTime,
+    this.requestTime,
+    this.requestId,
+    this.endpoint,
+    this.apiVersion,
+    this.functionsVersion,
+    this.la,
+    this.pmu,
+    this.mu,
   });
 
-  ItemList.fromJson(Map<String, dynamic> json) {
-    originalPrice = json['originalPrice'];
-    originalPriceCurrency = json['originalPriceCurrency'];
-    salePrice = json['salePrice'];
-    discount = json['discount'];
-    itemMainPic = json['itemMainPic'];
-    title = json['title'];
-    type = json['type'];
-    score = json['score'];
-    itemId = json['itemId'];
-    targetSalePrice = json['targetSalePrice'];
-    cateId = json['cateId'];
-    targetOriginalPriceCurrency = json['targetOriginalPriceCurrency'];
-    if (json['originMinPrice'] != null) {
-      // الـ API يرسله أحيانا كنص JSON، لذا يجب فك ترميزه أولاً
-      if (json['originMinPrice'] is String) {
-        final decodedPrice = jsonDecode(json['originMinPrice']);
-        originMinPrice = OriginMinPrice.fromJson(decodedPrice);
-      }
-      // وأحياناً يرسله كـ Map مباشرة
-      else if (json['originMinPrice'] is Map) {
-        originMinPrice = OriginMinPrice.fromJson(json['originMinPrice']);
-      }
-    } else {
-      originMinPrice = null;
-    }
-    evaluateRate = json['evaluateRate'];
-    salePriceFormat = json['salePriceFormat'];
-    orders = json['orders'];
-    targetOriginalPrice = json['targetOriginalPrice'];
-    salePriceCurrency = json['salePriceCurrency'];
+  Status.fromJson(Map<String, dynamic> json) {
+    code = json['code'];
+    data = json['data'];
+    executionTime = json['executionTime'];
+    requestTime = json['requestTime'];
+    requestId = json['requestId'];
+    endpoint = json['endpoint'];
+    apiVersion = json['apiVersion'];
+    functionsVersion = json['functionsVersion'];
+    la = json['la'];
+    pmu = json['pmu'];
+    mu = json['mu'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['originalPrice'] = originalPrice;
-    data['originalPriceCurrency'] = originalPriceCurrency;
-    data['salePrice'] = salePrice;
-    data['discount'] = discount;
-    data['itemMainPic'] = itemMainPic;
-    data['title'] = title;
-    data['type'] = type;
-    data['score'] = score;
-    data['itemId'] = itemId;
-    data['targetSalePrice'] = targetSalePrice;
-    data['cateId'] = cateId;
-    data['targetOriginalPriceCurrency'] = targetOriginalPriceCurrency;
-    if (originMinPrice != null) {
-      data['originMinPrice'] = originMinPrice!.toJson(); // <<-- تم التعديل
-    }
-    data['evaluateRate'] = evaluateRate;
-    data['salePriceFormat'] = salePriceFormat;
-    data['orders'] = orders;
-    data['targetOriginalPrice'] = targetOriginalPrice;
-    data['salePriceCurrency'] = salePriceCurrency;
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['code'] = this.code;
+    data['data'] = this.data;
+    data['executionTime'] = this.executionTime;
+    data['requestTime'] = this.requestTime;
+    data['requestId'] = this.requestId;
+    data['endpoint'] = this.endpoint;
+    data['apiVersion'] = this.apiVersion;
+    data['functionsVersion'] = this.functionsVersion;
+    data['la'] = this.la;
+    data['pmu'] = this.pmu;
+    data['mu'] = this.mu;
     return data;
   }
 }
 
-// أضف هذا الكلاس الجديد
-class OriginMinPrice {
-  String? formatPrice;
-  // أضف أي حقول أخرى تحتاجها من هذا الكائن
-  // String? currencySymbol;
-  // int? cent;
+class Settings {
+  String? q;
+  String? catId;
+  String? sort;
+  String? page;
+  String? startPrice;
+  String? endPrice;
+  String? region;
+  String? locale;
+  String? currency;
 
-  OriginMinPrice({this.formatPrice});
+  Settings({
+    this.q,
+    this.catId,
+    this.sort,
+    this.page,
+    this.startPrice,
+    this.endPrice,
+    this.region,
+    this.locale,
+    this.currency,
+  });
 
-  OriginMinPrice.fromJson(Map<String, dynamic> json) {
-    formatPrice = json['formatPrice'];
-    // currencySymbol = json['currencySymbol'];
-    // cent = json['cent'];
+  Settings.fromJson(Map<String, dynamic> json) {
+    q = json['q'];
+    catId = json['catId'];
+    sort = json['sort'];
+    page = json['page'];
+    startPrice = json['startPrice'];
+    endPrice = json['endPrice'];
+    region = json['region'];
+    locale = json['locale'];
+    currency = json['currency'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['formatPrice'] = formatPrice;
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['q'] = this.q;
+    data['catId'] = this.catId;
+    data['sort'] = this.sort;
+    data['page'] = this.page;
+    data['startPrice'] = this.startPrice;
+    data['endPrice'] = this.endPrice;
+    data['region'] = this.region;
+    data['locale'] = this.locale;
+    data['currency'] = this.currency;
+    return data;
+  }
+}
+
+class Base {
+  int? totalResults;
+  int? pageSize;
+  int? page;
+  List<String>? sortValues;
+
+  Base({this.totalResults, this.pageSize, this.page, this.sortValues});
+
+  Base.fromJson(Map<String, dynamic> json) {
+    totalResults = json['totalResults'];
+    pageSize = json['pageSize'];
+    page = json['page'];
+    sortValues = json['sortValues'].cast<String>();
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['totalResults'] = this.totalResults;
+    data['pageSize'] = this.pageSize;
+    data['page'] = this.page;
+    data['sortValues'] = this.sortValues;
+    return data;
+  }
+}
+
+class ResultList {
+  Item? item;
+
+  ResultList({this.item});
+
+  ResultList.fromJson(Map<String, dynamic> json) {
+    item = json['item'] != null ? new Item.fromJson(json['item']) : null;
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    if (this.item != null) {
+      data['item'] = this.item!.toJson();
+    }
+    return data;
+  }
+}
+
+class Item {
+  int? itemId;
+  String? title;
+  int? sales;
+  String? itemUrl;
+  String? image;
+  String? video;
+  Sku? sku;
+
+  Item({
+    this.itemId,
+    this.title,
+    this.sales,
+    this.itemUrl,
+    this.image,
+    this.video,
+    this.sku,
+  });
+
+  Item.fromJson(Map<String, dynamic> json) {
+    itemId = json['itemId'];
+    title = json['title'];
+    sales = json['sales'];
+    itemUrl = json['itemUrl'];
+    image = json['image'];
+    video = json['video'];
+    sku = json['sku'] != null ? new Sku.fromJson(json['sku']) : null;
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['itemId'] = this.itemId;
+    data['title'] = this.title;
+    data['sales'] = this.sales;
+    data['itemUrl'] = this.itemUrl;
+    data['image'] = this.image;
+    data['video'] = this.video;
+    if (this.sku != null) {
+      data['sku'] = this.sku!.toJson();
+    }
+    return data;
+  }
+}
+
+class Sku {
+  Def? def;
+
+  Sku({this.def});
+
+  Sku.fromJson(Map<String, dynamic> json) {
+    def = json['def'] != null ? new Def.fromJson(json['def']) : null;
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    if (this.def != null) {
+      data['def'] = this.def!.toJson();
+    }
+    return data;
+  }
+}
+
+class Def {
+  String? price;
+  String? promotionPrice;
+
+  Def({this.price, this.promotionPrice});
+
+  Def.fromJson(Map<String, dynamic> json) {
+    price = json['price'];
+    promotionPrice = json['promotionPrice'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['price'] = this.price;
+    data['promotionPrice'] = this.promotionPrice;
     return data;
   }
 }

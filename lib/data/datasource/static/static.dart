@@ -6,16 +6,16 @@ List<Onboardingmodal> onborardinglist = [
   Onboardingmodal(
     title: "onboardingTitle1".tr,
     body: "onboardingBody1".tr,
-    image: AppImagesassets.onboradingone,
+    image: AppImagesassets.woman3,
   ),
   Onboardingmodal(
     title: "onboardingTitle2".tr,
     body: "onboardingBody2".tr,
-    image: AppImagesassets.onboradingtow,
+    image: AppImagesassets.woman4,
   ),
   Onboardingmodal(
     title: "onboardingTitle3".tr,
     body: "onboardingBody3".tr,
-    image: AppImagesassets.onboradingthree,
+    image: AppImagesassets.woman,
   ),
 ];

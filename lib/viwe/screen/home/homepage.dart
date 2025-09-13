@@ -1,8 +1,9 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:e_comerece/core/constant/imagesassets.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
+import 'package:e_comerece/core/shared/widget_shared/custcarouselslider.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/utils.dart';
 
 class Homepage extends StatelessWidget {
   const Homepage({super.key});
@@ -11,19 +12,20 @@ class Homepage extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListView(
       children: [
-        Container(
-          margin: EdgeInsets.symmetric(horizontal: 15),
-          height: 130,
-          width: double.infinity,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            color: Colors.red,
-            image: DecorationImage(
-              image: AssetImage(AppImagesassets.tset),
-              fit: BoxFit.cover,
-            ),
-          ),
-        ),
+        Custcarouselslider(items: [AppImagesassets.tset]),
+        // Container(
+        //   margin: EdgeInsets.symmetric(horizontal: 15),
+        //   height: 130,
+        //   width: double.infinity,
+        //   decoration: BoxDecoration(
+        //     borderRadius: BorderRadius.circular(20),
+        //     color: Colors.red,
+        //     image: DecorationImage(
+        //       image: AssetImage(AppImagesassets.tset),
+        //       fit: BoxFit.cover,
+        //     ),
+        //   ),
+        // ),
         SizedBox(height: 10),
         GridView(
           padding: EdgeInsets.symmetric(horizontal: 10),

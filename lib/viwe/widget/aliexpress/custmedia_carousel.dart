@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chewie/chewie.dart';
 import 'package:e_comerece/controller/aliexpriess/product_details_controller.dart';
+import 'package:e_comerece/core/shared/widget_shared/shimmer_image_product.dart';
 import 'package:flutter/material.dart';
 
 class CustmediaCarousel extends StatelessWidget {
@@ -10,10 +11,8 @@ class CustmediaCarousel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final chewieController = controller.chewieController;
-    final imageList =
-        controller.itemDetails?.productInfoComponent?.imageList ?? [];
+    final imageList = controller.imageList;
 
-    // نحدد إذا كان هناك فيديو بناءً على وجود chewieController
     final hasVideo = chewieController != null;
     final itemCount = (hasVideo ? 1 : 0) + imageList.length;
 
@@ -28,7 +27,7 @@ class CustmediaCarousel extends StatelessWidget {
       height: 300,
       child: PageView.builder(
         controller: controller.pageController,
-        itemCount: itemCount,
+        itemCount: itemCount.toInt(),
         itemBuilder: (context, index) {
           Widget mediaWidget;
           if (hasVideo && index == 0) {
@@ -36,10 +35,9 @@ class CustmediaCarousel extends StatelessWidget {
           } else {
             final imageIndex = hasVideo ? index - 1 : index;
             mediaWidget = CachedNetworkImage(
-              imageUrl: imageList[imageIndex],
+              imageUrl: "https:${imageList[imageIndex]}",
               fit: BoxFit.cover,
-              placeholder: (context, url) =>
-                  const Center(child: CircularProgressIndicator()),
+              placeholder: (context, url) => const ShimmerImageProduct(),
               errorWidget: (context, url, error) => const Icon(Icons.error),
             );
           }

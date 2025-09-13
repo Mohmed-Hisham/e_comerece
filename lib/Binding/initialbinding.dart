@@ -1,5 +1,5 @@
 import 'package:e_comerece/controller/aliexpriess/category_controller.dart';
-import 'package:e_comerece/controller/favorites_controller.dart';
+import 'package:e_comerece/controller/favorite/favorites_controller.dart';
 import 'package:e_comerece/core/class/crud.dart';
 import 'package:get/get.dart';
 

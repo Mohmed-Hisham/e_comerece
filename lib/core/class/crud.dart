@@ -5,7 +5,6 @@ import 'package:e_comerece/core/funcations/checkinternet.dart';
 import 'package:http/http.dart' as http;
 
 class Crud {
- 
   Future<Either<Statusrequest, Map>> postData(String linlurl, Map data) async {
     try {
       if (await checkinternet()) {
@@ -20,12 +19,11 @@ class Crud {
         return const Left(Statusrequest.oflinefailuer);
       }
     } catch (e) {
-      print('Exception Error in Crud: $e'); 
+      print('Exception Error in Crud: $e');
 
       return const Left(Statusrequest.failuerException);
     }
   }
-
 
   Future<Either<Statusrequest, Map>> getData(
     String linkurl, {
@@ -37,19 +35,21 @@ class Crud {
 
         if (response.statusCode == 200 || response.statusCode == 201) {
           if (response.body.isEmpty) {
-            return const Left(Statusrequest.serverfailuer);
+            print('No Data: ${response.body}');
+
+            return const Left(Statusrequest.noData);
           }
           Map responsebody = jsonDecode(response.body);
           return Right(responsebody);
         } else {
-          // print('Server Error: ${response.body}');
+          print('Server Error: ${response.body}');
           return const Left(Statusrequest.serverfailuer);
         }
       } else {
         return const Left(Statusrequest.oflinefailuer);
       }
     } catch (e) {
-      // print('Exception Error: $e');
+      print('Exception Error: $e');
       return const Left(Statusrequest.failuerException);
     }
   }

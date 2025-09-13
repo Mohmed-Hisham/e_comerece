@@ -14,4 +14,12 @@ class LoginData {
 
     return respons.fold((l) => l, (r) => r);
   }
+
+  loginStepOne({required String email}) async {
+    var respons = await crud.postData(Appapi.loginStepOne, {
+      "user_email": email,
+    });
+
+    return respons.fold((l) => l, (r) => r);
+  }
 }

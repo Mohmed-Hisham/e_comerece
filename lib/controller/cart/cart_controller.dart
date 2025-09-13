@@ -1,4 +1,5 @@
 import 'package:e_comerece/core/class/statusrequest.dart';
+import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/funcations/handlingdata.dart';
 import 'package:e_comerece/core/servises/serviese.dart';
 import 'package:e_comerece/data/datasource/remote/cart/cart_addorremove_data.dart';
@@ -23,16 +24,6 @@ class CartController extends GetxController {
   void onInit() {
     super.onInit();
     getCartItems();
-  }
-
-  int _getTotalQuantityForProduct(String productId) {
-    int totalQuantity = 0;
-    for (var item in cartItems) {
-      if (item.productId == productId) {
-        totalQuantity += int.parse(item.cartQuantity!);
-      }
-    }
-    return totalQuantity;
   }
 
   double total() {
@@ -62,9 +53,6 @@ class CartController extends GetxController {
         List responseData = response['data'];
         cartItems = responseData.map((e) => CartModel.fromJson(e)).toList();
         totalbuild = total();
-        // print(totalbuild);
-
-        // print(total());
       } else {
         statusrequest = Statusrequest.failuer;
       }
@@ -81,12 +69,11 @@ class CartController extends GetxController {
       myServises.sharedPreferences.getString("user_id")!,
       cartId,
     );
-    // print(reso);
   }
 
   addprise({required CartModel cartModel}) async {
     int availableQuantity = int.parse(cartModel.cartAvailableQuantity!);
-    int currentTotalInCart = _getTotalQuantityForProduct(cartModel.productId!);
+    int currentTotalInCart = int.parse(cartModel.cartQuantity!);
     if (currentTotalInCart >= availableQuantity) {
       Get.rawSnackbar(
         title: "تنبيه",
@@ -100,25 +87,19 @@ class CartController extends GetxController {
 
     var response = await cartAddorremoveData.addprise(
       myServises.sharedPreferences.getString("user_id")!,
-      cartModel.productId!,
+      cartModel.productId!.toString(),
       cartModel.cartAttributes!,
       cartModel.cartAvailableQuantity!,
     );
 
-    // print("response=>$response");
     statusrequest = handlingData(response);
     if (Statusrequest.success == statusrequest) {
       if (response['status'] == "success" && response['message'] == "edit") {
         int currentQuantity = int.parse(cartModel.cartQuantity!);
         cartModel.cartQuantity = (currentQuantity + 1).toString();
         totalbuild = total();
-        // print(totalbuild);
-        // Get.rawSnackbar(
-        //   title: "اشعار",
-        //   messageText: const Text("تم زيادة الكمية"),
-        // );
-        // cartController.update();
-        update([1]);
+
+        update(['1']);
       } else {
         statusrequest = Statusrequest.failuer;
       }
@@ -126,32 +107,24 @@ class CartController extends GetxController {
   }
 
   removprise({required CartModel cartModel}) async {
-    // statusrequest = handlingData(response);
-    // if (Statusrequest.success == statusrequest) {
-    //   if (response['status'] == "success" && response['message'] == "edit") {
     int currentQuantity = int.parse(cartModel.cartQuantity!);
-    // print(currentQuantity);
     if (currentQuantity > 1) {
       await cartAddorremoveData.addremov(
         myServises.sharedPreferences.getString("user_id")!,
-        cartModel.productId!,
+        cartModel.productId!.toString(),
         cartModel.cartAttributes!,
       );
-      // print("response=>$response");
 
       cartModel.cartQuantity = (currentQuantity - 1).toString();
       totalbuild = total();
-      // print(totalbuild);
-      // Get.rawSnackbar(
-      //   title: "اشعار",
-      //   messageText: const Text("تم تقليل الكميه بمقدار 1 "),
-      // );
-      // cartController.update();
-      update([1]);
+      update(['1']);
     }
-    //   } else {
-    //     statusrequest = Statusrequest.failuer;
-    //   }
-    // }
+  }
+
+  gotoproductdetails(int productId, String lang) {
+    Get.toNamed(
+      AppRoutesname.detelspage,
+      arguments: {"product_id": productId, "lang": lang},
+    );
   }
 }

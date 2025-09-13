@@ -1,6 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e_comerece/controller/aliexpriess/category_controller.dart';
-import 'package:e_comerece/controller/favorites_controller.dart';
+import 'package:e_comerece/controller/favorite/favorites_controller.dart';
+import 'package:e_comerece/core/class/handlingdataviwe.dart';
+import 'package:e_comerece/core/funcations/calculateDiscount.dart';
+import 'package:e_comerece/core/funcations/translate_data.dart';
+import 'package:e_comerece/core/shared/widget_shared/shimmer_silvergridviwe.dart';
+import 'package:e_comerece/core/shared/widget_shared/shimmer_image_product.dart';
+import 'package:e_comerece/viwe/widget/custgridviwe.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -9,127 +15,78 @@ class HotProductsGrid extends GetView<HomePageControllerImpl> {
 
   @override
   Widget build(BuildContext context) {
-    // final HomePageControllerImpl controller = Get.find();
+    return Handlingdataviwe(
+      isSliver: true,
+      shimmer: ShimmerSliverGridviwe(),
+      statusrequest: controller.statusrequestHotProducts,
+      widget: SliverGrid.builder(
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          mainAxisSpacing: 10,
+          mainAxisExtent: 260,
+        ),
 
-    return GridView.builder(
-      padding: EdgeInsets.symmetric(horizontal: 10),
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        childAspectRatio: 0.7,
-        crossAxisSpacing: 10,
-        mainAxisSpacing: 10,
-      ),
-      itemCount: controller.hotProducts.length,
-      itemBuilder: (context, index) {
-        final product = controller.hotProducts[index];
+        itemCount: controller.hotProducts.length,
+        itemBuilder: (context, index) {
+          final product = controller.hotProducts[index];
 
-        return InkWell(
-          onTap: () {
-            String id = product.productId.toString();
-            controller.gotoditels(id);
-          },
-          child: Card(
-            elevation: 2,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: ClipRRect(
-                    borderRadius: BorderRadiusGeometry.circular(15),
-                    child: CachedNetworkImage(
-                      imageUrl: product.productMainImageUrl!,
-                      fit: BoxFit.cover,
-                      width: double.infinity,
-                      placeholder: (context, url) =>
-                          const Center(child: CircularProgressIndicator()),
-                      errorWidget: (context, url, error) =>
-                          const Icon(Icons.error),
-                    ),
+          return InkWell(
+            onTap: () {
+              int id = product.item!.itemId!;
+              controller.gotoditels(id: id, lang: enOrAr());
+            },
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: Custgridviwe(
+                image: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: CachedNetworkImage(
+                    imageUrl: "https:${product.item!.image!}",
+                    fit: BoxFit.cover,
+                    width: double.infinity,
+                    placeholder: (context, url) => const ShimmerImageProduct(),
+                    errorWidget: (context, url, error) =>
+                        const Icon(Icons.error),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        product.productTitle!,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            "\$${product.targetSalePrice!}",
-                            style: const TextStyle(
-                              fontSize: 10,
-                              color: Colors.red,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Text(
-                            "\$${product.targetOriginalPrice}",
-                            style: const TextStyle(
-                              fontSize: 10,
-                              color: Colors.red,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          // if (product.discount != "0%")
-                          //   Text(
-                          //     product.discount!,
-                          //     style: const TextStyle(
-                          //       fontSize: 16,
-                          //       color: Colors.grey,
-                          //       fontWeight: FontWeight.bold,
-                          //     ),
-                          //   ),
-                          GetBuilder<FavoritesController>(
-                            builder: (controller) {
-                              bool isFav =
-                                  controller.isFavorite[product.productId
-                                      .toString()] ??
-                                  false;
-
-                              return IconButton(
-                                onPressed: () {
-                                  controller.toggleFavorite(
-                                    product.productId!.toString(),
-                                    product.productTitle!,
-                                    product.productMainImageUrl!,
-                                    product.targetSalePrice!,
-                                    "aliex",
-                                  );
-                                },
-                                // 2. نستخدم الحالة لتحديد شكل ولون الأيقونة
-                                icon: Icon(
-                                  isFav
-                                      ? Icons.favorite
-                                      : Icons.favorite_border,
-                                  color: isFav ? Colors.red : Colors.grey,
-                                  size: 30, // يمكنك تعديل الحجم
-                                ),
-                              );
-                            },
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+                disc: calculateDiscountPercent(
+                  product.item!.sku!.def!.price!,
+                  product.item!.sku!.def!.promotionPrice!,
                 ),
-              ],
+                title: product.item!.title!,
+                price: "\$${product.item!.sku!.def!.promotionPrice!}",
+                icon: GetBuilder<FavoritesController>(
+                  builder: (controller) {
+                    bool isFav =
+                        controller.isFavorite[product.item!.itemId
+                            .toString()] ??
+                        false;
+
+                    return IconButton(
+                      onPressed: () {
+                        controller.toggleFavorite(
+                          product.item!.itemId!.toString(),
+                          product.item!.title!,
+                          product.item!.image!,
+                          product.item!.sku!.def!.promotionPrice!,
+                          "Aliexpress",
+                        );
+                      },
+                      icon: Icon(
+                        isFav ? Icons.favorite : Icons.favorite_border,
+                        color: isFav ? Colors.red : Colors.black,
+                        size: 25,
+                      ),
+                    );
+                  },
+                ),
+
+                discprice: "\$${product.item!.sku!.def!.price!}",
+              ),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 }

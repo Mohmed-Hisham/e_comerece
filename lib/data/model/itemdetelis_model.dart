@@ -1,474 +1,427 @@
-class ItemDetelis {
-  String? welcomedeal;
-  ProductInfoComponent? productInfoComponent;
-  SkuComponent? skuComponent;
-  PriceComponent? priceComponent;
-  CurrencyComponent? currencyComponent;
-  SellerComponent? sellerComponent;
-  MultiLanguageUrlComponent? multiLanguageUrlComponent;
-  ImageComponent? imageComponent;
+class ItemDetailsModel {
+  ItemDetailsModel({required this.result});
 
-  ItemDetelis({
-    this.welcomedeal,
-    this.productInfoComponent,
-    this.skuComponent,
-    this.priceComponent,
-    this.currencyComponent,
-    this.sellerComponent,
-    this.multiLanguageUrlComponent,
-    this.imageComponent,
+  final Result? result;
+
+  factory ItemDetailsModel.fromJson(Map<String, dynamic> json) {
+    return ItemDetailsModel(
+      result: json["result"] == null ? null : Result.fromJson(json["result"]),
+    );
+  }
+}
+
+class Result {
+  Result({
+    required this.status,
+    required this.settings,
+    required this.item,
+    required this.reviews,
+    required this.delivery,
+    required this.seller,
   });
 
-  ItemDetelis.fromJson(Map<String, dynamic> json) {
-    welcomedeal = json['welcomedeal'];
-    productInfoComponent = json['productInfoComponent'] != null
-        ? ProductInfoComponent.fromJson(json['productInfoComponent'])
-        : null;
-    skuComponent = json['skuComponent'] != null
-        ? SkuComponent.fromJson(json['skuComponent'])
-        : null;
-    priceComponent = json['priceComponent'] != null
-        ? PriceComponent.fromJson(json['priceComponent'])
-        : null;
-    currencyComponent = json['currencyComponent'] != null
-        ? CurrencyComponent.fromJson(json['currencyComponent'])
-        : null;
-    sellerComponent = json['sellerComponent'] != null
-        ? SellerComponent.fromJson(json['sellerComponent'])
-        : null;
-    multiLanguageUrlComponent = json['multiLanguageUrlComponent'] != null
-        ? MultiLanguageUrlComponent.fromJson(json['multiLanguageUrlComponent'])
-        : null;
-    imageComponent = json['imageComponent'] != null
-        ? ImageComponent.fromJson(json['imageComponent'])
-        : null;
-  }
+  final Status? status;
+  final Settings? settings;
+  final Item? item;
+  final Reviews? reviews;
+  final Delivery? delivery;
+  final Seller? seller;
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['welcomedeal'] = welcomedeal;
-    if (productInfoComponent != null) {
-      data['productInfoComponent'] = productInfoComponent!.toJson();
-    }
-    if (skuComponent != null) {
-      data['skuComponent'] = skuComponent!.toJson();
-    }
-    if (priceComponent != null) {
-      data['priceComponent'] = priceComponent!.toJson();
-    }
-    if (currencyComponent != null) {
-      data['currencyComponent'] = currencyComponent!.toJson();
-    }
-    if (sellerComponent != null) {
-      data['sellerComponent'] = sellerComponent!.toJson();
-    }
-    if (multiLanguageUrlComponent != null) {
-      data['multiLanguageUrlComponent'] = multiLanguageUrlComponent!.toJson();
-    }
-    if (imageComponent != null) {
-      data['imageComponent'] = imageComponent!.toJson();
-    }
-    return data;
+  factory Result.fromJson(Map<String, dynamic> json) {
+    return Result(
+      status: json["status"] == null ? null : Status.fromJson(json["status"]),
+      settings: json["settings"] == null
+          ? null
+          : Settings.fromJson(json["settings"]),
+      item: json["item"] == null ? null : Item.fromJson(json["item"]),
+      reviews: json["reviews"] == null
+          ? null
+          : Reviews.fromJson(json["reviews"]),
+      delivery: json["delivery"] == null
+          ? null
+          : Delivery.fromJson(json["delivery"]),
+      seller: json["seller"] == null ? null : Seller.fromJson(json["seller"]),
+    );
   }
 }
 
-class ProductInfoComponent {
-  int? categoryId;
-  String? subject;
-  List<String>? imageList;
-  PackageInfo? packageInfo;
-  String? productId;
-  Video? video;
-
-  ProductInfoComponent({
-    this.categoryId,
-    this.subject,
-    this.imageList,
-    this.packageInfo,
-    this.productId,
-    this.video,
+class Delivery {
+  Delivery({
+    required this.shippingToCode,
+    required this.shippingOutDays,
+    required this.shippingList,
+    required this.packageDetail,
   });
 
-  ProductInfoComponent.fromJson(Map<String, dynamic> json) {
-    categoryId = json['categoryId'];
-    subject = json['subject'];
-    imageList = json['imageList'].cast<String>();
-    packageInfo = json['packageInfo'] != null
-        ? PackageInfo.fromJson(json['packageInfo'])
-        : null;
-    productId = json['productId'];
-    video = json['video'] != null ? Video.fromJson(json['video']) : null;
-  }
+  final String? shippingToCode;
+  final int? shippingOutDays;
+  final dynamic shippingList;
+  final PackageDetail? packageDetail;
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['categoryId'] = categoryId;
-    data['subject'] = subject;
-    data['imageList'] = imageList;
-    if (packageInfo != null) {
-      data['packageInfo'] = packageInfo!.toJson();
-    }
-    data['productId'] = productId;
-    if (video != null) {
-      data['video'] = video!.toJson();
-    }
-    return data;
+  factory Delivery.fromJson(Map<String, dynamic> json) {
+    return Delivery(
+      shippingToCode: json["shippingToCode"],
+      shippingOutDays: json["shippingOutDays"],
+      shippingList: json["shippingList"],
+      packageDetail: json["packageDetail"] == null
+          ? null
+          : PackageDetail.fromJson(json["packageDetail"]),
+    );
   }
 }
 
-class PackageInfo {
-  int? height;
-  int? length;
-  double? weight;
-  int? width;
-
-  PackageInfo({this.height, this.length, this.weight, this.width});
-
-  PackageInfo.fromJson(Map<String, dynamic> json) {
-    height = json['height'];
-    length = json['length'];
-    weight = (json['weight'] as num?)?.toDouble();
-    width = json['width'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['height'] = height;
-    data['length'] = length;
-    data['weight'] = weight;
-    data['width'] = width;
-    return data;
-  }
-}
-
-class Video {
-  String? posterUrl;
-  int? videoId;
-  String? videoUrl;
-
-  Video({this.posterUrl, this.videoId, this.videoUrl});
-
-  Video.fromJson(Map<String, dynamic> json) {
-    posterUrl = json['posterUrl'];
-    videoId = json['videoId'];
-    videoUrl = json['videoUrl'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['posterUrl'] = posterUrl;
-    data['videoId'] = videoId;
-    data['videoUrl'] = videoUrl;
-    return data;
-  }
-}
-
-class SkuComponent {
-  List<ProductSKUPropertyList>? productSKUPropertyList;
-
-  SkuComponent({this.productSKUPropertyList});
-
-  SkuComponent.fromJson(Map<String, dynamic> json) {
-    if (json['productSKUPropertyList'] != null) {
-      productSKUPropertyList = <ProductSKUPropertyList>[];
-      json['productSKUPropertyList'].forEach((v) {
-        productSKUPropertyList!.add(ProductSKUPropertyList.fromJson(v));
-      });
-    }
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    if (productSKUPropertyList != null) {
-      data['productSKUPropertyList'] = productSKUPropertyList!
-          .map((v) => v.toJson())
-          .toList();
-    }
-    return data;
-  }
-}
-
-class ProductSKUPropertyList {
-  String? skuPropertyName;
-  String? skuPropertyId;
-  int? order;
-  String? showType;
-  bool? showTypeColor;
-  bool? sizeProperty;
-  bool? isNewStandardSizeChart;
-  List<SkuPropertyValues>? skuPropertyValues;
-
-  ProductSKUPropertyList({
-    this.skuPropertyName,
-    this.skuPropertyId,
-    this.order,
-    this.showType,
-    this.showTypeColor,
-    this.sizeProperty,
-    this.isNewStandardSizeChart,
-    this.skuPropertyValues,
+class PackageDetail {
+  PackageDetail({
+    required this.weight,
+    required this.length,
+    required this.height,
+    required this.width,
   });
 
-  ProductSKUPropertyList.fromJson(Map<String, dynamic> json) {
-    skuPropertyName = json['skuPropertyName'];
-    skuPropertyId = json['skuPropertyId'];
-    order = json['order'];
-    showType = json['showType'];
-    showTypeColor = json['showTypeColor'];
-    sizeProperty = json['sizeProperty'];
-    isNewStandardSizeChart = json['isNewStandardSizeChart'];
-    if (json['skuPropertyValues'] != null) {
-      skuPropertyValues = <SkuPropertyValues>[];
-      json['skuPropertyValues'].forEach((v) {
-        skuPropertyValues!.add(SkuPropertyValues.fromJson(v));
-      });
-    }
-  }
+  final String? weight;
+  final int? length;
+  final int? height;
+  final int? width;
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['skuPropertyName'] = skuPropertyName;
-    data['skuPropertyId'] = skuPropertyId;
-    data['order'] = order;
-    data['showType'] = showType;
-    data['showTypeColor'] = showTypeColor;
-    data['sizeProperty'] = sizeProperty;
-    data['isNewStandardSizeChart'] = isNewStandardSizeChart;
-    if (skuPropertyValues != null) {
-      data['skuPropertyValues'] = skuPropertyValues!
-          .map((v) => v.toJson())
-          .toList();
-    }
-    return data;
+  factory PackageDetail.fromJson(Map<String, dynamic> json) {
+    return PackageDetail(
+      weight: json["weight"],
+      length: json["length"],
+      height: json["height"],
+      width: json["width"],
+    );
   }
 }
 
-class SkuPropertyValues {
-  int? propertyValueId;
-  String? propertyValueName;
-  int? propertyValueIdLong;
-  String? propertyValueDisplayName;
-  int? skuPropertyValueShowOrder;
-  String? skuPropertyTips;
-  String? skuPropertyValueTips;
-  String? skuPropertyImagePath;
-  String? skuPropertyImageSummPath;
-
-  SkuPropertyValues({
-    this.propertyValueId,
-    this.propertyValueName,
-    this.propertyValueIdLong,
-    this.propertyValueDisplayName,
-    this.skuPropertyValueShowOrder,
-    this.skuPropertyTips,
-    this.skuPropertyValueTips,
-    this.skuPropertyImagePath,
-    this.skuPropertyImageSummPath,
+class Item {
+  Item({
+    required this.available,
+    required this.itemId,
+    required this.title,
+    required this.catId,
+    required this.itemUrl,
+    required this.images,
+    required this.video,
+    required this.properties,
+    required this.description,
+    required this.sku,
   });
 
-  SkuPropertyValues.fromJson(Map<String, dynamic> json) {
-    propertyValueId = json['propertyValueId'];
-    propertyValueName = json['propertyValueName'];
-    propertyValueIdLong = json['propertyValueIdLong'];
-    propertyValueDisplayName = json['propertyValueDisplayName'];
-    skuPropertyValueShowOrder = json['skuPropertyValueShowOrder'];
-    skuPropertyTips = json['skuPropertyTips'];
-    skuPropertyValueTips = json['skuPropertyValueTips'];
-    skuPropertyImagePath = json['skuPropertyImagePath'];
-    skuPropertyImageSummPath = json['skuPropertyImageSummPath'];
-  }
+  final bool? available;
+  final int? itemId;
+  final String? title;
+  final int? catId;
+  final String? itemUrl;
+  final List<String> images;
+  final dynamic video;
+  final Properties? properties;
+  final Description? description;
+  final Sku? sku;
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['propertyValueId'] = propertyValueId;
-    data['propertyValueName'] = propertyValueName;
-    data['propertyValueIdLong'] = propertyValueIdLong;
-    data['propertyValueDisplayName'] = propertyValueDisplayName;
-    data['skuPropertyValueShowOrder'] = skuPropertyValueShowOrder;
-    data['skuPropertyTips'] = skuPropertyTips;
-    data['skuPropertyValueTips'] = skuPropertyValueTips;
-    data['skuPropertyImagePath'] = skuPropertyImagePath;
-    data['skuPropertyImageSummPath'] = skuPropertyImageSummPath;
-    return data;
-  }
-}
-
-class PriceComponent {
-  List<SkuPriceList>? skuPriceList;
-
-  PriceComponent({this.skuPriceList});
-
-  PriceComponent.fromJson(Map<String, dynamic> json) {
-    if (json['skuPriceList'] != null) {
-      skuPriceList = <SkuPriceList>[];
-      json['skuPriceList'].forEach((v) {
-        skuPriceList!.add(SkuPriceList.fromJson(v));
-      });
-    }
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    if (skuPriceList != null) {
-      data['skuPriceList'] = skuPriceList!.map((v) => v.toJson()).toList();
-    }
-    return data;
+  factory Item.fromJson(Map<String, dynamic> json) {
+    return Item(
+      available: json["available"],
+      itemId: json["itemId"],
+      title: json["title"],
+      catId: json["catId"],
+      itemUrl: json["itemUrl"],
+      images: json["images"] == null
+          ? []
+          : List<String>.from(json["images"]!.map((x) => x)),
+      video: json["video"],
+      properties: json["properties"] == null
+          ? null
+          : Properties.fromJson(json["properties"]),
+      description: json["description"] == null
+          ? null
+          : Description.fromJson(json["description"]),
+      sku: json["sku"] == null ? null : Sku.fromJson(json["sku"]),
+    );
   }
 }
 
-class SkuPriceList {
-  String? skuId;
-  String? skuPropIds;
-  String? skuAttr;
-  SkuVal? skuVal;
+class Description {
+  Description({required this.html, required this.images});
 
-  SkuPriceList({this.skuId, this.skuPropIds, this.skuAttr, this.skuVal});
+  final String? html;
+  final List<String> images;
 
-  SkuPriceList.fromJson(Map<String, dynamic> json) {
-    skuId = json['skuId'];
-    skuPropIds = json['skuPropIds'];
-    skuAttr = json['skuAttr'];
-    skuVal = json['skuVal'] != null ? SkuVal.fromJson(json['skuVal']) : null;
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['skuId'] = skuId;
-    data['skuPropIds'] = skuPropIds;
-    data['skuAttr'] = skuAttr;
-    if (skuVal != null) {
-      data['skuVal'] = skuVal!.toJson();
-    }
-    return data;
+  factory Description.fromJson(Map<String, dynamic> json) {
+    return Description(
+      html: json["html"],
+      images: json["images"] == null
+          ? []
+          : List<String>.from(json["images"]!.map((x) => x)),
+    );
   }
 }
 
-class SkuVal {
-  SkuAmount? skuAmount;
-  SkuAmount? skuActivityAmount;
-  String? discountTips;
-  int? availQuantity;
+class Properties {
+  Properties({required this.cut, required this.list});
 
-  SkuVal({
-    this.skuAmount,
-    this.skuActivityAmount,
-    this.discountTips,
-    this.availQuantity,
+  final String? cut;
+  final List<ListElement> list;
+
+  factory Properties.fromJson(Map<String, dynamic> json) {
+    return Properties(
+      cut: json["cut"],
+      list: json["list"] == null
+          ? []
+          : List<ListElement>.from(
+              json["list"]!.map((x) => ListElement.fromJson(x)),
+            ),
+    );
+  }
+}
+
+class ListElement {
+  ListElement({required this.name, required this.value});
+
+  final String? name;
+  final String? value;
+
+  factory ListElement.fromJson(Map<String, dynamic> json) {
+    return ListElement(name: json["name"], value: json["value"]);
+  }
+}
+
+class Sku {
+  Sku({
+    required this.def,
+    required this.base,
+    required this.props,
+    required this.skuImages,
   });
 
-  SkuVal.fromJson(Map<String, dynamic> json) {
-    skuAmount = json['skuAmount'] != null
-        ? SkuAmount.fromJson(json['skuAmount'])
-        : null;
-    skuActivityAmount = json['skuActivityAmount'] != null
-        ? SkuAmount.fromJson(json['skuActivityAmount'])
-        : null;
-    discountTips = json['discountTips'];
-    availQuantity = json['availQuantity'];
-  }
+  final Def? def;
+  final List<Base> base;
+  final List<Prop> props;
+  final SkuImages? skuImages;
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    if (skuAmount != null) {
-      data['skuAmount'] = skuAmount!.toJson();
-    }
-    if (skuActivityAmount != null) {
-      data['skuActivityAmount'] = skuActivityAmount!.toJson();
-    }
-    data['discountTips'] = discountTips;
-    data['availQuantity'] = availQuantity;
-    return data;
+  factory Sku.fromJson(Map<String, dynamic> json) {
+    return Sku(
+      def: json["def"] == null ? null : Def.fromJson(json["def"]),
+      base: json["base"] == null
+          ? []
+          : List<Base>.from(json["base"]!.map((x) => Base.fromJson(x))),
+      props: json["props"] == null
+          ? []
+          : List<Prop>.from(json["props"]!.map((x) => Prop.fromJson(x))),
+      skuImages: json["skuImages"] == null
+          ? null
+          : SkuImages.fromJson(json["skuImages"]),
+    );
   }
 }
 
-class SkuAmount {
-  String? formatedAmount;
-  double? value;
+class Base {
+  Base({
+    required this.skuId,
+    required this.skuAttr,
+    required this.propMap,
+    required this.price,
+    required this.promotionPrice,
+    required this.quantity,
+    required this.ext,
+  });
 
-  SkuAmount({this.formatedAmount, this.value});
+  final String? skuId;
+  final String? skuAttr;
+  final String? propMap;
+  final String? price;
+  final String? promotionPrice;
+  final int? quantity;
+  final String? ext;
 
-  SkuAmount.fromJson(Map<String, dynamic> json) {
-    formatedAmount = json['formatedAmount'];
-    value = (json['value'] as num?)?.toDouble();
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['formatedAmount'] = formatedAmount;
-    data['value'] = value;
-    return data;
-  }
-}
-
-class CurrencyComponent {
-  String? baseCurrencyCode;
-  String? currencyCode;
-
-  CurrencyComponent({this.baseCurrencyCode, this.currencyCode});
-
-  CurrencyComponent.fromJson(Map<String, dynamic> json) {
-    baseCurrencyCode = json['baseCurrencyCode'];
-    currencyCode = json['currencyCode'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['baseCurrencyCode'] = baseCurrencyCode;
-    data['currencyCode'] = currencyCode;
-    return data;
+  factory Base.fromJson(Map<String, dynamic> json) {
+    return Base(
+      skuId: json["skuId"],
+      skuAttr: json["skuAttr"],
+      propMap: json["propMap"],
+      price: json["price"],
+      promotionPrice: json["promotionPrice"],
+      quantity: json["quantity"],
+      ext: json["ext"],
+    );
   }
 }
 
-class SellerComponent {
-  String? storeName;
-  String? sellerAdminSeq;
-  String? storeLogo;
+class Def {
+  Def({
+    required this.quantity,
+    required this.price,
+    required this.promotionPrice,
+  });
 
-  SellerComponent({this.storeName, this.sellerAdminSeq, this.storeLogo});
+  final int? quantity;
+  final String? price;
+  final String? promotionPrice;
 
-  SellerComponent.fromJson(Map<String, dynamic> json) {
-    storeName = json['storeName'];
-    sellerAdminSeq = json['sellerAdminSeq'];
-    storeLogo = json['storeLogo'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['storeName'] = storeName;
-    data['sellerAdminSeq'] = sellerAdminSeq;
-    data['storeLogo'] = storeLogo;
-    return data;
+  factory Def.fromJson(Map<String, dynamic> json) {
+    return Def(
+      quantity: json["quantity"],
+      price: json["price"],
+      promotionPrice: json["promotionPrice"],
+    );
   }
 }
 
-class MultiLanguageUrlComponent {
-  String? itemDetailUrl;
+class Prop {
+  Prop({required this.pid, required this.name, required this.values});
 
-  MultiLanguageUrlComponent({this.itemDetailUrl});
+  final int? pid;
+  final String? name;
+  final List<Value> values;
 
-  MultiLanguageUrlComponent.fromJson(Map<String, dynamic> json) {
-    itemDetailUrl = json['itemDetailUrl'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['itemDetailUrl'] = itemDetailUrl;
-    return data;
+  factory Prop.fromJson(Map<String, dynamic> json) {
+    return Prop(
+      pid: json["pid"],
+      name: json["name"],
+      values: json["values"] == null
+          ? []
+          : List<Value>.from(json["values"]!.map((x) => Value.fromJson(x))),
+    );
   }
 }
 
-class ImageComponent {
-  List<String>? image640PathList;
+class Value {
+  Value({required this.vid, required this.name, required this.image});
 
-  ImageComponent({this.image640PathList});
+  final int? vid;
+  final String? name;
+  final String? image;
 
-  ImageComponent.fromJson(Map<String, dynamic> json) {
-    image640PathList = json['image640PathList'].cast<String>();
+  factory Value.fromJson(Map<String, dynamic> json) {
+    return Value(vid: json["vid"], name: json["name"], image: json["image"]);
   }
+}
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['image640PathList'] = image640PathList;
-    return data;
+class SkuImages {
+  SkuImages({
+    required this.the14365458,
+    required this.the14100018786,
+    required this.the14771,
+    required this.the141254,
+    required this.the14193,
+    required this.the14173,
+  });
+
+  final String? the14365458;
+  final String? the14100018786;
+  final String? the14771;
+  final String? the141254;
+  final String? the14193;
+  final String? the14173;
+
+  factory SkuImages.fromJson(Map<String, dynamic> json) {
+    return SkuImages(
+      the14365458: json["14:365458"],
+      the14100018786: json["14:100018786"],
+      the14771: json["14:771"],
+      the141254: json["14:1254"],
+      the14193: json["14:193"],
+      the14173: json["14:173"],
+    );
+  }
+}
+
+class Reviews {
+  Reviews({required this.count, required this.averageStar});
+
+  final String? count;
+  final String? averageStar;
+
+  factory Reviews.fromJson(Map<String, dynamic> json) {
+    return Reviews(count: json["count"], averageStar: json["averageStar"]);
+  }
+}
+
+class Seller {
+  Seller({
+    required this.storeTitle,
+    required this.storeId,
+    required this.storeUrl,
+  });
+
+  final String? storeTitle;
+  final int? storeId;
+  final String? storeUrl;
+
+  factory Seller.fromJson(Map<String, dynamic> json) {
+    return Seller(
+      storeTitle: json["storeTitle"],
+      storeId: json["storeId"],
+      storeUrl: json["storeUrl"],
+    );
+  }
+}
+
+class Settings {
+  Settings({
+    required this.locale,
+    required this.currency,
+    required this.country,
+    required this.itemId,
+  });
+
+  final String? locale;
+  final String? currency;
+  final String? country;
+  final String? itemId;
+
+  factory Settings.fromJson(Map<String, dynamic> json) {
+    return Settings(
+      locale: json["locale"],
+      currency: json["currency"],
+      country: json["country"],
+      itemId: json["itemId"],
+    );
+  }
+}
+
+class Status {
+  Status({
+    required this.code,
+    required this.attempt,
+    required this.data,
+    required this.executionTime,
+    required this.requestTime,
+    required this.requestId,
+    required this.endpoint,
+    required this.apiVersion,
+    required this.functionsVersion,
+    required this.la,
+    required this.pmu,
+    required this.mu,
+  });
+
+  final int? code;
+  final int? attempt;
+  final String? data;
+  final String? executionTime;
+  final DateTime? requestTime;
+  final String? requestId;
+  final String? endpoint;
+  final String? apiVersion;
+  final String? functionsVersion;
+  final String? la;
+  final int? pmu;
+  final int? mu;
+
+  factory Status.fromJson(Map<String, dynamic> json) {
+    return Status(
+      code: json["code"],
+      attempt: json["attempt"],
+      data: json["data"],
+      executionTime: json["executionTime"],
+      requestTime: DateTime.tryParse(json["requestTime"] ?? ""),
+      requestId: json["requestId"],
+      endpoint: json["endpoint"],
+      apiVersion: json["apiVersion"],
+      functionsVersion: json["functionsVersion"],
+      la: json["la"],
+      pmu: json["pmu"],
+      mu: json["mu"],
+    );
   }
 }

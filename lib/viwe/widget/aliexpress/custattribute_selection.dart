@@ -4,21 +4,17 @@ import 'package:flutter/material.dart';
 
 class CustattributeSelection extends StatelessWidget {
   final ProductDetailsController controller;
-
   const CustattributeSelection({super.key, required this.controller});
 
   @override
   Widget build(BuildContext context) {
-    final attributes =
-        controller.itemDetails?.skuComponent?.productSKUPropertyList;
-    if (attributes == null || attributes.isEmpty) {
+    final attributes = controller.uiSkuProperties;
+    if (attributes.isEmpty) {
       return const SizedBox.shrink();
     }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: attributes.map((attribute) {
-        print(attribute.skuPropertyName);
-
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -36,15 +32,20 @@ class CustattributeSelection extends StatelessWidget {
                     value.propertyValueId!.toString();
                 return GestureDetector(
                   onTap: () {
-                    print(value.propertyValueDisplayName!.toString());
                     controller.updateSelectedAttribute(
                       attribute.skuPropertyId!,
                       value.propertyValueId!.toString(),
                     );
+
+                    // controller.getquiqtity(
+                    //     jsonEncode(buildDisplayAttributes(controller)),
+                    //   );
                   },
                   child: Column(
                     children: [
-                      Text(value.propertyValueDisplayName!.toString()),
+                      if (value.skuPropertyImagePath != null &&
+                          value.skuPropertyImagePath!.isNotEmpty)
+                        Text(value.propertyValueDisplayName!.toString()),
                       Container(
                         decoration: BoxDecoration(
                           border: Border.all(
@@ -57,7 +58,7 @@ class CustattributeSelection extends StatelessWidget {
                             (value.skuPropertyImagePath != null &&
                                 value.skuPropertyImagePath!.isNotEmpty)
                             ? CachedNetworkImage(
-                                imageUrl: value.skuPropertyImagePath!,
+                                imageUrl: "https:${value.skuPropertyImagePath}",
                                 width: 50,
                                 height: 50,
                                 fit: BoxFit.cover,

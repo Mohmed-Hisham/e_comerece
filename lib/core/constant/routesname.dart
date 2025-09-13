@@ -1,5 +1,9 @@
 class AppRoutesname {
+  //splash
+  static const String splash = "/splash";
+
   static const String login = "/login";
+  static const String loginStepOne = "/LoginStepOne";
   static const String onBoarding = "/onboarding";
   static const String sginin = "/sginin";
   static const String forgetpassword = "/forgotpassword";
@@ -17,4 +21,7 @@ class AppRoutesname {
   static const String shearchname = "/Shearchname";
   static const String favoritescreen = "/FavoriteScreen";
   static const String cartscreen = "/cartscreen";
+
+  // Aliexpress
+  static const String favoritealiexpress = "/favoritealiexpress";
 }

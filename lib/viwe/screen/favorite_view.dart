@@ -1,5 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:e_comerece/controller/favorite_view_controller.dart';
+import 'package:e_comerece/controller/favorite/favorite_view_controller.dart';
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/data/model/favorite_model.dart';
 import 'package:flutter/material.dart';
@@ -110,7 +110,7 @@ class ProductCard extends StatelessWidget {
                     top: Radius.circular(15),
                   ),
                   child: CachedNetworkImage(
-                    imageUrl: favorite.productImage!,
+                    imageUrl: 'https:${favorite.productImage}',
                     fit: BoxFit.cover,
                     width: double.infinity,
                     placeholder: (context, url) =>

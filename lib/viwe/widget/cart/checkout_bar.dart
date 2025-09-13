@@ -10,14 +10,14 @@ class CheckoutBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetBuilder<CartController>(
-      id: 1,
+      id: "1",
       builder: (controller) => Container(
         padding: const EdgeInsets.all(15),
         decoration: BoxDecoration(
           color: Colors.white,
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.withOpacity(0.5),
+              color: Colors.grey,
               spreadRadius: 5,
               blurRadius: 7,
               offset: const Offset(0, 3),

@@ -20,7 +20,6 @@ class SginupControllerimplemnt extends SginupController {
   late TextEditingController email;
   late TextEditingController passowrd;
   late TextEditingController phone;
-  late TextEditingController confirmpassowrd;
 
   Statusrequest? statusrequest;
 
@@ -37,12 +36,6 @@ class SginupControllerimplemnt extends SginupController {
   sginup() async {
     var formdate = formState.currentState!;
     if (formdate.validate()) {
-      if (passowrd.text != confirmpassowrd.text) {
-        return Get.defaultDialog(
-          title: "خطأ",
-          middleText: "كلمه المرور غير متطابقة",
-        );
-      }
       statusrequest = Statusrequest.loading;
       update();
       var response = await signupData.postData(
@@ -75,7 +68,7 @@ class SginupControllerimplemnt extends SginupController {
 
   @override
   goToSginin() {
-    Get.offNamed(AppRoutesname.login);
+    Get.offNamed(AppRoutesname.loginStepOne);
   }
 
   @override
@@ -85,7 +78,6 @@ class SginupControllerimplemnt extends SginupController {
     phone = TextEditingController();
     passowrd = TextEditingController();
     username = TextEditingController();
-    confirmpassowrd = TextEditingController();
   }
 
   @override
@@ -95,6 +87,5 @@ class SginupControllerimplemnt extends SginupController {
     phone.dispose();
     passowrd.dispose();
     username.dispose();
-    confirmpassowrd.dispose();
   }
 }

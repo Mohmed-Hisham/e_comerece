@@ -6,4 +6,5 @@ enum Statusrequest {
   serverfailuer,
   oflinefailuer,
   failuerException,
+  noData,
 }

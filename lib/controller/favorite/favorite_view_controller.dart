@@ -53,12 +53,10 @@ class FavoriteViewController extends GetxController {
   }
 
   removeFavorite(String productId) {
-    // Optimistically remove from the local list
     favorites.removeWhere((favorite) => favorite.productId == productId);
     groupFavoritesByPlatform();
     update();
 
-    // Call the API to remove from the server
     removeData.remove(
       userId: myServises.sharedPreferences.getString("user_id")!,
       productid: productId,

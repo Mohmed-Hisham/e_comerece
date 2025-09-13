@@ -3,21 +3,21 @@ import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/funcations/handlingdata.dart';
 import 'package:e_comerece/core/servises/serviese.dart';
 import 'package:e_comerece/data/datasource/remote/auth/login_data.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 abstract class LoginController extends GetxController {
   login();
-
   goToSginup();
   goToForgetpassword();
 }
 
 class LoginControllerimplment extends LoginController {
   LoginData loginData = LoginData(Get.find());
-  late TextEditingController email;
   late TextEditingController passowrd;
+
+  late String name;
+  late String email;
 
   MyServises myServises = Get.find();
 
@@ -42,11 +42,25 @@ class LoginControllerimplment extends LoginController {
     if (formdate.validate()) {
       statusrequest = Statusrequest.loading;
       update();
+      if (!Get.isDialogOpen!) {
+        Get.dialog(
+          PopScope(
+            canPop: false,
+            onPopInvokedWithResult: (bool didPop, dynamic result) {
+              if (didPop) return;
+            },
+            child: Center(child: CircularProgressIndicator()),
+          ),
+        );
+      }
       var response = await loginData.postData(
-        email: email.text,
+        email: email,
         password: passowrd.text,
       );
+
       statusrequest = handlingData(response);
+      if (Get.isDialogOpen ?? false) Get.back();
+
       if (Statusrequest.success == statusrequest) {
         if (response['status'] == 'not_approve') {
           Get.offNamed(
@@ -70,13 +84,14 @@ class LoginControllerimplment extends LoginController {
             "user_phone",
             response['data']['user_phone'],
           );
-          myServises.sharedPreferences.setString("step", "2");
-          Get.offNamed(AppRoutesname.homepage);
+          if (myServises.sharedPreferences.getString("step") == "1") {
+            Get.offNamed(AppRoutesname.homepage);
+          } else {
+            Get.offNamed(AppRoutesname.onBoarding);
+          }
+          myServises.sharedPreferences.setString("step", "1");
         } else {
-          Get.defaultDialog(
-            title: "خطأ",
-            middleText: "كلمه المرور خطأ او الحساب غير موجود",
-          );
+          Get.defaultDialog(title: "خطأ", middleText: "كلمه المرور خطأ");
           statusrequest = Statusrequest.failuer;
         }
       }
@@ -87,19 +102,19 @@ class LoginControllerimplment extends LoginController {
   @override
   void onInit() {
     super.onInit();
-    FirebaseMessaging.instance.getToken().then((val) {
-      String? token = val;
-      print(val);
-    });
+    // FirebaseMessaging.instance.getToken().then((val) {
+    //   String? token = val;
+    //   print(val);
+    // });
+    name = Get.arguments['name'];
+    email = Get.arguments['email'];
 
-    email = TextEditingController();
     passowrd = TextEditingController();
   }
 
   @override
   void dispose() {
     super.dispose();
-    email.dispose();
     passowrd.dispose();
   }
 

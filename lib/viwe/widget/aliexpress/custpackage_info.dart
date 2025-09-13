@@ -1,4 +1,5 @@
 import 'package:e_comerece/controller/aliexpriess/product_details_controller.dart';
+import 'package:e_comerece/core/constant/color.dart';
 import 'package:flutter/material.dart';
 
 class Custpackageinfo extends StatelessWidget {
@@ -7,9 +8,13 @@ class Custpackageinfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final packageInfo =
-        controller.itemDetails?.productInfoComponent?.packageInfo;
-    if (packageInfo == null) return const SizedBox.shrink();
+    final weight = controller.packageWeight;
+    final length = controller.packageLength;
+    final width = controller.packageWidth;
+    final height = controller.packageHeight;
+    if (weight == null && (length == null || width == null || height == null)) {
+      return const SizedBox.shrink();
+    }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -18,11 +23,47 @@ class Custpackageinfo extends StatelessWidget {
           style: Theme.of(context).textTheme.titleLarge,
         ),
         const SizedBox(height: 8),
-        if (packageInfo.weight != null)
-          Text('Weight: ${packageInfo.weight} kg'),
-        if (packageInfo.length != null)
-          Text(
-            'Dimensions: ${packageInfo.length}x${packageInfo.width}x${packageInfo.height} cm',
+        if (weight != null)
+          Text.rich(
+            TextSpan(
+              children: [
+                TextSpan(
+                  text: 'Weight:  ',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: Appcolor.black,
+                  ),
+                ),
+                TextSpan(
+                  text: '$weight kg',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blueAccent,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        if (length != null && width != null && height != null)
+          Text.rich(
+            TextSpan(
+              children: [
+                TextSpan(
+                  text: 'Dimensions:  ',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: Appcolor.black,
+                  ),
+                ),
+                TextSpan(
+                  text: '${length} x ${width} x ${height} cm',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blueAccent,
+                  ),
+                ),
+              ],
+            ),
           ),
       ],
     );

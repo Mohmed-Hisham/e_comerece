@@ -2,13 +2,13 @@ import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/funcations/handlingdata.dart';
 import 'package:e_comerece/data/datasource/remote/auth/forgetpassword/checkemail_data.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 
 abstract class Forgetpassowrd extends GetxController {
-  ckeckemail();
-
   goToveyfiycode();
+  goback();
 }
 
 class Forgetpassowrdlment extends Forgetpassowrd {
@@ -20,25 +20,39 @@ class Forgetpassowrdlment extends Forgetpassowrd {
 
   @override
   goToveyfiycode() async {
-    statusrequest = Statusrequest.loading;
-    update();
-    var response = await checkemailData.postData(email: email.text);
-    print(response);
-
-    statusrequest = handlingData(response);
-    if (Statusrequest.success == statusrequest) {
-      if (response['status'] == 'success') {
-        Get.toNamed(AppRoutesname.verFiyCode, arguments: {"email": email.text});
-      } else {
-        Get.defaultDialog(title: "خطأ", middleText: "الايميل غير موجود");
-        statusrequest = Statusrequest.failuer;
+    if (formState.currentState!.validate()) {
+      statusrequest = Statusrequest.loading;
+      update();
+      if (!Get.isDialogOpen!) {
+        Get.dialog(
+          PopScope(
+            canPop: false,
+            onPopInvokedWithResult: (bool didPop, dynamic result) {
+              if (didPop) return;
+            },
+            child: Center(child: CircularProgressIndicator()),
+          ),
+        );
       }
-    }
-    update();
-  }
 
-  @override
-  ckeckemail() {}
+      var response = await checkemailData.postData(email: email.text);
+
+      statusrequest = handlingData(response);
+      if (Get.isDialogOpen ?? false) Get.back();
+      if (Statusrequest.success == statusrequest) {
+        if (response['status'] == 'success') {
+          Get.toNamed(
+            AppRoutesname.verFiyCode,
+            arguments: {"email": email.text},
+          );
+        } else {
+          Get.defaultDialog(title: "خطأ", middleText: "الايميل غير موجود");
+          statusrequest = Statusrequest.failuer;
+        }
+      }
+      update();
+    }
+  }
 
   @override
   void onInit() {
@@ -50,5 +64,10 @@ class Forgetpassowrdlment extends Forgetpassowrd {
   void dispose() {
     super.dispose();
     email.dispose();
+  }
+
+  @override
+  goback() {
+    Get.back();
   }
 }

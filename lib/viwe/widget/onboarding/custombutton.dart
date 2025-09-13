@@ -4,26 +4,24 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class CustombuttonOnBoarding extends GetView<Onboardingcontroolerimplement> {
-  const CustombuttonOnBoarding({super.key});
+  final void Function()? onTap;
+  final String title;
+  const CustombuttonOnBoarding({this.onTap, required this.title, super.key});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 40,
-      width: 200,
-      margin: EdgeInsets.only(bottom: 50),
+      height: 42,
+      width: 170,
 
-      // padding: EdgeInsets.symmetric(horizontal: 60),
       decoration: BoxDecoration(
         color: Appcolor.primrycolor,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(15),
       ),
       child: MaterialButton(
-        onPressed: () {
-          controller.next();
-        },
+        onPressed: onTap,
         child: Text(
-          "continue".tr,
+          title.tr,
           style: TextStyle(color: Appcolor.white, fontWeight: FontWeight.bold),
         ),
       ),

@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 abstract class VerifycodeController extends GetxController {
   late String code;
   ckeckCode(verifycodeSignup);
+  goback() => Get.back();
 }
 
 class VerifycodeControllerImp extends VerifycodeController {
@@ -25,7 +26,6 @@ class VerifycodeControllerImp extends VerifycodeController {
       email: email!,
       verifycode: verifycodeSignup,
     );
-    print(response);
 
     statusrequest = handlingData(response);
     if (Statusrequest.success == statusrequest) {

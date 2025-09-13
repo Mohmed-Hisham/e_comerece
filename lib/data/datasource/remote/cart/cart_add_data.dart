@@ -31,4 +31,18 @@ class CartAddData {
 
     return respons.fold((l) => l, (r) => r);
   }
+
+  cartquantity({
+    required String userId,
+    required String productid,
+    required String attributes,
+  }) async {
+    var respons = await crud.postData(Appapi.cartquantity, {
+      "user_id": userId,
+      "product_id": productid,
+      "attributes": attributes,
+    });
+
+    return respons.fold((l) => l, (r) => r);
+  }
 }

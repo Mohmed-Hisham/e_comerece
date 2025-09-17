@@ -9,9 +9,13 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 abstract class AddorrmoveController extends GetxController {
-  addprise({required CartModel cartModel, required String availablequantity});
-  removprise({required CartModel cartModel});
-  add(
+  Future<void> addprise({
+    required CartModel cartModel,
+    required String availablequantity,
+  });
+  Future<void> removprise({required CartModel cartModel});
+  Future<int> cartquintty(int productid, String attributes);
+  Future<void> add(
     String productid,
     String producttitle,
     String productimage,
@@ -35,14 +39,14 @@ class AddorrmoveControllerimple extends AddorrmoveController {
 
   @override
   add(
-    String productid,
-    String producttitle,
-    String productimage,
-    String productprice,
-    String platform,
-    String quantity,
-    String attributes,
-    String availableqQuantity,
+    productid,
+    producttitle,
+    productimage,
+    productprice,
+    platform,
+    quantity,
+    attributes,
+    availableqQuantity,
   ) async {
     statusRequest = Statusrequest.loading;
     var response = await cartAddData.addcart(
@@ -78,7 +82,7 @@ class AddorrmoveControllerimple extends AddorrmoveController {
   }
 
   @override
-  addprise({required CartModel cartModel, required availablequantity}) async {
+  addprise({required cartModel, required availablequantity}) async {
     var response = await cartAddorremoveData.addprise(
       myServices.sharedPreferences.getString("user_id")!,
       cartModel.productId!.toString(),
@@ -106,7 +110,7 @@ class AddorrmoveControllerimple extends AddorrmoveController {
   }
 
   @override
-  removprise({required CartModel cartModel}) async {
+  removprise({required cartModel}) async {
     var response = await cartAddorremoveData.addremov(
       myServices.sharedPreferences.getString("user_id")!,
       cartModel.productId!.toString(),
@@ -132,7 +136,8 @@ class AddorrmoveControllerimple extends AddorrmoveController {
     }
   }
 
-  Future<int> cartquintty(int productid, String attributes) async {
+  @override
+  cartquintty(productid, attributes) async {
     statusRequest = Statusrequest.loading;
     var response = await cartAddData.cartquantity(
       userId: myServices.sharedPreferences.getString("user_id")!,

@@ -2,12 +2,13 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e_comerece/controller/aliexpriess/category_controller.dart';
 import 'package:e_comerece/controller/favorite/favorites_controller.dart';
 import 'package:e_comerece/core/class/handlingdataviwe.dart';
+import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/funcations/calculateDiscount.dart';
 import 'package:e_comerece/core/funcations/translate_data.dart';
-import 'package:e_comerece/core/shared/widget_shared/shimmer_silvergridviwe.dart';
 import 'package:e_comerece/core/shared/widget_shared/shimmer_image_product.dart';
 import 'package:e_comerece/viwe/widget/custgridviwe.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 
 class HotProductsGrid extends GetView<HomePageControllerImpl> {
@@ -17,7 +18,7 @@ class HotProductsGrid extends GetView<HomePageControllerImpl> {
   Widget build(BuildContext context) {
     return Handlingdataviwe(
       isSliver: true,
-      shimmer: ShimmerSliverGridviwe(),
+      // shimmer: ShimmerSliverGridviwe(),
       statusrequest: controller.statusrequestHotProducts,
       widget: SliverGrid.builder(
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -72,16 +73,24 @@ class HotProductsGrid extends GetView<HomePageControllerImpl> {
                           "Aliexpress",
                         );
                       },
-                      icon: Icon(
-                        isFav ? Icons.favorite : Icons.favorite_border,
-                        color: isFav ? Colors.red : Colors.black,
-                        size: 25,
+                      icon: FaIcon(
+                        isFav
+                            ? FontAwesomeIcons.solidHeart
+                            : FontAwesomeIcons.heart,
+                        color: isFav ? Appcolor.reed : Appcolor.reed,
                       ),
+
+                      //  Icon(
+                      //   isFav ? Icons.favorite : Icons.favorite_border,
+                      //   color: isFav ? Colors.red : Colors.black,
+                      //   size: 25,
+                      // ),
                     );
                   },
                 ),
 
                 discprice: "\$${product.item!.sku!.def!.price!}",
+                countsall: "${product.item!.sales!} مبيعة",
               ),
             ),
           );

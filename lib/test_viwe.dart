@@ -1,74 +1,59 @@
-import 'package:e_comerece/core/constant/color.dart';
+import 'dart:io';
+import 'package:e_comerece/core/shared/image_manger/Image_manager_controller.dart';
+import 'package:e_comerece/core/shared/image_manger/Image_manager_view.dart';
+import 'package:e_comerece/data/datasource/remote/upload_to_cloudinary.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 
-import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+class TestViwe extends StatelessWidget {
+  const TestViwe({super.key});
 
-class RPSCustomClipper extends CustomClipper<Path> {
-  @override
-  Path getClip(Size size) {
-    Path path_0 = Path();
-    path_0.moveTo(size.width * 1.0181818, size.height * 0.9990000);
-    path_0.lineTo(size.width * -0.0254545, size.height * 1.0060000);
-    path_0.lineTo(size.width * 0.0000182, size.height * 0.5796600);
-    path_0.quadraticBezierTo(
-      size.width * 0.0100000,
-      size.height * 0.5090000,
-      size.width * 0.1272727,
-      size.height * 0.4930000,
-    );
-    path_0.cubicTo(
-      size.width * 0.8830727,
-      size.height * 0.4892200,
-      size.width * 0.9425273,
-      size.height * 0.5135700,
-      size.width * 1.0016000,
-      size.height * 0.3729100,
-    );
-    path_0.quadraticBezierTo(
-      size.width * 1.0351091,
-      size.height * 0.5120400,
-      size.width * 1.0181818,
-      size.height * 0.9990000,
-    );
-    path_0.close();
-
-    return path_0;
-  }
-
-  @override
-  bool shouldReclip(covariant CustomClipper<Path> oldClipper) {
-    return true;
-  }
-}
-
-class MyCustomShape extends StatelessWidget {
-  const MyCustomShape({super.key});
+  // استبدل ال uploadPreset بالقيمة اللي في Cloudinary Dashboard
+  static const String uploadPreset = 'ecommerce_unsigned';
+  static const String cloudName = 'dgonvbimk';
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: SvgPicture.asset(
-          'assets/svg/bubble.svg',
-          width: 200,
-          height: 200,
-          colorBlendMode: BlendMode.srcIn,
-          colorFilter: const ColorFilter.mode(
-            Color.fromARGB(255, 243, 99, 91),
-            BlendMode.srcIn,
-          ),
-        ),
+    Get.put(ImageManagerController());
 
-        //  ClipPath(
-        //   clipper: RPSCustomClipper(),
-        //   child: Container(
-        //     width: 600,
-        //     height: 700,
-        //     color: Appcolor.primrycolor,
-        //     alignment: Alignment.center,
-        //   ),
-        // ),
+    return Scaffold(
+      appBar: AppBar(title: const Text('اختبار الرفع')),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Center(
+            child: ImageManagerView(
+              defaultBuilder: ElevatedButton(
+                onPressed: Get.find<ImageManagerController>().pickImage,
+                child: Icon(Icons.add_a_photo),
+              ),
+              // imageBuilder: (image) => Container(
+              //   height: 200,
+              //   width: 200,
+              //   decoration: BoxDecoration(
+              //     border: Border.all(color: Colors.grey),
+              //   ),
+              //   child: Image.file(File(image.path), fit: BoxFit.cover),
+              // ),
+              onImagePicked: (XFile image) {
+                uploadToCloudinary(
+                      filePath: image.path,
+                      cloudName: cloudName,
+                      uploadPreset: uploadPreset,
+                    )
+                    .then((url) {
+                      if (url != null) {
+                        print('Uploaded to: $url');
+                      } else {}
+                    })
+                    .catchError((err) {
+                      print('Error: $err');
+                    });
+              },
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -25,10 +25,8 @@ class CategoriesList extends StatelessWidget {
               itemCount: controller.categories.length,
               itemBuilder: (context, index) {
                 final category = controller.categories[index];
-
                 final IconData iconToShow =
                     categoryIcons[category.id] ?? Icons.category_outlined;
-
                 return Container(
                   width: 100,
                   alignment: Alignment.center,

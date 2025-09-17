@@ -2,23 +2,14 @@ import 'package:e_comerece/app_api/aliaxpress_api.dart';
 import 'package:e_comerece/core/class/crud.dart';
 import 'package:e_comerece/core/funcations/translate_data.dart';
 
-class ShearshnameData {
+class SearchByImageData {
   Crud crud;
 
-  ShearshnameData(this.crud);
+  SearchByImageData(this.crud);
 
-  getData({
-    required String keyWord,
-    required int categoryId,
-    required int pageindex,
-  }) async {
+  getData({required String imageUrl}) async {
     var response = await crud.getData(
-      AliaxpressApi.shearchname(
-        keyWord: keyWord,
-        categoryId: categoryId,
-        lang: enOrAr(),
-        pageindex: pageindex,
-      ),
+      AliaxpressApi.searshByimage(imageUrl: imageUrl, lang: enOrAr()),
       headers: AliaxpressApi.rapidApiHeaders,
     );
 

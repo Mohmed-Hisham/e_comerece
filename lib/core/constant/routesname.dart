@@ -24,4 +24,5 @@ class AppRoutesname {
 
   // Aliexpress
   static const String favoritealiexpress = "/favoritealiexpress";
+  static const String searchByimagealiexpress = "/searchByimagealiexpress";
 }

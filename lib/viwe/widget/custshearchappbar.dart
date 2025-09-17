@@ -1,8 +1,11 @@
 import 'package:e_comerece/core/constant/color.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get/get.dart';
 
 class Custshearchappbar extends StatelessWidget {
   final void Function()? favoriteOnPressed;
+  final void Function()? imageOnPressed;
   final void Function()? onTapSearch;
   final TextEditingController mycontroller;
   final Function(String)? onChanged;
@@ -12,6 +15,7 @@ class Custshearchappbar extends StatelessWidget {
     required this.mycontroller,
     this.onChanged,
     this.onTapSearch,
+    this.imageOnPressed,
   });
 
   @override
@@ -26,7 +30,7 @@ class Custshearchappbar extends StatelessWidget {
       child: Row(
         children: [
           SizedBox(
-            width: 280,
+            width: Get.width / 1.6,
             child: TextFormField(
               onChanged: onChanged,
               controller: mycontroller,
@@ -56,7 +60,15 @@ class Custshearchappbar extends StatelessWidget {
           ),
           IconButton(
             onPressed: favoriteOnPressed,
-            icon: Icon(Icons.favorite, color: Appcolor.white, size: 30),
+            icon: FaIcon(FontAwesomeIcons.solidHeart, color: Appcolor.white),
+          ),
+          IconButton(
+            onPressed: imageOnPressed,
+            icon: Icon(
+              Icons.image_search_rounded,
+              color: Appcolor.white,
+              size: 30,
+            ),
           ),
         ],
       ),

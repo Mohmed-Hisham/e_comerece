@@ -60,8 +60,8 @@ class AddToCartBottomSheet extends StatelessWidget {
     return GetBuilder<ProductDetailsController>(
       id: 'quantity',
       builder: (controller) {
-        print("quantity.quantity=>${controller.quantity}");
-        print('buildQuantitySelector');
+        print("quantity.quantity======>${controller.quantity}");
+
         return Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [

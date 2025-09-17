@@ -42,13 +42,13 @@ class Buildaddtocartbutton extends StatelessWidget {
 
           final stock =
               controller.currentSku?.skuVal?.availQuantity?.toString() ?? '0';
-          print("stock=>$stock");
-          print("quantity=>${controller.quantity}");
-          print("price=>$price");
-          print("imageUrl=>$imageUrl");
-          print("subject=>$subject");
-          print("productId=>$productId");
-          print("attributesJson=>$attributesJson");
+          // print("stock=>$stock");
+          // print("quantity=>${controller.quantity}");
+          // print("price=>$price");
+          // print("imageUrl=>$imageUrl");
+          // print("subject=>$subject");
+          // print("productId=>$productId");
+          // print("attributesJson=>$attributesJson");
 
           cartController.add(
             productId,

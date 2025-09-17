@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class Custtextfeld extends StatelessWidget {
   final String hint;
   final TextEditingController? controller;
-  final Widget? suffixIcon; // استخدم suffixIcon للآيكونات
+  final Widget? suffixIcon;
   final String? Function(String?) validator;
   final bool? obscureText;
 
@@ -22,7 +22,7 @@ class Custtextfeld extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 1),
       child: ConstrainedBox(
-        constraints: BoxConstraints(minHeight: 50), // لا تقم بتثبيت height
+        constraints: BoxConstraints(minHeight: 50),
         child: TextFormField(
           obscureText: obscureText ?? false,
           validator: validator,

@@ -26,7 +26,8 @@ class AppImagesassets {
   // test
   static const String tset = "$_rootimages/test.jpg";
 
-  static const String loadinglottie = "$_rootlottie/loading.json";
+  static const String shoppingcart = "$_rootlottie/shoppingcart.json";
+  static const String addcart = "$_rootlottie/addcart.json";
   static const String nodatalottie = "$_rootlottie/nodata.json";
   static const String nointernetlottie = "$_rootlottie/nointernet.json";
   static const String srverfailuerlottie = "$_rootlottie/srverfailuer.json";

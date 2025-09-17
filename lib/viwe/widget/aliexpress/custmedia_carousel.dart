@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chewie/chewie.dart';
 import 'package:e_comerece/controller/aliexpriess/product_details_controller.dart';
+import 'package:e_comerece/core/shared/widget_shared/openFullimage.dart';
 import 'package:e_comerece/core/shared/widget_shared/shimmer_image_product.dart';
 import 'package:flutter/material.dart';
 
@@ -34,11 +35,15 @@ class CustmediaCarousel extends StatelessWidget {
             mediaWidget = Chewie(controller: controller.chewieController!);
           } else {
             final imageIndex = hasVideo ? index - 1 : index;
-            mediaWidget = CachedNetworkImage(
-              imageUrl: "https:${imageList[imageIndex]}",
-              fit: BoxFit.cover,
-              placeholder: (context, url) => const ShimmerImageProduct(),
-              errorWidget: (context, url, error) => const Icon(Icons.error),
+            mediaWidget = GestureDetector(
+              onTap: () =>
+                  openFullImage(context, "https:${imageList[imageIndex]}"),
+              child: CachedNetworkImage(
+                imageUrl: "https:${imageList[imageIndex]}",
+                fit: BoxFit.cover,
+                placeholder: (context, url) => const ShimmerImageProduct(),
+                errorWidget: (context, url, error) => const Icon(Icons.error),
+              ),
             );
           }
 

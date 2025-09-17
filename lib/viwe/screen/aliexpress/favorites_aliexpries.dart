@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e_comerece/controller/favorite/favorite_view_platform_controller.dart';
 import 'package:e_comerece/core/class/handlingdataviwe.dart';

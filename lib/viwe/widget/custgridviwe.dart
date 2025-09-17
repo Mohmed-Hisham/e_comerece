@@ -9,6 +9,7 @@ class Custgridviwe extends StatelessWidget {
   final String price;
   final Function()? onChangeIcon;
   final Widget icon;
+  final String? countsall;
   const Custgridviwe({
     super.key,
     required this.image,
@@ -18,6 +19,7 @@ class Custgridviwe extends StatelessWidget {
     this.onChangeIcon,
     required this.icon,
     required this.discprice,
+    this.countsall,
   });
 
   @override
@@ -57,6 +59,33 @@ class Custgridviwe extends StatelessWidget {
                   child: icon,
                 ),
               ),
+              if (countsall != null)
+                Positioned(
+                  top: 0,
+                  left: -1,
+                  child: Container(
+                    padding: const EdgeInsets.all(3),
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [Color(0xFFFF5790), Color(0xFFF81140)],
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                      ),
+
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      countsall.toString(),
+                      style: TextStyle(
+                        color: Appcolor.white,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'signika',
+                      ),
+                      textAlign: TextAlign.start,
+                    ),
+                  ),
+                ),
             ],
           ),
         ),

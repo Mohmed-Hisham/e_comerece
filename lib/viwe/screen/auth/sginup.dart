@@ -65,8 +65,8 @@ class Sginup extends StatelessWidget {
                         validator: (val) {
                           return vlidateInPut(
                             val: val!,
-                            min: 10,
-                            max: 100,
+                            min: 3,
+                            max: 50,
                             type: 'username',
                           );
                         },

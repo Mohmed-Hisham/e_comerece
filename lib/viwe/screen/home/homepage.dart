@@ -13,19 +13,7 @@ class Homepage extends StatelessWidget {
     return ListView(
       children: [
         Custcarouselslider(items: [AppImagesassets.tset]),
-        // Container(
-        //   margin: EdgeInsets.symmetric(horizontal: 15),
-        //   height: 130,
-        //   width: double.infinity,
-        //   decoration: BoxDecoration(
-        //     borderRadius: BorderRadius.circular(20),
-        //     color: Colors.red,
-        //     image: DecorationImage(
-        //       image: AssetImage(AppImagesassets.tset),
-        //       fit: BoxFit.cover,
-        //     ),
-        //   ),
-        // ),
+
         SizedBox(height: 10),
         GridView(
           padding: EdgeInsets.symmetric(horizontal: 10),

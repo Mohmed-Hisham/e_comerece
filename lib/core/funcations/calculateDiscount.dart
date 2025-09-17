@@ -6,5 +6,5 @@ String calculateDiscountPercent(originalPrice, promotionPrice) {
   }
   double discount = originalPrice - promotionPrice;
   double discountPercent = (discount / originalPrice) * 100;
-  return discountPercent.toStringAsFixed(2);
+  return "${discountPercent.toStringAsFixed(0)}%";
 }

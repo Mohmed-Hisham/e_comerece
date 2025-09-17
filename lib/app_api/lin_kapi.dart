@@ -1,6 +1,6 @@
 class Appapi {
-  // static const String server = "http://192.168.1.8/ecommerce";
-  static const String server = "http://10.188.240.126/ecommerce";
+  static const String server = "http://192.168.1.13/ecommerce";
+  // static const String server = "http://10.188.240.126/ecommerce";
   static const String test = "$server/test.php";
 
   //                         Auth
@@ -33,4 +33,8 @@ class Appapi {
   static const String addPrise = "$server/cart/cart_add_preise.php";
   static const String removPrise = "$server/cart/cart_remove_prise.php";
   static const String cartquantity = "$server/cart/cart_quantity.php";
+
+  //cloudinary
+  static const String uploadPreset = 'ecommerce_unsigned';
+  static const String cloudName = 'dgonvbimk';
 }

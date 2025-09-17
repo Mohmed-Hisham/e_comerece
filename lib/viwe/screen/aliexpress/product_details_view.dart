@@ -1,13 +1,15 @@
 import 'package:e_comerece/controller/aliexpriess/product_details_controller.dart';
 import 'package:e_comerece/controller/cart/cart_from_detils.dart';
+import 'package:e_comerece/controller/favorite/favorites_controller.dart';
 import 'package:e_comerece/core/class/handlingdataviwe.dart';
 import 'package:e_comerece/core/shared/widget_shared/shimmer_product_details.dart';
-import 'package:e_comerece/viwe/screen/aliexpress/add_to_cart_bottom_sheet.dart';
 import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_app_bar.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_right_1.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_right_2.dart';
 import 'package:e_comerece/viwe/widget/aliexpress/custattribute_selection.dart';
+import 'package:e_comerece/viwe/widget/aliexpress/custbuildpricedisplay.dart';
+import 'package:e_comerece/viwe/widget/aliexpress/custbutton_add_cart.dart';
 import 'package:e_comerece/viwe/widget/aliexpress/custmedia_carousel.dart';
 import 'package:e_comerece/viwe/widget/aliexpress/custpackage_info.dart';
 import 'package:e_comerece/viwe/widget/aliexpress/custstock_info.dart';
@@ -24,53 +26,9 @@ class ProductDetailsView extends StatelessWidget {
     AddorrmoveControllerimple addcontroller = Get.put(
       AddorrmoveControllerimple(),
     );
+    Get.put(FavoritesController());
     return Scaffold(
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: GetBuilder<ProductDetailsController>(
-          builder: (controller) => ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Appcolor.primrycolor,
-              foregroundColor: Appcolor.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-            onPressed: () {
-              // Map<String, dynamic> cc = buildDisplayAttributes(controller);
-              // print("  ${jsonEncode(buildDisplayAttributes(controller))}");
-              // print(cc['Color']['name']);
-              // print(cc['Color']['image']);
-              // print(cc['Compatibility by Model']['name']);
-              // print(cc['Compatibility by Model']['image']);
-              // print(controller.productId.runtimeType);
-
-              // print("controller.quantity=>${controller.quantity}");
-
-              // controller.getquiqtity(
-              //   jsonEncode(buildDisplayAttributes(controller)),
-              // );
-              // print(".quantity=>${controller.quantity}");
-              Get.bottomSheet(
-                AddToCartBottomSheet(
-                  controller: controller,
-                  addcontroller: addcontroller,
-                ),
-                backgroundColor: Colors.white,
-                elevation: 10,
-                shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    topRight: Radius.circular(20),
-                  ),
-                ),
-              );
-            },
-            child: Text("add to cart"),
-          ),
-        ),
-      ),
-      // appBar: AppBar(title: const Text('Product Details')),
+      backgroundColor: Color(0xFFF7F8FA),
       body: Stack(
         children: [
           PositionedRight1(),
@@ -92,6 +50,7 @@ class ProductDetailsView extends StatelessWidget {
             ),
           ),
           PositionedAppBar(title: "Product Details", onPressed: Get.back),
+          CustbuttonAddCart(addcontroller: addcontroller),
         ],
       ),
     );
@@ -108,7 +67,6 @@ class ProductDetailsView extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(""),
-        // const SizedBox(height: 20),
         CustmediaCarousel(controller: controller),
         Padding(
           padding: const EdgeInsets.all(16.0),
@@ -117,18 +75,17 @@ class ProductDetailsView extends StatelessWidget {
             children: [
               _buildProductTitle(context, controller),
               const SizedBox(height: 8),
-               ImagesCarousel(images: images, height: 300),
-                
-                 const SizedBox(height: 8),
+              ImagesCarousel(images: images),
+              const SizedBox(height: 8),
               _buildSellerInfo(context, controller),
               const SizedBox(height: 16),
-              _buildPriceDisplay(context, controller),
+              Custbuildpricedisplay(),
               const SizedBox(height: 16),
               CustattributeSelection(controller: controller),
               const SizedBox(height: 16),
               Custpackageinfo(controller: controller),
               const SizedBox(height: 16),
-              CuststockInfo(controller: controller),
+              CuststockInfo(),
               const SizedBox(height: 16),
               _buildReviews(context, controller),
               const SizedBox(height: 16),
@@ -181,39 +138,6 @@ class ProductDetailsView extends StatelessWidget {
             style: Theme.of(context).textTheme.titleMedium,
           ),
         ),
-      ],
-    );
-  }
-
-  Widget _buildPriceDisplay(
-    BuildContext context,
-    ProductDetailsController controller,
-  ) {
-    final price = controller.currentSku?.skuVal?.skuActivityAmount;
-    final originalPrice = controller.currentSku?.skuVal?.skuAmount;
-
-    if (price == null && originalPrice == null) {
-      return const SizedBox.shrink();
-    }
-
-    return Row(
-      children: [
-        if (price != null)
-          Text(
-            price.formatedAmount!,
-            style: Theme.of(
-              context,
-            ).textTheme.headlineMedium?.copyWith(color: Colors.red),
-          ),
-        const SizedBox(width: 8),
-        if (originalPrice != null && price?.value != originalPrice.value)
-          Text(
-            originalPrice.formatedAmount!,
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              color: Colors.grey,
-              decoration: TextDecoration.lineThrough,
-            ),
-          ),
       ],
     );
   }

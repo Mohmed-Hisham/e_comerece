@@ -24,8 +24,9 @@ class AliaxpressApi {
     required String keyWord,
     required int categoryId,
     required String lang,
+    required int pageindex,
   }) {
-    return "$server/item_search_5?q=$keyWord&page=1&sort=default&catId=$categoryId&locale=$lang&region=YE&currency=USD";
+    return "$server/item_search_5?q=$keyWord&page=$pageindex&sort=default&catId=$categoryId&locale=$lang&region=YE&currency=USD";
   }
 
   static String searshText({
@@ -37,8 +38,15 @@ class AliaxpressApi {
     // return "$server/textsearch.php?keyWord=$keyWord&pageSize=150&pageIndex=$pageindex&country=YE&currency=USD&lang=$lang&filter=orders&sortBy=asc";
   }
 
+  static String searshByimage({
+    required String imageUrl,
+    required String lang,
+  }) {
+    return "$server/item_search_image?sort=default&catId=0&imgUrl=$imageUrl&locale=$lang&region=YE&currency=USD";
+  }
+
   static const Map<String, String> rapidApiHeaders = {
     'X-RapidAPI-Host': 'aliexpress-datahub.p.rapidapi.com',
-    'X-RapidAPI-Key': '3c0ab5688dmsh0817a4812cf01ddp13364djsn1d8e1391f7d3',
+    'X-RapidAPI-Key': 'acf6950ef4msh9730465e824a79cp17ca91jsn4dcbd85736a7',
   };
 }

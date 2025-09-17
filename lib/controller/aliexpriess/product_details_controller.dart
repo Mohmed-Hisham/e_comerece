@@ -1,6 +1,7 @@
 // ignore_for_file: unused_import
 import 'dart:convert';
 
+import 'package:carousel_slider/carousel_controller.dart';
 import 'package:chewie/chewie.dart';
 import 'package:e_comerece/controller/cart/cart_from_detils.dart';
 import 'package:e_comerece/core/class/statusrequest.dart';
@@ -29,7 +30,7 @@ class ProductDetailsController extends GetxController {
 
   Map<String, String> selectedAttributes = {};
   SkuPriceList? currentSku;
-  int quantity = 0;
+  int quantity = 1;
   VideoPlayerController? videoPlayerController;
   ChewieController? chewieController;
   MyServises myServices = Get.find();
@@ -39,13 +40,17 @@ class ProductDetailsController extends GetxController {
   List<SkuPriceList> priceList = [];
   List<ProductSKUPropertyList> uiSkuProperties = [];
 
+  int currentIndex = 0;
+  // final CarouselSliderController carouselController =
+  //     CarouselSliderController();
+
   @override
   void onInit() {
     super.onInit();
     productId = Get.arguments['product_id'];
     lang = Get.arguments['lang'];
     fetchProductDetails();
-    fetchCart();
+    // fetchCart();
   }
 
   @override
@@ -83,6 +88,7 @@ class ProductDetailsController extends GetxController {
         statusrequest = Statusrequest.failuer;
       }
     }
+    update(['selectedAttributes']);
 
     update();
   }
@@ -107,7 +113,7 @@ class ProductDetailsController extends GetxController {
     selectedAttributes[attributeId] = valueId;
     _updateCurrentSku();
 
-    update();
+    update(['selectedAttributes']);
   }
 
   void incrementQuantity() {
@@ -161,7 +167,9 @@ class ProductDetailsController extends GetxController {
         productId!,
         attributes,
       );
-      if (newQty != quantity) {
+      if (newQty == 0) {
+        quantity = 1;
+      } else {
         quantity = newQty;
         update(['quantity']);
       }
@@ -170,26 +178,32 @@ class ProductDetailsController extends GetxController {
     }
   }
 
-  Future<void> fetchCart() async {
-    String userId = myServices.sharedPreferences.getString("user_id") ?? "0";
-    if (userId == "0") return;
+  // Future<void> fetchCart() async {
+  //   String userId = myServices.sharedPreferences.getString("user_id") ?? "0";
+  //   if (userId == "0") return;
 
-    var response = await cartData.getData(userId);
+  //   var response = await cartData.getData(userId);
 
-    if (response is Map &&
-        response['status'] == 'success' &&
-        response['data'] != null) {
-      List cartlist = response['data'];
-      // print("cartlist=>$cartlist");
-      cartQuantities.clear();
-      for (var item in cartlist) {
-        String productId = item['productId'].toString();
-        int qu = int.tryParse(item['cart_quantity']?.toString() ?? '0') ?? 0;
+  //   if (response is Map &&
+  //       response['status'] == 'success' &&
+  //       response['data'] != null) {
+  //     List cartlist = response['data'];
+  //     // print("cartlist=>$cartlist");
+  //     cartQuantities.clear();
+  //     for (var item in cartlist) {
+  //       String productId = item['productId'].toString();
+  //       int qu = int.tryParse(item['cart_quantity']?.toString() ?? '0') ?? 0;
 
-        cartQuantities[productId] = qu;
-      }
-    }
-    update(['quantity']);
+  //       cartQuantities[productId] = qu;
+  //     }
+  //   }
+  //   update(['quantity']);
+  // }
+
+  void indexchange(int index) {
+    currentIndex = index;
+    // carouselController.animateToPage(index);
+    update(["index"]);
   }
 }
 
@@ -203,8 +217,8 @@ class SkuPriceList {
 
 class SkuVal {
   final int? availQuantity;
-  final Amount? skuAmount; // original
-  final Amount? skuActivityAmount; // promo/current
+  final Amount? skuAmount;
+  final Amount? skuActivityAmount;
   SkuVal({this.availQuantity, this.skuAmount, this.skuActivityAmount});
 }
 

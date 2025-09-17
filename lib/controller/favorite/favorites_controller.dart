@@ -60,6 +60,7 @@ class FavoritesController extends GetxController {
 
       // show dialog
       Get.dialog(
+        barrierDismissible: false,
         Center(
           child: FavoriteAnimatedWidget(
             size: 110,
@@ -69,16 +70,9 @@ class FavoritesController extends GetxController {
           ),
         ),
 
-        barrierDismissible: false,
         barrierColor: Colors.transparent,
       );
       await FavoriteAnimationController.to.play();
-
-      // Future.delayed(Duration(milliseconds: 100), () {
-      //   if (Get.isDialogOpen ?? false) {
-      //     Get.back();
-      //   }
-      // });
     }
   }
 

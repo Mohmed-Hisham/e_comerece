@@ -1,4 +1,5 @@
 import 'package:e_comerece/core/constant/routesname.dart';
+import 'package:e_comerece/test_viwe.dart';
 import 'package:e_comerece/viwe/screen/favorite_view.dart';
 import 'package:e_comerece/viwe/screen/home/homepage.dart';
 import 'package:e_comerece/viwe/screen/settings.dart';
@@ -16,7 +17,7 @@ abstract class HomescreenController extends GetxController {
 class HomescreenControllerImple extends HomescreenController {
   int pageindex = 0;
 
-  List<Widget> pages = [Homepage(), FavoriteScreen(), Text("cart"), Setting()];
+  List<Widget> pages = [Homepage(), FavoriteScreen(), TestViwe(), Setting()];
   List nameBottonBar = [
     {'title': 'Home', 'icon': Icons.home},
     {'title': 'noti', 'icon': Icons.notifications_active_outlined},

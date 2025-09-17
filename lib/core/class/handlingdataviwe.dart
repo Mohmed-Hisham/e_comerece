@@ -24,7 +24,7 @@ class Handlingdataviwe extends StatelessWidget {
     Widget boxChild(Widget child) => Center(child: child);
     Widget sliverChild(Widget child) => SliverToBoxAdapter(
       child: SizedBox(
-        height: MediaQuery.of(context).size.height * 0.5,
+        height: MediaQuery.of(context).size.height * 0.3,
         child: Center(child: child),
       ),
     );
@@ -34,11 +34,7 @@ class Handlingdataviwe extends StatelessWidget {
         case Statusrequest.loading:
           if (shimmer != null) return shimmer!;
           return sliverChild(
-            Lottie.asset(
-              AppImagesassets.loadinglottie,
-              width: 180,
-              height: 180,
-            ),
+            Lottie.asset(AppImagesassets.shoppingcart, width: 180, height: 180),
           );
         case Statusrequest.noData:
           return sliverChild(
@@ -73,7 +69,7 @@ class Handlingdataviwe extends StatelessWidget {
           return shimmer ??
               boxChild(
                 Lottie.asset(
-                  AppImagesassets.loadinglottie,
+                  AppImagesassets.shoppingcart,
                   width: 180,
                   height: 180,
                 ),
@@ -123,7 +119,7 @@ class HandlingdatRequest extends StatelessWidget {
     return statusrequest == Statusrequest.loading
         ? Center(
             child: Lottie.asset(
-              AppImagesassets.loadinglottie,
+              AppImagesassets.shoppingcart,
               width: 250,
               height: 300,
             ),

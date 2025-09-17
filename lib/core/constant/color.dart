@@ -11,5 +11,5 @@ class Appcolor {
   static const Color primrycolor2 = Color(0xffF8F9FD);
   static const Color soecendcolor = Color.fromARGB(255, 248, 140, 63);
   static const Color fourcolor = Color.fromARGB(255, 248, 235, 225);
-  static const Color reed = Color.fromARGB(255, 250, 4, 4);
+  static const Color reed = Color.fromARGB(255, 245, 59, 59);
 }

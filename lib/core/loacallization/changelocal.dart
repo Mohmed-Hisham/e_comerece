@@ -1,4 +1,5 @@
 import 'package:e_comerece/core/constant/apptheme.dart';
+import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/servises/serviese.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -23,13 +24,40 @@ class LocaleController extends GetxController {
     String? shardPrLang = myServises.sharedPreferences.getString("lang");
     if (shardPrLang == "ar") {
       language = const Locale("ar");
-      themeData = themeAr;
+      themeData = themeAr.copyWith(
+        scaffoldBackgroundColor: Appcolor.white2,
+        textSelectionTheme: TextSelectionThemeData(
+          cursorColor: Colors.red, // لون الكيرسور
+          selectionColor: Colors.orange.withValues(
+            alpha: 0.4,
+          ), // لون خلفية التحديد
+          selectionHandleColor: Colors.orange, // لون المقبض اللي يمسك التحديد
+        ),
+      );
     } else if (shardPrLang == "en") {
       language = const Locale("en");
-      themeData = themeEn;
+      themeData = themeEn.copyWith(
+        scaffoldBackgroundColor: Appcolor.white2,
+        textSelectionTheme: TextSelectionThemeData(
+          cursorColor: Colors.red, // لون الكيرسور
+          selectionColor: Colors.orange.withValues(
+            alpha: 0.4,
+          ), // لون خلفية التحديد
+          selectionHandleColor: Colors.orange, // لون المقبض اللي يمسك التحديد
+        ),
+      );
     } else {
       language = Locale(Get.deviceLocale!.languageCode);
-      themeData = themeEn;
+      themeData = themeEn.copyWith(
+        scaffoldBackgroundColor: Appcolor.white2,
+        textSelectionTheme: TextSelectionThemeData(
+          cursorColor: Colors.red, // لون الكيرسور
+          selectionColor: Colors.orange.withValues(
+            alpha: 0.4,
+          ), // لون خلفية التحديد
+          selectionHandleColor: Colors.orange, // لون المقبض اللي يمسك التحديد
+        ),
+      );
     }
   }
 }

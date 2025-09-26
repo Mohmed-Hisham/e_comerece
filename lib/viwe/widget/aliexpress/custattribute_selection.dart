@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get_state_manager/src/simple/get_state.dart';
 
 class CustattributeSelection extends StatelessWidget {
-  final ProductDetailsController controller;
+  final ProductDetailsControllerImple controller;
   const CustattributeSelection({super.key, required this.controller});
 
   @override
@@ -13,7 +13,7 @@ class CustattributeSelection extends StatelessWidget {
     if (attributes.isEmpty) {
       return const SizedBox.shrink();
     }
-    return GetBuilder<ProductDetailsController>(
+    return GetBuilder<ProductDetailsControllerImple>(
       id: 'selectedAttributes',
       builder: (controller) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -39,6 +39,10 @@ class CustattributeSelection extends StatelessWidget {
                         attribute.skuPropertyId!,
                         value.propertyValueId!.toString(),
                       );
+                      controller.imgageAttribute = value.skuPropertyImagePath;
+                      // print(
+                      //   "selectedAttributes=>${value.skuPropertyImagePath}",
+                      // );
 
                       // controller.getquiqtity(
                       //     jsonEncode(buildDisplayAttributes(controller)),

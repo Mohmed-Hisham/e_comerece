@@ -5,13 +5,13 @@ import 'package:e_comerece/core/funcations/handlingdata.dart';
 import 'package:e_comerece/core/shared/image_manger/Image_manager_controller.dart';
 import 'package:e_comerece/data/datasource/remote/aliexpriess/search_By_image_data.dart';
 import 'package:e_comerece/data/datasource/remote/upload_to_cloudinary.dart';
-import 'package:e_comerece/data/model/searchbyimage_model.dart';
+import 'package:e_comerece/data/model/aliexpriess_model/searchbyimage_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
 abstract class SearchByimageController extends GetxController {
-  Future<void> fetchShearchname(String imageUrl);
+  Future<void> fetchShearchByimage(String imageUrl);
   void pickimage();
   void gotoditels({required int id, required String lang});
   void gotoshearchname(String nameCat, int categoryId);
@@ -29,7 +29,7 @@ class SearchByimageControllerllerImple extends SearchByimageController {
   bool isLoading = false;
 
   @override
-  fetchShearchname(imageUrl) async {
+  fetchShearchByimage(imageUrl) async {
     statusrequest = Statusrequest.loading;
     update();
     var response = await searchByImageData.getData(imageUrl: imageUrl);
@@ -55,7 +55,7 @@ class SearchByimageControllerllerImple extends SearchByimageController {
     super.onInit();
     imageUrl = Get.arguments["url"];
     image = Get.arguments["image"];
-    fetchShearchname(imageUrl!);
+    fetchShearchByimage(imageUrl!);
   }
 
   @override
@@ -85,13 +85,15 @@ class SearchByimageControllerllerImple extends SearchByimageController {
         if (image.path != '') {
           this.image = image;
           Get.dialog(
-            PopScope(
-              canPop: false,
-              onPopInvokedWithResult: (bool didPop, dynamic result) {
-                if (didPop) return;
-              },
-              child: Center(child: CircularProgressIndicator()),
-            ),
+            barrierDismissible: false,
+            // PopScope(
+            //   canPop: false,
+            //   onPopInvokedWithResult: (bool didPop, dynamic result) {
+            //     if (didPop) return;
+            //   },
+            //   child:,
+            // ),
+            Center(child: CircularProgressIndicator()),
           );
           uploadToCloudinary(
                 filePath: image.path,
@@ -102,7 +104,7 @@ class SearchByimageControllerllerImple extends SearchByimageController {
                 if (Get.isDialogOpen ?? false) Get.back();
                 if (url != null) {
                   print('Uploaded to: $url');
-                  fetchShearchname(url);
+                  fetchShearchByimage(url);
                 } else {
                   print('Upload failed');
                 }

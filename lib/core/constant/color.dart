@@ -6,6 +6,7 @@ class Appcolor {
   static const Color black2 = Color.fromARGB(255, 77, 76, 76);
   static const Color somgray = Color(0xffF2EFEB);
   static const Color white = Color(0xffFAF1F6);
+  static const Color white2 = Color.fromARGB(255, 237, 240, 247);
   static const Color primrycolor = Color.fromARGB(255, 253, 106, 1);
   static const Color threecolor = Color(0xffFFD84D);
   static const Color primrycolor2 = Color(0xffF8F9FD);

@@ -19,7 +19,7 @@ class CustbuttonAddCart extends StatelessWidget {
       child: Container(
         color: Colors.transparent,
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-        child: GetBuilder<ProductDetailsController>(
+        child: GetBuilder<ProductDetailsControllerImple>(
           id: 'selectedAttributes',
           builder: (controller) {
             if (controller.statusrequest == Statusrequest.loading ||

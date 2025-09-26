@@ -17,12 +17,15 @@ class SearchName extends StatelessWidget {
   Widget build(BuildContext context) {
     return NotificationListener<ScrollNotification>(
       onNotification: (scrollInfo) {
-        if (!controller.isLoading &&
-            scrollInfo.metrics.pixels >=
-                scrollInfo.metrics.maxScrollExtent * 0.8) {
-          controller.loadMoreSearch(
-            detectLangFromQuery(controller.searchController.text),
-          );
+        if (!controller.isLoading) {
+          final atEdge = scrollInfo.metrics.atEdge;
+          final pixels = scrollInfo.metrics.pixels;
+          final maxScrollExtent = scrollInfo.metrics.maxScrollExtent;
+          if (atEdge && pixels == maxScrollExtent) {
+            controller.loadMoreSearch(
+              detectLangFromQuery(controller.searchController.text),
+            );
+          }
         }
         return true;
       },
@@ -52,6 +55,7 @@ class SearchName extends StatelessWidget {
                       int id = item.itemId!;
                       controller.gotoditels(
                         id: id,
+                        Title: item.title!,
                         lang: detectLangFromQuery(
                           controller.searchController.text,
                         ),

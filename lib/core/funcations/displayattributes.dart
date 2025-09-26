@@ -2,14 +2,15 @@ import 'package:e_comerece/controller/aliexpriess/product_details_controller.dar
 
 // >> الدالة الآن تُرجع Map أكثر تعقيداً <<
 Map<String, Map<String, String?>> buildDisplayAttributes(
-  ProductDetailsController controller,
+  ProductDetailsControllerImple controller,
 ) {
   final Map<String, Map<String, String?>> displayAttributes = {};
 
   controller.selectedAttributes.forEach((attributeId, valueId) {
     try {
-      final attribute = controller.uiSkuProperties
-          .firstWhere((attr) => attr.skuPropertyId == attributeId);
+      final attribute = controller.uiSkuProperties.firstWhere(
+        (attr) => attr.skuPropertyId == attributeId,
+      );
 
       final value = attribute.skuPropertyValues?.firstWhere(
         (val) => val.propertyValueId.toString() == valueId,

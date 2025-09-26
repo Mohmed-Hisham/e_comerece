@@ -1,18 +1,18 @@
 import 'package:e_comerece/app_api/lin_kapi.dart';
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
+import 'package:e_comerece/core/funcations/handle_paging_response.dart';
 import 'package:e_comerece/core/funcations/handlingdata.dart';
 import 'package:e_comerece/core/shared/image_manger/Image_manager_controller.dart';
 import 'package:e_comerece/data/datasource/remote/aliexpriess/category_data.dart';
 import 'package:e_comerece/data/datasource/remote/aliexpriess/hotproductssdata.dart';
 import 'package:e_comerece/data/datasource/remote/aliexpriess/searchtext_data.dart';
 import 'package:e_comerece/data/datasource/remote/upload_to_cloudinary.dart';
-import 'package:e_comerece/data/model/category_model.dart';
-import 'package:e_comerece/data/model/hotproductmodel.dart';
-import 'package:e_comerece/data/model/searshtextmodel.dart';
+import 'package:e_comerece/data/model/aliexpriess_model/category_model.dart';
+import 'package:e_comerece/data/model/aliexpriess_model/hotproductmodel.dart';
+import 'package:e_comerece/data/model/aliexpriess_model/searshtextmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:image_picker/image_picker.dart';
 
 abstract class HomePageController extends GetxController {
   Future<void> fetchHomePageData();
@@ -25,7 +25,11 @@ abstract class HomePageController extends GetxController {
   void onTapSearch({required String keyWord, required String lang});
   void onChangeSearch(String value);
   void goTofavorite();
-  void gotoditels({required int id, required String lang});
+  void gotoditels({
+    required int id,
+    required String lang,
+    required String Title,
+  });
   void goToSearchByimage();
   void gotoshearchname(String nameCat, int categoryId);
   void indexchange(int index);
@@ -101,20 +105,32 @@ class HomePageControllerImpl extends HomePageController {
     update();
 
     var hotProductsResponse = await hotProductsData.getData(pageIndex);
-    var status = handlingData(hotProductsResponse);
-    if (hotProductsResponse is Map &&
-        hotProductsResponse['result']?['status']['code'] == 200) {
-      var hotProductModel = HotProductModel.fromJson(
-        hotProductsResponse as Map<String, dynamic>,
-      );
 
-      if (hotProductModel.result!.resultListHotprosuct!.isEmpty) {
+    var status = handlingData(hotProductsResponse);
+    print("status=>$status");
+    if (status == Statusrequest.success) {
+      if (handle200(hotProductsResponse)) {
+        var hotProductModel = HotProductModel.fromJson(hotProductsResponse);
+
+        if (hotProductModel.result!.resultListHotprosuct!.isEmpty) {
+          hasMore = false;
+        } else {
+          hotProducts.addAll(hotProductModel.result!.resultListHotprosuct!);
+          pageIndex++;
+        }
+        if (!isLoadMore) statusrequestHotProducts = Statusrequest.success;
+      } else if (handle205(hotProductsResponse, pageIndex)) {
         hasMore = false;
-      } else {
-        hotProducts.addAll(hotProductModel.result!.resultListHotprosuct!);
-        pageIndex++;
+        statusrequestHotProducts = Statusrequest.noDataPageindex;
+        custSnackBarNoMore();
       }
-      if (!isLoadMore) statusrequestHotProducts = Statusrequest.success;
+      //  else {
+      //   if (!isLoadMore) {
+      //     statusrequestHotProducts =
+      //         status as Statusrequest? ?? Statusrequest.failuer;
+      //   }
+      //   hasMore = false;
+      // }
     } else {
       if (!isLoadMore) {
         statusrequestHotProducts =
@@ -124,6 +140,7 @@ class HomePageControllerImpl extends HomePageController {
     }
 
     isLoading = false;
+    print("statusrequestHotProducts=>$statusrequestHotProducts");
     update();
   }
 
@@ -147,23 +164,11 @@ class HomePageControllerImpl extends HomePageController {
     update();
   }
 
-  // @override
-  // fetchOnrefresh() async {
-  //   statusrequest = Statusrequest.loading;
-  //   update();
-
-  //   await Future.wait({fetchProducts()});
-  //   if (statusrequest == Statusrequest.loading) {
-  //     statusrequest = Statusrequest.success;
-  //   }
-  //   update();
-  // }
-
   @override
-  gotoditels({required id, required lang}) {
+  gotoditels({required id, required lang, required Title}) {
     Get.toNamed(
       AppRoutesname.detelspage,
-      arguments: {"product_id": id, "lang": lang},
+      arguments: {"product_id": id, "lang": lang, "title": Title},
     );
   }
 
@@ -205,7 +210,7 @@ class HomePageControllerImpl extends HomePageController {
 
       statusrequestsearch = handlingData(response);
       if (statusrequestsearch == Statusrequest.success) {
-        if (response != null && response['result']['status']['code'] == 200) {
+        if (handle200(response)) {
           final model = SearshTextModel.fromJson(response);
           final List<ResultListSearshTextModel> iterable =
               model.resultSearshTextModel!.resultListSearshTextModel!;
@@ -217,9 +222,13 @@ class HomePageControllerImpl extends HomePageController {
             searchProducts.addAll(iterable);
             pageIndexSearch++;
           }
+        } else if (handle205(response, pageIndexSearch)) {
+          hasMoresearch = false;
+          statusrequestsearch = Statusrequest.noDataPageindex;
+          custSnackBarNoMore();
         } else {
           hasMoresearch = false;
-          statusrequestsearch = Statusrequest.failuer;
+          statusrequestsearch = Statusrequest.noData;
         }
       }
     } catch (e) {
@@ -232,7 +241,7 @@ class HomePageControllerImpl extends HomePageController {
   }
 
   @override
-  void loadMoreSearch(lang) {
+  loadMoreSearch(lang) {
     searshText(keyWord: searchController.text, isLoadMore: true, lang: lang);
   }
 
@@ -260,13 +269,13 @@ class HomePageControllerImpl extends HomePageController {
   }
 
   @override
-  void indexchange(int index) {
+  indexchange(int index) {
     currentIndex = index;
     update(["index"]);
   }
 
   @override
-  void goToSearchByimage() {
+  goToSearchByimage() {
     Get.put(ImageManagerController())
       ..pickImage().then((image) {
         if (image.path != '')

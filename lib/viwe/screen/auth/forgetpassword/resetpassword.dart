@@ -7,7 +7,7 @@ import 'package:e_comerece/viwe/widget/auth/customtextbody.dart';
 import 'package:e_comerece/viwe/widget/auth/customtexttitleauth.dart';
 import 'package:e_comerece/viwe/widget/auth/custtextfeld.dart';
 import 'package:e_comerece/viwe/widget/custavatar.dart';
-import 'package:e_comerece/viwe/widget/custcancle.dart';
+import 'package:e_comerece/core/shared/widget_shared/cust_button_botton.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -70,7 +70,7 @@ class Resetpassword extends StatelessWidget {
                       },
                     ),
                     SizedBox(height: 10),
-                    Custcancle(onTap: controller.goback),
+                    CustButtonBotton(onTap: controller.goback),
                   ],
                 ),
               ),

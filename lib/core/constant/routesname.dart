@@ -25,4 +25,11 @@ class AppRoutesname {
   // Aliexpress
   static const String favoritealiexpress = "/favoritealiexpress";
   static const String searchByimagealiexpress = "/searchByimagealiexpress";
+
+  // Alibaba
+  static const String Homepagealibaba = "/Homepagealibaba";
+  static const String AlibabaByimageView = "/AlibabaByimageView";
+  static const String ProductDetailsAlibabView = "/ProductDetailsAlibabView";
+  // static const String FavoritesAlibaba = "/FavoritesAlibaba";
+  // static const String searchByimagealibaba = "/searchByimagealibaba";
 }

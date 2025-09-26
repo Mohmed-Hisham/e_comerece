@@ -16,6 +16,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class SearchByImageView extends StatelessWidget {
+  const SearchByImageView({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     Get.put(SearchByimageControllerllerImple());

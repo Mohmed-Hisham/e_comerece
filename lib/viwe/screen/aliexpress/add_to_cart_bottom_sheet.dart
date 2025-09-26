@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class AddToCartBottomSheet extends StatelessWidget {
-  final ProductDetailsController controller;
+  final ProductDetailsControllerImple controller;
   final AddorrmoveControllerimple addcontroller;
 
   const AddToCartBottomSheet({
@@ -57,7 +57,7 @@ class AddToCartBottomSheet extends StatelessWidget {
     BuildContext context,
     AddorrmoveControllerimple addcontroller,
   ) {
-    return GetBuilder<ProductDetailsController>(
+    return GetBuilder<ProductDetailsControllerImple>(
       id: 'quantity',
       builder: (controller) {
         print("quantity.quantity======>${controller.quantity}");
@@ -85,7 +85,7 @@ class AddToCartBottomSheet extends StatelessWidget {
                     );
                   },
                 ),
-                GetBuilder<ProductDetailsController>(
+                GetBuilder<ProductDetailsControllerImple>(
                   builder: (ctrl) {
                     return Text(
                       "${ctrl.quantity}",

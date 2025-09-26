@@ -47,7 +47,9 @@ class CartController extends GetxController {
     var response = await cartData.getData(
       myServises.sharedPreferences.getString("user_id")!,
     );
+    print("response=>$response");
     statusrequest = handlingData(response);
+    print("statusrequest=>$statusrequest");
     if (Statusrequest.success == statusrequest) {
       if (response['status'] == 'success') {
         List responseData = response['data'];

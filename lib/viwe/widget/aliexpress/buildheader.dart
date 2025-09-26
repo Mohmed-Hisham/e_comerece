@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class Buildheader extends StatelessWidget {
-  final ProductDetailsController controller;
+  final ProductDetailsControllerImple controller;
 
   const Buildheader({super.key, required this.controller});
 

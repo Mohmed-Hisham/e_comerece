@@ -7,4 +7,6 @@ enum Statusrequest {
   oflinefailuer,
   failuerException,
   noData,
+  noDataPageindex,
+  failuerTryAgain,
 }

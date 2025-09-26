@@ -1,6 +1,8 @@
 import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/middleware/middleware.dart';
-import 'package:e_comerece/test_viwe.dart';
+import 'package:e_comerece/viwe/screen/alibaba/alibaba_byImage_view.dart';
+import 'package:e_comerece/viwe/screen/alibaba/home_alibaba_view.dart';
+import 'package:e_comerece/viwe/screen/alibaba/product_details_alibab_view.dart';
 import 'package:e_comerece/viwe/screen/aliexpress/favorites_aliexpries.dart';
 import 'package:e_comerece/viwe/screen/aliexpress/product_from_cat.dart';
 import 'package:e_comerece/viwe/screen/aliexpress/searchbyImage_view.dart';
@@ -16,7 +18,6 @@ import 'package:e_comerece/viwe/screen/auth/forgetpassword/veyfiycpde.dart';
 import 'package:e_comerece/viwe/screen/aliexpress/home_aliexpriess.dart';
 import 'package:e_comerece/viwe/screen/cart/cart_view.dart';
 import 'package:e_comerece/viwe/screen/favorite_view.dart';
-import 'package:e_comerece/viwe/screen/home/homepage.dart';
 import 'package:e_comerece/viwe/screen/home/homenavbar.dart';
 import 'package:e_comerece/viwe/screen/language.dart';
 import 'package:e_comerece/viwe/screen/onboarding.dart';
@@ -76,10 +77,16 @@ List<GetPage<dynamic>>? routes = [
   // Home
   GetPage(name: AppRoutesname.homepage1, page: () => const HomePage1()),
   GetPage(name: AppRoutesname.homepage, page: () => const Homenavbar()),
-  GetPage(name: AppRoutesname.detelspage, page: () => ProductDetailsView()),
-  GetPage(name: AppRoutesname.shearchname, page: () => ProductFromCat()),
-  GetPage(name: AppRoutesname.favoritescreen, page: () => FavoriteScreen()),
-  GetPage(name: AppRoutesname.cartscreen, page: () => CartView()),
+  GetPage(
+    name: AppRoutesname.detelspage,
+    page: () => const ProductDetailsView(),
+  ),
+  GetPage(name: AppRoutesname.shearchname, page: () => const ProductFromCat()),
+  GetPage(
+    name: AppRoutesname.favoritescreen,
+    page: () => const FavoriteScreen(),
+  ),
+  GetPage(name: AppRoutesname.cartscreen, page: () => const CartView()),
 
   //Aliexpress
   GetPage(
@@ -88,6 +95,21 @@ List<GetPage<dynamic>>? routes = [
   ),
   GetPage(
     name: AppRoutesname.searchByimagealiexpress,
-    page: () => SearchByImageView(),
+    page: () => const SearchByImageView(),
   ),
+
+  // Alibaba
+  GetPage(name: AppRoutesname.Homepagealibaba, page: () => const HomeAlibaba()),
+  GetPage(
+    name: AppRoutesname.AlibabaByimageView,
+    page: () => const AlibabaByimageView(),
+  ),
+  GetPage(
+    name: AppRoutesname.ProductDetailsAlibabView,
+    page: () => const ProductDetailsAlibabView(),
+  ),
+  // GetPage(
+  //   name: AppRoutesname.FavoritesAlibaba,
+  //   page: () => const FavoritesAlibaba(),
+  // ),
 ];

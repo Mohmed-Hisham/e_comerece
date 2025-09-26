@@ -60,7 +60,7 @@ class ProductFromCat extends StatelessWidget {
                             ? controller.categorymodel[index]
                             : controller.categorymodelFromImage[index];
 
-                        // احصل على الـ id و name بطريقة مأمونة
+                        // احصل على الـ id و name بطريقة
                         final int currentId = useModel
                             ? (current.id ?? 0)
                             : int.tryParse(current.id.toString()) ?? 0;
@@ -71,12 +71,10 @@ class ProductFromCat extends StatelessWidget {
                             categoryIcons[currentId] ??
                             FontAwesomeIcons.tableCellsLarge;
 
-                        // هل العنصر محدد؟
                         final bool isSelected =
                             controller.categoryId == currentId ||
                             controller.selectedIndex == index;
 
-                        // اختر وِيدجت الأيقونة: FaIcon إن كانت من FontAwesome، وإلا Icon
                         final Widget iconWidget =
                             (iconToShow.fontPackage != null &&
                                 iconToShow.fontPackage ==
@@ -116,7 +114,6 @@ class ProductFromCat extends StatelessWidget {
                                       ),
                                       child: Center(child: iconWidget),
                                     ),
-                                    // show popup only if there are subCategories available and we're using the model
                                     if (useModel &&
                                         (current.subCategories != null &&
                                             (current.subCategories as List)
@@ -193,10 +190,11 @@ class ProductFromCat extends StatelessWidget {
                   Expanded(
                     child: NotificationListener<ScrollNotification>(
                       onNotification: (scrollInfo) {
-                        if (!controller.isLoading &&
-                            scrollInfo.metrics.pixels >=
-                                scrollInfo.metrics.maxScrollExtent * 0.8 &&
-                            controller.hasMore) {
+                        final atEdge = scrollInfo.metrics.atEdge;
+                        final pixels = scrollInfo.metrics.pixels;
+                        final maxScrollExtent =
+                            scrollInfo.metrics.maxScrollExtent;
+                        if (atEdge && pixels == maxScrollExtent) {
                           controller.loadMoreSearch();
                         }
                         return true;
@@ -226,9 +224,11 @@ class ProductFromCat extends StatelessWidget {
 
                               return InkWell(
                                 onTap: () {
+                                  print(product.item!.itemId);
                                   controller.gotoditels(
                                     id: product.item!.itemId!,
                                     lang: enOrAr(),
+                                    Title: product.item!.title!,
                                   );
                                 },
                                 child: Custgridviwe(

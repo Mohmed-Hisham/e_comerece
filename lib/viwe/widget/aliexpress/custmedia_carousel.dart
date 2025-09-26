@@ -6,7 +6,7 @@ import 'package:e_comerece/core/shared/widget_shared/shimmer_image_product.dart'
 import 'package:flutter/material.dart';
 
 class CustmediaCarousel extends StatelessWidget {
-  final ProductDetailsController controller;
+  final ProductDetailsControllerImple controller;
   const CustmediaCarousel({super.key, required this.controller});
 
   @override

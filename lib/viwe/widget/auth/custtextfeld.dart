@@ -5,7 +5,7 @@ class Custtextfeld extends StatelessWidget {
   final String hint;
   final TextEditingController? controller;
   final Widget? suffixIcon;
-  final String? Function(String?) validator;
+  final String? Function(String?)? validator;
   final bool? obscureText;
 
   const Custtextfeld({
@@ -13,7 +13,7 @@ class Custtextfeld extends StatelessWidget {
     required this.hint,
     this.controller,
     this.suffixIcon,
-    required this.validator,
+    this.validator,
     this.obscureText,
   });
 
@@ -50,7 +50,7 @@ class Custtextfeld extends StatelessWidget {
             ),
             filled: true,
             fillColor: Appcolor.somgray,
-            suffixIcon: suffixIcon, // هنا
+            suffixIcon: suffixIcon,
             errorStyle: TextStyle(color: Appcolor.reed, fontSize: 12),
             errorMaxLines: 2,
           ),

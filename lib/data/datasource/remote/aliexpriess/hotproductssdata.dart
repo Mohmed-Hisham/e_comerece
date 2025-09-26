@@ -10,11 +10,12 @@ class HotProductsData {
   getData(int pageIndex) async {
     var response = await crud.getData(
       AliaxpressApi.hotProductsData(
-        Kword: "shoze",
+        Kword: "clothing",
         pageIndex: pageIndex,
         lang: enOrAr(),
       ),
       headers: AliaxpressApi.rapidApiHeaders,
+      debug: true,
     );
 
     return response.fold((l) => l, (r) => r);

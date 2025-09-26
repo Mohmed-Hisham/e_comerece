@@ -10,6 +10,7 @@ class ProductDetailsData {
     var response = await crud.getData(
       AliaxpressApi.itemDetails(productId: productId, lang: lang),
       headers: AliaxpressApi.rapidApiHeaders,
+      debug: true,
     );
 
     return response.fold((l) => l, (r) => r);

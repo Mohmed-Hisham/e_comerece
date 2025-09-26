@@ -7,7 +7,7 @@ class CuststockInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<ProductDetailsController>(
+    return GetBuilder<ProductDetailsControllerImple>(
       id: 'selectedAttributes',
       builder: (controller) {
         final stock = controller.currentSku?.skuVal?.availQuantity;

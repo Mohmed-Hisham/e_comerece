@@ -50,6 +50,8 @@ class MyTrenslition extends Translations {
       "successSignUpBody": "تم إنشاء الحساب بنجاح",
       "verifyCodeTitle": "التحقق من الرمز",
       "verifyCodeBody": "الرجاء إدخال الرمز المكون من 5 أرقام المرسل إلى",
+      "textloading":
+          "نقوم الآن بجلب بيانات المنتج. أحيانًا قد يستغرق الأمر بضع ثوانٍ بسبب حجم البيانات وعدد المنتجات — نشكرك على صبرك.",
     },
     "en": {
       "chooseLang": "Choose Language",
@@ -97,6 +99,8 @@ class MyTrenslition extends Translations {
       "verifyCodeTitle": "Verification Code",
       "verifyCodeBody":
           "Enter 5-digits code we sent you\n on your phone number",
+      "textloading":
+          'We\'re fetching the product details now. This may take a few seconds due to the amount of data and the number of products — thank you for your patience.',
     },
   };
 }

@@ -2,8 +2,12 @@ import 'package:e_comerece/controller/aliexpriess/product_details_controller.dar
 import 'package:e_comerece/controller/cart/cart_from_detils.dart';
 import 'package:e_comerece/controller/favorite/favorites_controller.dart';
 import 'package:e_comerece/core/class/handlingdataviwe.dart';
+import 'package:e_comerece/core/funcations/translate_data.dart';
+import 'package:e_comerece/core/servises/extract_image_urls.dart';
 import 'package:e_comerece/core/shared/widget_shared/shimmer_product_details.dart';
 import 'package:e_comerece/core/constant/color.dart';
+import 'package:e_comerece/core/shared/widget_shared/shimmerbar.dart';
+import 'package:e_comerece/viwe/screen/aliexpress/poduct_more_ditels.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_app_bar.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_right_1.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_right_2.dart';
@@ -21,14 +25,12 @@ class ProductDetailsView extends StatelessWidget {
   const ProductDetailsView({super.key});
   @override
   Widget build(BuildContext context) {
-    print("build1");
-    Get.put(ProductDetailsController());
+    Get.put(ProductDetailsControllerImple());
     AddorrmoveControllerimple addcontroller = Get.put(
       AddorrmoveControllerimple(),
     );
     Get.put(FavoritesController());
     return Scaffold(
-      backgroundColor: Color(0xFFF7F8FA),
       body: Stack(
         children: [
           PositionedRight1(),
@@ -36,14 +38,59 @@ class ProductDetailsView extends StatelessWidget {
 
           Container(
             padding: EdgeInsets.only(top: 65),
-            child: GetBuilder<ProductDetailsController>(
+            child: GetBuilder<ProductDetailsControllerImple>(
               builder: (controller) {
-                print("build2");
                 return Handlingdataviwe(
                   shimmer: ShimmerProductDetails(),
                   statusrequest: controller.statusrequest,
-                  widget: SingleChildScrollView(
-                    child: _buildProductDetails(context, controller),
+                  widget: NotificationListener<ScrollNotification>(
+                    onNotification: (scrollInfo) {
+                      if (scrollInfo is ScrollUpdateNotification) {
+                        if (scrollInfo.metrics.axis == Axis.vertical) {
+                          if (!controller.isLoading &&
+                              scrollInfo.metrics.pixels >=
+                                  scrollInfo.metrics.maxScrollExtent * 0.8) {
+                            // final pixels = scrollInfo.metrics.pixels;
+                            // final max = scrollInfo.metrics.maxScrollExtent;
+                            final atEdge = scrollInfo.metrics.atEdge;
+                            final pixels = scrollInfo.metrics.pixels;
+                            final maxScrollExtent =
+                                scrollInfo.metrics.maxScrollExtent;
+                            if (atEdge && pixels == maxScrollExtent) {
+                              if (controller.loadSearchOne == 0) {
+                                controller.searshText();
+                                controller.loadSearchOne = 1;
+                              } else {
+                                controller.loadMoreSearch(
+                                  detectLangFromQuery(controller.title!),
+                                );
+                              }
+                            }
+
+                            // if (max > 0 && pixels >= max * 0.8) {
+                            //   print("1  ");
+
+                            // }
+                          }
+                        }
+                      }
+                      return false;
+                    },
+
+                    child: CustomScrollView(
+                      slivers: [
+                        SliverToBoxAdapter(
+                          child: _buildProductDetails(context, controller),
+                        ),
+                        PoductMoreDitels(controller: controller),
+                        if (controller.isLoading &&
+                            controller.hasMoresearch &&
+                            controller.pageIndexSearch > 0)
+                          SliverToBoxAdapter(
+                            child: ShimmerBar(height: 8, animationDuration: 1),
+                          ),
+                      ],
+                    ),
                   ),
                 );
               },
@@ -58,7 +105,7 @@ class ProductDetailsView extends StatelessWidget {
 
   Widget _buildProductDetails(
     BuildContext context,
-    ProductDetailsController controller,
+    ProductDetailsControllerImple controller,
   ) {
     final html =
         controller.itemDetailsModel?.result?.item?.description?.html ?? '';
@@ -99,7 +146,7 @@ class ProductDetailsView extends StatelessWidget {
 
   Widget _buildProductTitle(
     BuildContext context,
-    ProductDetailsController controller,
+    ProductDetailsControllerImple controller,
   ) {
     final subject = controller.subject;
     if (subject == null) return const SizedBox.shrink();
@@ -125,7 +172,7 @@ class ProductDetailsView extends StatelessWidget {
 
   Widget _buildSellerInfo(
     BuildContext context,
-    ProductDetailsController controller,
+    ProductDetailsControllerImple controller,
   ) {
     final sellerName = controller.sellerName;
     if (sellerName == null) return const SizedBox.shrink();
@@ -144,7 +191,7 @@ class ProductDetailsView extends StatelessWidget {
 
   Widget _buildReviews(
     BuildContext context,
-    ProductDetailsController controller,
+    ProductDetailsControllerImple controller,
   ) {
     final count = controller.reviewsCount;
     final avg = controller.averageStar;
@@ -181,7 +228,7 @@ class ProductDetailsView extends StatelessWidget {
 
   Widget _buildSpecifications(
     BuildContext context,
-    ProductDetailsController controller,
+    ProductDetailsControllerImple controller,
   ) {
     final specs = controller.specifications;
     if (specs.isEmpty) return const SizedBox.shrink();

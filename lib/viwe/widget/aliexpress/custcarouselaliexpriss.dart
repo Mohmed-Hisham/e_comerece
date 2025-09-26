@@ -50,7 +50,7 @@ class Custcarouselaliexpriss extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: controller.currentIndex == index
                         ? Appcolor.primrycolor
-                        : Appcolor.somgray,
+                        : Appcolor.threecolor,
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),

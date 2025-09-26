@@ -1,12 +1,10 @@
-import 'dart:math';
-
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/funcations/handlingdata.dart';
 import 'package:e_comerece/data/datasource/remote/aliexpriess/shearshname_data.dart';
-import 'package:e_comerece/data/model/category_model.dart';
-import 'package:e_comerece/data/model/shearch_model.dart';
-import 'package:e_comerece/data/model/searchbyimage_model.dart'
+import 'package:e_comerece/data/model/aliexpriess_model/category_model.dart';
+import 'package:e_comerece/data/model/aliexpriess_model/shearch_model.dart';
+import 'package:e_comerece/data/model/aliexpriess_model/searchbyimage_model.dart'
     as searchbyimage;
 import 'package:get/get.dart';
 
@@ -14,7 +12,11 @@ abstract class ShearchnameController extends GetxController {
   Future<void> fetchShearchname(String nameCat, int categoryId);
   void changeCat(String valnaame, int valid, int index);
   void loadMoreSearch();
-  void gotoditels({required int id, required String lang});
+  void gotoditels({
+    required int id,
+    required String lang,
+    required String Title,
+  });
 }
 
 class ShearchnameControllerImple extends ShearchnameController {
@@ -40,16 +42,7 @@ class ShearchnameControllerImple extends ShearchnameController {
     int categoryId, {
     bool isLoadMore = false,
   }) async {
-    if (isLoadMore) {
-      if (isLoading || !hasMore) return;
-      isLoading = true;
-    } else {
-      pageIndex = 1;
-      hasMore = true;
-      items.clear();
-      statusrequest = Statusrequest.loading;
-    }
-    update();
+    _startLoading(isLoadMore: isLoadMore);
 
     try {
       var response = await shearshnameData.getData(
@@ -59,33 +52,42 @@ class ShearchnameControllerImple extends ShearchnameController {
       );
 
       statusrequest = handlingData(response);
-      if (statusrequest == Statusrequest.success &&
-          response is Map &&
-          response['result']?['status']?['code'] == 200) {
+      print("statusrequest=>$statusrequest");
+      if (statusrequest == Statusrequest.success) {
         final responseAsMap = response as Map<String, dynamic>;
-        var newItems = SearchFromCatModel.fromJson(
-          responseAsMap,
-        ).result!.resultList!;
+        int code =
+            SearchFromCatModel.fromJson(responseAsMap).result!.status!.code
+                as int;
+        if (code == 200) {
+          var newItems = SearchFromCatModel.fromJson(
+            responseAsMap,
+          ).result!.resultList!;
 
-        if (newItems.isEmpty) {
+          if (newItems.isEmpty) {
+            hasMore = false;
+          } else {
+            items.addAll(newItems);
+            pageIndex++;
+          }
+          _cachedData[categoryId] = SearchFromCatModel.fromJson(responseAsMap);
+        } else if (code == 205 && pageIndex > 1) {
           hasMore = false;
+          statusrequest = Statusrequest.noDataPageindex;
+          Get.snackbar(
+            "message",
+            "no more data",
+            snackPosition: SnackPosition.BOTTOM,
+          );
         } else {
-          items.addAll(newItems);
-          pageIndex++;
+          hasMore = false;
+          statusrequest = Statusrequest.noData;
         }
-        _cachedData[categoryId] = SearchFromCatModel.fromJson(responseAsMap);
-      } else {
-        hasMore = false;
-        statusrequest = Statusrequest.failuer;
       }
     } catch (e) {
       hasMore = false;
       statusrequest = Statusrequest.failuer;
-      print("Error: $e");
-    } finally {
-      if (isLoadMore) isLoading = false;
-      update();
     }
+    _endLoading(isLoadMore: isLoadMore);
   }
 
   @override
@@ -93,6 +95,8 @@ class ShearchnameControllerImple extends ShearchnameController {
     super.onInit();
     nameCat = Get.arguments["namecat"];
     categoryId = Get.arguments["categoryId"];
+    // print("categoryId=>$categoryId");
+    // print("nameCat=>$nameCat");
     if (Get.arguments["categorymodel"] is List<ResultListCat>) {
       categorymodel = Get.arguments["categorymodel"];
     } else {
@@ -126,10 +130,29 @@ class ShearchnameControllerImple extends ShearchnameController {
   }
 
   @override
-  gotoditels({required id, required lang}) {
+  gotoditels({required id, required lang, required Title}) {
     Get.toNamed(
       AppRoutesname.detelspage,
-      arguments: {"product_id": id, "lang": lang},
+      arguments: {"product_id": id, "lang": lang, "title": Title},
     );
+  }
+  // ------------------------------------------------------------------
+
+  void _startLoading({bool isLoadMore = false}) {
+    if (isLoadMore) {
+      if (isLoading || !hasMore) return;
+      isLoading = true;
+    } else {
+      pageIndex = 1;
+      hasMore = true;
+      items.clear();
+      statusrequest = Statusrequest.loading;
+    }
+    update();
+  }
+
+  void _endLoading({bool isLoadMore = false}) {
+    if (isLoadMore) isLoading = false;
+    update();
   }
 }

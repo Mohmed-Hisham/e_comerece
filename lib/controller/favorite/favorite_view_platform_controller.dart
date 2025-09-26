@@ -9,9 +9,8 @@ import 'package:get/get.dart';
 
 abstract class FavoriteViewPlatformController extends GetxController {
   void getFavoritesPlatform({required String platform});
-
   void removeFavorite(String productId);
-  void goToProductDetails(int productId, String lang);
+  void goToProductDetails(int productId, String lang, String Title);
 }
 
 class FavoriteViewPlatformControllerImpl
@@ -26,7 +25,7 @@ class FavoriteViewPlatformControllerImpl
   List<FavoriteModel> favorites = [];
 
   @override
-  void getFavoritesPlatform({required platform}) async {
+  getFavoritesPlatform({required platform}) async {
     String userId = myServises.sharedPreferences.getString("user_id") ?? "0";
     if (userId == "0") return;
 
@@ -60,17 +59,28 @@ class FavoriteViewPlatformControllerImpl
   }
 
   @override
-  void onInit() {
+  onInit() {
     super.onInit();
     platform = Get.arguments['platform'];
     getFavoritesPlatform(platform: platform);
   }
 
   @override
-  void goToProductDetails(int productId, String lang) {
-    Get.toNamed(
-      AppRoutesname.detelspage,
-      arguments: {"product_id": productId, "lang": lang},
-    );
+  goToProductDetails(productId, lang, Title) {
+    print(platform);
+    switch (platform) {
+      case "Aliexpress":
+        Get.toNamed(
+          AppRoutesname.detelspage,
+          arguments: {"product_id": productId, "lang": lang, "title": Title},
+        );
+        break;
+      case "Alibaba":
+        Get.toNamed(
+          AppRoutesname.ProductDetailsAlibabView,
+          arguments: {"product_id": productId, "lang": lang, "title": Title},
+        );
+        break;
+    }
   }
 }

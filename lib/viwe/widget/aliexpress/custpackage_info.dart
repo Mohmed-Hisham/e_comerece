@@ -3,7 +3,7 @@ import 'package:e_comerece/core/constant/color.dart';
 import 'package:flutter/material.dart';
 
 class Custpackageinfo extends StatelessWidget {
-  final ProductDetailsController controller;
+  final ProductDetailsControllerImple controller;
   const Custpackageinfo({super.key, required this.controller});
 
   @override

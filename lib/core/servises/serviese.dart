@@ -1,4 +1,3 @@
-import 'package:e_comerece/controller/favorite/favorites_controller.dart';
 import 'package:e_comerece/core/shared/widget_shared/likeanimationpage.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:get/get.dart';

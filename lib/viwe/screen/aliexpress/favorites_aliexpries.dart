@@ -3,7 +3,6 @@ import 'package:e_comerece/controller/favorite/favorite_view_platform_controller
 import 'package:e_comerece/core/class/handlingdataviwe.dart';
 import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/funcations/translate_data.dart';
-import 'package:e_comerece/core/shared/widget_shared/shimmer_grideviwe.dart';
 import 'package:e_comerece/core/shared/widget_shared/shimmer_image_product.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_app_bar.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_left_2.dart';
@@ -29,11 +28,11 @@ class FavoritesAliexpries extends StatelessWidget {
               PositionedRight1(),
               PositionedRight2(),
               PositionedAppBar(
-                title: "Favorites Aliexpries",
+                title: "Favorites ${controller.platform}",
                 onPressed: Get.back,
               ),
               Handlingdataviwe(
-                shimmer: ShimmerGrideviwe(forSilver: true),
+                // shimmer: ShimmerGrideviwe(forSilver: true),
                 statusrequest: controller.statusrequest,
                 widget: Column(
                   children: [
@@ -58,6 +57,7 @@ class FavoritesAliexpries extends StatelessWidget {
                             onTap: () => controller.goToProductDetails(
                               int.parse(item.productId!.toString()),
                               enOrAr(),
+                              item.productTitle!,
                             ),
                             child: Custgridviwe(
                               image: CachedNetworkImage(

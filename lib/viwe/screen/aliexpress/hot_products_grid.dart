@@ -34,7 +34,11 @@ class HotProductsGrid extends GetView<HomePageControllerImpl> {
           return InkWell(
             onTap: () {
               int id = product.item!.itemId!;
-              controller.gotoditels(id: id, lang: enOrAr());
+              controller.gotoditels(
+                id: id,
+                Title: product.item!.title!,
+                lang: enOrAr(),
+              );
             },
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10),

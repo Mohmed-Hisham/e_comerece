@@ -6,7 +6,7 @@ import 'package:e_comerece/viwe/widget/Positioned/positioned_right_1.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_right_2.dart';
 import 'package:e_comerece/viwe/widget/auth/customtextbody.dart';
 import 'package:e_comerece/viwe/widget/auth/customtexttitleauth.dart';
-import 'package:e_comerece/viwe/widget/custcancle.dart';
+import 'package:e_comerece/core/shared/widget_shared/cust_button_botton.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
 import 'package:get/get.dart';
@@ -89,7 +89,7 @@ class Verifycodesignup extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: 20),
-                    Custcancle(
+                    CustButtonBotton(
                       onTap: () {
                         controller.goTOSignup();
                       },

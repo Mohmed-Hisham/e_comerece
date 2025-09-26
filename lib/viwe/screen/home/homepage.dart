@@ -27,7 +27,14 @@ class Homepage extends StatelessWidget {
           ),
           children: [
             Image.asset(AppImagesassets.shein, height: 80, width: 300),
-            Image.asset(AppImagesassets.alibab, height: 100, width: 200),
+            InkWell(
+              onTap: () => Get.toNamed(AppRoutesname.Homepagealibaba),
+              child: Image.asset(
+                AppImagesassets.alibab,
+                height: 100,
+                width: 200,
+              ),
+            ),
             InkWell(
               onTap: () {
                 Get.toNamed(AppRoutesname.homepage1);

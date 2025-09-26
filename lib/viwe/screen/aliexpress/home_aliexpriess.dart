@@ -73,13 +73,20 @@ class HomePage1 extends StatelessWidget {
                                 if (scrollInfo.metrics.axis == Axis.vertical) {
                                   if (!controller.isLoading &&
                                       controller.hasMore) {
+                                    // final pixels = scrollInfo.metrics.pixels;
+                                    // final max =
+                                    // scrollInfo.metrics.maxScrollExtent;
+                                    final atEdge = scrollInfo.metrics.atEdge;
                                     final pixels = scrollInfo.metrics.pixels;
-                                    final max =
+                                    final maxScrollExtent =
                                         scrollInfo.metrics.maxScrollExtent;
-
-                                    if (max > 0 && pixels >= max * 0.8) {
+                                    if (atEdge && pixels == maxScrollExtent) {
                                       controller.loadMore();
                                     }
+
+                                    // if (max > 0 && pixels >= max * 0.8) {
+                                    //   controller.loadMore();
+                                    // }
                                   }
                                 }
                               }

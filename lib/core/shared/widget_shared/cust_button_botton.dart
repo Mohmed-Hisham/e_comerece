@@ -1,11 +1,11 @@
 import 'package:e_comerece/core/constant/color.dart';
 import 'package:flutter/material.dart';
 
-class Custcancle extends StatelessWidget {
+class CustButtonBotton extends StatelessWidget {
   final String? title;
   final void Function() onTap;
 
-  const Custcancle({super.key, required this.onTap, this.title});
+  const CustButtonBotton({super.key, required this.onTap, this.title});
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +17,13 @@ class Custcancle extends StatelessWidget {
           borderRadius: BorderRadius.circular(15),
           border: Border.all(color: Appcolor.primrycolor, width: 1.5),
         ),
-        child: Text(title ?? "Cancel"),
+        child: Text(
+          title ?? "Cancel",
+          style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+            color: title == null ? Appcolor.gray : Appcolor.black,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
       ),
     );
   }

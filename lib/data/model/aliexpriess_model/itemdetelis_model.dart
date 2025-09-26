@@ -113,7 +113,7 @@ class Item {
   final int? catId;
   final String? itemUrl;
   final List<String> images;
-  final dynamic video;
+  final Video? video;
   final Properties? properties;
   final Description? description;
   final Sku? sku;
@@ -128,7 +128,7 @@ class Item {
       images: json["images"] == null
           ? []
           : List<String>.from(json["images"]!.map((x) => x)),
-      video: json["video"],
+      video: json["video"] == null ? null : Video.fromJson(json["video"]),
       properties: json["properties"] == null
           ? null
           : Properties.fromJson(json["properties"]),
@@ -198,18 +198,81 @@ class Sku {
   final List<Prop> props;
   final SkuImages? skuImages;
 
-  factory Sku.fromJson(Map<String, dynamic> json) {
+  /// Robust factory: accepts Map, List, null, or String JSON.
+  factory Sku.fromJson(dynamic json) {
+    // If null -> return empty/nullable fields
+    if (json == null) {
+      return Sku(def: null, base: [], props: [], skuImages: null);
+    }
+
+    // If the API gave a List, try to use the first element if it's a Map
+    if (json is List) {
+      if (json.isEmpty) {
+        return Sku(def: null, base: [], props: [], skuImages: null);
+      }
+      final first = json.first;
+      if (first is Map<String, dynamic>) {
+        json = Map<String, dynamic>.from(first);
+      } else {
+        // not map inside list -> can't parse -> return empty safe object
+        return Sku(def: null, base: [], props: [], skuImages: null);
+      }
+    }
+
+    // At this point we expect a Map
+    if (json is! Map<String, dynamic>) {
+      return Sku(def: null, base: [], props: [], skuImages: null);
+    }
+
+    final map = json;
+
+    // def could be Map or List
+    final defRaw = map['def'];
+    Def? defObj;
+    if (defRaw is Map<String, dynamic>) {
+      defObj = Def.fromJson(defRaw);
+    } else if (defRaw is List &&
+        defRaw.isNotEmpty &&
+        defRaw.first is Map<String, dynamic>) {
+      defObj = Def.fromJson(defRaw.first as Map<String, dynamic>);
+    }
+
+    // base may be List or a single Map
+    final baseRaw = map['base'];
+    List<Base> baseList = [];
+    if (baseRaw is List) {
+      baseList = baseRaw
+          .where((e) => e is Map<String, dynamic>)
+          .map((e) => Base.fromJson(Map<String, dynamic>.from(e as Map)))
+          .toList();
+    } else if (baseRaw is Map<String, dynamic>) {
+      baseList = [Base.fromJson(Map<String, dynamic>.from(baseRaw))];
+    }
+
+    // props may be List or Map
+    final propsRaw = map['props'];
+    List<Prop> propsList = [];
+    if (propsRaw is List) {
+      propsList = propsRaw
+          .where((e) => e is Map<String, dynamic>)
+          .map((e) => Prop.fromJson(Map<String, dynamic>.from(e as Map)))
+          .toList();
+    } else if (propsRaw is Map<String, dynamic>) {
+      propsList = [Prop.fromJson(Map<String, dynamic>.from(propsRaw))];
+    }
+
+    // skuImages likely Map
+    SkuImages? skuImgs;
+    final skuImagesRaw = map['skuImages'];
+    if (skuImagesRaw is Map<String, dynamic>) {
+      skuImgs = SkuImages.fromJson(Map<String, dynamic>.from(skuImagesRaw));
+    }
+
     return Sku(
-      def: json["def"] == null ? null : Def.fromJson(json["def"]),
-      base: json["base"] == null
-          ? []
-          : List<Base>.from(json["base"]!.map((x) => Base.fromJson(x))),
-      props: json["props"] == null
-          ? []
-          : List<Prop>.from(json["props"]!.map((x) => Prop.fromJson(x))),
-      skuImages: json["skuImages"] == null
-          ? null
-          : SkuImages.fromJson(json["skuImages"]),
+      def: defObj,
+      base: baseList,
+      props: propsList,
+      skuImages: skuImgs,
     );
   }
 }
@@ -375,6 +438,22 @@ class Settings {
       currency: json["currency"],
       country: json["country"],
       itemId: json["itemId"],
+    );
+  }
+}
+
+class Video {
+  Video({required this.id, required this.thumbnail, required this.url});
+
+  final int? id;
+  final String? thumbnail;
+  final String? url;
+
+  factory Video.fromJson(Map<String, dynamic> json) {
+    return Video(
+      id: json["id"],
+      thumbnail: json["thumbnail"],
+      url: json["url"],
     );
   }
 }

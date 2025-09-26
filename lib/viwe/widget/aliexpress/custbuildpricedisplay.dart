@@ -7,7 +7,7 @@ class Custbuildpricedisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<ProductDetailsController>(
+    return GetBuilder<ProductDetailsControllerImple>(
       id: 'selectedAttributes',
       builder: (controller) {
         final price = controller.currentSku?.skuVal?.skuActivityAmount;

@@ -30,3 +30,32 @@ class ShimmerImageProduct extends StatelessWidget {
     );
   }
 }
+
+class ShimmerImageProductSmall extends StatelessWidget {
+  const ShimmerImageProductSmall({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey.shade300,
+      highlightColor: Colors.grey.shade100,
+      child: Card(
+        elevation: 0,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(15),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

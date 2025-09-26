@@ -8,7 +8,7 @@ import 'package:get/get.dart';
 
 class Buildaddtocartbutton extends StatelessWidget {
   final AddorrmoveControllerimple cartController;
-  final ProductDetailsController controller;
+  final ProductDetailsControllerImple controller;
   const Buildaddtocartbutton({
     super.key,
     required this.cartController,
@@ -48,12 +48,12 @@ class Buildaddtocartbutton extends StatelessWidget {
           // print("imageUrl=>$imageUrl");
           // print("subject=>$subject");
           // print("productId=>$productId");
-          // print("attributesJson=>$attributesJson");
+          print("attributesJson=>$attributesJson");
 
           cartController.add(
             productId,
             subject,
-            imageUrl,
+            controller.imgageAttribute ?? imageUrl,
             price,
             "aliexpress",
             controller.quantity.toString(),

@@ -14,7 +14,7 @@ abstract class AddorrmoveController extends GetxController {
     required String availablequantity,
   });
   Future<void> removprise({required CartModel cartModel});
-  Future<int> cartquintty(int productid, String attributes);
+  Future<Map<String, dynamic>> cartquintty(int productid, String attributes);
   Future<void> add(
     String productid,
     String producttitle,
@@ -23,8 +23,9 @@ abstract class AddorrmoveController extends GetxController {
     String platform,
     String quantity,
     String attributes,
-    String availableqQuantity,
-  );
+    String availableqQuantity, {
+    String? tier,
+  });
 }
 
 class AddorrmoveControllerimple extends AddorrmoveController {
@@ -46,8 +47,9 @@ class AddorrmoveControllerimple extends AddorrmoveController {
     platform,
     quantity,
     attributes,
-    availableqQuantity,
-  ) async {
+    availableqQuantity, {
+    tier,
+  }) async {
     statusRequest = Statusrequest.loading;
     var response = await cartAddData.addcart(
       userId: myServices.sharedPreferences.getString("user_id")!,
@@ -59,8 +61,9 @@ class AddorrmoveControllerimple extends AddorrmoveController {
       quantity: quantity,
       attributes: attributes,
       availableqQuantity: availableqQuantity,
+      tier: tier,
     );
-    // print("response=>$response");
+    print("response=>$response");
     statusRequest = handlingData(response);
     if (Statusrequest.success == statusRequest) {
       if (response['status'] == "success" && response['message'] == "add") {
@@ -147,17 +150,19 @@ class AddorrmoveControllerimple extends AddorrmoveController {
 
     statusRequest = handlingData(response);
     if (Statusrequest.success == statusRequest) {
-      int quantity = int.tryParse(response['data'].toString()) ?? 0;
+      final int quantity =
+          int.tryParse(response['cart_quantity'].toString()) ?? 0;
+      final bool infavorite = response['in_favorite'];
 
       if (response['status'] == "success") {
-        return quantity;
+        return {"quantity": quantity, "in_favorite": infavorite};
       } else {
         statusRequest = Statusrequest.failuer;
-        return quantity;
+        return {"quantity": 0, "in_favorite": false};
       }
     }
     update();
-    return 0;
+    return {"quantity": 0, "in_favorite": false};
   }
 
   // Future<void> fetchCart() async {

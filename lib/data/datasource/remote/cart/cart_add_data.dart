@@ -16,6 +16,7 @@ class CartAddData {
     required String quantity,
     required String attributes,
     required String availableqQuantity,
+    String? tier,
   }) async {
     var respons = await crud.postData(Appapi.addCart, {
       "user_id": userId,
@@ -27,6 +28,7 @@ class CartAddData {
       "attributes": attributes,
       "available_quantity": availableqQuantity,
       "platform": platform,
+      "cart_tier": tier,
     });
 
     return respons.fold((l) => l, (r) => r);

@@ -47,6 +47,6 @@ class AliaxpressApi {
 
   static const Map<String, String> rapidApiHeaders = {
     'X-RapidAPI-Host': 'aliexpress-datahub.p.rapidapi.com',
-    'X-RapidAPI-Key': 'acf6950ef4msh9730465e824a79cp17ca91jsn4dcbd85736a7',
+    'X-RapidAPI-Key': '01e39f77famsh35c369f7d42d022p16172bjsn513d81171cf7',
   };
 }

@@ -10,6 +10,9 @@ class Custgridviwe extends StatelessWidget {
   final Function()? onChangeIcon;
   final Widget icon;
   final String? countsall;
+  final bool isAlibaba;
+  final Widget? images;
+  final String? rate;
   const Custgridviwe({
     super.key,
     required this.image,
@@ -20,274 +23,205 @@ class Custgridviwe extends StatelessWidget {
     required this.icon,
     required this.discprice,
     this.countsall,
+    this.isAlibaba = false,
+    this.images,
+    this.rate,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(
-          child: Stack(
-            children: [
-              Container(
-                height: 165,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(15),
-                  child: image,
-                ),
-              ),
-              // favorite
-              Positioned(
-                top: 3,
-                right: 3,
-                child: Container(
-                  alignment: Alignment.center,
-                  height: 40,
-                  width: 40,
+    return Container(
+      decoration: BoxDecoration(
+        color: Appcolor.white,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          isAlibaba
+              ? Container(
+                  margin: const EdgeInsets.only(bottom: 10),
+                  child: images!,
+                )
+              : const SizedBox.shrink(),
+
+          SizedBox(
+            child: Stack(
+              children: [
+                Container(
+                  height: 165,
+                  width: double.infinity,
                   decoration: BoxDecoration(
-                    color: Colors.white.withAlpha(
-                      (0.6.clamp(0.0, 1.0) * 255).round(),
-                    ),
-                    borderRadius: BorderRadius.circular(50),
+                    borderRadius: BorderRadius.circular(20),
                   ),
-
-                  child: icon,
-                ),
-              ),
-              if (countsall != null)
-                Positioned(
-                  top: 0,
-                  left: -1,
-                  child: Container(
-                    padding: const EdgeInsets.all(3),
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [Color(0xFFFF5790), Color(0xFFF81140)],
-                        begin: Alignment.centerLeft,
-                        end: Alignment.centerRight,
-                      ),
-
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Text(
-                      countsall.toString(),
-                      style: TextStyle(
-                        color: Appcolor.white,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'signika',
-                      ),
-                      textAlign: TextAlign.start,
-                    ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(15),
+                    child: image,
                   ),
                 ),
-            ],
-          ),
-        ),
-        Text(
-          title,
-          style: TextStyle(
-            color: Appcolor.black,
-            fontWeight: FontWeight.bold,
-            fontSize: 14,
-          ),
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-        ),
-        Text(
-          price,
-          // "20\$"
-          style: TextStyle(
-            color: Appcolor.primrycolor,
-            fontWeight: FontWeight.bold,
-            fontFamily: 'signika',
-            fontSize: 17,
-          ),
-          textAlign: TextAlign.start,
-        ),
 
-        price == discprice
-            ? const SizedBox.shrink()
-            : Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                spacing: 6,
-                children: [
-                  Text(
-                    discprice,
+                // favorite
+                if (countsall != null)
+                  Positioned(
+                    top: 0,
+                    left: -1,
+                    child: Container(
+                      padding: const EdgeInsets.all(3),
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [Color(0xFFFF5790), Color(0xFFF81140)],
+                          begin: Alignment.centerLeft,
+                          end: Alignment.centerRight,
+                        ),
 
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.grey,
-                      decoration: TextDecoration.lineThrough,
-                      decorationColor: Colors.grey,
-                      decorationThickness: 2.0,
-                      decorationStyle: TextDecorationStyle.solid,
-                    ),
-                  ),
-                  Row(
-                    children: [
-                      Text(
-                        disc,
-                        // "20\$"
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Text(
+                        countsall.toString(),
                         style: TextStyle(
-                          color: Appcolor.primrycolor,
+                          color: Appcolor.white,
                           fontWeight: FontWeight.bold,
                           fontFamily: 'signika',
                         ),
+                        textAlign: TextAlign.start,
                       ),
-                      const SizedBox(width: 3),
-                      Text(
-                        "OFF",
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: Appcolor.primrycolor,
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
-                ],
+                Positioned(
+                  top: 3,
+                  right: 3,
+                  child: Container(
+                    alignment: Alignment.center,
+                    height: 40,
+                    width: 40,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withAlpha(
+                        (0.6.clamp(0.0, 1.0) * 255).round(),
+                      ),
+                      borderRadius: BorderRadius.circular(50),
+                    ),
+
+                    child: icon,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Text(
+            title,
+            style: TextStyle(
+              color: Appcolor.black,
+              fontWeight: FontWeight.bold,
+              fontSize: 14,
+            ),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+          Row(
+            spacing: 10,
+            children: [
+              Expanded(
+                child: Text(
+                  price,
+                  // "20\$"
+                  style: TextStyle(
+                    color: Appcolor.primrycolor,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'signika',
+                    fontSize: 17,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.start,
+                ),
               ),
-      ],
+
+              isAlibaba
+                  ? Row(
+                      spacing: 3,
+                      children: [
+                        const Icon(
+                          Icons.star,
+                          color: Appcolor.threecolor,
+                          size: 18,
+                        ),
+                        Text(
+                          rate ?? "",
+                          style: Theme.of(context).textTheme.bodyMedium!
+                              .copyWith(
+                                color: Appcolor.black,
+                                fontWeight: FontWeight.w800,
+                              ),
+                        ),
+                      ],
+                    )
+                  : const SizedBox.shrink(),
+            ],
+          ),
+
+          price == discprice
+              ? const SizedBox.shrink()
+              : Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  spacing: 6,
+                  children: [
+                    Text(
+                      discprice,
+
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.grey,
+                        decoration: TextDecoration.lineThrough,
+                        decorationColor: Colors.grey,
+                        decorationThickness: 2.0,
+                        decorationStyle: TextDecorationStyle.solid,
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        Text(
+                          disc,
+                          // "20\$"
+                          style: TextStyle(
+                            color: Appcolor.primrycolor,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'signika',
+                          ),
+                        ),
+                        const SizedBox(width: 3),
+                        Text(
+                          "OFF",
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: Appcolor.primrycolor,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+
+          // Expanded(
+          //   child: ListView.builder(
+          //     itemCount: 5,
+          //     // shrinkWrap: true,
+          //     scrollDirection: Axis.horizontal,
+
+          //     itemBuilder: (context, index) {
+          //       return Container(
+          //         height: 10,
+          //         width: 10,
+          //         decoration: BoxDecoration(
+          //           shape: BoxShape.circle,
+          //           color: Appcolor.primrycolor,
+          //         ),
+          //       );
+          //     },
+          //   ),
+          // ),
+        ],
+      ),
     );
   }
 }
-
-//      Stack(
-//       children: [
-//         Container(
-//           decoration: BoxDecoration(
-//             color: Colors.red,
-//             borderRadius: BorderRadius.circular(20),
-//           ),
-//           child: image,
-//         ),
-
-//         Positioned(
-//           bottom: -1,
-//           child: Column(
-//             children: [
-//               Container(
-//                 padding: const EdgeInsets.symmetric(
-//                   horizontal: 10,
-//                   vertical: 5,
-//                 ),
-//                 decoration: BoxDecoration(
-//                   color: Colors.white.withAlpha(
-//                     (0.9.clamp(0.0, 1.0) * 255).round(),
-//                   ),
-//                   borderRadius: BorderRadius.circular(100),
-//                 ),
-//                 child: Center(
-//                   child: Text(
-//                     price,
-//                     // "20\$"
-//                     style: TextStyle(
-//                       color: Appcolor.primrycolor,
-//                       fontWeight: FontWeight.bold,
-//                       fontFamily: 'signika',
-//                     ),
-//                   ),
-//                 ),
-//               ),
-//               Container(
-//                 height: 60,
-//                 width: 170,
-//                 decoration: BoxDecoration(
-//                   color: Colors.white,
-//                   borderRadius: BorderRadius.circular(20),
-//                 ),
-//                 child: Padding(
-//                   padding: const EdgeInsets.all(8.0),
-//                   child: Text(
-//                     title,
-//                     style: TextStyle(
-//                       color: Appcolor.primrycolor,
-//                       fontWeight: FontWeight.bold,
-//                       fontSize: 14,
-//                     ),
-//                     maxLines: 2,
-//                     overflow: TextOverflow.ellipsis,
-//                   ),
-//                 ),
-//               ),
-//             ],
-//           ),
-//         ),
-
-//         // discount
-//         Positioned(
-//           top: 3,
-//           left: 3,
-//           child: Container(
-//             height: 35,
-//             width: 35,
-//             decoration: BoxDecoration(
-//               color: Colors.white.withAlpha(
-//                 (0.8.clamp(0.0, 1.0) * 255).round(),
-//               ),
-//               borderRadius: BorderRadius.circular(20),
-//             ),
-//             child: Center(
-//               child: Text(
-//                 disc,
-//                 style: TextStyle(
-//                   color: Appcolor.primrycolor,
-//                   fontWeight: FontWeight.bold,
-//                   height: 1.5,
-//                   fontFamily: 'signika',
-//                 ),
-//               ),
-//             ),
-//           ),
-//         ),
-
-//         // like
-//         Positioned(
-//           top: 3,
-//           right: 3,
-//           child: Container(
-//             height: 35,
-//             width: 35,
-//             decoration: BoxDecoration(
-//               color: Colors.white.withAlpha(
-//                 (0.7.clamp(0.0, 1.0) * 255).round(),
-//               ),
-//               borderRadius: BorderRadius.circular(20),
-//             ),
-//             child: icon,
-//           ),
-//         ),
-//         // price
-//         // Positioned(
-//         //   bottom: 50,
-//         //   right: 60,
-//         //   child: Container(
-//         //     height: 35,
-//         //     width: 35,
-//         //     decoration: BoxDecoration(
-//         //       color: Colors.white.withAlpha(
-//         //         (0.9.clamp(0.0, 1.0) * 255).round(),
-//         //       ),
-//         //       borderRadius: BorderRadius.circular(20),
-//         //     ),
-//         //     child: const Center(
-//         //       child: Text(
-//         //         "20\$",
-//         //         style: TextStyle(
-//         //           color: Appcolor.primrycolor,
-//         //           fontWeight: FontWeight.bold,
-//         //           fontFamily: 'signika',
-//         //         ),
-//         //       ),
-//         //     ),
-//         //   ),
-//         // ),
-//       ],
-//     );
-//   }
-// }

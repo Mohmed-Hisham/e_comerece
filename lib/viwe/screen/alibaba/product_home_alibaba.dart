@@ -35,7 +35,7 @@ class ProductHomeAlibaba extends GetView<ProductAlibabaHomeControllerImp> {
             onTap: () {
               controller.gotoditels(
                 id: product.itemid,
-                Title: product.titel,
+                title: product.titel,
                 lang: enOrAr(),
               );
             },

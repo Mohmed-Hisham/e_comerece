@@ -3,7 +3,7 @@ class AlibabaApi {
 
   static const Map<String, String> rapidApiHeaders = {
     'X-RapidAPI-Host': 'alibaba-datahub.p.rapidapi.com',
-    'X-RapidAPI-Key': '7a92b54596mshe98e59af65328ddp163ba0jsn2e4bbaa8dd83',
+    'X-RapidAPI-Key': '154f05712emsh78a06e9450717a1p10be2cjsn534236a10e6a',
   };
 
   static String productHome(
@@ -25,6 +25,6 @@ class AlibabaApi {
   }
 
   static String itemDetails({required int productId, required String lang}) {
-    return "$_server/item_detail?itemId=$productId&region=YE&currency=USD&locale=$lang";
+    return "$_server/item_detail?itemId=$productId&currency=USD&locale=$lang";
   }
 }

@@ -15,6 +15,7 @@ import 'package:e_comerece/viwe/widget/Positioned/positioned_right_2.dart';
 import 'package:e_comerece/viwe/widget/auth/custombuttonauth.dart';
 import 'package:e_comerece/viwe/widget/custgridviwe.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 
 class AlibabaByimageView extends StatelessWidget {
@@ -176,7 +177,7 @@ class AlibabaByimageView extends StatelessWidget {
         return InkWell(
           onTap: () {
             int id = int.tryParse(item.itemId!.toString()) ?? 0;
-            controller.gotoditels(id: id, lang: enOrAr(), Title: item.title!);
+            controller.gotoditels(id: id, lang: enOrAr(), title: item.title!);
           },
 
           child: Custgridviwe(
@@ -203,10 +204,11 @@ class AlibabaByimageView extends StatelessWidget {
                       "Aliexpress",
                     );
                   },
-                  icon: Icon(
-                    isFav ? Icons.favorite : Icons.favorite_border,
-                    color: isFav ? Colors.red : Colors.black,
-                    size: 25,
+                  icon: FaIcon(
+                    isFav
+                        ? FontAwesomeIcons.solidHeart
+                        : FontAwesomeIcons.heart,
+                    color: isFav ? Appcolor.reed : Appcolor.reed,
                   ),
                 );
               },

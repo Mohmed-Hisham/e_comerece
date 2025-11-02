@@ -3,12 +3,18 @@ import 'package:flutter/material.dart';
 class PositionedAppBar extends StatelessWidget {
   final void Function()? onPressed;
   final String title;
-  const PositionedAppBar({super.key, this.onPressed, required this.title});
+  final double? top;
+  const PositionedAppBar({
+    super.key,
+    this.onPressed,
+    required this.title,
+    this.top = 25,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Positioned(
-      top: 17,
+      top: top,
       child: Row(
         spacing: 10,
         children: [

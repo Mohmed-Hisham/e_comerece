@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 import 'package:dartz/dartz.dart';
 import 'package:e_comerece/core/class/statusrequest.dart';
@@ -7,12 +8,40 @@ import 'package:e_comerece/core/funcations/checkinternet.dart';
 import 'package:http/http.dart' as http;
 
 class Crud {
-  Future<Either<Statusrequest, Map>> postData(String linlurl, Map data) async {
+  Future<Either<Statusrequest, Map>> postData(
+    String linlurl,
+    Map data, {
+    bool sendJson = false,
+  }) async {
     try {
       if (await checkinternet()) {
-        var response = await http.post(Uri.parse(linlurl), body: data);
+        http.Response response;
+
+        if (sendJson) {
+          log('data: ${jsonEncode(data)}');
+          response = await http.post(
+            Uri.parse(linlurl),
+            headers: {'Content-Type': 'application/json; charset=utf-8'},
+            body: jsonEncode(data),
+          );
+        } else {
+          // الافتراضي: تحويل كل القيم إلى String وإرسال كـ application/x-www-form-urlencoded
+          final Map<String, String> bodyFields = {};
+          data.forEach((key, value) {
+            // تجاهل القيم التي تساوي null أو ترسل كـ '' حسب تفضيلك:
+            bodyFields[key] = value == null ? '' : value.toString();
+          });
+
+          response = await http.post(
+            Uri.parse(linlurl),
+            body:
+                bodyFields, // http يضع Content-Type تلقائياً كـ application/x-www-form-urlencoded
+          );
+        }
+
         if (response.statusCode == 200 || response.statusCode == 201) {
-          Map respnsebody = jsonDecode(response.body);
+          final Map respnsebody = jsonDecode(response.body);
+          log('respnsebody: $respnsebody');
           return Right(respnsebody);
         } else {
           return const Left(Statusrequest.serverfailuer);
@@ -20,9 +49,8 @@ class Crud {
       } else {
         return const Left(Statusrequest.oflinefailuer);
       }
-    } catch (e) {
-      print('Exception Error in Crud: $e');
-
+    } catch (e, st) {
+      print('Exception Error in Crud: $e \n $st');
       return const Left(Statusrequest.failuerException);
     }
   }

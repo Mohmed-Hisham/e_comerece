@@ -24,6 +24,8 @@ class ProductFromCat extends StatelessWidget {
   Widget build(BuildContext context) {
     Get.put(ShearchnameControllerImple());
     Get.put(FavoritesController());
+    final ScrollController scrollController = ScrollController();
+
     return Scaffold(
       body: Stack(
         children: [
@@ -39,9 +41,36 @@ class ProductFromCat extends StatelessWidget {
           ),
           GetBuilder<ShearchnameControllerImple>(
             builder: (controller) {
-              final int itemCount = controller.categorymodel.isNotEmpty
-                  ? controller.categorymodel.length
-                  : controller.categorymodelFromImage.length;
+              // final int itemCount = controller.categorymodel.isNotEmpty
+              //     ? controller.categorymodel.length
+              //     : controller.categorymodelFromImage.length;
+              final int itemCount = controller.categorymodel.length;
+              if (itemCount > 0 &&
+                  controller.categoryId.toString().isNotEmpty) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  // نحسب موقع العنصر المحدد
+                  final selectedIndex = controller.categorymodel.indexWhere(
+                    (cat) => cat.id == controller.categoryId,
+                  );
+
+                  if (selectedIndex != -1) {
+                    // نحسب البوزيشن اللي نسكرول ليه (كل عنصر عرضه 100)
+                    final screenWidth = MediaQuery.of(context).size.width;
+                    final offset =
+                        (screenWidth / 2) - 50; // نص الشاشة - نص العنصر
+                    final targetPosition = (selectedIndex * 100.0) - offset;
+
+                    // نتأكد إن الـ controller مرتبط بالـ ListView
+                    if (scrollController.hasClients) {
+                      scrollController.animateTo(
+                        targetPosition,
+                        duration: const Duration(milliseconds: 600),
+                        curve: Curves.easeInOut,
+                      );
+                    }
+                  }
+                });
+              }
 
               return Column(
                 children: [
@@ -49,6 +78,7 @@ class ProductFromCat extends StatelessWidget {
                   SizedBox(
                     height: 100,
                     child: ListView.builder(
+                      controller: scrollController,
                       scrollDirection: Axis.horizontal,
                       itemCount: itemCount,
                       itemBuilder: (context, index) {
@@ -95,6 +125,7 @@ class ProductFromCat extends StatelessWidget {
                             controller.changeCat(currentName, currentId, index);
                           },
                           child: Container(
+                            margin: const EdgeInsets.only(left: 5),
                             width: 100,
                             alignment: Alignment.center,
                             child: Column(
@@ -107,7 +138,9 @@ class ProductFromCat extends StatelessWidget {
                                       decoration: BoxDecoration(
                                         color: Appcolor.white,
                                         border: Border.all(
-                                          color: Appcolor.threecolor,
+                                          color: isSelected
+                                              ? Appcolor.primrycolor
+                                              : Appcolor.threecolor,
                                           width: 3,
                                         ),
                                         borderRadius: BorderRadius.circular(50),
@@ -165,20 +198,20 @@ class ProductFromCat extends StatelessWidget {
                                     ),
                                   ),
                                 ),
-                                AnimatedContainer(
-                                  duration: const Duration(milliseconds: 500),
-                                  curve: Curves.easeInOut,
-                                  width: isSelected ? 80 : 0,
-                                  height: 6,
-                                  decoration: BoxDecoration(
-                                    color: controller.categoryId == currentId
-                                        ? (isSelected
-                                              ? Appcolor.primrycolor
-                                              : Colors.transparent)
-                                        : Colors.transparent,
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                ),
+                                // AnimatedContainer(
+                                //   duration: const Duration(milliseconds: 500),
+                                //   curve: Curves.easeInOut,
+                                //   width: isSelected ? 80 : 0,
+                                //   height: 6,
+                                //   decoration: BoxDecoration(
+                                //     color: controller.categoryId == currentId
+                                //         ? (isSelected
+                                //               ? Appcolor.primrycolor
+                                //               : Colors.transparent)
+                                //         : Colors.transparent,
+                                //     borderRadius: BorderRadius.circular(10),
+                                //   ),
+                                // ),
                               ],
                             ),
                           ),
@@ -224,11 +257,10 @@ class ProductFromCat extends StatelessWidget {
 
                               return InkWell(
                                 onTap: () {
-                                  print(product.item!.itemId);
                                   controller.gotoditels(
                                     id: product.item!.itemId!,
                                     lang: enOrAr(),
-                                    Title: product.item!.title!,
+                                    title: product.item!.title!,
                                   );
                                 },
                                 child: Custgridviwe(
@@ -253,9 +285,8 @@ class ProductFromCat extends StatelessWidget {
                                     builder: (isFavoriteController) {
                                       bool isFav =
                                           isFavoriteController
-                                              .isFavorite[product
-                                              .item!
-                                              .itemId] ??
+                                              .isFavorite[product.item!.itemId
+                                              .toString()] ??
                                           false;
 
                                       return IconButton(
@@ -272,14 +303,13 @@ class ProductFromCat extends StatelessWidget {
                                             "Aliexpress",
                                           );
                                         },
-                                        icon: Icon(
+                                        icon: FaIcon(
                                           isFav
-                                              ? Icons.favorite
-                                              : Icons.favorite_border,
+                                              ? FontAwesomeIcons.solidHeart
+                                              : FontAwesomeIcons.heart,
                                           color: isFav
-                                              ? Colors.red
-                                              : Colors.black,
-                                          size: 25,
+                                              ? Appcolor.reed
+                                              : Appcolor.reed,
                                         ),
                                       );
                                     },

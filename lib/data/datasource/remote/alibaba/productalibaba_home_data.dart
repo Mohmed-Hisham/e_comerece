@@ -14,7 +14,7 @@ class ProductalibabaHomeData {
   }) async {
     var response = await crud.getData(
       AlibabaApi.productHome(
-        "clothes",
+        "fashion",
         pageindex,
         enOrAr(is_ar_SA: true),
         '',

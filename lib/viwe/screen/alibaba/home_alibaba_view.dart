@@ -8,7 +8,6 @@ import 'package:e_comerece/core/shared/widget_shared/animations.dart';
 import 'package:e_comerece/core/shared/widget_shared/shimmerbar.dart';
 import 'package:e_comerece/viwe/screen/alibaba/product_home_alibaba.dart';
 import 'package:e_comerece/viwe/screen/alibaba/search_name_alibaba.dart';
-import 'package:e_comerece/viwe/screen/alibaba/seetings_alibaba.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_app_bar.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_left_2.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_right_2.dart';

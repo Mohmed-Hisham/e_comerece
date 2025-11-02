@@ -37,8 +37,10 @@ class FavoritesController extends GetxController {
     String productTitle,
     String productImage,
     String productPrice,
-    String platform,
-  ) async {
+    String platform, {
+    String? goodsSn,
+    String? categoryid,
+  }) async {
     String id = myServises.sharedPreferences.getString("user_id")!;
 
     bool currentStatus = isFavorite[productId] ?? false;
@@ -55,24 +57,56 @@ class FavoritesController extends GetxController {
         productimage: productImage,
         productprice: productPrice,
         platform: platform,
+        categoryid: categoryid ?? "",
+        goodsSn: goodsSn ?? "",
       );
       if (Get.isDialogOpen ?? false) return;
 
       // show dialog
-      Get.dialog(
-        barrierDismissible: false,
-        Center(
+      Get.rawSnackbar(
+        titleText: const SizedBox.shrink(),
+        backgroundColor: Colors.transparent,
+        snackStyle: SnackStyle.FLOATING,
+        snackPosition: SnackPosition.TOP,
+        maxWidth: Get.width * 0.95,
+
+        margin: EdgeInsets.only(left: 12, right: 12, bottom: 18, top: 50),
+        padding: EdgeInsets.zero,
+        borderRadius: 0,
+        duration: Duration(seconds: 1),
+
+        messageText: Center(
           child: FavoriteAnimatedWidget(
-            size: 110,
+            size: 60,
             onEnd: () {
               if (Get.isDialogOpen ?? false) Get.back();
             },
           ),
         ),
-
-        barrierColor: Colors.transparent,
       );
       await FavoriteAnimationController.to.play();
+      // Get.snackbar(
+      //   'ok',
+      //   'Added to favorites',
+      //   snackPosition: SnackPosition.BOTTOM,
+      //   backgroundColor: Colors.green.withOpacity(0.5),
+      //   colorText: Colors.white,
+      //   margin: EdgeInsets.only(bottom: 100),
+      // );
+      // Get.dialog(
+      //   barrierDismissible: false,
+      //   Center(
+      //     child: FavoriteAnimatedWidget(
+      //       size: 110,
+      //       onEnd: () {
+      //         if (Get.isDialogOpen ?? false) Get.back();
+      //       },
+      //     ),
+      //   ),
+
+      //   barrierColor: Colors.transparent,
+      // );
+      // await FavoriteAnimationController.to.play();
     }
   }
 

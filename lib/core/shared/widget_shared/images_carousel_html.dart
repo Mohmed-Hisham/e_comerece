@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:e_comerece/core/shared/widget_shared/loadingimage.dart';
-import 'package:e_comerece/core/shared/widget_shared/openFullimage.dart';
+import 'package:e_comerece/core/shared/widget_shared/open_full_image.dart';
 import 'package:flutter/material.dart';
 
 class ImagesCarouselHtml extends StatelessWidget {

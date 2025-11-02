@@ -13,6 +13,7 @@ import 'package:e_comerece/viwe/widget/aliexpress/categoryList_for_imagesearch.d
 import 'package:e_comerece/viwe/widget/auth/custombuttonauth.dart';
 import 'package:e_comerece/viwe/widget/custgridviwe.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 
 class SearchByImageView extends StatelessWidget {
@@ -142,10 +143,11 @@ class SearchByImageView extends StatelessWidget {
                       "Aliexpress",
                     );
                   },
-                  icon: Icon(
-                    isFav ? Icons.favorite : Icons.favorite_border,
-                    color: isFav ? Colors.red : Colors.black,
-                    size: 25,
+                  icon: FaIcon(
+                    isFav
+                        ? FontAwesomeIcons.solidHeart
+                        : FontAwesomeIcons.heart,
+                    color: isFav ? Appcolor.reed : Appcolor.reed,
                   ),
                 );
               },

@@ -1,36 +1,73 @@
 import 'package:e_comerece/controller/home/homescreen_controller.dart';
-import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/viwe/widget/home/custbottonappbar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class Homenavbar extends StatelessWidget {
+class Homenavbar extends StatefulWidget {
   const Homenavbar({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    Get.put(HomescreenControllerImple());
-    return GetBuilder<HomescreenControllerImple>(
-      builder: (controller) => Scaffold(
-        appBar: AppBar(),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        floatingActionButton: Container(
-          padding: EdgeInsets.all(4),
-          decoration: BoxDecoration(
-            color: Appcolor.primrycolor,
-            borderRadius: BorderRadius.circular(25),
-          ),
-          child: IconButton(
-            onPressed: () {
-              controller.gotocart();
-            },
-            icon: Icon(Icons.card_travel, size: 30),
-            color: Appcolor.white,
-          ),
-        ),
+  State<Homenavbar> createState() => _HomenavbarState();
+}
 
-        bottomNavigationBar: Custbottonappbar(),
-        body: controller.pages.elementAt(controller.pageindex),
+class _HomenavbarState extends State<Homenavbar>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+  late HomescreenControllerImple controller;
+
+  @override
+  void initState() {
+    super.initState();
+    // ضع الكنترولر هنا مرة واحدة فقط
+    controller = Get.put(HomescreenControllerImple());
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+    return Scaffold(
+      body: Stack(
+        children: [
+          GetBuilder<HomescreenControllerImple>(
+            // id: 'changePage',
+            builder: (controller) {
+              return AnimatedSwitcher(
+                duration: const Duration(milliseconds: 300),
+                transitionBuilder: (child, animation) {
+                  final bool isForward =
+                      controller.pageindexHome > controller.previousIndex;
+
+                  final offsetTween = Tween<Offset>(
+                    begin: isForward
+                        ? const Offset(1.0, 0.0)
+                        : const Offset(-1.0, 0.0),
+                    end: Offset.zero,
+                  );
+                  final offsetAnimation = offsetTween.animate(animation);
+                  final fadeAnimation = CurvedAnimation(
+                    parent: animation,
+                    curve: Curves.easeInOut,
+                  );
+                  return SlideTransition(
+                    position: offsetAnimation,
+                    child: FadeTransition(opacity: fadeAnimation, child: child),
+                  );
+                },
+                // نفّذ Key على الطفل الفعلي حتى يميّزه AnimatedSwitcher
+                child: KeyedSubtree(
+                  key: ValueKey<int>(controller.pageindexHome),
+                  child: SizedBox.expand(
+                    child: controller.pages.elementAt(controller.pageindexHome),
+                  ),
+                ),
+              );
+            },
+          ),
+
+          // bottom bar ثابت فوق
+          Positioned(left: 0, right: 0, bottom: 0, child: Custbottonappbar()),
+        ],
       ),
     );
   }

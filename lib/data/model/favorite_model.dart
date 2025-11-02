@@ -5,6 +5,8 @@ class FavoriteModel {
   String? productImage;
   String? productPrice;
   String? platform;
+  String? goodsSn;
+  String? categoryId;
 
   FavoriteModel({
     this.favoriteId,
@@ -13,6 +15,8 @@ class FavoriteModel {
     this.productImage,
     this.productPrice,
     this.platform,
+    this.goodsSn,
+    this.categoryId,
   });
 
   FavoriteModel.fromJson(Map<String, dynamic> json) {
@@ -22,6 +26,8 @@ class FavoriteModel {
     productImage = json['product_image'];
     productPrice = json['product_price'];
     platform = json['favorite_platform'];
+    goodsSn = json['goods_sn'];
+    categoryId = json['category_id'];
   }
 
   Map<String, dynamic> toJson() {

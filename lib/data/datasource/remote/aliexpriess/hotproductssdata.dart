@@ -7,10 +7,10 @@ class HotProductsData {
 
   HotProductsData(this.crud);
 
-  getData(int pageIndex) async {
+  getData(int pageIndex, {String? q}) async {
     var response = await crud.getData(
       AliaxpressApi.hotProductsData(
-        Kword: "clothing",
+        kword: q ?? "women fashion ",
         pageIndex: pageIndex,
         lang: enOrAr(),
       ),

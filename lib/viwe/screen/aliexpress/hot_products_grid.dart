@@ -1,5 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:e_comerece/controller/aliexpriess/category_controller.dart';
+import 'package:e_comerece/controller/aliexpriess/aliexprise_home_controller.dart';
 import 'package:e_comerece/controller/favorite/favorites_controller.dart';
 import 'package:e_comerece/core/class/handlingdataviwe.dart';
 import 'package:e_comerece/core/constant/color.dart';
@@ -36,7 +36,7 @@ class HotProductsGrid extends GetView<HomePageControllerImpl> {
               int id = product.item!.itemId!;
               controller.gotoditels(
                 id: id,
-                Title: product.item!.title!,
+                title: product.item!.title!,
                 lang: enOrAr(),
               );
             },

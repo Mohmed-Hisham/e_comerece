@@ -29,3 +29,30 @@ String detectLangFromQuery(String query, {bool is_ar_SA = false}) {
     return 'en_US';
   }
 }
+
+String detectLangFromQueryAmazon(String query) {
+  final hasArabic = RegExp(r'[\u0600-\u06FF]').hasMatch(query);
+  if (hasArabic) {
+    return 'ar_AE';
+  } else {
+    return 'en_AE';
+  }
+}
+
+String enOrArAmazon() {
+  MyServises myServises = Get.find();
+  if (myServises.sharedPreferences.getString("lang") == "ar") {
+    return "ar_AE";
+  } else {
+    return "en_AE";
+  }
+}
+
+bool langDirection() {
+  MyServises myServises = Get.find();
+  if (myServises.sharedPreferences.getString("lang") == "ar") {
+    return true;
+  } else {
+    return false;
+  }
+}

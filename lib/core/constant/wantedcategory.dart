@@ -68,6 +68,60 @@ const Map<int, IconData> categoryIcons = {
   14190101: FontAwesomeIcons.plug, // Connectors
   100005791: FontAwesomeIcons.shirt, // Casual Dresses
   32004: FontAwesomeIcons.gem, // Evening Dresses
+  4436: FontAwesomeIcons.personDress,
+  2038: FontAwesomeIcons.shirt,
+  2031: FontAwesomeIcons.child,
+  3195: FontAwesomeIcons.personRunning,
+  2026: FontAwesomeIcons.person,
+  3224: FontAwesomeIcons.baby,
+  4083: FontAwesomeIcons.bed,
+  2032: FontAwesomeIcons.house,
+  3650: FontAwesomeIcons.blender,
+  4327: FontAwesomeIcons.hammer,
+  4328: FontAwesomeIcons.puzzlePiece,
+  3631: FontAwesomeIcons.ring,
+  3634: FontAwesomeIcons.gem,
+  3636: FontAwesomeIcons.shoePrints,
+  3637: FontAwesomeIcons.suitcase,
+  2400: FontAwesomeIcons.paw,
+  2297: FontAwesomeIcons.school,
+  1864: FontAwesomeIcons.spa,
+  2274: FontAwesomeIcons.mobile,
+  2273: FontAwesomeIcons.microchip,
+  3657: FontAwesomeIcons.car,
 };
 
-IconData getCategoryIcon(int id) => categoryIcons[id] ?? Icons.category;
+// IconData getCategoryIcon(int id) => categoryIcons[id] ?? Icons.category;
+
+const Map<String, IconData> amazonCategoryIcons = {
+  'aps': FontAwesomeIcons.store,
+  'amazon-devices': FontAwesomeIcons.mobileScreenButton,
+  'fashion': FontAwesomeIcons.shirt,
+  'amazon-global-store': FontAwesomeIcons.globe,
+  'warehouse-deals': FontAwesomeIcons.boxOpen,
+  'appliances': FontAwesomeIcons.blender,
+  'automotive': FontAwesomeIcons.car,
+  'baby': FontAwesomeIcons.baby,
+  'beauty': FontAwesomeIcons.spa,
+  'stripbooks': FontAwesomeIcons.book,
+  'computers': FontAwesomeIcons.laptop,
+  'electronics': FontAwesomeIcons.microchip,
+  'gift-cards': FontAwesomeIcons.gift,
+  'grocery': FontAwesomeIcons.carrot,
+  'hpc': FontAwesomeIcons.bandage,
+  'local-services': FontAwesomeIcons.houseUser,
+  'garden': FontAwesomeIcons.tree,
+  'kitchen': FontAwesomeIcons.utensils,
+  'fashion-luggage': FontAwesomeIcons.suitcase,
+  'mi': FontAwesomeIcons.music,
+  'office-products': FontAwesomeIcons.clipboardList,
+  'pets': FontAwesomeIcons.paw,
+  'instant-video': FontAwesomeIcons.film,
+  'sports': FontAwesomeIcons.futbol,
+  'tools': FontAwesomeIcons.screwdriverWrench,
+  'toys': FontAwesomeIcons.puzzlePiece,
+  'videogames': FontAwesomeIcons.gamepad,
+};
+
+// IconData getCategoryIconAmazon(String id) =>
+//     categoryIcons[id] ?? Icons.category;

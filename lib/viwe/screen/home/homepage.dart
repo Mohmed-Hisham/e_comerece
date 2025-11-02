@@ -1,8 +1,24 @@
-import 'package:carousel_slider/carousel_slider.dart';
+import 'dart:developer';
+
+import 'package:e_comerece/controller/favorite/favorites_controller.dart';
+import 'package:e_comerece/controller/home/homescreen_controller.dart';
 import 'package:e_comerece/core/constant/imagesassets.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
+import 'package:e_comerece/core/constant/sliver_spacer.dart';
+import 'package:e_comerece/core/shared/widget_shared/animations.dart';
 import 'package:e_comerece/core/shared/widget_shared/custcarouselslider.dart';
+import 'package:e_comerece/viwe/screen/home/hot_product_alibaba_home.dart';
+import 'package:e_comerece/viwe/screen/home/hot_product_aliexpriess_home.dart';
+import 'package:e_comerece/viwe/screen/home/hot_product_amazon.dart';
+import 'package:e_comerece/viwe/screen/home/hot_product_shein.dart';
+import 'package:e_comerece/viwe/screen/home/search_home_view.dart';
+import 'package:e_comerece/viwe/screen/shein/cust_label_container.dart';
+import 'package:e_comerece/viwe/widget/Positioned/positioned_left_2.dart';
+import 'package:e_comerece/viwe/widget/Positioned/positioned_right_2.dart';
+import 'package:e_comerece/viwe/widget/custshearchappbar.dart';
+import 'package:e_comerece/viwe/widget/home/cust_container.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 class Homepage extends StatelessWidget {
@@ -10,85 +26,183 @@ class Homepage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
+    // Get.put(HomescreenControllerImple());
+    Get.put(FavoritesController());
+    GlobalKey<FormState> formkey = GlobalKey<FormState>();
+    return Stack(
       children: [
-        Custcarouselslider(items: [AppImagesassets.tset]),
+        const PositionedRight1(),
+        const PositionedRight2(),
 
-        SizedBox(height: 10),
-        GridView(
-          padding: EdgeInsets.symmetric(horizontal: 10),
-          physics: AlwaysScrollableScrollPhysics(),
-          shrinkWrap: true,
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 4,
-            crossAxisSpacing: 10,
-            mainAxisExtent: 100,
-            mainAxisSpacing: 10,
-          ),
-          children: [
-            Image.asset(AppImagesassets.shein, height: 80, width: 300),
-            InkWell(
-              onTap: () => Get.toNamed(AppRoutesname.Homepagealibaba),
-              child: Image.asset(
-                AppImagesassets.alibab,
-                height: 100,
-                width: 200,
+        GetBuilder<HomescreenControllerImple>(
+          builder: (controller) {
+            return Form(
+              key: formkey,
+              child: Column(
+                children: [
+                  SizedBox(height: 60.h),
+                  GetBuilder<HomescreenControllerImple>(
+                    id: 'initShow',
+                    builder: (controller) {
+                      return SlideUpFade(
+                        visible: controller.initShow,
+                        offsetY: -0.40,
+                        child: Custshearchappbar(
+                          mycontroller: controller.searchController,
+                          onChanged: (val) {
+                            controller.onChangeSearch(val);
+                            controller.whenstartSearch(val);
+                          },
+                          onTapSearch: () {
+                            if (formkey.currentState!.validate()) {
+                              controller.searshAll();
+                            }
+                          },
+                          showClose: controller.showClose,
+                          favoriteOnPressed: () {
+                            controller.goToFavorit();
+                          },
+
+                          onTapClose: () {
+                            controller.onCloseSearch();
+                          },
+                        ),
+                      );
+                    },
+                  ),
+                  Expanded(
+                    child: controller.isSearch
+                        ? SearchHomeView()
+                        : CustomScrollView(
+                            physics: const BouncingScrollPhysics(),
+                            slivers: <Widget>[
+                              SliverToBoxAdapter(
+                                child: Custcarouselslider(
+                                  items: [
+                                    AppImagesassets.tset,
+                                    AppImagesassets.tset,
+                                    AppImagesassets.tset,
+                                  ],
+                                ),
+                              ),
+                              SliverToBoxAdapter(child: SizedBox(height: 10)),
+                              SliverToBoxAdapter(
+                                child: GridView(
+                                  addRepaintBoundaries: true,
+                                  padding: EdgeInsets.symmetric(horizontal: 10),
+                                  physics: const BouncingScrollPhysics(),
+                                  shrinkWrap: true,
+                                  gridDelegate:
+                                      SliverGridDelegateWithFixedCrossAxisCount(
+                                        crossAxisCount: 4,
+                                        crossAxisSpacing: 10,
+                                        mainAxisExtent: 80,
+                                        mainAxisSpacing: 10,
+                                      ),
+                                  children: [
+                                    InkWell(
+                                      onTap: () => Get.toNamed(
+                                        AppRoutesname.homeSheinView,
+                                      ),
+                                      child: CustCntainer(
+                                        text: "Shein",
+                                        color: const Color(0xFF455A2D),
+                                      ),
+                                    ),
+                                    InkWell(
+                                      onTap: () => Get.toNamed(
+                                        AppRoutesname.homepagealibaba,
+                                      ),
+                                      child: CustCntainer(
+                                        text: "Alibaba",
+                                        color: const Color(0xFFDFA672),
+                                      ),
+                                    ),
+                                    InkWell(
+                                      onTap: () {
+                                        Get.toNamed(AppRoutesname.homepage1);
+                                      },
+                                      child: CustCntainer(
+                                        fontsize: 14,
+                                        text: "AliExpress",
+                                        color: const Color(0xFF1A6572),
+                                      ),
+                                    ),
+                                    InkWell(
+                                      onTap: () => Get.toNamed(
+                                        AppRoutesname.homeAmazonView,
+                                      ),
+
+                                      child: CustCntainer(
+                                        fontsize: 18,
+                                        text: "Amazon",
+                                        color: const Color(0xFF917D55),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              SliverSpacer(20.h),
+
+                              SliverToBoxAdapter(
+                                child: Row(
+                                  children: [
+                                    CustLabelContainer(
+                                      text: 'Best from AliExpress',
+                                    ),
+                                  ],
+                                ),
+                              ),
+
+                              SliverToBoxAdapter(
+                                child: HotProductAliexpriessHome(),
+                              ),
+
+                              SliverSpacer(10.h),
+                              SliverToBoxAdapter(
+                                child: Row(
+                                  children: [
+                                    CustLabelContainer(
+                                      text: 'Best from Alibaba',
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              SliverToBoxAdapter(
+                                child: HotProductAlibabaHome(),
+                              ),
+                              SliverSpacer(10.h),
+                              SliverToBoxAdapter(
+                                child: Row(
+                                  children: [
+                                    CustLabelContainer(
+                                      text: 'Hot Deals from Amazon',
+                                    ),
+                                  ],
+                                ),
+                              ),
+
+                              SliverToBoxAdapter(child: HotProductAmazon()),
+                              SliverSpacer(10.h),
+                              SliverToBoxAdapter(
+                                child: Row(
+                                  children: [
+                                    CustLabelContainer(
+                                      text: 'Trending Products from Shein',
+                                    ),
+                                  ],
+                                ),
+                              ),
+
+                              SliverToBoxAdapter(child: HotProductShein()),
+                              SliverSpacer(100.h),
+                            ],
+                          ),
+                  ),
+                ],
               ),
-            ),
-            InkWell(
-              onTap: () {
-                Get.toNamed(AppRoutesname.homepage1);
-              },
-              child: Image.asset(
-                AppImagesassets.aliexpress,
-                height: 100,
-                width: 200,
-              ),
-            ),
-            Image.asset(AppImagesassets.amazon, height: 100, width: 200),
-          ],
-        ),
-        SizedBox(height: 5),
-        Text("   Best from AliExpress"),
-        SizedBox(
-          height: 110,
-          child: ListView.builder(
-            padding: EdgeInsets.only(top: 10),
-            scrollDirection: Axis.horizontal,
-            itemCount: 10,
-            itemBuilder: (context, i) {
-              return Container(
-                margin: EdgeInsets.only(left: 10),
-                height: 100,
-                width: 100,
-                decoration: BoxDecoration(
-                  color: Colors.red,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-              );
-            },
-          ),
-        ),
-        SizedBox(height: 5),
-        Text("   Best from Alibaba"),
-        SizedBox(
-          height: 110,
-          child: ListView.builder(
-            padding: EdgeInsets.only(top: 10),
-            scrollDirection: Axis.horizontal,
-            itemCount: 10,
-            itemBuilder: (context, i) {
-              return Container(
-                margin: EdgeInsets.only(left: 10),
-                height: 100,
-                width: 100,
-                decoration: BoxDecoration(
-                  color: Colors.green,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-              );
-            },
-          ),
+            );
+          },
         ),
       ],
     );

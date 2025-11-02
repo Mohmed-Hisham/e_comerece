@@ -1,6 +1,5 @@
 import 'package:e_comerece/controller/alibaba/product_details_alibaba_controller.dart';
 import 'package:e_comerece/controller/cart/cart_from_detils.dart';
-import 'package:e_comerece/controller/favorite/favorites_controller.dart';
 import 'package:e_comerece/controller/favorite/toggleFavorite_controller.dart';
 import 'package:e_comerece/core/class/handlingdataviwe.dart';
 import 'package:e_comerece/core/funcations/translate_data.dart';
@@ -20,6 +19,7 @@ import 'package:e_comerece/viwe/widget/alibaba/product_description_html_alibaba.
 import 'package:e_comerece/viwe/widget/alibaba/product_properties_alibaba.dart';
 import 'package:e_comerece/viwe/widget/alibaba/quantity_section_alibaba.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 class ProductDetailsAlibabView extends StatelessWidget {
@@ -39,7 +39,7 @@ class ProductDetailsAlibabView extends StatelessWidget {
           const PositionedRight2(),
 
           Container(
-            padding: EdgeInsets.only(top: 65),
+            padding: EdgeInsets.only(top: 85.h),
             child: GetBuilder<ProductDetailsAlibabaControllerImple>(
               builder: (controller) {
                 return Handlingdataviwe(
@@ -84,6 +84,7 @@ class ProductDetailsAlibabView extends StatelessWidget {
                     },
 
                     child: CustomScrollView(
+                      physics: const BouncingScrollPhysics(),
                       slivers: [
                         SliverToBoxAdapter(
                           child: _buildProductDetails(
@@ -96,7 +97,7 @@ class ProductDetailsAlibabView extends StatelessWidget {
 
                         GetBuilder<ProductDetailsAlibabaControllerImple>(
                           id: 'searshText',
-                          builder: (Container) {
+                          builder: (controller) {
                             if (controller.isLoading &&
                                 controller.hasMoresearch &&
                                 controller.pageIndexSearch > 0) {

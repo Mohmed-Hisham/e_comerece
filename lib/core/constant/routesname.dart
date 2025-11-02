@@ -1,6 +1,7 @@
 class AppRoutesname {
   //splash
   static const String splash = "/splash";
+  static const String language = "/language";
 
   static const String login = "/login";
   static const String loginStepOne = "/LoginStepOne";
@@ -27,9 +28,24 @@ class AppRoutesname {
   static const String searchByimagealiexpress = "/searchByimagealiexpress";
 
   // Alibaba
-  static const String Homepagealibaba = "/Homepagealibaba";
-  static const String AlibabaByimageView = "/AlibabaByimageView";
-  static const String ProductDetailsAlibabView = "/ProductDetailsAlibabView";
+  static const String homepagealibaba = "/Homepagealibaba";
+  static const String alibabaByimageView = "/AlibabaByimageView";
+  static const String productDetailsAlibabView = "/ProductDetailsAlibabView";
   // static const String FavoritesAlibaba = "/FavoritesAlibaba";
   // static const String searchByimagealibaba = "/searchByimagealibaba";
+
+  // shein
+
+  static const String homeSheinView = "/HomeSheinView";
+  static const String productDetailsSheinView = "/ProductDetailsSheinView";
+  // static const String CategoriesShein = "/CategoriesShein";
+  // static const String ProductDetailsShein = "/ProductDetailsShein";
+
+  // Amazon
+  static const String homeAmazonView = "/HomeAmazonView";
+  static const String productDetailsAmazonView = "/ProductDetailsAmazonView";
+  static const String productFromCatView = "/ProductFromCatView";
+
+  // address
+  static const String addAddresses = "/AddAddresses";
 }

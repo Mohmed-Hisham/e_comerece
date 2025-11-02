@@ -1,5 +1,5 @@
 import 'package:e_comerece/core/class/crud.dart';
-import 'package:e_comerece/app_api/lin_kapi.dart';
+import 'package:e_comerece/app_api/link_api.dart';
 
 class FavoriteData {
   Crud crud;
@@ -13,6 +13,8 @@ class FavoriteData {
     required String productimage,
     required String productprice,
     required String platform,
+    String goodsSn = "",
+    String categoryid = "",
   }) async {
     var respons = await crud.postData(Appapi.addFavorite, {
       "user_id": userId,
@@ -21,6 +23,8 @@ class FavoriteData {
       "product_image": productimage,
       "product_price": productprice,
       "favorite_platform": platform,
+      "goods_sn": goodsSn,
+      "category_id": categoryid,
     });
 
     return respons.fold((l) => l, (r) => r);

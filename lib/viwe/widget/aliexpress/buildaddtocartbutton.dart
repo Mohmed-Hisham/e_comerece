@@ -59,6 +59,7 @@ class Buildaddtocartbutton extends StatelessWidget {
             controller.quantity.toString(),
             attributesJson,
             stock,
+            tier: "",
           );
           Get.back();
         },

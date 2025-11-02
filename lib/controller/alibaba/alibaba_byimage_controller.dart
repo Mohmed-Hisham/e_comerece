@@ -1,4 +1,6 @@
-import 'package:e_comerece/app_api/lin_kapi.dart';
+import 'dart:developer';
+
+import 'package:e_comerece/app_api/link_api.dart';
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/funcations/handle_paging_response.dart';
@@ -7,6 +9,7 @@ import 'package:e_comerece/core/shared/image_manger/Image_manager_controller.dar
 import 'package:e_comerece/data/datasource/remote/alibaba/alibaba_By_image_data.dart';
 import 'package:e_comerece/data/datasource/remote/upload_to_cloudinary.dart';
 import 'package:e_comerece/data/model/alibaba_model/productalibaba_byimage_model.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -17,7 +20,7 @@ abstract class AlibabaByimageController extends GetxController {
   void gotoditels({
     required int id,
     required String lang,
-    required String Title,
+    required String title,
   });
   void gotoshearchname(String nameCat, int categoryId);
   void loadMoreproduct();
@@ -88,7 +91,7 @@ class AlibabaByimageControllerllerImple extends AlibabaByimageController {
       if (!isLoadMore) {
         statusrequest = Statusrequest.failuer;
       }
-      print("Error in fetchShearchByimage: $e");
+      log("Error in fetchShearchByimage: $e");
     } finally {
       isLoading = false;
       update();
@@ -109,9 +112,9 @@ class AlibabaByimageControllerllerImple extends AlibabaByimageController {
   }
 
   @override
-  gotoditels({required id, required lang, required Title}) {
+  gotoditels({required id, required lang, required title}) {
     Get.toNamed(
-      AppRoutesname.ProductDetailsAlibabView,
+      AppRoutesname.productDetailsAlibabView,
       arguments: {"product_id": id, "lang": lang, "title": Title},
     );
   }
@@ -164,7 +167,9 @@ class AlibabaByimageControllerllerImple extends AlibabaByimageController {
                 }
               })
               .catchError((err) {
-                print('Error: $err');
+                if (kDebugMode) {
+                  print('Error: $err');
+                }
               });
         }
       });

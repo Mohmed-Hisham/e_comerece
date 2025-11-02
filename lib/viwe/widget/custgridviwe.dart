@@ -11,6 +11,7 @@ class Custgridviwe extends StatelessWidget {
   final Widget icon;
   final String? countsall;
   final bool isAlibaba;
+  final bool isAmazon;
   final Widget? images;
   final String? rate;
   const Custgridviwe({
@@ -24,6 +25,7 @@ class Custgridviwe extends StatelessWidget {
     required this.discprice,
     this.countsall,
     this.isAlibaba = false,
+    this.isAmazon = false,
     this.images,
     this.rate,
   });
@@ -137,7 +139,7 @@ class Custgridviwe extends StatelessWidget {
                 ),
               ),
 
-              isAlibaba
+              isAlibaba || isAmazon
                   ? Row(
                       spacing: 3,
                       children: [
@@ -150,10 +152,11 @@ class Custgridviwe extends StatelessWidget {
                           rate ?? "",
                           style: Theme.of(context).textTheme.bodyMedium!
                               .copyWith(
-                                color: Appcolor.black,
+                                color: Appcolor.primrycolor,
                                 fontWeight: FontWeight.w800,
                               ),
                         ),
+                        SizedBox(width: 5),
                       ],
                     )
                   : const SizedBox.shrink(),
@@ -190,13 +193,14 @@ class Custgridviwe extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(width: 3),
-                        Text(
-                          "OFF",
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: Appcolor.primrycolor,
+                        if (discprice.isNotEmpty)
+                          Text(
+                            "OFF",
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Appcolor.primrycolor,
+                            ),
                           ),
-                        ),
                       ],
                     ),
                   ],

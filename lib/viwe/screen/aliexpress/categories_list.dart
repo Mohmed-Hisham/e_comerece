@@ -1,4 +1,4 @@
-import 'package:e_comerece/controller/aliexpriess/category_controller.dart';
+import 'package:e_comerece/controller/aliexpriess/aliexprise_home_controller.dart';
 import 'package:e_comerece/core/class/handlingdataviwe.dart';
 import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/constant/wantedcategory.dart';

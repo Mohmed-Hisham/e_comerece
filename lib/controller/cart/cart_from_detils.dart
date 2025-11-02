@@ -1,5 +1,6 @@
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/funcations/handlingdata.dart';
+import 'package:e_comerece/core/servises/custom_getx_snak_bar.dart';
 import 'package:e_comerece/core/servises/serviese.dart';
 import 'package:e_comerece/data/datasource/remote/cart/cart_add_data.dart';
 import 'package:e_comerece/data/datasource/remote/cart/cart_addorremove_data.dart';
@@ -14,7 +15,7 @@ abstract class AddorrmoveController extends GetxController {
     required String availablequantity,
   });
   Future<void> removprise({required CartModel cartModel});
-  Future<Map<String, dynamic>> cartquintty(int productid, String attributes);
+  Future<Map<String, dynamic>> cartquintty(String productid, String attributes);
   Future<void> add(
     String productid,
     String producttitle,
@@ -67,16 +68,10 @@ class AddorrmoveControllerimple extends AddorrmoveController {
     statusRequest = handlingData(response);
     if (Statusrequest.success == statusRequest) {
       if (response['status'] == "success" && response['message'] == "add") {
-        Get.rawSnackbar(
-          title: "اشعار",
-          messageText: const Text("تم اضافة المنتج الي السله "),
-        );
+        showCustomGetSnack(isGreen: true, text: "تم اضافة المنتج الي السله ");
       } else if (response['status'] == "success" &&
           response['message'] == "edit") {
-        Get.rawSnackbar(
-          title: "اشعار",
-          messageText: const Text("تم تحديث المنتج في السله "),
-        );
+        showCustomGetSnack(isGreen: true, text: "تم تحديث المنتج في السله ");
       } else {
         statusRequest = Statusrequest.failuer;
       }

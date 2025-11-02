@@ -1,4 +1,3 @@
-import 'package:e_comerece/app_api/aliaxpress_api.dart';
 import 'package:e_comerece/app_api/alibaba_api.dart';
 import 'package:e_comerece/core/class/crud.dart';
 import 'package:e_comerece/core/funcations/translate_data.dart';

@@ -1,5 +1,5 @@
 import 'package:e_comerece/core/class/crud.dart';
-import 'package:e_comerece/app_api/lin_kapi.dart';
+import 'package:e_comerece/app_api/link_api.dart';
 
 class TestData {
   Crud crud;

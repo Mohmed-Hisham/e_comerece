@@ -1,12 +1,14 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:e_comerece/controller/aliexpriess/category_controller.dart';
+import 'package:e_comerece/controller/aliexpriess/aliexprise_home_controller.dart';
 import 'package:e_comerece/controller/favorite/favorites_controller.dart';
+import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/funcations/calculateDiscount.dart';
 import 'package:e_comerece/core/funcations/translate_data.dart';
 import 'package:e_comerece/core/shared/widget_shared/shimmer_image_product.dart';
 import 'package:e_comerece/core/shared/widget_shared/shimmerbar.dart';
 import 'package:e_comerece/viwe/widget/custgridviwe.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get_state_manager/src/simple/get_state.dart';
 
 class SearchName extends StatelessWidget {
@@ -55,7 +57,7 @@ class SearchName extends StatelessWidget {
                       int id = item.itemId!;
                       controller.gotoditels(
                         id: id,
-                        Title: item.title!,
+                        title: item.title!,
                         lang: detectLangFromQuery(
                           controller.searchController.text,
                         ),
@@ -80,7 +82,8 @@ class SearchName extends StatelessWidget {
                       icon: GetBuilder<FavoritesController>(
                         builder: (isFavoriteController) {
                           bool isFav =
-                              isFavoriteController.isFavorite[item.itemId] ??
+                              isFavoriteController.isFavorite[item.itemId
+                                  .toString()] ??
                               false;
 
                           return IconButton(
@@ -93,10 +96,11 @@ class SearchName extends StatelessWidget {
                                 "Aliexpress",
                               );
                             },
-                            icon: Icon(
-                              isFav ? Icons.favorite : Icons.favorite_border,
-                              color: isFav ? Colors.red : Colors.black,
-                              size: 25,
+                            icon: FaIcon(
+                              isFav
+                                  ? FontAwesomeIcons.solidHeart
+                                  : FontAwesomeIcons.heart,
+                              color: isFav ? Appcolor.reed : Appcolor.reed,
                             ),
                           );
                         },

@@ -7,6 +7,7 @@ class Custtextfeld extends StatelessWidget {
   final Widget? suffixIcon;
   final String? Function(String?)? validator;
   final bool? obscureText;
+  final void Function(String)? onChanged;
 
   const Custtextfeld({
     super.key,
@@ -15,6 +16,7 @@ class Custtextfeld extends StatelessWidget {
     this.suffixIcon,
     this.validator,
     this.obscureText,
+    this.onChanged,
   });
 
   @override
@@ -24,6 +26,7 @@ class Custtextfeld extends StatelessWidget {
       child: ConstrainedBox(
         constraints: BoxConstraints(minHeight: 50),
         child: TextFormField(
+          onChanged: onChanged,
           obscureText: obscureText ?? false,
           validator: validator,
           controller: controller,

@@ -121,7 +121,7 @@ class FavoriteAnimatedWidget extends StatelessWidget {
           return const LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [Color(0xFFFFB74D), Colors.red],
+            colors: [Color.fromARGB(255, 250, 80, 50), Colors.red],
           ).createShader(Rect.fromLTWH(0, 0, rect.width, rect.height));
         },
         blendMode: BlendMode.srcIn,

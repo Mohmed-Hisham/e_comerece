@@ -1,5 +1,7 @@
 import 'package:e_comerece/core/class/statusrequest.dart';
+import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/funcations/handlingdata.dart';
+import 'package:e_comerece/core/servises/custom_getx_snak_bar.dart';
 import 'package:e_comerece/core/servises/serviese.dart';
 import 'package:e_comerece/data/datasource/remote/favorite/favorite_data.dart';
 import 'package:e_comerece/data/datasource/remote/favorite/viwefavorite_data.dart';
@@ -56,10 +58,55 @@ class FavoriteViewController extends GetxController {
     favorites.removeWhere((favorite) => favorite.productId == productId);
     groupFavoritesByPlatform();
     update();
-
+    showCustomGetSnack(isGreen: true, text: 'Removed from favorites');
     removeData.remove(
       userId: myServises.sharedPreferences.getString("user_id")!,
       productid: productId,
     );
+  }
+
+  goToProductDetails({
+    int? productId,
+
+    String? lang,
+    required String title,
+    required String platform,
+    String? goodssn,
+    String? goodsid,
+    String? categoryid,
+    String? asin,
+    String? langamazon,
+  }) {
+    switch (platform) {
+      case "Aliexpress":
+        Get.toNamed(
+          AppRoutesname.detelspage,
+          arguments: {"product_id": productId, "lang": lang, "title": title},
+        );
+        break;
+      case "Alibaba":
+        Get.toNamed(
+          AppRoutesname.productDetailsAlibabView,
+          arguments: {"product_id": productId, "lang": lang, "title": title},
+        );
+        break;
+      case "Amazon":
+        Get.toNamed(
+          AppRoutesname.productDetailsAmazonView,
+          arguments: {"lang": langamazon, "title": title, "asin": asin},
+        );
+        break;
+      case "Shein":
+        Get.toNamed(
+          AppRoutesname.productDetailsSheinView,
+          arguments: {
+            "goods_sn": goodssn,
+            "title": title,
+            "goods_id": goodsid,
+            "category_id": categoryid,
+          },
+        );
+        break;
+    }
   }
 }

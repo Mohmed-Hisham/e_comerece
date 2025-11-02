@@ -93,7 +93,11 @@ class Handlingdataviwe extends StatelessWidget {
           return sliverChild(
             Column(
               children: [
-                Lottie.asset(lottie.shoppingcart, width: 180, height: 180),
+                Lottie.asset(
+                  Lottieassets.shoppingcart,
+                  width: 180,
+                  height: 180,
+                ),
                 if (isproductdetails)
                   Center(
                     child: Padding(
@@ -111,23 +115,31 @@ class Handlingdataviwe extends StatelessWidget {
           );
         case Statusrequest.noData:
           return sliverChild(
-            Lottie.asset(lottie.nodatalottie, width: 220, height: 220),
+            Lottie.asset(Lottieassets.nodatalottie, width: 220, height: 220),
           );
         case Statusrequest.oflinefailuer:
           return sliverChild(
-            Lottie.asset(lottie.nointernetlottie, width: 220, height: 220),
+            Lottie.asset(
+              Lottieassets.nointernetlottie,
+              width: 220,
+              height: 220,
+            ),
           );
         case Statusrequest.serverfailuer:
           return sliverChild(
-            Lottie.asset(lottie.srverfailuerlottie, width: 220, height: 220),
+            Lottie.asset(
+              Lottieassets.srverfailuerlottie,
+              width: 220,
+              height: 220,
+            ),
           );
         case Statusrequest.failuer:
           return sliverChild(
-            Lottie.asset(lottie.nodatalottie, width: 220, height: 220),
+            Lottie.asset(Lottieassets.nodatalottie, width: 220, height: 220),
           );
         case Statusrequest.failuerTryAgain:
           return sliverChild(
-            Lottie.asset(lottie.tryAgain, width: 220, height: 220),
+            Lottie.asset(Lottieassets.tryAgain, width: 220, height: 220),
           );
         default:
           return widget;
@@ -141,7 +153,11 @@ class Handlingdataviwe extends StatelessWidget {
                   // crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Lottie.asset(lottie.shoppingcart, width: 180, height: 180),
+                    Lottie.asset(
+                      Lottieassets.shoppingcart,
+                      width: 180,
+                      height: 180,
+                    ),
                     if (isproductdetails)
                       Center(
                         child: Padding(
@@ -158,23 +174,31 @@ class Handlingdataviwe extends StatelessWidget {
               );
         case Statusrequest.noData:
           return boxChild(
-            Lottie.asset(lottie.nodatalottie, width: 220, height: 220),
+            Lottie.asset(Lottieassets.nodatalottie, width: 220, height: 220),
           );
         case Statusrequest.oflinefailuer:
           return boxChild(
-            Lottie.asset(lottie.nointernetlottie, width: 220, height: 220),
+            Lottie.asset(
+              Lottieassets.nointernetlottie,
+              width: 220,
+              height: 220,
+            ),
           );
         case Statusrequest.serverfailuer:
           return boxChild(
-            Lottie.asset(lottie.srverfailuerlottie, width: 220, height: 220),
+            Lottie.asset(
+              Lottieassets.srverfailuerlottie,
+              width: 220,
+              height: 220,
+            ),
           );
         case Statusrequest.failuer:
           return boxChild(
-            Lottie.asset(lottie.nodatalottie, width: 300, height: 300),
+            Lottie.asset(Lottieassets.nodatalottie, width: 300, height: 300),
           );
         case Statusrequest.failuerTryAgain:
           return boxChild(
-            Lottie.asset(lottie.tryAgain, width: 300, height: 300),
+            Lottie.asset(Lottieassets.tryAgain, width: 300, height: 300),
           );
         default:
           return widget;
@@ -196,12 +220,16 @@ class HandlingdatRequest extends StatelessWidget {
   Widget build(BuildContext context) {
     return statusrequest == Statusrequest.loading
         ? Center(
-            child: Lottie.asset(lottie.shoppingcart, width: 250, height: 300),
+            child: Lottie.asset(
+              Lottieassets.shoppingcart,
+              width: 250,
+              height: 300,
+            ),
           )
         : statusrequest == Statusrequest.oflinefailuer
         ? Center(
             child: Lottie.asset(
-              lottie.nointernetlottie,
+              Lottieassets.nointernetlottie,
               width: 250,
               height: 300,
             ),
@@ -209,7 +237,7 @@ class HandlingdatRequest extends StatelessWidget {
         : statusrequest == Statusrequest.serverfailuer
         ? Center(
             child: Lottie.asset(
-              lottie.srverfailuerlottie,
+              Lottieassets.srverfailuerlottie,
               width: 250,
               height: 300,
             ),
@@ -231,12 +259,16 @@ class HandlingdataviweNoLoading extends StatelessWidget {
   Widget build(BuildContext context) {
     return statusrequest == Statusrequest.noData
         ? Center(
-            child: Lottie.asset(lottie.nodatalottie, width: 300, height: 350),
+            child: Lottie.asset(
+              Lottieassets.nodatalottie,
+              width: 300,
+              height: 350,
+            ),
           )
         : statusrequest == Statusrequest.oflinefailuer
         ? Center(
             child: Lottie.asset(
-              lottie.nointernetlottie,
+              Lottieassets.nointernetlottie,
               width: 250,
               height: 300,
             ),
@@ -244,14 +276,18 @@ class HandlingdataviweNoLoading extends StatelessWidget {
         : statusrequest == Statusrequest.serverfailuer
         ? Center(
             child: Lottie.asset(
-              lottie.srverfailuerlottie,
+              Lottieassets.srverfailuerlottie,
               width: 250,
               height: 300,
             ),
           )
         : statusrequest == Statusrequest.failuer
         ? Center(
-            child: Lottie.asset(lottie.nodatalottie, width: 300, height: 350),
+            child: Lottie.asset(
+              Lottieassets.nodatalottie,
+              width: 300,
+              height: 350,
+            ),
           )
         : widget;
   }

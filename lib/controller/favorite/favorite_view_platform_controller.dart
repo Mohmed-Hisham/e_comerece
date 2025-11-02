@@ -10,7 +10,7 @@ import 'package:get/get.dart';
 abstract class FavoriteViewPlatformController extends GetxController {
   void getFavoritesPlatform({required String platform});
   void removeFavorite(String productId);
-  void goToProductDetails(int productId, String lang, String Title);
+  void goToProductDetails(int productId, String lang, String title);
 }
 
 class FavoriteViewPlatformControllerImpl
@@ -66,19 +66,19 @@ class FavoriteViewPlatformControllerImpl
   }
 
   @override
-  goToProductDetails(productId, lang, Title) {
+  goToProductDetails(productId, lang, title) {
     print(platform);
     switch (platform) {
       case "Aliexpress":
         Get.toNamed(
           AppRoutesname.detelspage,
-          arguments: {"product_id": productId, "lang": lang, "title": Title},
+          arguments: {"product_id": productId, "lang": lang, "title": title},
         );
         break;
       case "Alibaba":
         Get.toNamed(
-          AppRoutesname.ProductDetailsAlibabView,
-          arguments: {"product_id": productId, "lang": lang, "title": Title},
+          AppRoutesname.productDetailsAlibabView,
+          arguments: {"product_id": productId, "lang": lang, "title": title},
         );
         break;
     }

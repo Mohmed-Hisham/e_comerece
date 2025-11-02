@@ -1,4 +1,4 @@
-import 'package:get/get.dart';
+import 'package:e_comerece/core/servises/custom_getx_snak_bar.dart';
 
 bool handle200(response) {
   if (response is Map<String, dynamic> &&
@@ -31,5 +31,6 @@ bool handle5008(response) {
 }
 
 void custSnackBarNoMore() {
-  Get.snackbar("message", "no more data", snackPosition: SnackPosition.BOTTOM);
+  showCustomGetSnack(isGreen: false, text: "no more data");
+  // Get.snackbar("message", "no more data", snackPosition: SnackPosition.BOTTOM);
 }

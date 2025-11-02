@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/funcations/handlingdata.dart';
@@ -70,8 +72,9 @@ class LoginControllerimplment extends LoginController {
         } else if (response['status'] == 'success') {
           myServises.sharedPreferences.setString(
             "user_id",
-            response['data']['user_id'],
+            response['data']['user_id'].toString(),
           );
+          log(response['data']['user_id'].toString());
           myServises.sharedPreferences.setString(
             "user_name",
             response['data']['user_name'],

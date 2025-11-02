@@ -4,7 +4,7 @@ vlidateInPut({
   required String val,
   required int min,
   required int max,
-  required String type,
+  String? type,
 }) {
   if (val.isEmpty) {
     return "can't be Empty";

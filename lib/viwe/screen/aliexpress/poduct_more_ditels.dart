@@ -2,11 +2,13 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e_comerece/controller/aliexpriess/product_details_controller.dart';
 import 'package:e_comerece/controller/favorite/favorites_controller.dart';
 import 'package:e_comerece/core/class/handlingdataviwe.dart';
+import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/funcations/calculateDiscount.dart';
 import 'package:e_comerece/core/shared/widget_shared/shimmer_image_product.dart';
 import 'package:e_comerece/core/shared/widget_shared/shimmerbar.dart';
 import 'package:e_comerece/viwe/widget/custgridviwe.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get_state_manager/src/simple/get_state.dart';
 
 class PoductMoreDitels extends StatelessWidget {
@@ -66,10 +68,11 @@ class PoductMoreDitels extends StatelessWidget {
                           "Aliexpress",
                         );
                       },
-                      icon: Icon(
-                        isFav ? Icons.favorite : Icons.favorite_border,
-                        color: isFav ? Colors.red : Colors.black,
-                        size: 25,
+                      icon: FaIcon(
+                        isFav
+                            ? FontAwesomeIcons.solidHeart
+                            : FontAwesomeIcons.heart,
+                        color: isFav ? Appcolor.reed : Appcolor.reed,
                       ),
                     );
                   },

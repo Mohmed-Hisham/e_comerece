@@ -1,6 +1,8 @@
 import 'package:e_comerece/controller/home/homescreen_controller.dart';
+import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/viwe/widget/home/custombottonbar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get_state_manager/src/simple/get_state.dart';
 
 class Custbottonappbar extends StatelessWidget {
@@ -9,27 +11,29 @@ class Custbottonappbar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetBuilder<HomescreenControllerImple>(
-      builder: (controller) => BottomAppBar(
-        // color: Colors.amber,
-        shape: CircularNotchedRectangle(),
-        notchMargin: 10,
-        padding: EdgeInsets.symmetric(horizontal: 10),
-        height: 60,
+      builder: (controller) => Container(
+        height: 80.h,
+        color: Appcolor.white2,
+        // decoration: const BoxDecoration(
+        //   gradient: LinearGradient(
+        //     begin: Alignment.topCenter,
+        //     end: Alignment.bottomCenter,
+        //     colors: [Appcolor.white2, Color.fromARGB(255, 243, 126, 43)],
+        //   ),
+        // ),
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            ...List.generate(controller.pages.length + 1, (index) {
-              int i = index > 2 ? index - 1 : index;
-              return index == 2
-                  ? Spacer()
-                  : Custombottonbar(
-                      // text: controller.nameBottonBar[i]['title'],
-                      iconData: controller.nameBottonBar[i]['icon'],
-                      textcolor: Colors.black,
-                      onPressed: () {
-                        controller.changepage(i);
-                      },
-                      isactive: controller.pageindex == i ? true : false,
-                    );
+            ...List.generate(controller.pages.length, (i) {
+              return Custombottonbar(
+                // text: controller.nameBottonBar[i]['title'],
+                iconData: controller.nameBottonBar[i]['icon'],
+                textcolor: Colors.black,
+                onPressed: () {
+                  controller.changepage(i);
+                },
+                isactive: controller.pageindexHome == i ? true : false,
+              );
             }),
           ],
         ),

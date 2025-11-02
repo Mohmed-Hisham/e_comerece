@@ -1,5 +1,6 @@
 import 'package:e_comerece/core/constant/color.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class Custombottonbar extends StatelessWidget {
   final void Function()? onPressed;
@@ -25,11 +26,16 @@ class Custombottonbar extends StatelessWidget {
         icon: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
+            FaIcon(
               iconData,
               color: isactive ? Appcolor.primrycolor : Appcolor.gray,
-              size: 30,
+              size: 26,
             ),
+            // Icon(
+            //   iconData,
+            //   color: isactive ? Appcolor.primrycolor : Appcolor.gray,
+            //   size: 30,
+            // ),
             // Text(
             //   "$text",
             //   style: TextStyle(

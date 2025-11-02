@@ -7,6 +7,8 @@ import 'package:e_comerece/core/funcations/handlingdata.dart';
 import 'package:e_comerece/core/servises/serviese.dart';
 import 'package:e_comerece/data/datasource/remote/aliexpriess/product_details_data.dart';
 import 'package:e_comerece/data/datasource/remote/aliexpriess/searchtext_data.dart';
+import 'package:e_comerece/data/datasource/remote/api_cash/get_cash_data.dart';
+import 'package:e_comerece/data/datasource/remote/api_cash/insert_cash_data.dart';
 import 'package:e_comerece/data/datasource/remote/cart/cartviwe_data.dart';
 import 'package:e_comerece/data/model/cartmodel.dart';
 import 'package:e_comerece/data/model/aliexpriess_model/itemdetelis_model.dart';
@@ -14,70 +16,6 @@ import 'package:e_comerece/data/model/aliexpriess_model/searshtextmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:video_player/video_player.dart';
-
-/// Normalize arbitrary `response` to a Map<String, dynamic> that your
-/// `fromJson` can accept.
-///
-/// Rules:
-/// - If response is already Map<String, dynamic> -> return as is.
-/// - If response is List:
-///   - if empty -> return {} (empty map)
-///   - if first element is Map -> return that first Map (with a log)
-///   - otherwise -> return {'data': list}
-/// - If response is String -> try jsonDecode and recurse
-/// - Otherwise -> return {'value': response.toString()}
-// Map<String, dynamic> normalizeToMap(dynamic response) {
-//   try {
-//     // 1) already a Map -> cast safe
-//     if (response is Map<String, dynamic>) {
-//       return response;
-//     }
-
-//     // 2) response is List -> try to pick sensible map
-//     if (response is List) {
-//       if (response.isEmpty) {
-//         print('normalizeToMap: response is empty List -> returning empty Map');
-//         return <String, dynamic>{};
-//       }
-
-//       final first = response.first;
-//       if (first is Map<String, dynamic>) {
-//         print(
-//           'normalizeToMap: response is List but first item is Map -> using first Map (possible data loss)',
-//         );
-//         return Map<String, dynamic>.from(first);
-//       }
-
-//       // list of primitives -> wrap under "data"
-//       print(
-//         'normalizeToMap: response is List of non-maps -> wrapping into {data: list}',
-//       );
-//       return <String, dynamic>{'data': response};
-//     }
-
-//     // 3) response is String -> try parse json and recurse
-//     if (response is String) {
-//       final trimmed = response.trim();
-//       if (trimmed.isEmpty) return <String, dynamic>{};
-//       try {
-//         final decoded = jsonDecode(trimmed);
-//         return normalizeToMap(decoded);
-//       } catch (e) {
-//         // not JSON -> store raw string
-//         print(
-//           'normalizeToMap: response is String but not JSON -> returning as {value: string}',
-//         );
-//         return <String, dynamic>{'value': trimmed};
-//       }
-//     }
-
-//     // 4) other types (int, double, bool, etc.) -> stringify
-//     return <String, dynamic>{'value': response?.toString()};
-//   } catch (e, st) {
-//     print('normalizeToMap ERROR: $e\n$st');
-//     return <String, dynamic>{};
-//   }
-// }
 
 abstract class ProductDetailsController extends GetxController {
   Future<void> fetchProductDetails();
@@ -103,6 +41,8 @@ class ProductDetailsControllerImple extends ProductDetailsController {
     AddorrmoveControllerimple(),
   );
   CartviweData cartData = CartviweData(Get.find());
+  InsertCashData insertCashData = InsertCashData(Get.find());
+  GetCashData getCashData = GetCashData(Get.find());
 
   Statusrequest statusrequest = Statusrequest.loading;
   ItemDetailsModel? itemDetailsModel;
@@ -270,8 +210,8 @@ class ProductDetailsControllerImple extends ProductDetailsController {
   getquiqtity(attributes) async {
     try {
       final Map<String, dynamic> newQty = await addorrmoveController
-          .cartquintty(productId!, attributes);
-      if (newQty == 0) {
+          .cartquintty(productId!.toString(), attributes);
+      if (newQty['quantity'] == 0) {
         quantity = 1;
       } else {
         quantity = newQty['quantity'];
@@ -291,10 +231,8 @@ class ProductDetailsControllerImple extends ProductDetailsController {
 
   @override
   searshText({bool isLoadMore = false, String? titleReload}) async {
-    print('-----------------------------------');
-    print("titleReload=>$titleReload");
-    print("isLoadMore=>$isLoadMore");
-    print("title=>$title");
+    cashkey(String q, int p) => 'productdetails:aliexpress:$q:page=$p';
+
     if (isLoadMore) {
       if (isLoading || !hasMoresearch) return;
       isLoading = true;
@@ -307,34 +245,69 @@ class ProductDetailsControllerImple extends ProductDetailsController {
     update();
 
     try {
-      var response = await searchtextData.getData(
-        lang: lang!,
-        keyWord: titleReload ?? title!,
-        pageindex: pageIndexSearch,
+      final cashe = await getCashData.getCash(
+        query: cashkey(titleReload ?? title!, pageIndexSearch),
+        platform: "aliexpress",
       );
+      if (cashe["status"] == "success") {
+        print("get search aliexpress from cache server =====================");
+        final response = cashe["data"];
+        statusrequestsearch = handlingData(response);
+        if (statusrequestsearch == Statusrequest.success) {
+          if (handle200(response)) {
+            final model = SearshTextModel.fromJson(response);
+            final List<ResultListSearshTextModel> iterable =
+                model.resultSearshTextModel!.resultListSearshTextModel!;
 
-      statusrequestsearch = handlingData(response);
-      if (statusrequestsearch == Statusrequest.success) {
-        if (handle200(response)) {
-          final model = SearshTextModel.fromJson(response);
-          final List<ResultListSearshTextModel> iterable =
-              model.resultSearshTextModel!.resultListSearshTextModel!;
-
-          if (iterable.isEmpty) {
-            hasMoresearch = false;
-            statusrequestsearch = Statusrequest.noData;
+            if (iterable.isEmpty) {
+              hasMoresearch = false;
+              statusrequestsearch = Statusrequest.noData;
+            } else {
+              searchProducts.addAll(iterable);
+              pageIndexSearch++;
+            }
           } else {
-            searchProducts.addAll(iterable);
-            pageIndexSearch++;
+            hasMoresearch = false;
+            statusrequestsearch = Statusrequest.failuer;
           }
-        } else if (handle205(response, pageIndexSearch)) {
-          hasMoresearch = false;
-          statusrequestsearch = Statusrequest.noDataPageindex;
-          // chaing();
-          custSnackBarNoMore();
-        } else {
-          hasMoresearch = false;
-          statusrequestsearch = Statusrequest.failuer;
+        }
+      } else {
+        print("get search aliexpress from api=====================");
+        final response = await searchtextData.getData(
+          lang: lang!,
+          keyWord: titleReload ?? title!,
+          pageindex: pageIndexSearch,
+        );
+
+        statusrequestsearch = handlingData(response);
+        if (statusrequestsearch == Statusrequest.success) {
+          if (handle200(response)) {
+            final model = SearshTextModel.fromJson(response);
+            final List<ResultListSearshTextModel> iterable =
+                model.resultSearshTextModel!.resultListSearshTextModel!;
+
+            if (iterable.isEmpty) {
+              hasMoresearch = false;
+              statusrequestsearch = Statusrequest.noData;
+            } else {
+              searchProducts.addAll(iterable);
+              insertCashData.insertCash(
+                query: cashkey(titleReload ?? title!, pageIndexSearch),
+                platform: "aliexpress",
+                data: response,
+                ttlHours: "24",
+              );
+              pageIndexSearch++;
+            }
+          } else if (handle205(response, pageIndexSearch)) {
+            hasMoresearch = false;
+            statusrequestsearch = Statusrequest.noDataPageindex;
+            // chaing();
+            custSnackBarNoMore();
+          } else {
+            hasMoresearch = false;
+            statusrequestsearch = Statusrequest.failuer;
+          }
         }
       }
     } catch (e) {

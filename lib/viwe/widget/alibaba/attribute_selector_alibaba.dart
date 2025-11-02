@@ -4,7 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e_comerece/controller/alibaba/product_details_alibaba_controller.dart';
 import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/servises/selected_attributes_tomap_fordb.dart';
-import 'package:e_comerece/core/shared/widget_shared/openfullimage.dart';
+import 'package:e_comerece/core/shared/widget_shared/open_full_image.dart';
 import 'package:e_comerece/data/model/alibaba_model/product_ditels_alibaba_model.dart';
 import 'package:flutter/material.dart';
 

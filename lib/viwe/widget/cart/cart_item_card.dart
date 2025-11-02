@@ -3,6 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e_comerece/controller/cart/cart_controller.dart';
 import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/funcations/translate_data.dart';
+import 'package:e_comerece/core/shared/widget_shared/fix_url.dart';
 import 'package:e_comerece/data/model/cartmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -33,7 +34,7 @@ class CartItemCard extends StatelessWidget {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(15),
                   child: CachedNetworkImage(
-                    imageUrl: "https:${cartItem.cartProductImage}",
+                    imageUrl: secureUrl(cartItem.cartProductImage) ?? '',
                     width: 75,
                     height: 75,
                     fit: BoxFit.cover,
@@ -180,62 +181,204 @@ class CartItemCard extends StatelessWidget {
               style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 20),
-            ..._buildAttributeWidgets(attributes),
+            ...buildAttributeWidgets(attributes),
           ],
         ),
       ),
     );
   }
 
-  List<Widget> _buildAttributeWidgets(Map<String, dynamic> attributes) {
-    List<Widget> widgets = [];
+  String? _normalizeUrl(String? url) {
+    if (url == null || url.trim().isEmpty) return null;
+    url = url.trim();
+    // لو الرابط يبدأ بـ "//" ضيف https:
+    if (url.startsWith('//')) return 'https:$url';
+    // لو لا يبدأ ببروتوكول لكن يحتوي على مسار صورة (مثلاً endsWith jpg/png/webp)
+    if (!RegExp(r'^[a-zA-Z0-9+.-]+://').hasMatch(url) &&
+        RegExp(
+          r'\.(png|jpg|jpeg|webp|gif|svg)$',
+          caseSensitive: false,
+        ).hasMatch(url)) {
+      return 'https://$url';
+    }
+    // لو البروتوكول http أو https موجود رجعه كما هو
+    if (url.startsWith('http://') || url.startsWith('https://')) return url;
+    return null;
+  }
 
-    attributes.forEach((key, value) {
-      if (value is Map<String, dynamic>) {
-        final String? imageName = value['name'] as String?;
-        final String? imageUrl = value['image'] as String?;
+  String _valueToText(dynamic value) {
+    if (value == null) return '';
+    if (value is String) return value.trim();
+    if (value is num || value is bool) return value.toString();
+    if (value is Map) {
+      // حاول استخراج اسم من مفاتيح شائعة
+      final keys = ['name', 'title', 'model', 'value', 'label', 'text'];
+      for (final k in keys) {
+        final v = value[k];
+        if (v != null && v is String && v.trim().isNotEmpty) return v.trim();
+      }
+      // لو فيه زوج key/value داخل الماب، حاول تحويله لنص
+      if (value.length == 1) return value.values.first.toString();
+      return value.entries.map((e) => '${e.key}: ${e.value}').join(', ');
+    }
+    if (value is List) return value.map((e) => _valueToText(e)).join(', ');
+    return value.toString();
+  }
 
-        widgets.add(
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  '$key: ',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
+  String? _extractImageUrl(dynamic value) {
+    if (value == null) return null;
+    if (value is String) {
+      final candidate = _normalizeUrl(value);
+      if (candidate != null) return candidate;
+      return null;
+    }
+    if (value is Map) {
+      // مفاتيح محتملة تحوي صورة
+      final imgKeys = [
+        'image',
+        'img',
+        'picture',
+        'photo',
+        'thumbnail',
+        'model',
+      ];
+      for (final k in imgKeys) {
+        final v = value[k];
+        if (v is String) {
+          final candidate = _normalizeUrl(v);
+          if (candidate != null) return candidate;
+        }
+      }
+      // لو الماب نفسها عبارة عن رابط
+      final stringRepr = value.toString();
+      final candidate = _normalizeUrl(stringRepr);
+      if (candidate != null) return candidate;
+      return null;
+    }
+    if (value is List) {
+      // خذ أول رابط صالح في الليست لو موجود
+      for (final it in value) {
+        final c = _extractImageUrl(it);
+        if (c != null) return c;
+      }
+    }
+    return null;
+  }
+
+  List<Widget> buildAttributeWidgets(
+    Map<String, dynamic>? attributes, {
+    List<String>? allowedDomains,
+  }) {
+    if (attributes == null) return [];
+
+    final List<Widget> widgets = [];
+
+    attributes.forEach((rawKey, rawValue) {
+      final key = rawKey ?? '';
+      // نص العرض: نحاول بناء نص لطيف من القيمة
+      String displayText = '';
+      String? imageUrl;
+
+      // بعض المصادر تضع القيم في شكل Map داخل map e.g. "Color": {"name": "Rose", "image": "..."}
+      if (rawValue is Map<String, dynamic>) {
+        displayText = _valueToText(rawValue);
+        imageUrl = _extractImageUrl(rawValue);
+      } else if (rawValue is List) {
+        // لو لستة من القيم، حولها إلى نص وجرب إيجاد صورة
+        displayText = rawValue.map((v) => _valueToText(v)).join(', ');
+        imageUrl = _extractImageUrl(rawValue);
+      } else {
+        // قيمة بسيطة (String/num/bool)
+        displayText = _valueToText(rawValue);
+        // أحيانًا يكون الـ key يحمل رابط (rare) أو القيمة نفسها رابط
+        imageUrl = _extractImageUrl(rawValue);
+      }
+
+      // لو ما لاقيش صورة بعد دا كله، ممكن تكون في مفتاح موازي مثل "model" أو "image" بجانب key
+      if (imageUrl == null && rawValue is! Map) {
+        // مثال: بعض الـ payloads يحطون صورة كمفتاح مجاور داخل نفس attributes map
+        final siblingKeys = [
+          'image',
+          'img',
+          'photo',
+          'thumbnail',
+          'model',
+          '${key}_image',
+        ];
+        for (final s in siblingKeys) {
+          if (attributes.containsKey(s)) {
+            imageUrl = _extractImageUrl(attributes[s]);
+            if (imageUrl != null) break;
+          }
+        }
+      }
+
+      // فلترة دومينات لو عايز (اختياري)
+      if (allowedDomains != null &&
+          allowedDomains.isNotEmpty &&
+          imageUrl != null) {
+        final host = Uri.tryParse(imageUrl)?.host ?? '';
+        final ok = allowedDomains.any((d) => host.endsWith(d));
+        if (!ok) imageUrl = null;
+      }
+
+      widgets.add(
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                child: RichText(
+                  text: TextSpan(
+                    style: const TextStyle(color: Colors.black87),
+                    children: [
+                      TextSpan(
+                        text: '$key: ',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                      TextSpan(
+                        text: displayText,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                if (imageUrl != null && imageUrl.isNotEmpty)
-                  Padding(
-                    padding: const EdgeInsets.only(right: 8.0),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(6),
-                      child: CachedNetworkImage(
-                        imageUrl: "https:$imageUrl",
+              ),
+              if (imageUrl != null)
+                Padding(
+                  padding: const EdgeInsets.only(left: 8.0),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(6),
+                    child: CachedNetworkImage(
+                      imageUrl: imageUrl,
+                      width: 40,
+                      height: 40,
+                      fit: BoxFit.cover,
+                      placeholder: (c, s) => Container(
                         width: 40,
                         height: 40,
+                        color: Colors.grey[200],
+                      ),
+                      errorWidget: (c, s, e) => Container(
+                        width: 40,
+                        height: 40,
+                        color: Colors.grey[300],
+                        child: const Icon(Icons.broken_image, size: 18),
                       ),
                     ),
                   ),
-                if (imageName != null)
-                  Expanded(
-                    child: Text(
-                      imageName,
-                      style: const TextStyle(fontSize: 16),
-                    ),
-                  ),
-              ],
-            ),
+                ),
+            ],
           ),
-        );
-      } else {
-        print(
-          "Unexpected attribute format for key '$key': value is ${value.runtimeType}",
-        );
-      }
+        ),
+      );
     });
 
     return widgets;

@@ -36,15 +36,23 @@ class AppImagesassets {
   // static const String avtar = "assets/svg/avtar.svg";
 }
 
-class lottie {
+class Lottieassets {
   static const String _rootlottie = "assets/lottie";
   static const String shoppingcart = "$_rootlottie/shoppingcart.json";
   static const String addcart = "$_rootlottie/addcart.json";
   static const String nodatalottie = "$_rootlottie/nodata.json";
   static const String nointernetlottie = "$_rootlottie/nointernet.json";
   static const String srverfailuerlottie = "$_rootlottie/srverfailuer.json";
-  static const String Empty = "$_rootlottie/Empty.json";
+  static const String empty = "$_rootlottie/Empty.json";
   static const String loadindimage4 = "$_rootlottie/loadingimage4.json";
   static const String loadindimage3 = "$_rootlottie/loadingimage3.json";
   static const String tryAgain = "$_rootlottie/try_again.json";
+}
+
+class Svgassets {
+  static const String _rootSvg = "assets/svg";
+  static const String aliexpress = "$_rootSvg/aliexp.svg";
+  static const String alibaba = "$_rootSvg/alibaba.svg";
+  static const String amazon = "$_rootSvg/amazon.svg";
+  static const String shein = "$_rootSvg/shein.svg";
 }

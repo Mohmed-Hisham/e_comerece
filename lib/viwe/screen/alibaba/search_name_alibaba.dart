@@ -10,6 +10,7 @@ import 'package:e_comerece/viwe/screen/alibaba/extension_geter_product_home.dart
 import 'package:e_comerece/viwe/screen/alibaba/seetings_alibaba.dart';
 import 'package:e_comerece/viwe/widget/custgridviwe.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/simple/get_state.dart';
 
@@ -28,6 +29,7 @@ class SearchNameAlibaba extends StatelessWidget {
               final pixels = scrollInfo.metrics.pixels;
               final maxScrollExtent = scrollInfo.metrics.maxScrollExtent;
               if (atEdge && pixels == maxScrollExtent) {
+                print("end");
                 controller.loadMoreSearch();
               }
             }
@@ -61,7 +63,7 @@ class SearchNameAlibaba extends StatelessWidget {
                       int id = item.itemid;
                       controller.gotoditels(
                         id: id,
-                        Title: item.titel,
+                        title: item.titel,
                         lang: detectLangFromQuery(
                           controller.searchController.text,
                         ),
@@ -82,7 +84,8 @@ class SearchNameAlibaba extends StatelessWidget {
                       icon: GetBuilder<FavoritesController>(
                         builder: (isFavoriteController) {
                           bool isFav =
-                              isFavoriteController.isFavorite[item.itemid] ??
+                              isFavoriteController.isFavorite[item.itemid
+                                  .toString()] ??
                               false;
 
                           return IconButton(
@@ -95,10 +98,11 @@ class SearchNameAlibaba extends StatelessWidget {
                                 "Alibaba",
                               );
                             },
-                            icon: Icon(
-                              isFav ? Icons.favorite : Icons.favorite_border,
-                              color: isFav ? Colors.red : Colors.black,
-                              size: 25,
+                            icon: FaIcon(
+                              isFav
+                                  ? FontAwesomeIcons.solidHeart
+                                  : FontAwesomeIcons.heart,
+                              color: isFav ? Appcolor.reed : Appcolor.reed,
                             ),
                           );
                         },

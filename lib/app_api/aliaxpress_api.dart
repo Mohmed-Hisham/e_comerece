@@ -7,9 +7,9 @@ class AliaxpressApi {
   static String hotProductsData({
     required int pageIndex,
     required String lang,
-    required String Kword,
+    required String kword,
   }) {
-    return "$server/item_search_5?q=$Kword&page=$pageIndex&sort=default&locale=$lang&region=YE&currency=USD";
+    return "$server/item_search_5?q=$kword&page=$pageIndex&sort=default&locale=$lang&region=YE&currency=USD";
 
     // /affiliate-hot-products.php?currency=USD&lang=$lang&country=YE&pageSize=50&pageIndex=$pageIndex";
   }
@@ -47,6 +47,6 @@ class AliaxpressApi {
 
   static const Map<String, String> rapidApiHeaders = {
     'X-RapidAPI-Host': 'aliexpress-datahub.p.rapidapi.com',
-    'X-RapidAPI-Key': '01e39f77famsh35c369f7d42d022p16172bjsn513d81171cf7',
+    'X-RapidAPI-Key': '1cdedf81b2msh9d2cbbf21b03409p1fc930jsn9c27cf0b5142',
   };
 }

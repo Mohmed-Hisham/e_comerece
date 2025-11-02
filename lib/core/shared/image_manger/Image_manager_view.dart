@@ -2,7 +2,6 @@ import 'package:e_comerece/core/shared/image_manger/Image_manager_controller.dar
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'dart:io';
 
 class ImageManagerView extends StatelessWidget {
   final Widget defaultBuilder;

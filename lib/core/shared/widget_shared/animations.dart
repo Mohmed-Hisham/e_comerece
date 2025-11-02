@@ -8,13 +8,13 @@ class FadeScaleTransition extends StatelessWidget {
   final Alignment alignment;
 
   const FadeScaleTransition({
-    Key? key,
+    super.key,
     required this.child,
     required this.visible,
     this.duration = const Duration(milliseconds: 380),
     this.curve = Curves.easeOutBack,
     this.alignment = Alignment.center,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -42,13 +42,13 @@ class SlideUpFade extends StatelessWidget {
   offsetY; // مقدار الابتعاد العمودي بالبداية (مثال: 0.25 = 25% of height)
 
   const SlideUpFade({
-    Key? key,
+    super.key,
     required this.child,
     required this.visible,
     this.duration = const Duration(milliseconds: 420),
     this.curve = Curves.easeOut,
     this.offsetY = 0.18,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -74,14 +74,14 @@ class StaggeredPop extends StatelessWidget {
   final double startRotation;
 
   const StaggeredPop({
-    Key? key,
+    super.key,
     required this.child,
     required this.visible,
     this.duration = const Duration(milliseconds: 500),
     this.curve = Curves.elasticOut,
     this.startScale = 0.6,
     this.startRotation = -0.15, // radians
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

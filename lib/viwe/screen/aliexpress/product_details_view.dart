@@ -41,7 +41,8 @@ class ProductDetailsView extends StatelessWidget {
             child: GetBuilder<ProductDetailsControllerImple>(
               builder: (controller) {
                 return Handlingdataviwe(
-                  shimmer: ShimmerProductDetails(),
+                  isproductdetails: true,
+                  // shimmer: ShimmerProductDetails(),
                   statusrequest: controller.statusrequest,
                   widget: NotificationListener<ScrollNotification>(
                     onNotification: (scrollInfo) {
@@ -78,6 +79,7 @@ class ProductDetailsView extends StatelessWidget {
                     },
 
                     child: CustomScrollView(
+                      physics: const BouncingScrollPhysics(),
                       slivers: [
                         SliverToBoxAdapter(
                           child: _buildProductDetails(context, controller),
@@ -114,7 +116,7 @@ class ProductDetailsView extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(""),
-        CustmediaCarousel(controller: controller),
+        CustmediaCarousel(),
         Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(

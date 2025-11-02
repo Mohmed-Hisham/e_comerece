@@ -45,22 +45,44 @@ class TogglefavoriteController extends GetxController {
       );
       print('add :$response');
       if (Get.isDialogOpen ?? false) return;
+      Get.rawSnackbar(
+        titleText: const SizedBox.shrink(),
+        backgroundColor: Colors.transparent,
+        snackStyle: SnackStyle.FLOATING,
+        snackPosition: SnackPosition.TOP,
+        maxWidth: Get.width * 0.95,
 
-      // show dialog
-      Get.dialog(
-        barrierDismissible: false,
-        Center(
+        margin: EdgeInsets.only(left: 12, right: 12, bottom: 18, top: 50),
+        padding: EdgeInsets.zero,
+        borderRadius: 0,
+        duration: Duration(seconds: 1),
+
+        messageText: Center(
           child: FavoriteAnimatedWidget(
-            size: 110,
+            size: 60,
             onEnd: () {
               if (Get.isDialogOpen ?? false) Get.back();
             },
           ),
         ),
-
-        barrierColor: Colors.transparent,
       );
       await FavoriteAnimationController.to.play();
+
+      // show dialog
+      // Get.dialog(
+      //   barrierDismissible: false,
+      //   Center(
+      //     child: FavoriteAnimatedWidget(
+      //       size: 110,
+      //       onEnd: () {
+      //         if (Get.isDialogOpen ?? false) Get.back();
+      //       },
+      //     ),
+      //   ),
+
+      //   barrierColor: Colors.transparent,
+      // );
+      // await FavoriteAnimationController.to.play();
     }
   }
 }

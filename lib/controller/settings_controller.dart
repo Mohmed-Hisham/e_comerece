@@ -3,7 +3,8 @@ import 'package:e_comerece/core/servises/serviese.dart';
 import 'package:get/get.dart';
 
 abstract class SettingsController extends GetxController {
-  logout();
+  void logout();
+  goToLanguagePage();
 }
 
 class SettingsControllerImple extends SettingsController {
@@ -12,6 +13,11 @@ class SettingsControllerImple extends SettingsController {
   @override
   logout() {
     myServises.sharedPreferences.clear();
-    Get.offAllNamed(AppRoutesname.login);
+    Get.offAllNamed(AppRoutesname.loginStepOne);
+  }
+
+  @override
+  goToLanguagePage() {
+    Get.toNamed(AppRoutesname.language);
   }
 }

@@ -2,6 +2,7 @@ import 'package:e_comerece/controller/alibaba/product_details_alibaba_controller
 import 'package:e_comerece/controller/cart/cart_from_detils.dart';
 import 'package:e_comerece/controller/favorite/toggleFavorite_controller.dart';
 import 'package:e_comerece/core/class/handlingdataviwe.dart';
+import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/funcations/translate_data.dart';
 import 'package:e_comerece/core/servises/extract_image_urls.dart';
 import 'package:e_comerece/core/constant/color.dart';
@@ -10,6 +11,7 @@ import 'package:e_comerece/viwe/screen/alibaba/product_for_page_detils_alibaba.d
 import 'package:e_comerece/viwe/widget/Positioned/positioned_app_bar.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_right_1.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_right_2.dart';
+import 'package:e_comerece/viwe/widget/Positioned/positioned_support.dart';
 import 'package:e_comerece/viwe/widget/alibaba/SellerInfo_alibaba.dart';
 import 'package:e_comerece/viwe/widget/alibaba/add_to_cart_button_alibaba.dart';
 import 'package:e_comerece/viwe/widget/alibaba/attribute_selector_alibaba.dart';
@@ -33,16 +35,16 @@ class ProductDetailsAlibabView extends StatelessWidget {
     );
     Get.put(TogglefavoriteController());
     return Scaffold(
-      body: Stack(
-        children: [
-          const PositionedRight1(),
-          const PositionedRight2(),
+      body: GetBuilder<ProductDetailsAlibabaControllerImple>(
+        builder: (controller) {
+          return Stack(
+            children: [
+              const PositionedRight1(),
+              const PositionedRight2(),
 
-          Container(
-            padding: EdgeInsets.only(top: 85.h),
-            child: GetBuilder<ProductDetailsAlibabaControllerImple>(
-              builder: (controller) {
-                return Handlingdataviwe(
+              Container(
+                padding: EdgeInsets.only(top: 85.h),
+                child: Handlingdataviwe(
                   isproductdetails: true,
                   ontryagain: () => controller.fetchProductDetails(),
 
@@ -117,12 +119,27 @@ class ProductDetailsAlibabView extends StatelessWidget {
                       ],
                     ),
                   ),
-                );
-              },
-            ),
-          ),
-          PositionedAppBar(title: "Product Details", onPressed: Get.back),
-        ],
+                ),
+              ),
+              PositionedAppBar(title: "Product Details", onPressed: Get.back),
+              PositionedSupport(
+                onPressed: () {
+                  Get.toNamed(
+                    AppRoutesname.messagesScreen,
+                    arguments: {
+                      "platform": 'alibaba',
+                      "link_Product": controller
+                          .productDitelsAliBabaModel
+                          ?.result
+                          ?.item
+                          ?.itemUrl,
+                    },
+                  );
+                },
+              ),
+            ],
+          );
+        },
       ),
     );
   }

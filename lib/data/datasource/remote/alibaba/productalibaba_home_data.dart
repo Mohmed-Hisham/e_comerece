@@ -16,7 +16,7 @@ class ProductalibabaHomeData {
       AlibabaApi.productHome(
         "fashion",
         pageindex,
-        enOrAr(is_ar_SA: true),
+        enOrAr(isArSA: true),
         '',
         '',
       ),

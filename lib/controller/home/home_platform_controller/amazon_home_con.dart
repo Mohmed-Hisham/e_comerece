@@ -4,6 +4,7 @@ import 'package:e_comerece/controller/home/homescreen_controller.dart';
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/funcations/handle_paging_response.dart';
 import 'package:e_comerece/core/funcations/handlingdata.dart';
+import 'package:e_comerece/core/funcations/translate_data.dart';
 import 'package:e_comerece/core/helper/db_database.dart';
 import 'package:e_comerece/data/datasource/remote/amazon_data/hot_deals_amazon_data.dart';
 import 'package:e_comerece/data/model/amazon_models/hotdeals_amazon_model.dart';
@@ -25,7 +26,7 @@ class AmazonHomeCon extends GetxController {
   }
 
   fetchProducts({isLoadMore = false}) async {
-    final String platform = 'amazon';
+    final String platform = 'amazon-lang-${enOrArAmazon()}';
     String cacheKey(int p) => 'hotProducts:$platform:page=$p';
     if (isLoadMore) {
       if (isLoading || !hasMore) return;

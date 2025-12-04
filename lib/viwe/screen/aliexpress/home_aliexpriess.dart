@@ -3,6 +3,7 @@ import 'package:e_comerece/controller/favorite/favorites_controller.dart';
 import 'package:e_comerece/core/class/handlingdataviwe.dart';
 import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/constant/imagesassets.dart';
+import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/funcations/translate_data.dart';
 import 'package:e_comerece/core/shared/image_manger/Image_manager_controller.dart';
 import 'package:e_comerece/core/shared/widget_shared/shimmerbar.dart';
@@ -12,6 +13,7 @@ import 'package:e_comerece/viwe/screen/aliexpress/search_name.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_app_bar.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_left_2.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_right_2.dart';
+import 'package:e_comerece/viwe/widget/Positioned/positioned_support.dart';
 import 'package:e_comerece/viwe/widget/aliexpress/custcarouselaliexpriss.dart';
 import 'package:e_comerece/viwe/widget/custshearchappbar.dart';
 import 'package:flutter/material.dart';
@@ -169,6 +171,14 @@ class HomePage1 extends StatelessWidget {
                           ),
                   ),
                 ],
+              ),
+              PositionedSupport(
+                onPressed: () {
+                  Get.toNamed(
+                    AppRoutesname.messagesScreen,
+                    arguments: {"platform": 'aliexpress'},
+                  );
+                },
               ),
             ],
           );

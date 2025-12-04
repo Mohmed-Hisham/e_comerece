@@ -11,7 +11,7 @@ class AlibabaByImageData {
     var response = await crud.getData(
       AlibabaApi.searshByimage(
         imageUrl: imageUrl,
-        lang: enOrAr(is_ar_SA: true),
+        lang: enOrAr(isArSA: true),
         pageindex: pageindex,
       ),
       headers: AlibabaApi.rapidApiHeaders,

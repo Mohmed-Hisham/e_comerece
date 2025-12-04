@@ -1,12 +1,13 @@
 import 'package:e_comerece/controller/amazon_controllers/amazon_home_controller.dart';
 import 'package:e_comerece/core/constant/color.dart';
+import 'package:e_comerece/core/constant/strings_keys.dart';
 import 'package:e_comerece/core/shared/widget_shared/cust_button_botton.dart';
 import 'package:e_comerece/viwe/widget/auth/custtextfeld.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class SeetingsPriceShein extends GetView<AmazonHomeControllerImpl> {
-  const SeetingsPriceShein({super.key});
+class SeetingsPriceAmazon extends GetView<AmazonHomeControllerImpl> {
+  const SeetingsPriceAmazon({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -30,11 +31,11 @@ class SeetingsPriceShein extends GetView<AmazonHomeControllerImpl> {
               child: Text(
                 index == 0
                     ? (controller.startPriceController.text == '')
-                          ? 'startPrice: random'
-                          : 'startPrice: ${controller.startPriceController.text}'
+                          ? StringsKeys.startPriceRandom.tr
+                          : '${StringsKeys.startPriceLabel.tr}${controller.startPriceController.text}'
                     : (controller.endPriceController.text == '')
-                    ? ' endPrice: random'
-                    : 'endPrice: ${controller.endPriceController.text}',
+                    ? StringsKeys.endPriceRandom.tr
+                    : '${StringsKeys.endPriceLabel.tr}${controller.endPriceController.text}',
                 style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                   color: Appcolor.black,
                   fontWeight: FontWeight.bold,
@@ -55,17 +56,17 @@ class SeetingsPriceShein extends GetView<AmazonHomeControllerImpl> {
 
                       children: [
                         Text(
-                          "Note: Price filter is in USD and not related to your selected display currency.",
+                          StringsKeys.priceFilterNote.tr,
                           style: Theme.of(context).textTheme.bodySmall
                               ?.copyWith(fontStyle: FontStyle.italic),
                         ),
                         const SizedBox(height: 12),
                         Custtextfeld(
-                          hint: 'startPrice'.tr,
+                          hint: StringsKeys.startPrice.tr,
                           controller: controller.startPriceController,
                         ),
                         Custtextfeld(
-                          hint: 'endPrice'.tr,
+                          hint: StringsKeys.endPrice.tr,
                           controller: controller.endPriceController,
                         ),
 
@@ -74,7 +75,7 @@ class SeetingsPriceShein extends GetView<AmazonHomeControllerImpl> {
                             controller.searshText();
                             Get.back();
                           },
-                          title: "change".tr,
+                          title: StringsKeys.change.tr,
                         ),
                       ],
                     ),
@@ -82,7 +83,7 @@ class SeetingsPriceShein extends GetView<AmazonHomeControllerImpl> {
                 ),
               );
             },
-            title: "change".tr,
+            title: StringsKeys.change.tr,
           ),
           const SizedBox(width: 10),
         ],

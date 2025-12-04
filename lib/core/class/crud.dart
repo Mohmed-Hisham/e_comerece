@@ -19,30 +19,31 @@ class Crud {
 
         if (sendJson) {
           log('data: ${jsonEncode(data)}');
+
           response = await http.post(
             Uri.parse(linlurl),
             headers: {'Content-Type': 'application/json; charset=utf-8'},
             body: jsonEncode(data),
           );
+          log('response======: ${response.statusCode}');
+          log('response======: ${response.body}');
         } else {
-          // الافتراضي: تحويل كل القيم إلى String وإرسال كـ application/x-www-form-urlencoded
           final Map<String, String> bodyFields = {};
           data.forEach((key, value) {
-            // تجاهل القيم التي تساوي null أو ترسل كـ '' حسب تفضيلك:
             bodyFields[key] = value == null ? '' : value.toString();
           });
 
-          response = await http.post(
-            Uri.parse(linlurl),
-            body:
-                bodyFields, // http يضع Content-Type تلقائياً كـ application/x-www-form-urlencoded
-          );
+          response = await http.post(Uri.parse(linlurl), body: bodyFields);
         }
 
         if (response.statusCode == 200 || response.statusCode == 201) {
           final Map respnsebody = jsonDecode(response.body);
           log('respnsebody: $respnsebody');
           return Right(respnsebody);
+        } else if (response.statusCode == 400 || response.statusCode == 401) {
+          return const Left(Statusrequest.failuer);
+        } else if (response.statusCode == 404 || response.statusCode == 500) {
+          return const Left(Statusrequest.noData);
         } else {
           return const Left(Statusrequest.serverfailuer);
         }
@@ -54,6 +55,7 @@ class Crud {
       return const Left(Statusrequest.failuerException);
     }
   }
+  // --------------------------------------------------------------------------
 
   Future<Either<Statusrequest, Map<String, dynamic>>> getData(
     String linkUrl, {
@@ -137,29 +139,3 @@ class Crud {
     }
   }
 }
-
-// import 'dart:convert';
-// import 'package:dartz/dartz.dart';
-// import 'package:e_comerece/core/class/statusrequest.dart';
-// import 'package:e_comerece/core/funcations/checkinternet.dart';
-// import 'package:http/http.dart' as http;
-
-// class Crud {
-//   Future<Either<Statusrequest, Map>> postData(String linlurl, Map data) async {
-//     try {
-//       if (await checkinternet()) {
-//         var response = await http.post(Uri.parse(linlurl), body: data);
-//         if (response.statusCode == 200 || response.statusCode == 201) {
-//           Map respnsebody = jsonDecode(response.body);
-//           return Right(respnsebody);
-//         } else {
-//           return const Left(Statusrequest.serverfailuer);
-//         }
-//       } else {
-//         return const Left(Statusrequest.oflinefailuer);
-//       }
-//     } catch (e) {
-//       return const Left(Statusrequest.failuerException);
-//     }
-//   }
-// }

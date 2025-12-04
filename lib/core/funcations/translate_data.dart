@@ -10,20 +10,20 @@ translateData(columnen, columnar) {
   }
 }
 
-String enOrAr({bool is_ar_SA = false}) {
+String enOrAr({bool isArSA = false}) {
   MyServises myServises = Get.find();
   if (myServises.sharedPreferences.getString("lang") == "ar") {
-    return is_ar_SA ? "ar_SA" : "ar_MA";
+    return isArSA ? "ar_SA" : "ar_MA";
   } else {
     return "en_US";
   }
 }
 
-String detectLangFromQuery(String query, {bool is_ar_SA = false}) {
+String detectLangFromQuery(String query, {bool isArSA = false}) {
   final hasArabic = RegExp(r'[\u0600-\u06FF]').hasMatch(query);
-  if (is_ar_SA && hasArabic) {
+  if (isArSA && hasArabic) {
     return 'ar_SA';
-  } else if (!is_ar_SA && hasArabic) {
+  } else if (!isArSA && hasArabic) {
     return 'ar_MA';
   } else {
     return 'en_US';
@@ -50,9 +50,5 @@ String enOrArAmazon() {
 
 bool langDirection() {
   MyServises myServises = Get.find();
-  if (myServises.sharedPreferences.getString("lang") == "ar") {
-    return true;
-  } else {
-    return false;
-  }
+  return myServises.sharedPreferences.getString("lang") != "ar";
 }

@@ -135,10 +135,6 @@ class ProductDetailsSheinControllerImple extends ProductDetailsSheinController {
     statusrequest = Statusrequest.loading;
     update();
     try {
-      // Shein product details API expects goods_sn; we will use title or id to fetch
-      // Here assume backend accepts goods_sn via title if provided; otherwise use id as string
-      // final goodsSn =
-      //     Get.parameters['goods_sn'] ?? (title ?? productId?.toString() ?? '');
       var response = await productDitelsSheinData.getProductDitels(
         goodssn ?? '',
       );
@@ -172,6 +168,7 @@ class ProductDetailsSheinControllerImple extends ProductDetailsSheinController {
       var response = await productDitelsSheinData.getProductDitelsImageList(
         goodssn!,
       );
+      print("respons=========: $response");
       statusrequestImagesList = handlingData(response);
 
       if (Statusrequest.success == statusrequestImagesList) {
@@ -313,6 +310,8 @@ class ProductDetailsSheinControllerImple extends ProductDetailsSheinController {
 
   @override
   String? get subject => _product?.goodsName;
+
+  String? get productLink => _product?.productUrl;
 
   @override
   List<String> get imageList {

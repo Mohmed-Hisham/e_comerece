@@ -457,6 +457,7 @@ extension ProductDetailsUi on ProductDetailsControllerImple {
 
   // UI getters
   String? get subject => itemDetailsModel?.result?.item?.title;
+  String? get productLink => itemDetailsModel?.result?.item?.itemUrl;
   List<String> get imageList => itemDetailsModel?.result?.item?.images ?? [];
   String? get sellerName => itemDetailsModel?.result?.seller?.storeTitle;
   String? get videoUrlString =>

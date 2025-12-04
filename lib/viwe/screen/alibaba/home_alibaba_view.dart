@@ -3,6 +3,7 @@ import 'package:e_comerece/controller/favorite/favorites_controller.dart';
 import 'package:e_comerece/core/class/handlingdataviwe.dart';
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/imagesassets.dart';
+import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/shared/image_manger/Image_manager_controller.dart';
 import 'package:e_comerece/core/shared/widget_shared/animations.dart';
 import 'package:e_comerece/core/shared/widget_shared/shimmerbar.dart';
@@ -11,6 +12,7 @@ import 'package:e_comerece/viwe/screen/alibaba/search_name_alibaba.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_app_bar.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_left_2.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_right_2.dart';
+import 'package:e_comerece/viwe/widget/Positioned/positioned_support.dart';
 import 'package:e_comerece/viwe/widget/alibaba/custcarousel_alibaba.dart';
 import 'package:e_comerece/viwe/widget/custshearchappbar.dart';
 import 'package:flutter/material.dart';
@@ -28,7 +30,6 @@ class HomeAlibaba extends StatelessWidget {
     return Scaffold(
       body: GetBuilder<ProductAlibabaHomeControllerImp>(
         builder: (controller) {
-          print("build");
           return Stack(
             children: [
               const PositionedRight1(),
@@ -157,6 +158,14 @@ class HomeAlibaba extends StatelessWidget {
                           ),
                   ),
                 ],
+              ),
+              PositionedSupport(
+                onPressed: () {
+                  Get.toNamed(
+                    AppRoutesname.messagesScreen,
+                    arguments: {"platform": 'alibaba'},
+                  );
+                },
               ),
             ],
           );

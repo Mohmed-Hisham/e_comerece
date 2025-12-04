@@ -3,7 +3,7 @@ class SheinApi {
 
   static const Map<String, String> rapidApiHeaders = {
     'X-RapidAPI-Host': 'shein-data-api.p.rapidapi.com',
-    'X-RapidAPI-Key': '1cdedf81b2msh9d2cbbf21b03409p1fc930jsn9c27cf0b5142',
+    'X-RapidAPI-Key': '1bd0905b8fmshd7e930954808aeep1f3f99jsn4f9f6ee455a3',
   };
 
   static String categories() {
@@ -28,11 +28,11 @@ class SheinApi {
   }
 
   static String productDitelsImageList(String goodssn) {
-    return "$_server/product/description/v3?goods_sn=$goodssn&country=YE";
+    return "$_server/product/description/v3?goods_sn=$goodssn&country=SAR";
   }
 
   static String productDitelsSize(String goodsid) {
-    return "$_server/product/description/bygoodsid?goods_id=$goodsid&country=YE";
+    return "$_server/product/description/bygoodsid?goods_id=$goodsid&country=SAR";
   }
 
   static String productByCategories(String categoryId, String pageindex) {

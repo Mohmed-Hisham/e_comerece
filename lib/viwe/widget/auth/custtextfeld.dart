@@ -7,7 +7,11 @@ class Custtextfeld extends StatelessWidget {
   final Widget? suffixIcon;
   final String? Function(String?)? validator;
   final bool? obscureText;
+  final int? maxLines;
+  final int? minLines;
   final void Function(String)? onChanged;
+  final void Function()? onTap;
+  final FocusNode? focusNode;
 
   const Custtextfeld({
     super.key,
@@ -17,6 +21,10 @@ class Custtextfeld extends StatelessWidget {
     this.validator,
     this.obscureText,
     this.onChanged,
+    this.onTap,
+    this.maxLines,
+    this.minLines,
+    this.focusNode,
   });
 
   @override
@@ -26,11 +34,16 @@ class Custtextfeld extends StatelessWidget {
       child: ConstrainedBox(
         constraints: BoxConstraints(minHeight: 50),
         child: TextFormField(
+          autofocus: false,
+          focusNode: focusNode,
+          onTap: onTap,
+          maxLines: maxLines ?? 1,
+          minLines: minLines ?? 1,
           onChanged: onChanged,
           obscureText: obscureText ?? false,
           validator: validator,
           controller: controller,
-          autovalidateMode: AutovalidateMode.onUserInteraction,
+          // autovalidateMode: AutovalidateMode.onUserInteraction,
           decoration: InputDecoration(
             hintText: hint,
             isDense: true,

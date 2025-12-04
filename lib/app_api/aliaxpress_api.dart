@@ -1,5 +1,9 @@
 class AliaxpressApi {
   static const String server = "https://aliexpress-datahub.p.rapidapi.com";
+  static const Map<String, String> rapidApiHeaders = {
+    'X-RapidAPI-Host': 'aliexpress-datahub.p.rapidapi.com',
+    'X-RapidAPI-Key': '1bd0905b8fmshd7e930954808aeep1f3f99jsn4f9f6ee455a3',
+  };
   static String getcategory({required String lang}) {
     return "$server/category_list_1?locale=$lang";
   }
@@ -44,9 +48,4 @@ class AliaxpressApi {
   }) {
     return "$server/item_search_image?sort=default&catId=0&imgUrl=$imageUrl&locale=$lang&region=YE&currency=USD";
   }
-
-  static const Map<String, String> rapidApiHeaders = {
-    'X-RapidAPI-Host': 'aliexpress-datahub.p.rapidapi.com',
-    'X-RapidAPI-Key': '1cdedf81b2msh9d2cbbf21b03409p1fc930jsn9c27cf0b5142',
-  };
 }

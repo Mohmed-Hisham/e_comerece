@@ -4,6 +4,7 @@ import 'package:e_comerece/controller/home/homescreen_controller.dart';
 import 'package:e_comerece/core/class/handlingdataviwe.dart';
 import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/funcations/translate_data.dart';
+import 'package:e_comerece/core/servises/platform_ext.dart';
 import 'package:e_comerece/core/shared/widget_shared/loadingimage.dart';
 import 'package:e_comerece/core/shared/widget_shared/shimmer_list_horizontal.dart';
 import 'package:e_comerece/core/shared/widget_shared/shimmer_image_product.dart';
@@ -21,35 +22,15 @@ class HotProductAlibabaHome extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetBuilder<HomescreenControllerImple>(
       id: 'alibaba',
-      builder: (controller) => NotificationListener<ScrollNotification>(
-        onNotification: (scrollInfo) {
-          if (scrollInfo is ScrollUpdateNotification) {
-            if (scrollInfo.metrics.axis == Axis.horizontal) {
-              if (!controller.alibabaHomeController.isLoading &&
-                  controller.alibabaHomeController.hasMore) {
-                final pixels = scrollInfo.metrics.pixels;
-                final max = scrollInfo.metrics.maxScrollExtent;
-                // final atEdge = scrollInfo.metrics.atEdge;
-                // // final pixels = scrollInfo.metrics.pixels;
-                // final maxScrollExtent = scrollInfo.metrics.maxScrollExtent;
-                // if (atEdge && pixels == maxScrollExtent) {
-                //   controller.fetchProductsAliExpress(isLoadMore: true);
-                // }
-                if (max > 0 && pixels >= max * 0.8) {
-                  controller.loadMoreproductAlibaba();
-                }
-              }
-            }
-          }
-          return false;
-        },
-        child: Handlingdataviwe(
+      builder: (controller) {
+        return Handlingdataviwe(
           shimmer: ShimmerListHorizontal(isSlevr: false),
           statusrequest: controller.alibabaHomeController.statusrequestAlibaba,
           widget: Container(
             margin: EdgeInsets.symmetric(vertical: 20.h),
             height: 400.h,
             child: CustomScrollView(
+              controller: controller.scrollContrAlibaba,
               physics: const BouncingScrollPhysics(),
               scrollDirection: Axis.horizontal,
               slivers: [
@@ -63,6 +44,7 @@ class HotProductAlibabaHome extends StatelessWidget {
                     return InkWell(
                       onTap: () {
                         controller.gotoditels(
+                          platform: PlatformSource.alibaba,
                           id: product.itemid,
                           title: product.titel,
                           lang: enOrAr(),
@@ -126,7 +108,7 @@ class HotProductAlibabaHome extends StatelessWidget {
                               child: ListView.builder(
                                 cacheExtent: 500,
                                 scrollDirection: Axis.horizontal,
-                                physics: const ClampingScrollPhysics(),
+                                physics: const BouncingScrollPhysics(),
                                 itemCount: product.imageUrls.length + 1,
                                 itemBuilder: (context, index) {
                                   if (index == 0) {
@@ -184,8 +166,8 @@ class HotProductAlibabaHome extends StatelessWidget {
               ],
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

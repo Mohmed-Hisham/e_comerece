@@ -2,18 +2,18 @@ class AppImagesassets {
   static const String _rootimages = "assets/images";
   // static const String _rootSvg = "assets/svg";
 
-  static const String logo = "$_rootimages/logo.png";
-  static const String logoapp = "$_rootimages/logoapp.png";
-  static const String onboradingone = "$_rootimages/one.png";
-  static const String onboradingtow = "$_rootimages/two.png";
-  static const String onboradingthree = "$_rootimages/three.png";
-  static const String background1 = "$_rootimages/background1.png";
-  static const String background2 = "$_rootimages/background2.png";
-  static const String shein = "$_rootimages/shein.png";
-  static const String aliexpress = "$_rootimages/aliexp.png";
-  static const String amazon = "$_rootimages/amazon.png";
-  static const String alibab = "$_rootimages/alibaba.jpg";
-  static const String applogo = "$_rootimages/applogo.jpg";
+  // static const String logo = "$_rootimages/logo.png";
+  // static const String logoapp = "$_rootimages/logoapp.png";
+  // static const String onboradingone = "$_rootimages/one.png";
+  // static const String onboradingtow = "$_rootimages/two.png";
+  // static const String onboradingthree = "$_rootimages/three.png";
+  // static const String background1 = "$_rootimages/background1.png";
+  // static const String background2 = "$_rootimages/background2.png";
+  // static const String shein = "$_rootimages/shein.png";
+  // static const String aliexpress = "$_rootimages/aliexp.png";
+  // static const String amazon = "$_rootimages/amazon.png";
+  // static const String alibab = "$_rootimages/alibaba.jpg";
+  static const String applogo = "$_rootimages/applogo.png";
   static const String avatar = "$_rootimages/avtar.png";
 
   static const String avata = "$_rootimages/avatar.png";
@@ -33,7 +33,7 @@ class AppImagesassets {
   static const String bubblle3 = "assets/svg/bubblle3.svg";
   static const String bubbleRight = "assets/svg/bubbleRight.svg";
   static const String bubbleRight2 = "assets/svg/bubbleRight2.svg";
-  // static const String avtar = "assets/svg/avtar.svg";
+  static const String avtar = "assets/svg/avtar.svg";
 }
 
 class Lottieassets {
@@ -49,10 +49,10 @@ class Lottieassets {
   static const String tryAgain = "$_rootlottie/try_again.json";
 }
 
-class Svgassets {
-  static const String _rootSvg = "assets/svg";
-  static const String aliexpress = "$_rootSvg/aliexp.svg";
-  static const String alibaba = "$_rootSvg/alibaba.svg";
-  static const String amazon = "$_rootSvg/amazon.svg";
-  static const String shein = "$_rootSvg/shein.svg";
-}
+// class Svgassets {
+//   static const String _rootSvg = "assets/svg";
+//   static const String aliexpress = "$_rootSvg/aliexp.svg";
+//   static const String alibaba = "$_rootSvg/alibaba.svg";
+//   static const String amazon = "$_rootSvg/amazon.svg";
+//   static const String shein = "$_rootSvg/shein.svg";
+// }

@@ -6,7 +6,6 @@ import 'package:e_comerece/core/funcations/calculateDiscount.dart';
 import 'package:e_comerece/core/shared/widget_shared/loadingimage.dart';
 import 'package:e_comerece/core/shared/widget_shared/shimmer_image_product.dart';
 import 'package:e_comerece/core/shared/widget_shared/shimmerbar.dart';
-import 'package:e_comerece/viwe/screen/alibaba/seetings_alibaba.dart';
 import 'package:e_comerece/viwe/screen/shein/seetings_price_shein.dart';
 import 'package:e_comerece/viwe/widget/custgridviwe.dart';
 import 'package:flutter/material.dart';

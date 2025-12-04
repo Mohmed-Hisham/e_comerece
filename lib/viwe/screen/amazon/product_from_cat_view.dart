@@ -1,5 +1,4 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:e_comerece/controller/aliexpriess/shearchname_controller.dart';
 import 'package:e_comerece/controller/amazon_controllers/product_from_categories_controller.dart';
 import 'package:e_comerece/controller/favorite/favorites_controller.dart';
 import 'package:e_comerece/core/class/handlingdataviwe.dart';
@@ -7,10 +6,7 @@ import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/constant/wantedcategory.dart';
 import 'package:e_comerece/core/funcations/calculateDiscount.dart';
 import 'package:e_comerece/core/funcations/extractn_umbers.dart';
-import 'package:e_comerece/core/funcations/translate_data.dart';
-import 'package:e_comerece/core/shared/widget_shared/custmenubutton.dart';
 import 'package:e_comerece/core/shared/widget_shared/loadingimage.dart';
-import 'package:e_comerece/core/shared/widget_shared/shimmer_image_product.dart';
 import 'package:e_comerece/core/shared/widget_shared/shimmerbar.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_app_bar.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_left_2.dart';

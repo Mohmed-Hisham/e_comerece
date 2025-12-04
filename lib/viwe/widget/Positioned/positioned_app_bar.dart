@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class PositionedAppBar extends StatelessWidget {
   final void Function()? onPressed;
@@ -8,7 +9,7 @@ class PositionedAppBar extends StatelessWidget {
     super.key,
     this.onPressed,
     required this.title,
-    this.top = 25,
+    this.top = 35,
   });
 
   @override
@@ -16,18 +17,24 @@ class PositionedAppBar extends StatelessWidget {
     return Positioned(
       top: top,
       child: Row(
-        spacing: 10,
+        spacing: 10.w,
         children: [
-          SizedBox(),
-          IconButton(
-            onPressed: onPressed,
-            icon: Icon(Icons.arrow_back_rounded, color: Colors.black, size: 27),
-          ),
+          SizedBox(height: 20.h),
+          onPressed == null
+              ? const SizedBox()
+              : IconButton(
+                  onPressed: onPressed,
+                  icon: Icon(
+                    Icons.arrow_back_rounded,
+                    color: Colors.black,
+                    size: 38.sp,
+                  ),
+                ),
 
           Text(
             title,
             style: TextStyle(
-              fontSize: 25,
+              fontSize: 30.sp,
               fontWeight: FontWeight.bold,
               color: Colors.black,
             ),

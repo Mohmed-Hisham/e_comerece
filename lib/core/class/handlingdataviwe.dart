@@ -1,6 +1,7 @@
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/imagesassets.dart';
 import 'package:e_comerece/core/shared/widget_shared/cust_button_botton.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +14,7 @@ class Handlingdataviwe extends StatelessWidget {
   final bool isproductdetails;
   final void Function()? ontryagain;
   final String? texttryagain;
+  final bool isSizedBox;
 
   const Handlingdataviwe({
     super.key,
@@ -23,6 +25,7 @@ class Handlingdataviwe extends StatelessWidget {
     this.isproductdetails = false,
     this.ontryagain,
     this.texttryagain,
+    this.isSizedBox = false,
   });
 
   @override
@@ -31,9 +34,12 @@ class Handlingdataviwe extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         if (statusrequest != Statusrequest.loading)
-          CustButtonBotton(
-            onTap: ontryagain ?? () {},
-            title: texttryagain ?? "try again".tr,
+          Container(
+            margin: const EdgeInsets.only(top: 10),
+            child: CustButtonBotton(
+              onTap: ontryagain ?? () {},
+              title: texttryagain ?? "try again".tr,
+            ),
           ),
         Center(
           child: TweenAnimationBuilder<double>(
@@ -61,9 +67,10 @@ class Handlingdataviwe extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                if (isSizedBox) SizedBox(height: 220.h),
                 if (statusrequest != Statusrequest.loading)
                   CustButtonBotton(
-                    onTap: () => ontryagain ?? null,
+                    onTap: () => ontryagain,
                     title: "tryagain".tr,
                   ),
 
@@ -207,88 +214,41 @@ class Handlingdataviwe extends StatelessWidget {
   }
 }
 
-class HandlingdatRequest extends StatelessWidget {
-  final Statusrequest statusrequest;
-  final Widget widget;
-  const HandlingdatRequest({
-    super.key,
-    required this.statusrequest,
-    required this.widget,
-  });
+// class HandlingdatRequest extends StatelessWidget {
+//   final Statusrequest statusrequest;
+//   final Widget widget;
+//   const HandlingdatRequest({
+//     super.key,
+//     required this.statusrequest,
+//     required this.widget,
+//   });
 
-  @override
-  Widget build(BuildContext context) {
-    return statusrequest == Statusrequest.loading
-        ? Center(
-            child: Lottie.asset(
-              Lottieassets.shoppingcart,
-              width: 250,
-              height: 300,
-            ),
-          )
-        : statusrequest == Statusrequest.oflinefailuer
-        ? Center(
-            child: Lottie.asset(
-              Lottieassets.nointernetlottie,
-              width: 250,
-              height: 300,
-            ),
-          )
-        : statusrequest == Statusrequest.serverfailuer
-        ? Center(
-            child: Lottie.asset(
-              Lottieassets.srverfailuerlottie,
-              width: 250,
-              height: 300,
-            ),
-          )
-        : widget;
-  }
-}
-
-class HandlingdataviweNoLoading extends StatelessWidget {
-  final Statusrequest statusrequest;
-  final Widget widget;
-  const HandlingdataviweNoLoading({
-    super.key,
-    required this.statusrequest,
-    required this.widget,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return statusrequest == Statusrequest.noData
-        ? Center(
-            child: Lottie.asset(
-              Lottieassets.nodatalottie,
-              width: 300,
-              height: 350,
-            ),
-          )
-        : statusrequest == Statusrequest.oflinefailuer
-        ? Center(
-            child: Lottie.asset(
-              Lottieassets.nointernetlottie,
-              width: 250,
-              height: 300,
-            ),
-          )
-        : statusrequest == Statusrequest.serverfailuer
-        ? Center(
-            child: Lottie.asset(
-              Lottieassets.srverfailuerlottie,
-              width: 250,
-              height: 300,
-            ),
-          )
-        : statusrequest == Statusrequest.failuer
-        ? Center(
-            child: Lottie.asset(
-              Lottieassets.nodatalottie,
-              width: 300,
-              height: 350,
-            ),
-          )
-        : widget;
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return statusrequest == Statusrequest.loading
+//         ? Center(
+//             child: Lottie.asset(
+//               Lottieassets.shoppingcart,
+//               width: 250,
+//               height: 300,
+//             ),
+//           )
+//         : statusrequest == Statusrequest.oflinefailuer
+//         ? Center(
+//             child: Lottie.asset(
+//               Lottieassets.nointernetlottie,
+//               width: 250,
+//               height: 300,
+//             ),
+//           )
+//         : statusrequest == Statusrequest.serverfailuer
+//         ? Center(
+//             child: Lottie.asset(
+//               Lottieassets.srverfailuerlottie,
+//               width: 250,
+//               height: 300,
+//             ),
+//           )
+//         : widget;
+//   }
+// }

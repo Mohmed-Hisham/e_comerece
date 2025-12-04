@@ -3,18 +3,21 @@ import 'package:shimmer/shimmer.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class LocationInfoShimmer extends StatelessWidget {
-  const LocationInfoShimmer({super.key});
+  final BorderRadiusGeometry borderRadius;
+  final double height;
+  const LocationInfoShimmer({
+    super.key,
+    required this.borderRadius,
+    this.height = 250,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 250.h,
+      height: height.h,
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(30.r),
-          topRight: Radius.circular(30.r),
-        ),
+        borderRadius: borderRadius,
         boxShadow: [
           BoxShadow(
             color: Colors.grey.shade300,

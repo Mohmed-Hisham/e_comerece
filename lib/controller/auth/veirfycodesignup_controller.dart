@@ -1,8 +1,10 @@
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
+import 'package:e_comerece/core/constant/strings_keys.dart';
+import 'package:e_comerece/core/funcations/error_dialog.dart';
 import 'package:e_comerece/core/funcations/handlingdata.dart';
+import 'package:e_comerece/core/funcations/loading_dialog.dart';
 import 'package:e_comerece/data/datasource/remote/auth/verifycodesignup_data.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 abstract class VeirfycodesignupController extends GetxController {
@@ -22,15 +24,7 @@ class VerifycodesignupControllerImp extends VeirfycodesignupController {
     statusrequest = Statusrequest.loading;
     update();
     if (!Get.isDialogOpen!) {
-      Get.dialog(
-        PopScope(
-          canPop: false,
-          onPopInvokedWithResult: (bool didPop, dynamic result) {
-            if (didPop) return;
-          },
-          child: Center(child: CircularProgressIndicator()),
-        ),
-      );
+      loadingDialog();
     }
     var response = await verifycodesignupData.postData(
       email: email!,
@@ -43,7 +37,7 @@ class VerifycodesignupControllerImp extends VeirfycodesignupController {
       if (response['status'] == 'success') {
         Get.offAllNamed(AppRoutesname.successsginup);
       } else {
-        Get.defaultDialog(title: "خطأ", middleText: "الكود غير صحيح");
+        errorDialog(StringsKeys.error.tr, StringsKeys.incorrectCode.tr);
         statusrequest = Statusrequest.failuer;
       }
     }

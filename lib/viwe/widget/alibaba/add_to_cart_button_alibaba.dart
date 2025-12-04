@@ -4,6 +4,7 @@ import 'package:e_comerece/controller/alibaba/product_details_alibaba_controller
 import 'package:e_comerece/controller/cart/cart_from_detils.dart';
 import 'package:e_comerece/controller/favorite/toggleFavorite_controller.dart';
 import 'package:e_comerece/core/constant/color.dart';
+import 'package:e_comerece/core/helper/format_price.dart';
 import 'package:e_comerece/core/servises/selected_attributes_tomap_fordb.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -49,28 +50,35 @@ class AddToCartButtonAlibaba extends StatelessWidget {
                                   controller.quantity !=
                                       controller.cartquantityDB)
                           ? () async {
+                              log(
+                                "=========${selectedAttributesToMapForDb(controller.selectedAttributes)}",
+                              );
                               final imageurl = selectedAttributesToMapForDb(
                                 controller.selectedAttributes,
                               ).values.first['image'];
+                              print("imageurl=>$imageurl");
 
                               await cartController.add(
+                                porductink: controller.productLink ?? "",
                                 controller.productId.toString(),
                                 controller.subject.toString(),
-                                imageurl ?? controller.imageList[0].toString(),
-                                controller.getCurrentPriceFormatted(),
-                                'alibaba',
-                                controller.quantity.toString(),
+                                imageurl == ""
+                                    ? controller.imageList[0].toString()
+                                    : "",
+                                extractPrice(
+                                  controller.getCurrentPriceFormatted(),
+                                ),
+                                'Alibaba',
+                                controller.quantity,
                                 jsonEncode(
                                   selectedAttributesToMapForDb(
                                     controller.selectedAttributes,
                                   ),
                                 ),
 
-                                controller
-                                        .getCurrentPriceList()
-                                        ?.maxQuantity
-                                        .toString() ??
-                                    '',
+                                controller.getCurrentPriceList()?.maxQuantity ??
+                                    0,
+
                                 tier: jsonEncode(
                                   priceListToMap(controller.priceListFromModel),
                                 ),

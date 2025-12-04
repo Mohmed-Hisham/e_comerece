@@ -5,6 +5,8 @@ import 'package:e_comerece/controller/favorite/toggleFavorite_controller.dart';
 import 'package:e_comerece/core/class/handlingdataviwe.dart';
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/color.dart';
+import 'package:e_comerece/core/constant/routesname.dart';
+import 'package:e_comerece/core/helper/format_price.dart';
 import 'package:e_comerece/core/shared/widget_shared/loadingimage.dart';
 import 'package:e_comerece/core/shared/widget_shared/open_full_image.dart';
 import 'package:e_comerece/core/shared/widget_shared/shimmerbar.dart';
@@ -12,6 +14,7 @@ import 'package:e_comerece/viwe/screen/amazon/product_for_page_detils_amazon.dar
 import 'package:e_comerece/viwe/widget/Positioned/positioned_app_bar.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_right_1.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_right_2.dart';
+import 'package:e_comerece/viwe/widget/Positioned/positioned_support.dart';
 import 'package:e_comerece/viwe/widget/amazon/product_images_carousel_amazon.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -28,16 +31,16 @@ class ProductDetailsAmazonView extends StatelessWidget {
     );
     Get.put(TogglefavoriteController());
     return Scaffold(
-      body: Stack(
-        children: [
-          const PositionedRight1(),
-          const PositionedRight2(),
+      body: GetBuilder<ProductDetailsAmazonControllerImple>(
+        builder: (controller) {
+          return Stack(
+            children: [
+              const PositionedRight1(),
+              const PositionedRight2(),
 
-          Container(
-            padding: EdgeInsets.only(top: 65),
-            child: GetBuilder<ProductDetailsAmazonControllerImple>(
-              builder: (controller) {
-                return Handlingdataviwe(
+              Container(
+                padding: EdgeInsets.only(top: 65),
+                child: Handlingdataviwe(
                   isproductdetails: true,
                   ontryagain: () => controller.fetchProductDetails(),
 
@@ -105,12 +108,24 @@ class ProductDetailsAmazonView extends StatelessWidget {
                       ],
                     ),
                   ),
-                );
-              },
-            ),
-          ),
-          PositionedAppBar(title: "Product Details", onPressed: Get.back),
-        ],
+                ),
+              ),
+              PositionedAppBar(title: "Product Details", onPressed: Get.back),
+              PositionedSupport(
+                onPressed: () {
+                  Get.toNamed(
+                    AppRoutesname.messagesScreen,
+                    arguments: {
+                      "platform": 'alibaba',
+                      "link_Product":
+                          controller.detailsAmazonModel?.data?.productUrl,
+                    },
+                  );
+                },
+              ),
+            ],
+          );
+        },
       ),
     );
   }
@@ -471,12 +486,13 @@ class ProductDetailsAmazonView extends StatelessWidget {
                 controller.getCurrentAsin() ?? '',
                 controller.productTitle ?? '',
                 controller.productPhoto ?? '',
-                controller.getCurrentPriceFormatted(),
+                extractPrice(controller.getCurrentPriceFormatted()),
                 'Amazon',
-                controller.quantity.toString(),
+                controller.quantity,
                 jsonEncode(controller.selectedVariations),
-                '1000', // Available quantity - you might want to get this from API
+                1000, // Available quantity - you might want to get this from API
                 tier: '',
+                porductink: controller.productUrl ?? '',
               );
               controller.incart();
             },

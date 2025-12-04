@@ -129,6 +129,7 @@ class ProductDetailsAmazonControllerImple
       asin: asinParam ?? asin!,
       lang: lang!,
     );
+    log("response: $response");
 
     statusrequest = handlingData(response);
 
@@ -141,7 +142,7 @@ class ProductDetailsAmazonControllerImple
           initializeDefaultVariations();
 
           statusrequest = Statusrequest.success;
-
+          print('selectedVariations: ${jsonEncode(selectedVariations)}');
           getquiqtity(jsonEncode(selectedVariations));
         } catch (e, st) {
           log(st.toString());
@@ -319,7 +320,9 @@ class ProductDetailsAmazonControllerImple
 
   // Amazon-specific getter methods
   String? get productTitle => detailsAmazonModel?.data?.productTitle;
-  String? get productPrice => detailsAmazonModel?.data?.productPrice.toString();
+  String? get productPrice =>
+      detailsAmazonModel?.data?.productPrice ??
+      detailsAmazonModel?.data?.productOriginalPrice;
   String? get productOriginalPrice =>
       detailsAmazonModel?.data?.productOriginalPrice;
   String? get currency => detailsAmazonModel?.data?.currency;

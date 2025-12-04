@@ -1,8 +1,10 @@
 import 'package:e_comerece/core/constant/color.dart';
+import 'package:e_comerece/core/constant/strings_keys.dart';
 import 'package:e_comerece/core/funcations/translate_data.dart';
 import 'package:e_comerece/core/funcations/validate.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get/get.dart';
 
 class Custshearchappbar extends StatelessWidget {
   final void Function()? favoriteOnPressed;
@@ -12,6 +14,7 @@ class Custshearchappbar extends StatelessWidget {
   final bool showClose;
   final TextEditingController mycontroller;
   final Function(String)? onChanged;
+  final FocusNode? focusNode;
   const Custshearchappbar({
     super.key,
     this.favoriteOnPressed,
@@ -21,6 +24,7 @@ class Custshearchappbar extends StatelessWidget {
     this.imageOnPressed,
     this.onTapClose,
     this.showClose = false,
+    this.focusNode,
   });
 
   @override
@@ -42,12 +46,13 @@ class Custshearchappbar extends StatelessWidget {
                 validator: (value) {
                   return vlidateInPut(val: value!, min: 3, max: 100);
                 },
+                focusNode: focusNode,
                 onChanged: onChanged,
                 controller: mycontroller,
                 decoration: InputDecoration(
                   filled: true,
                   fillColor: Appcolor.somgray,
-                  hintText: "Shearch item",
+                  hintText: StringsKeys.searchHint.tr,
                   hintStyle: TextStyle(color: Appcolor.black),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(15),
@@ -71,7 +76,15 @@ class Custshearchappbar extends StatelessWidget {
                         ),
                       IconButton(
                         onPressed: onTapSearch,
-                        icon: Icon(Icons.search, color: Appcolor.primrycolor),
+                        icon: Transform(
+                          alignment: Alignment.center,
+                          transform: Matrix4.identity()
+                            ..scale(langDirection() ? 1.0 : -1.0, 1.0),
+                          child: Icon(
+                            Icons.search,
+                            color: Appcolor.primrycolor,
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -83,9 +96,9 @@ class Custshearchappbar extends StatelessWidget {
             onPressed: favoriteOnPressed,
             icon: FaIcon(
               langDirection()
-                  ? FontAwesomeIcons.heart
-                  : FontAwesomeIcons.solidHeart,
-              color: langDirection() ? Appcolor.primrycolor : Appcolor.white,
+                  ? FontAwesomeIcons.solidHeart
+                  : FontAwesomeIcons.heart,
+              color: langDirection() ? Appcolor.white : Appcolor.primrycolor,
             ),
           ),
           imageOnPressed == null

@@ -47,6 +47,10 @@ class HotProductShein extends StatelessWidget {
             return false;
           },
           child: Handlingdataviwe(
+            ontryagain: () {
+              controller.sheinHomController.fetchproducts();
+            },
+
             shimmer: ShimmerListHorizontal(isSlevr: false),
             statusrequest: controller.sheinHomController.statusrequestproduct,
             widget: Container(
@@ -171,8 +175,8 @@ class HotProductShein extends StatelessWidget {
                                       padding: const EdgeInsets.only(left: 5),
                                       child: ClipOval(
                                         child: CachedNetworkImage(
-                                          imageUrl:
-                                              '${product.relatedColorImages[index - 1]}',
+                                          imageUrl: product
+                                              .relatedColorImages[index - 1],
                                           width: 30,
                                           height: 30,
                                           fit: BoxFit.cover,

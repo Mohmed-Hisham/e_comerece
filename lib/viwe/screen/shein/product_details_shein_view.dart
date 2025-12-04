@@ -7,14 +7,16 @@ import 'package:e_comerece/controller/shein/product_details_shein_controller.dar
 import 'package:e_comerece/core/class/handlingdataviwe.dart';
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/color.dart';
+import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/constant/sliver_spacer.dart';
+import 'package:e_comerece/core/helper/format_price.dart';
 import 'package:e_comerece/core/shared/widget_shared/shimmerbar.dart';
 import 'package:e_comerece/viwe/screen/shein/cust_label_container.dart';
 import 'package:e_comerece/viwe/screen/shein/product_from_details.dart';
-import 'package:e_comerece/viwe/screen/shein/search_shein_viwe.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_app_bar.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_right_1.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_right_2.dart';
+import 'package:e_comerece/viwe/widget/Positioned/positioned_support.dart';
 import 'package:e_comerece/viwe/widget/shein/product_images_carousel_shein.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -30,17 +32,17 @@ class ProductDetailsSheinView extends StatelessWidget {
     );
 
     return Scaffold(
-      body: Stack(
-        children: [
-          const PositionedRight1(),
-          const PositionedRight2(),
+      body: GetBuilder<ProductDetailsSheinControllerImple>(
+        builder: (controller) {
+          log('build');
+          return Stack(
+            children: [
+              const PositionedRight1(),
+              const PositionedRight2(),
 
-          Container(
-            padding: const EdgeInsets.only(top: 65),
-            child: GetBuilder<ProductDetailsSheinControllerImple>(
-              builder: (controller) {
-                log('build');
-                return NotificationListener<ScrollNotification>(
+              Container(
+                padding: const EdgeInsets.only(top: 65),
+                child: NotificationListener<ScrollNotification>(
                   onNotification: (scrollInfo) {
                     if (scrollInfo is ScrollUpdateNotification) {
                       if (scrollInfo.metrics.axis == Axis.vertical) {
@@ -105,12 +107,27 @@ class ProductDetailsSheinView extends StatelessWidget {
                       ],
                     ),
                   ),
-                );
-              },
-            ),
-          ),
-          PositionedAppBar(title: "Product Details", onPressed: Get.back),
-        ],
+                ),
+              ),
+              PositionedAppBar(title: "Product Details", onPressed: Get.back),
+              PositionedSupport(
+                onPressed: () {
+                  Get.toNamed(
+                    AppRoutesname.messagesScreen,
+                    arguments: {
+                      "platform": 'alibaba',
+                      "link_Product": controller
+                          .productDitelsSheinModel
+                          ?.data
+                          ?.products
+                          ?.productUrl,
+                    },
+                  );
+                },
+              ),
+            ],
+          );
+        },
       ),
     );
   }
@@ -432,12 +449,15 @@ class _AddToCartButtonShein extends StatelessWidget {
                       controller.goodssn.toString(),
                       controller.subject.toString(),
                       controller.imageListFromApi.first.toString(),
-                      controller.getCurrentPriceFormatted(),
+                      extractPrice(controller.getCurrentPriceFormatted()),
                       'Shein',
-                      controller.quantity.toString(),
+                      controller.quantity,
                       '{"size":"${controller.label}", "model":"${controller.imageListFromApi.first.toString()}"}',
-                      '1000',
+                      1000,
                       tier: "",
+                      goodsSn: controller.goodssn.toString(),
+                      categoryId: controller.categoryid.toString(),
+                      porductink: controller.productLink ?? "",
                     );
                     controller.getquiqtity(
                       '{"size":"${controller.label}", "model":"${controller.imageListFromApi.first.toString()}"}',

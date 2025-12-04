@@ -1,16 +1,15 @@
-import 'dart:developer';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e_comerece/controller/amazon_controllers/amazon_home_controller.dart';
 import 'package:e_comerece/controller/favorite/favorites_controller.dart';
 import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/funcations/calculateDiscount.dart';
 import 'package:e_comerece/core/funcations/extractn_umbers.dart';
 import 'package:e_comerece/core/funcations/translate_data.dart';
-import 'package:e_comerece/core/shared/widget_shared/loadingimage.dart';
 import 'package:e_comerece/core/shared/widget_shared/shimmerbar.dart';
 import 'package:e_comerece/viwe/screen/amazon/cust_price_amazon.dart';
 import 'package:e_comerece/viwe/widget/custgridviwe.dart';
+import 'package:e_comerece/viwe/widget/custom_cached_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get_state_manager/src/simple/get_state.dart';
 
@@ -37,16 +36,17 @@ class SearchAmazonView extends StatelessWidget {
         onRefresh: () => controller.searshText(),
         child: Column(
           children: [
-            SeetingsPriceShein(),
+            SeetingsPriceAmazon(),
 
             Expanded(
               child: GridView.builder(
-                padding: const EdgeInsets.all(15),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                physics: const BouncingScrollPhysics(),
+                padding: EdgeInsets.all(12.w),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 10,
-                  mainAxisExtent: 260,
+                  crossAxisSpacing: 12.w,
+                  mainAxisSpacing: 10.w,
+                  mainAxisExtent: 330.h,
                 ),
                 itemCount: controller.searchProducts.length,
                 itemBuilder: (context, index) {
@@ -54,8 +54,8 @@ class SearchAmazonView extends StatelessWidget {
 
                   return InkWell(
                     onTap: () {
-                      log(item.productUrl.toString());
-                      print(item.asin.toString());
+                      // log(item.productUrl.toString());
+                      // print(item.asin.toString());
                       controller.gotoditels(
                         asin: item.asin.toString(),
                         title: item.productTitle!,
@@ -63,14 +63,7 @@ class SearchAmazonView extends StatelessWidget {
                       );
                     },
                     child: Custgridviwe(
-                      image: CachedNetworkImage(
-                        imageUrl: item.productPhoto!,
-                        fit: BoxFit.cover,
-                        width: double.infinity,
-                        placeholder: (context, url) => const Loadingimage(),
-                        errorWidget: (context, url, error) =>
-                            const Icon(Icons.error),
-                      ),
+                      image: CustomCachedImage(imageUrl: item.productPhoto!),
                       disc: calculateDiscountPercent(
                         extractNumbers(item.productPrice.toString()),
                         extractNumbers(item.productOriginalPrice ?? ""),

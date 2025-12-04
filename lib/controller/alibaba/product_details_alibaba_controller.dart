@@ -391,6 +391,7 @@ class ProductDetailsAlibabaControllerImple
       [];
 
   String? get subject => productDitelsAliBabaModel?.result?.item?.title;
+  String? get productLink => productDitelsAliBabaModel?.result?.item?.itemUrl;
   List<String> get imageList =>
       productDitelsAliBabaModel?.result?.item?.images ?? [];
   String? get sellerName =>

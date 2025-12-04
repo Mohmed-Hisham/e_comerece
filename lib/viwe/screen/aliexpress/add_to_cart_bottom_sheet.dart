@@ -80,7 +80,7 @@ class AddToCartBottomSheet extends StatelessWidget {
                       cartModel: CartModel(
                         productId: controller.productId!.toString(),
                         cartAttributes: attributesJson,
-                        cartQuantity: controller.quantity.toString(),
+                        cartQuantity: controller.quantity,
                       ),
                     );
                   },
@@ -105,12 +105,10 @@ class AddToCartBottomSheet extends StatelessWidget {
                       cartModel: CartModel(
                         productId: controller.productId!.toString(),
                         cartAttributes: attributesJson,
-                        cartQuantity: controller.quantity.toString(),
+                        cartQuantity: controller.quantity,
                       ),
                       availablequantity:
-                          controller.currentSku?.skuVal?.availQuantity
-                              ?.toString() ??
-                          "0",
+                          controller.currentSku?.skuVal?.availQuantity ?? 0,
                     );
                   },
                 ),

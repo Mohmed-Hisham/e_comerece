@@ -2,15 +2,16 @@ import 'package:e_comerece/controller/aliexpriess/product_details_controller.dar
 import 'package:e_comerece/controller/cart/cart_from_detils.dart';
 import 'package:e_comerece/controller/favorite/favorites_controller.dart';
 import 'package:e_comerece/core/class/handlingdataviwe.dart';
+import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/funcations/translate_data.dart';
 import 'package:e_comerece/core/servises/extract_image_urls.dart';
-import 'package:e_comerece/core/shared/widget_shared/shimmer_product_details.dart';
 import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/shared/widget_shared/shimmerbar.dart';
 import 'package:e_comerece/viwe/screen/aliexpress/poduct_more_ditels.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_app_bar.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_right_1.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_right_2.dart';
+import 'package:e_comerece/viwe/widget/Positioned/positioned_support.dart';
 import 'package:e_comerece/viwe/widget/aliexpress/custattribute_selection.dart';
 import 'package:e_comerece/viwe/widget/aliexpress/custbuildpricedisplay.dart';
 import 'package:e_comerece/viwe/widget/aliexpress/custbutton_add_cart.dart';
@@ -31,16 +32,16 @@ class ProductDetailsView extends StatelessWidget {
     );
     Get.put(FavoritesController());
     return Scaffold(
-      body: Stack(
-        children: [
-          PositionedRight1(),
-          PositionedRight2(),
+      body: GetBuilder<ProductDetailsControllerImple>(
+        builder: (controller) {
+          return Stack(
+            children: [
+              PositionedRight1(),
+              PositionedRight2(),
 
-          Container(
-            padding: EdgeInsets.only(top: 65),
-            child: GetBuilder<ProductDetailsControllerImple>(
-              builder: (controller) {
-                return Handlingdataviwe(
+              Container(
+                padding: EdgeInsets.only(top: 65),
+                child: Handlingdataviwe(
                   isproductdetails: true,
                   // shimmer: ShimmerProductDetails(),
                   statusrequest: controller.statusrequest,
@@ -94,13 +95,25 @@ class ProductDetailsView extends StatelessWidget {
                       ],
                     ),
                   ),
-                );
-              },
-            ),
-          ),
-          PositionedAppBar(title: "Product Details", onPressed: Get.back),
-          CustbuttonAddCart(addcontroller: addcontroller),
-        ],
+                ),
+              ),
+              PositionedAppBar(title: "Product Details", onPressed: Get.back),
+              CustbuttonAddCart(addcontroller: addcontroller),
+              PositionedSupport(
+                onPressed: () {
+                  Get.toNamed(
+                    AppRoutesname.messagesScreen,
+                    arguments: {
+                      "platform": 'alibaba',
+                      "link_Product":
+                          controller.itemDetailsModel?.result?.item?.itemUrl,
+                    },
+                  );
+                },
+              ),
+            ],
+          );
+        },
       ),
     );
   }

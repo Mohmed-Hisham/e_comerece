@@ -3,15 +3,15 @@ class AmazonApi {
 
   static const Map<String, String> rapidApiHeaders = {
     'X-RapidAPI-Host': 'real-time-amazon-data.p.rapidapi.com',
-    'X-RapidAPI-Key': '154f05712emsh78a06e9450717a1p10be2cjsn534236a10e6a',
+    'X-RapidAPI-Key': '1bd0905b8fmshd7e930954808aeep1f3f99jsn4f9f6ee455a3',
   };
 
-  static String categories() {
-    return "$_server/product-category-list?country=AE";
+  static String categories({required String countryForLanguage}) {
+    return "$_server/product-category-list?country=$countryForLanguage";
   }
 
-  static String hotdeals({int offset = 0}) {
-    return "$_server/deals-v2?country=SA&offset=$offset&min_product_star_rating=ALL&price_range=ALL&discount_range=ALL&language=en_AE";
+  static String hotdeals({int offset = 0, required String lang}) {
+    return "$_server/deals-v2?country=SA&offset=$offset&min_product_star_rating=ALL&price_range=ALL&discount_range=ALL&language=$lang";
   }
 
   static String searshProduct(

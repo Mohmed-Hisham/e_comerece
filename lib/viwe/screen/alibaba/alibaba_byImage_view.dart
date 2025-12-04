@@ -6,7 +6,7 @@ import 'package:e_comerece/controller/favorite/favorites_controller.dart';
 import 'package:e_comerece/core/class/handlingdataviwe.dart';
 import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/funcations/translate_data.dart';
-import 'package:e_comerece/core/servises/safeImage_url.dart';
+import 'package:e_comerece/core/servises/safe_image_url.dart';
 import 'package:e_comerece/core/shared/widget_shared/shimmer_image_product.dart';
 import 'package:e_comerece/core/shared/widget_shared/shimmerbar.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_app_bar.dart';
@@ -19,7 +19,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 
 class AlibabaByimageView extends StatelessWidget {
-  const AlibabaByimageView({Key? key}) : super(key: key);
+  const AlibabaByimageView({super.key});
   @override
   Widget build(BuildContext context) {
     Get.put(AlibabaByimageControllerllerImple());

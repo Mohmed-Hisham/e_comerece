@@ -48,4 +48,12 @@ class AppRoutesname {
 
   // address
   static const String addAddresses = "/AddAddresses";
+  static const String checkout = "/checkout";
+
+  // Support
+  static const String chatsScreen = "/chatsScreen";
+  static const String messagesScreen = "/messagesScreen";
+
+  // Orders
+  static const String orderDetails = "/order-details";
 }

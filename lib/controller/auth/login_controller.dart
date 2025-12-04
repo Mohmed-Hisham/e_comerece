@@ -3,10 +3,14 @@ import 'dart:developer';
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/funcations/handlingdata.dart';
+import 'package:e_comerece/core/funcations/loading_dialog.dart';
 import 'package:e_comerece/core/servises/serviese.dart';
 import 'package:e_comerece/data/datasource/remote/auth/login_data.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:e_comerece/core/constant/strings_keys.dart';
+import 'package:e_comerece/core/funcations/error_dialog.dart';
 
 abstract class LoginController extends GetxController {
   login();
@@ -15,6 +19,9 @@ abstract class LoginController extends GetxController {
 }
 
 class LoginControllerimplment extends LoginController {
+  ScrollController scrollController = ScrollController();
+  final focus = FocusNode();
+
   LoginData loginData = LoginData(Get.find());
   late TextEditingController passowrd;
 
@@ -45,15 +52,7 @@ class LoginControllerimplment extends LoginController {
       statusrequest = Statusrequest.loading;
       update();
       if (!Get.isDialogOpen!) {
-        Get.dialog(
-          PopScope(
-            canPop: false,
-            onPopInvokedWithResult: (bool didPop, dynamic result) {
-              if (didPop) return;
-            },
-            child: Center(child: CircularProgressIndicator()),
-          ),
-        );
+        loadingDialog();
       }
       var response = await loginData.postData(
         email: email,
@@ -70,10 +69,8 @@ class LoginControllerimplment extends LoginController {
             arguments: {"email": response['data']['user_email']},
           );
         } else if (response['status'] == 'success') {
-          myServises.sharedPreferences.setString(
-            "user_id",
-            response['data']['user_id'].toString(),
-          );
+          final String id = response['data']['user_id'].toString();
+          myServises.sharedPreferences.setString("user_id", id);
           log(response['data']['user_id'].toString());
           myServises.sharedPreferences.setString(
             "user_name",
@@ -87,14 +84,17 @@ class LoginControllerimplment extends LoginController {
             "user_phone",
             response['data']['user_phone'],
           );
+          FirebaseMessaging.instance.subscribeToTopic('users');
+          FirebaseMessaging.instance.subscribeToTopic('user$id');
+
           if (myServises.sharedPreferences.getString("step") == "1") {
             Get.offNamed(AppRoutesname.homepage);
           } else {
             Get.offNamed(AppRoutesname.onBoarding);
           }
-          myServises.sharedPreferences.setString("step", "1");
         } else {
-          Get.defaultDialog(title: "خطأ", middleText: "كلمه المرور خطأ");
+          errorDialog(StringsKeys.error.tr, StringsKeys.passwordIncorrect.tr);
+          focus.unfocus();
           statusrequest = Statusrequest.failuer;
         }
       }
@@ -119,6 +119,8 @@ class LoginControllerimplment extends LoginController {
   void dispose() {
     super.dispose();
     passowrd.dispose();
+    focus.dispose();
+    scrollController.dispose();
   }
 
   @override

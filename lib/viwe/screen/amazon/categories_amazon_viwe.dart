@@ -4,6 +4,7 @@ import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/constant/wantedcategory.dart';
 import 'package:e_comerece/core/shared/widget_shared/shimmer_categories.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 class CategoriesAmazonViwe extends StatelessWidget {
@@ -17,8 +18,9 @@ class CategoriesAmazonViwe extends StatelessWidget {
           shimmer: CategoriesShimmer(),
           statusrequest: controller.statusrequestcat,
           widget: SizedBox(
-            height: 100,
+            height: 100.h,
             child: ListView.builder(
+              physics: const BouncingScrollPhysics(),
               padding: EdgeInsets.only(left: 10),
               scrollDirection: Axis.horizontal,
               itemCount: controller.categories.length,
@@ -27,12 +29,13 @@ class CategoriesAmazonViwe extends StatelessWidget {
                 final IconData iconToShow =
                     amazonCategoryIcons[category.id] ?? Icons.category_outlined;
                 return Container(
-                  width: 100,
+                  width: 120.w,
                   alignment: Alignment.center,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           InkWell(
                             onTap: () {
@@ -40,8 +43,8 @@ class CategoriesAmazonViwe extends StatelessWidget {
                             },
 
                             child: Container(
-                              height: 50,
-                              width: 50,
+                              height: 60.h,
+                              width: 60.w,
                               decoration: BoxDecoration(
                                 color: Appcolor.white,
                                 border: Border.all(
@@ -56,16 +59,16 @@ class CategoriesAmazonViwe extends StatelessWidget {
                         ],
                       ),
                       Container(
-                        alignment: Alignment.centerLeft,
+                        alignment: Alignment.center,
                         padding: const EdgeInsets.all(4),
-                        width: 100,
+                        width: 120.w,
                         child: Text(
                           category.name!,
                           textAlign: TextAlign.start,
-                          maxLines: 2,
+                          maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            fontSize: 12,
+                          style: TextStyle(
+                            fontSize: 14.sp,
                             color: Appcolor.soecendcolor,
                             fontWeight: FontWeight.w900,
                           ),

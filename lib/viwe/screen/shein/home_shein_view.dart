@@ -2,6 +2,7 @@ import 'package:e_comerece/controller/favorite/favorites_controller.dart';
 import 'package:e_comerece/controller/shein/home_shein_controller.dart';
 import 'package:e_comerece/core/class/handlingdataviwe.dart';
 import 'package:e_comerece/core/constant/imagesassets.dart';
+import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/viwe/screen/shein/cust_label_container.dart';
 import 'package:e_comerece/viwe/screen/shein/categories_shein.dart';
 import 'package:e_comerece/viwe/screen/shein/search_shein_viwe.dart';
@@ -9,6 +10,7 @@ import 'package:e_comerece/viwe/screen/shein/trending_product_shein.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_app_bar.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_left_2.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_right_2.dart';
+import 'package:e_comerece/viwe/widget/Positioned/positioned_support.dart';
 import 'package:e_comerece/viwe/widget/custshearchappbar.dart';
 import 'package:e_comerece/viwe/widget/shein/cust_carouse_shein.dart';
 import 'package:flutter/material.dart';
@@ -21,12 +23,10 @@ class HomeSheinView extends StatelessWidget {
   Widget build(BuildContext context) {
     Get.put(HomeSheinControllerImpl());
     Get.put(FavoritesController());
-    // Get.lazyPut(() => ImageManagerController());
 
     return Scaffold(
       body: GetBuilder<HomeSheinControllerImpl>(
         builder: (controller) {
-          print("build");
           return Stack(
             children: [
               PositionedRight1(),
@@ -133,6 +133,14 @@ class HomeSheinView extends StatelessWidget {
                           ),
                   ),
                 ],
+              ),
+              PositionedSupport(
+                onPressed: () {
+                  Get.toNamed(
+                    AppRoutesname.messagesScreen,
+                    arguments: {"platform": 'shein'},
+                  );
+                },
               ),
             ],
           );

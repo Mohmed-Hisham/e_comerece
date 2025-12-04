@@ -12,7 +12,7 @@ import 'package:get/get.dart';
 abstract class AddorrmoveController extends GetxController {
   Future<void> addprise({
     required CartModel cartModel,
-    required String availablequantity,
+    required int availablequantity,
   });
   Future<void> removprise({required CartModel cartModel});
   Future<Map<String, dynamic>> cartquintty(String productid, String attributes);
@@ -20,12 +20,15 @@ abstract class AddorrmoveController extends GetxController {
     String productid,
     String producttitle,
     String productimage,
-    String productprice,
+    double productprice,
     String platform,
-    String quantity,
+    int quantity,
     String attributes,
-    String availableqQuantity, {
+    int availableqQuantity, {
     String? tier,
+    String? goodsSn,
+    String? categoryId,
+    required String porductink,
   });
 }
 
@@ -50,11 +53,14 @@ class AddorrmoveControllerimple extends AddorrmoveController {
     attributes,
     availableqQuantity, {
     tier,
+    goodsSn,
+    categoryId,
+    required porductink,
   }) async {
     statusRequest = Statusrequest.loading;
     var response = await cartAddData.addcart(
-      userId: myServices.sharedPreferences.getString("user_id")!,
-      productid: productid,
+      userId: int.parse(myServices.sharedPreferences.getString("user_id")!),
+      productid: productid.toString(),
       producttitle: producttitle,
       productimage: productimage,
       productprice: productprice,
@@ -63,6 +69,9 @@ class AddorrmoveControllerimple extends AddorrmoveController {
       attributes: attributes,
       availableqQuantity: availableqQuantity,
       tier: tier,
+      categoryId: categoryId,
+      goodsSn: goodsSn,
+      productLink: porductink,
     );
     print("response=>$response");
     statusRequest = handlingData(response);
@@ -92,8 +101,8 @@ class AddorrmoveControllerimple extends AddorrmoveController {
     statusRequest = handlingData(response);
     if (Statusrequest.success == statusRequest) {
       if (response['status'] == "success" && response['message'] == "edit") {
-        int currentQuantity = int.parse(cartModel.cartQuantity!);
-        cartModel.cartQuantity = (currentQuantity + 1).toString();
+        int currentQuantity = cartModel.cartQuantity!;
+        cartModel.cartQuantity = (currentQuantity + 1);
         Get.rawSnackbar(
           title: "اشعار",
           messageText: const Text("تم زيادة الكمية"),
@@ -119,9 +128,9 @@ class AddorrmoveControllerimple extends AddorrmoveController {
     statusRequest = handlingData(response);
     if (Statusrequest.success == statusRequest) {
       if (response['status'] == "success" && response['message'] == "edit") {
-        int currentQuantity = int.parse(cartModel.cartQuantity!);
+        int currentQuantity = cartModel.cartQuantity!;
         if (currentQuantity > 1) {
-          cartModel.cartQuantity = (currentQuantity - 1).toString();
+          cartModel.cartQuantity = (currentQuantity - 1);
           Get.rawSnackbar(
             title: "اشعار",
             messageText: const Text("تم تقليل الكميه بمقدار 1 "),

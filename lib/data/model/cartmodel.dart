@@ -1,13 +1,16 @@
 class CartModel {
-  String? cartId;
+  int? cartId;
   String? productId;
   String? cartProductTitle;
   String? cartProductImage;
   String? cartPrice;
-  String? cartQuantity;
+  int? cartQuantity;
   String? cartAttributes;
-  String? cartAvailableQuantity;
+  int? cartAvailableQuantity;
   String? cartPlatform;
+  String? goodsSn;
+  String? categoryId;
+  String? productink;
 
   CartModel({
     this.cartId,
@@ -19,6 +22,9 @@ class CartModel {
     this.cartAttributes,
     this.cartAvailableQuantity,
     this.cartPlatform,
+    this.goodsSn,
+    this.categoryId,
+    this.productink,
   });
 
   CartModel.fromJson(Map<String, dynamic> json) {
@@ -31,6 +37,9 @@ class CartModel {
     cartAttributes = json['cart_attributes'];
     cartAvailableQuantity = json['cart_available_quantity'];
     cartPlatform = json['cart_platform'];
+    goodsSn = json['goods_sn'];
+    categoryId = json['category_id'];
+    productink = json['product_link'];
   }
 
   Map<String, dynamic> toJson() {
@@ -44,6 +53,9 @@ class CartModel {
     data['cart_attributes'] = cartAttributes;
     data['cart_available_quantity'] = cartAvailableQuantity;
     data['cart_platform'] = cartPlatform;
+    data['goods_sn'] = goodsSn;
+    data['category_id'] = categoryId;
+    data['product_link'] = productink;
     return data;
   }
 }

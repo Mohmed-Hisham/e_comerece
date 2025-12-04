@@ -25,7 +25,7 @@ class FavoriteData {
       "favorite_platform": platform,
       "goods_sn": goodsSn,
       "category_id": categoryid,
-    });
+    }, sendJson: true);
 
     return respons.fold((l) => l, (r) => r);
   }

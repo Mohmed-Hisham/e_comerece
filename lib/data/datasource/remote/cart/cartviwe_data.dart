@@ -6,7 +6,7 @@ class CartviweData {
 
   CartviweData(this.crud);
 
-  getData(String userId) async {
+  getData(int userId) async {
     var response = await crud.postData(Appapi.viweCart, {"user_id": userId});
     return response.fold((l) => l, (r) => r);
   }

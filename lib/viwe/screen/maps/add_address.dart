@@ -58,7 +58,12 @@ class _CustGoogleMapState extends State<AddAddress> {
                 left: 0,
                 child: Handlingdataviwe(
                   statusrequest: getxcontroller.mapstatusrequest,
-                  shimmer: LocationInfoShimmer(),
+                  shimmer: LocationInfoShimmer(
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(30.r),
+                      topRight: Radius.circular(30.r),
+                    ),
+                  ),
                   widget: Container(
                     decoration: BoxDecoration(
                       boxShadow: [

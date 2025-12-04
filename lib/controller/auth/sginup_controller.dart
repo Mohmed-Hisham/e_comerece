@@ -1,5 +1,8 @@
 import 'package:e_comerece/core/class/statusrequest.dart';
+import 'package:e_comerece/core/constant/strings_keys.dart';
+import 'package:e_comerece/core/funcations/error_dialog.dart';
 import 'package:e_comerece/core/funcations/handlingdata.dart';
+import 'package:e_comerece/core/funcations/loading_dialog.dart';
 import 'package:e_comerece/data/datasource/remote/auth/signup_data.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
@@ -13,6 +16,11 @@ abstract class SginupController extends GetxController {
 
 class SginupControllerimplemnt extends SginupController {
   SignupData signupData = SignupData(Get.find());
+  ScrollController scrollController = ScrollController();
+  final emailFocus = FocusNode();
+  final phoneFocus = FocusNode();
+  final passwordFocus = FocusNode();
+  final usernameFocus = FocusNode();
 
   List data = [];
 
@@ -38,6 +46,9 @@ class SginupControllerimplemnt extends SginupController {
     if (formdate.validate()) {
       statusrequest = Statusrequest.loading;
       update();
+      if (!Get.isDialogOpen!) {
+        loadingDialog();
+      }
       var response = await signupData.postData(
         username: username.text,
         email: email.text,
@@ -45,6 +56,7 @@ class SginupControllerimplemnt extends SginupController {
         phone: phone.text,
       );
       statusrequest = handlingData(response);
+      if (Get.isDialogOpen ?? false) Get.back();
       if (Statusrequest.success == statusrequest) {
         if (response['status'] == 'success') {
           // data.addAll(response['data']);
@@ -52,17 +64,20 @@ class SginupControllerimplemnt extends SginupController {
             AppRoutesname.verFiyCodeSignUp,
             arguments: {"email": email.text},
           );
+          emailFocus.unfocus();
+          phoneFocus.unfocus();
+          passwordFocus.unfocus();
+          usernameFocus.unfocus();
         } else {
-          Get.defaultDialog(
-            title: "خطأ",
-            middleText: "الايميل او رقم الهاتف موجدين سابقا",
-          );
+          errorDialog(StringsKeys.error.tr, StringsKeys.emailOrPhoneExists.tr);
+          emailFocus.unfocus();
+          phoneFocus.unfocus();
+          passwordFocus.unfocus();
+          usernameFocus.unfocus();
           statusrequest = Statusrequest.failuer;
         }
       }
       update();
-    } else {
-      print("not valid");
     }
   }
 
@@ -83,9 +98,14 @@ class SginupControllerimplemnt extends SginupController {
   @override
   void dispose() {
     super.dispose();
+    emailFocus.dispose();
+    phoneFocus.dispose();
+    passwordFocus.dispose();
+    usernameFocus.dispose();
     email.dispose();
     phone.dispose();
     passowrd.dispose();
     username.dispose();
+    scrollController.dispose();
   }
 }

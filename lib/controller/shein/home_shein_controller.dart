@@ -3,6 +3,7 @@ import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/funcations/handle_paging_response.dart';
 import 'package:e_comerece/core/funcations/handlingdata.dart';
+import 'package:e_comerece/core/loacallization/translate_data.dart';
 import 'package:e_comerece/data/datasource/remote/api_cash/get_cash_data.dart';
 import 'package:e_comerece/data/datasource/remote/api_cash/insert_cash_data.dart';
 
@@ -38,6 +39,7 @@ abstract class HomeSheinController extends GetxController {
     required String title,
     required String goodsid,
     required String categoryid,
+    required String lang,
   });
   // void goToSearchByimage();
   // void gotoshearchname(String nameCat, int categoryId);
@@ -66,11 +68,28 @@ class HomeSheinControllerImpl extends HomeSheinController {
   List<searsh.Product> searchProducts = [];
 
   bool isLoadingSearch = false;
+  bool isLoading = false;
   bool hasMoresearch = true;
+  bool hasMore = true;
   int pageindex = 1;
+  int pageindexHotProduct = 1;
+
   bool isSearch = false;
+  bool showClose = false;
 
   int currentIndex = 0;
+  FocusNode searchFocusNode = FocusNode();
+
+  goTOProductByCat(String catId, String catName) {
+    Get.toNamed(
+      AppRoutesname.productByCategoryShein,
+      arguments: {
+        "categoryid": catId,
+        "title": catName,
+        "categories": categories,
+      },
+    );
+  }
 
   @override
   void onInit() {
@@ -80,11 +99,12 @@ class HomeSheinControllerImpl extends HomeSheinController {
 
   @override
   fetchCategories() async {
+    String cashkey(String q) => 'search:shein:$q:${enOrArShein()}';
     statusrequestcat = Statusrequest.loading;
     update();
     try {
       final cacheResponse = await getCashData.getCash(
-        query: 'categories:shein',
+        query: cashkey("categories"),
         platform: "Shein",
       );
       log('CACHE RESPONSE: ${cacheResponse["status"]}');
@@ -120,7 +140,7 @@ class HomeSheinControllerImpl extends HomeSheinController {
             if (catModel.data.isNotEmpty) {
               categories.assignAll(catModel.data);
               insertCashData.insertCash(
-                query: 'categories:shein',
+                query: cashkey("categories"),
                 platform: "Shein",
                 data: categoryResponse,
                 ttlHours: "24",
@@ -164,6 +184,7 @@ class HomeSheinControllerImpl extends HomeSheinController {
     required title,
     required goodsid,
     required categoryid,
+    required lang,
   }) {
     Get.toNamed(
       AppRoutesname.productDetailsSheinView,
@@ -172,21 +193,30 @@ class HomeSheinControllerImpl extends HomeSheinController {
         "title": title,
         "goods_id": goodsid,
         "category_id": categoryid,
+        "lang": lang,
       },
     );
   }
 
   @override
   fetchproducts({bool isLoadMore = false}) async {
-    cashkey(String q, int p) => 'homeproduct:shein:$q:page=$p';
+    cashkey(String q, int p) => 'homeproduct:shein:$q:page=$p:${enOrArShein()}';
 
-    statusrequestproduct = Statusrequest.loading;
+    if (isLoadMore) {
+      if (isLoading || !hasMore) return;
+      isLoading = true;
+    } else {
+      statusrequestproduct = Statusrequest.loading;
+      pageindexHotProduct = 1;
+      products.clear();
+      hasMore = true;
+    }
 
     update();
 
     try {
       final cacheResponse = await getCashData.getCash(
-        query: cashkey("", pageindex),
+        query: cashkey("", pageindexHotProduct),
         platform: "shein",
       );
 
@@ -200,50 +230,54 @@ class HomeSheinControllerImpl extends HomeSheinController {
             final List<Product> iterable = model.data!.products;
 
             if (iterable.isEmpty) {
+              hasMore = false;
               statusrequestproduct = Statusrequest.noData;
             } else {
-              products.assignAll(iterable);
-              statusrequestproduct = Statusrequest.success;
+              products.addAll(iterable);
+              pageindexHotProduct++;
             }
           }
         }
       } else {
         log("get from shein home product api=====================");
-        final response = await trendaingSheinData.getTrendingproduct();
-        print(response);
+        final response = await trendaingSheinData.getTrendingproduct(
+          pageindexHotProduct,
+        );
         statusrequestproduct = handlingData(response);
         if (statusrequestproduct == Statusrequest.success) {
           if (response['success'] == true) {
             final model = TrendingProductsModel.fromJson(response);
             final List<Product> iterable = model.data!.products;
 
-            if (iterable.isEmpty) {
+            if (iterable.isEmpty && pageindexHotProduct > 1) {
+              hasMore = false;
+              statusrequestproduct = Statusrequest.noDataPageindex;
+              custSnackBarNoMore();
+            } else if (iterable.isEmpty) {
+              hasMore = false;
               statusrequestproduct = Statusrequest.noData;
             } else {
-              products.assignAll(iterable);
-              statusrequestproduct = Statusrequest.success;
+              products.addAll(iterable);
               insertCashData.insertCash(
-                query: cashkey("", pageindex),
+                query: cashkey("", pageindexHotProduct),
                 platform: "shein",
                 data: response,
                 ttlHours: "24",
               );
+              pageindexHotProduct++;
             }
           }
         }
       }
     } catch (e, st) {
       log('FETCH ERROR: $e\n$st');
+      hasMore = false;
       statusrequestproduct = Statusrequest.failuer;
     } finally {
+      if (isLoadMore) isLoading = false;
       update();
     }
   }
-
-  // @override
-  // loadMoreSearch(lang) {
-  //   searshText(keyWord: searchController.text, isLoadMore: true, lang: lang);
-  // }
 
   // @override
   // onChangeSearch(String val) {
@@ -281,7 +315,8 @@ class HomeSheinControllerImpl extends HomeSheinController {
 
   @override
   searshProduct({isLoadMore = false, startPrice = "", endPrice = ""}) async {
-    cashkey(String q, int p) => 'search:shein:$q:page=$p';
+    cashkey(String q, int p) =>
+        'search:shein:$q:page=$p:${detectLangFromQueryShein(searchController.text)}';
 
     if (isLoadMore) {
       if (isLoadingSearch || !hasMoresearch) return;
@@ -328,6 +363,7 @@ class HomeSheinControllerImpl extends HomeSheinController {
           pageindex: pageindex.toString(),
           endPrice: endPrice,
           startPrice: startPrice,
+          countryCode: detectLangFromQueryShein(searchController.text),
         );
 
         statusrequestsearch = handlingData(response);
@@ -397,38 +433,26 @@ class HomeSheinControllerImpl extends HomeSheinController {
     }
   }
 
-  // @override
-  // goToSearchByimage() {
-  //   Get.put(ImageManagerController())
-  //     ..pickImage().then((image) {
-  //       if (image.path != '')
-  //         Get.dialog(
-  //           PopScope(
-  //             canPop: false,
-  //             onPopInvokedWithResult: (bool didPop, dynamic result) {
-  //               if (didPop) return;
-  //             },
-  //             child: Center(child: CircularProgressIndicator()),
-  //           ),
-  //         );
-  //       uploadToCloudinary(
-  //             filePath: image.path,
-  //             cloudName: Appapi.cloudName,
-  //             uploadPreset: Appapi.uploadPreset,
-  //           )
-  //           .then((url) {
-  //             if (Get.isDialogOpen ?? false) Get.back();
-  //             if (url != null) {
-  //               print('Uploaded to: $url');
-  //               Get.toNamed(
-  //                 AppRoutesname.searchByimagealiexpress,
-  //                 arguments: {'url': url, 'image': image},
-  //               );
-  //             } else {}
-  //           })
-  //           .catchError((err) {
-  //             print('Error: $err');
-  //           });
-  //     });
-  // }
+  onCloseSearch() {
+    if (isSearch) {
+      isSearch = false;
+      searchController.clear();
+      update();
+      showClose = false;
+      // update(['initShow']);
+    } else {
+      searchController.clear();
+      showClose = false;
+      // update(['initShow']);
+    }
+  }
+
+  whenstartSearch(String q) async {
+    if (q != "") {
+      showClose = true;
+      update();
+    } else {
+      showClose = false;
+    }
+  }
 }

@@ -1,20 +1,23 @@
 import 'dart:developer';
 import 'dart:math' as math;
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e_comerece/controller/cart/cart_from_detils.dart';
 import 'package:e_comerece/controller/shein/product_details_shein_controller.dart';
 import 'package:e_comerece/core/class/handlingdataviwe.dart';
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/color.dart';
+import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/constant/sliver_spacer.dart';
+import 'package:e_comerece/core/constant/strings_keys.dart';
+import 'package:e_comerece/core/helper/custom_cached_image.dart';
+import 'package:e_comerece/core/helper/format_price.dart';
 import 'package:e_comerece/core/shared/widget_shared/shimmerbar.dart';
 import 'package:e_comerece/viwe/screen/shein/cust_label_container.dart';
 import 'package:e_comerece/viwe/screen/shein/product_from_details.dart';
-import 'package:e_comerece/viwe/screen/shein/search_shein_viwe.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_app_bar.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_right_1.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_right_2.dart';
+import 'package:e_comerece/viwe/widget/Positioned/positioned_support.dart';
 import 'package:e_comerece/viwe/widget/shein/product_images_carousel_shein.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -24,23 +27,25 @@ class ProductDetailsSheinView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Get.put(ProductDetailsSheinControllerImple());
+    final String goodssn = Get.arguments['goods_sn'];
+    Get.put(ProductDetailsSheinControllerImple(), tag: goodssn);
     AddorrmoveControllerimple cartcontroller = Get.put(
       AddorrmoveControllerimple(),
     );
 
     return Scaffold(
-      body: Stack(
-        children: [
-          const PositionedRight1(),
-          const PositionedRight2(),
+      body: GetBuilder<ProductDetailsSheinControllerImple>(
+        tag: goodssn,
+        builder: (controller) {
+          log('build');
+          return Stack(
+            children: [
+              const PositionedRight1(),
+              const PositionedRight2(),
 
-          Container(
-            padding: const EdgeInsets.only(top: 65),
-            child: GetBuilder<ProductDetailsSheinControllerImple>(
-              builder: (controller) {
-                log('build');
-                return NotificationListener<ScrollNotification>(
+              Container(
+                padding: const EdgeInsets.only(top: 65),
+                child: NotificationListener<ScrollNotification>(
                   onNotification: (scrollInfo) {
                     if (scrollInfo is ScrollUpdateNotification) {
                       if (scrollInfo.metrics.axis == Axis.vertical) {
@@ -68,25 +73,30 @@ class ProductDetailsSheinView extends StatelessWidget {
                     ontryagain: () => controller.fetchProductDetails(),
                     statusrequest: controller.statusrequest,
                     widget: CustomScrollView(
+                      physics: const BouncingScrollPhysics(),
                       slivers: [
                         SliverToBoxAdapter(
                           child: _buildProductDetails(
                             context,
                             controller,
+                            goodssn,
                             cartcontroller,
                           ),
                         ),
 
-                        const SliverToBoxAdapter(
+                        SliverToBoxAdapter(
                           child: Row(
                             children: [
-                              CustLabelContainer(text: 'Related Items'),
+                              CustLabelContainer(
+                                text: StringsKeys.relatedItems.tr,
+                              ),
                             ],
                           ),
                         ),
                         const SliverSpacer(20),
-                        ProductFromDetails(),
+                        ProductFromDetails(tag: goodssn),
                         GetBuilder<ProductDetailsSheinControllerImple>(
+                          tag: goodssn,
                           id: 'searchProducts',
                           builder: (con) {
                             if (con.statusrequestsearch ==
@@ -105,12 +115,30 @@ class ProductDetailsSheinView extends StatelessWidget {
                       ],
                     ),
                   ),
-                );
-              },
-            ),
-          ),
-          PositionedAppBar(title: "Product Details", onPressed: Get.back),
-        ],
+                ),
+              ),
+              PositionedAppBar(
+                title: StringsKeys.productDetailsTitle.tr,
+                onPressed: Get.back,
+              ),
+              PositionedSupport(
+                onPressed: () {
+                  Get.toNamed(
+                    AppRoutesname.messagesScreen,
+                    arguments: {
+                      "platform": 'alibaba',
+                      "link_Product": controller
+                          .productDitelsSheinModel
+                          ?.data
+                          ?.products
+                          ?.productUrl,
+                    },
+                  );
+                },
+              ),
+            ],
+          );
+        },
       ),
     );
   }
@@ -118,6 +146,7 @@ class ProductDetailsSheinView extends StatelessWidget {
   Widget _buildProductDetails(
     BuildContext context,
     ProductDetailsSheinControllerImple controller,
+    String goodssn,
     AddorrmoveControllerimple cartController,
   ) {
     log(controller.sizeAttributes.map((e) => e.attrName).toString());
@@ -125,7 +154,7 @@ class ProductDetailsSheinView extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 8),
-        ProductImagesCarouselShein(),
+        ProductImagesCarouselShein(tag: goodssn),
         Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -140,19 +169,18 @@ class ProductDetailsSheinView extends StatelessWidget {
               const SizedBox(height: 12),
               _VariantSelectorShein(controller: controller),
               const SizedBox(height: 16),
-              _SizeTemplateSection(),
+              _SizeTemplateSection(tag: goodssn),
               const SizedBox(height: 16),
               _MallStockSectionShein(controller: controller),
               const SizedBox(height: 16),
               const SizedBox(height: 16),
-              _QuantitySectionShein(controller: controller),
+              _QuantitySectionShein(controller: controller, tag: goodssn),
               const SizedBox(height: 16),
               _AddToCartButtonShein(
                 controller: controller,
                 cartController: cartController,
+                tag: goodssn,
               ),
-              const SizedBox(height: 16),
-              // _SellerInfoShein(controller: controller),
               const SizedBox(height: 16),
             ],
           ),
@@ -162,7 +190,7 @@ class ProductDetailsSheinView extends StatelessWidget {
   }
 }
 
-class _TitleRowShein extends StatelessWidget {
+class _TitleRowShein extends StatefulWidget {
   final ProductDetailsSheinControllerImple controller;
   final AddorrmoveControllerimple cartController;
   const _TitleRowShein({
@@ -171,23 +199,47 @@ class _TitleRowShein extends StatelessWidget {
   });
 
   @override
+  State<_TitleRowShein> createState() => _TitleRowSheinState();
+}
+
+class _TitleRowSheinState extends State<_TitleRowShein> {
+  bool isExpanded = false;
+
+  @override
   Widget build(BuildContext context) {
-    final subject = controller.subject;
+    final subject = widget.controller.subject;
     if (subject == null) return const SizedBox.shrink();
+    log('Title $subject');
     return GetBuilder<AddorrmoveControllerimple>(
       id: 'fetchCart',
       builder: (cot) {
-        bool isInCart = cot.isCart[controller.goodssn.toString()] ?? false;
+        bool isInCart =
+            cot.isCart[widget.controller.goodssn.toString()] ?? false;
         return Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
-              child: Text(
-                subject,
-                style: Theme.of(context).textTheme.headlineSmall,
+              child: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    isExpanded = !isExpanded;
+                  });
+                },
+                child: Text(
+                  subject,
+                  style: Theme.of(context).textTheme.headlineSmall,
+                  maxLines: isExpanded ? null : 3,
+                  overflow: isExpanded
+                      ? TextOverflow.visible
+                      : TextOverflow.ellipsis,
+                ),
               ),
             ),
             if (isInCart)
-              const Icon(Icons.shopping_cart, color: Appcolor.primrycolor),
+              const Padding(
+                padding: EdgeInsets.only(left: 8.0),
+                child: Icon(Icons.shopping_cart, color: Appcolor.primrycolor),
+              ),
           ],
         );
       },
@@ -219,7 +271,7 @@ class _PriceSectionShein extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Price',
+                StringsKeys.price.tr,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: Appcolor.primrycolor,
@@ -239,7 +291,7 @@ class _PriceSectionShein extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Total (${controller.quantity} ${controller.getUnitName()}):',
+                "${StringsKeys.total.tr} (${controller.quantity} ${controller.getUnitName()}):",
                 style: Theme.of(
                   context,
                 ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
@@ -270,7 +322,10 @@ class _VariantSelectorShein extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Color', style: Theme.of(context).textTheme.titleMedium),
+        Text(
+          StringsKeys.color.tr,
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
         const SizedBox(height: 8),
         Wrap(
           children: [
@@ -306,38 +361,13 @@ class _VariantSelectorShein extends StatelessWidget {
                       ? const SizedBox.shrink()
                       : ClipRRect(
                           borderRadius: BorderRadius.circular(6),
-                          child: CachedNetworkImage(
-                            imageUrl: 'https:$img',
-
-                            fit: BoxFit.cover,
-                            placeholder: (context, url) => const Center(
-                              child: CircularProgressIndicator(),
-                            ),
-                            errorWidget: (context, url, error) =>
-                                const Icon(Icons.error),
-                          ),
+                          child: CustomCachedImage(imageUrl: img),
                         ),
                 ),
               );
             }),
           ],
         ),
-        // SizedBox(
-        //   height: 64,
-        //   child: ListView.separated(
-        //     scrollDirection: Axis.horizontal,
-        //     itemBuilder: (context, i) {
-        //       final v = variants[i];
-        //       final img = v.originalImg ?? v.goodsThumb ?? v.goodsColorImage;
-
-        //       final isSelected =
-        //           controller.currentVariant?.goodsId == v.goodsId;
-
-        //     },
-        //     separatorBuilder: (_, __) => const SizedBox(width: 10),
-        //     itemCount: variants.length,
-        //   ),
-        // ),
       ],
     );
   }
@@ -360,14 +390,17 @@ class _MallStockSectionShein extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Availability', style: Theme.of(context).textTheme.titleMedium),
+          Text(
+            StringsKeys.availability.tr,
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
           const SizedBox(height: 8),
           ...malls.map(
             (m) => Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Mall ${m.mallCode ?? ''}'),
-                Text('${m.stock ?? 0} in stock'),
+                Text("${StringsKeys.mall.tr} ${m.mallCode ?? ''}"),
+                Text("${m.stock ?? 0} ${StringsKeys.inStock.tr}"),
               ],
             ),
           ),
@@ -379,11 +412,13 @@ class _MallStockSectionShein extends StatelessWidget {
 
 class _QuantitySectionShein extends StatelessWidget {
   final ProductDetailsSheinControllerImple controller;
-  const _QuantitySectionShein({required this.controller});
+  final String tag;
+  const _QuantitySectionShein({required this.controller, required this.tag});
 
   @override
   Widget build(BuildContext context) {
     return GetBuilder<ProductDetailsSheinControllerImple>(
+      tag: tag,
       id: 'quantity',
       builder: (_) {
         return Row(
@@ -410,18 +445,23 @@ class _QuantitySectionShein extends StatelessWidget {
 class _AddToCartButtonShein extends StatelessWidget {
   final ProductDetailsSheinControllerImple controller;
   final AddorrmoveControllerimple cartController;
+  final String tag;
   const _AddToCartButtonShein({
     required this.controller,
     required this.cartController,
+    required this.tag,
   });
 
   @override
   Widget build(BuildContext context) {
     return GetBuilder<ProductDetailsSheinControllerImple>(
+      tag: tag,
       id: 'quantity',
       builder: (_) {
         final bool isInCart = controller.isInCart;
-        final bool isAvailable = controller.isProductAvailable();
+        final bool isAvailable = controller.activeMallList.any(
+          (mall) => (mall.stock ?? 0) > 0,
+        );
         return SizedBox(
           height: 50,
           width: double.infinity,
@@ -432,12 +472,15 @@ class _AddToCartButtonShein extends StatelessWidget {
                       controller.goodssn.toString(),
                       controller.subject.toString(),
                       controller.imageListFromApi.first.toString(),
-                      controller.getCurrentPriceFormatted(),
+                      extractPrice(controller.getCurrentPriceFormatted()),
                       'Shein',
-                      controller.quantity.toString(),
+                      controller.quantity,
                       '{"size":"${controller.label}", "model":"${controller.imageListFromApi.first.toString()}"}',
-                      '1000',
+                      1000,
                       tier: "",
+                      goodsSn: controller.goodssn.toString(),
+                      categoryId: controller.categoryid.toString(),
+                      porductink: controller.productLink ?? "",
                     );
                     controller.getquiqtity(
                       '{"size":"${controller.label}", "model":"${controller.imageListFromApi.first.toString()}"}',
@@ -469,10 +512,10 @@ class _AddToCartButtonShein extends StatelessWidget {
                 const SizedBox(width: 8),
                 Text(
                   isInCart && controller.quantity != controller.cartquantityDB
-                      ? 'Update Cart'
+                      ? StringsKeys.updateCart.tr
                       : isInCart
-                      ? 'Added to Cart'
-                      : 'Add to Cart',
+                      ? StringsKeys.addedToCartLabel.tr
+                      : StringsKeys.addToCart.tr,
                   style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
@@ -488,55 +531,21 @@ class _AddToCartButtonShein extends StatelessWidget {
   }
 }
 
-// class _SellerInfoShein extends StatelessWidget {
-//   final ProductDetailsSheinControllerImple controller;
-//   const _SellerInfoShein({required this.controller});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     final seller = controller.sellerName;
-//     if (seller == null || seller.isEmpty) return const SizedBox.shrink();
-//     return Row(
-//       children: [
-//         const Icon(Icons.store, color: Appcolor.primrycolor),
-//         const SizedBox(width: 8),
-//         Text(seller, style: Theme.of(context).textTheme.titleMedium),
-//       ],
-//     );
-//   }
-// }
-
-// Widget buildvariants(
-//   BuildContext context,
-//   ProductDetailsSheinControllerImple controller,
-// ) {
-//   return ListView.builder(
-//     itemCount:
-//         controller.productDitelsSheinModel?.data?.products?.variants.length ??
-//         0,
-
-//     shrinkWrap: true,
-//     physics: const NeverScrollableScrollPhysics(),
-
-//     itemBuilder: (context, index) {
-//       return Container();
-//     },
-//   );
-// }
-
 class _SizeTemplateSection extends StatelessWidget {
-  const _SizeTemplateSection();
+  final String tag;
+  const _SizeTemplateSection({required this.tag});
 
   @override
   Widget build(BuildContext context) {
     return GetBuilder<ProductDetailsSheinControllerImple>(
+      tag: tag,
       id: 'Size',
       builder: (controller) {
         final sizes = controller.sizeAttributes;
         log('sizes: $sizes');
         if (sizes.isEmpty) return const SizedBox.shrink();
 
-        final title = sizes.first.attrName ?? 'Attribute';
+        final title = sizes.first.attrName ?? StringsKeys.attribute.tr;
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -573,18 +582,10 @@ class _SizeTemplateSection extends StatelessWidget {
 
                     return GestureDetector(
                       onTap: () {
-                        // غيّر الاختيار في الكونترولر
                         controller.selectValue(attrId, valueId);
                         controller.label = label;
                         controller.getquiqtity(
                           '{"size":"${controller.label}", "model":"${controller.imageListFromApi.first.toString()}"}',
-                        );
-                        // اطبع القيمة المطلوبة
-                        print(
-                          'Selected value: $label (id: $valueId) for attr $attrId',
-                        );
-                        log(
-                          " vvvvv ${controller.selectedAttributeValue.toString()}",
                         );
                       },
                       child: AnimatedContainer(

@@ -1,5 +1,5 @@
 class FavoriteModel {
-  String? favoriteId;
+  int? favoriteId;
   String? productId;
   String? productTitle;
   String? productImage;
@@ -30,14 +30,14 @@ class FavoriteModel {
     categoryId = json['category_id'];
   }
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['favorite_id'] = favoriteId;
-    data['productId'] = productId;
-    data['product_title'] = productTitle;
-    data['product_image'] = productImage;
-    data['product_price'] = productPrice;
-    data['favorite_platform'] = platform;
-    return data;
-  }
+  // Map<String, dynamic> toJson() {
+  //   final Map<String, dynamic> data = <String, dynamic>{};
+  //   data['favorite_id'] = favoriteId;
+  //   data['productId'] = productId;
+  //   data['product_title'] = productTitle;
+  //   data['product_image'] = productImage;
+  //   data['product_price'] = productPrice;
+  //   data['favorite_platform'] = platform;
+  //   return data;
+  // }
 }

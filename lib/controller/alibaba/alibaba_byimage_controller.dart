@@ -5,6 +5,7 @@ import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/funcations/handle_paging_response.dart';
 import 'package:e_comerece/core/funcations/handlingdata.dart';
+import 'package:e_comerece/core/funcations/loading_dialog.dart';
 import 'package:e_comerece/core/shared/image_manger/Image_manager_controller.dart';
 import 'package:e_comerece/data/datasource/remote/alibaba/alibaba_By_image_data.dart';
 import 'package:e_comerece/data/datasource/remote/upload_to_cloudinary.dart';
@@ -143,35 +144,29 @@ class AlibabaByimageControllerllerImple extends AlibabaByimageController {
 
   @override
   pickimage() {
-    Get.put(ImageManagerController())
-      ..pickImage().then((image) {
-        if (image.path != '') {
-          this.image = image;
-          Get.dialog(
-            barrierDismissible: false,
-
-            Center(child: CircularProgressIndicator()),
-          );
-          uploadToCloudinary(
-                filePath: image.path,
-                cloudName: Appapi.cloudName,
-                uploadPreset: Appapi.uploadPreset,
-              )
-              .then((url) {
-                if (Get.isDialogOpen ?? false) Get.back();
-                if (url != null) {
-                  print('Uploaded to: $url');
-                  fetchShearchByimage(url);
-                } else {
-                  print('Upload failed');
-                }
-              })
-              .catchError((err) {
-                if (kDebugMode) {
-                  print('Error: $err');
-                }
-              });
+    Get.put(ImageManagerController()).pickImage().then((image) {
+      if (image.path != '') {
+        this.image = image;
+        if (!Get.isDialogOpen!) {
+          loadingDialog();
         }
-      });
+        uploadToCloudinary(
+              filePath: image.path,
+              cloudName: Appapi.cloudName,
+              uploadPreset: Appapi.uploadPreset,
+            )
+            .then((url) {
+              if (Get.isDialogOpen ?? false) Get.back();
+              if (url != null) {
+                fetchShearchByimage(url);
+              } else {}
+            })
+            .catchError((err) {
+              if (kDebugMode) {
+                print('Error: $err');
+              }
+            });
+      }
+    });
   }
 }

@@ -1,12 +1,12 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e_comerece/controller/favorite/favorites_controller.dart';
 import 'package:e_comerece/controller/home/homescreen_controller.dart';
 import 'package:e_comerece/core/class/handlingdataviwe.dart';
 import 'package:e_comerece/core/constant/color.dart';
-import 'package:e_comerece/core/funcations/translate_data.dart';
-import 'package:e_comerece/core/shared/widget_shared/loadingimage.dart';
+import 'package:e_comerece/core/constant/strings_keys.dart';
+import 'package:e_comerece/core/loacallization/translate_data.dart';
+import 'package:e_comerece/core/helper/custom_cached_image.dart';
+import 'package:e_comerece/core/servises/platform_ext.dart';
 import 'package:e_comerece/core/shared/widget_shared/shimmer_list_horizontal.dart';
-import 'package:e_comerece/core/shared/widget_shared/shimmer_image_product.dart';
 import 'package:e_comerece/viwe/screen/alibaba/extension_geter_product_home.dart';
 import 'package:e_comerece/viwe/widget/custgridviwe.dart';
 import 'package:flutter/material.dart';
@@ -21,35 +21,15 @@ class HotProductAlibabaHome extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetBuilder<HomescreenControllerImple>(
       id: 'alibaba',
-      builder: (controller) => NotificationListener<ScrollNotification>(
-        onNotification: (scrollInfo) {
-          if (scrollInfo is ScrollUpdateNotification) {
-            if (scrollInfo.metrics.axis == Axis.horizontal) {
-              if (!controller.alibabaHomeController.isLoading &&
-                  controller.alibabaHomeController.hasMore) {
-                final pixels = scrollInfo.metrics.pixels;
-                final max = scrollInfo.metrics.maxScrollExtent;
-                // final atEdge = scrollInfo.metrics.atEdge;
-                // // final pixels = scrollInfo.metrics.pixels;
-                // final maxScrollExtent = scrollInfo.metrics.maxScrollExtent;
-                // if (atEdge && pixels == maxScrollExtent) {
-                //   controller.fetchProductsAliExpress(isLoadMore: true);
-                // }
-                if (max > 0 && pixels >= max * 0.8) {
-                  controller.loadMoreproductAlibaba();
-                }
-              }
-            }
-          }
-          return false;
-        },
-        child: Handlingdataviwe(
+      builder: (controller) {
+        return Handlingdataviwe(
           shimmer: ShimmerListHorizontal(isSlevr: false),
           statusrequest: controller.alibabaHomeController.statusrequestAlibaba,
           widget: Container(
             margin: EdgeInsets.symmetric(vertical: 20.h),
             height: 400.h,
             child: CustomScrollView(
+              controller: controller.scrollContrAlibaba,
               physics: const BouncingScrollPhysics(),
               scrollDirection: Axis.horizontal,
               slivers: [
@@ -63,6 +43,7 @@ class HotProductAlibabaHome extends StatelessWidget {
                     return InkWell(
                       onTap: () {
                         controller.gotoditels(
+                          platform: PlatformSource.alibaba,
                           id: product.itemid,
                           title: product.titel,
                           lang: enOrAr(),
@@ -75,15 +56,8 @@ class HotProductAlibabaHome extends StatelessWidget {
                           child: Custgridviwe(
                             image: ClipRRect(
                               borderRadius: BorderRadius.circular(10),
-                              child: CachedNetworkImage(
-                                cacheKey: product.itemid.toString(),
-                                imageUrl: "https:${product.mainImageUrl}",
-                                fit: BoxFit.cover,
-                                width: double.infinity,
-                                placeholder: (context, url) =>
-                                    const Loadingimage(),
-                                errorWidget: (context, url, error) =>
-                                    const Icon(Icons.error),
+                              child: CustomCachedImage(
+                                imageUrl: product.mainImageUrl,
                               ),
                             ),
                             disc: product.skuPriceFormatted,
@@ -122,11 +96,11 @@ class HotProductAlibabaHome extends StatelessWidget {
                             countsall: product.minOrderFormatted,
                             isAlibaba: true,
                             images: SizedBox(
-                              height: 30,
+                              height: 33.h,
                               child: ListView.builder(
                                 cacheExtent: 500,
                                 scrollDirection: Axis.horizontal,
-                                physics: const ClampingScrollPhysics(),
+                                physics: const BouncingScrollPhysics(),
                                 itemCount: product.imageUrls.length + 1,
                                 itemBuilder: (context, index) {
                                   if (index == 0) {
@@ -135,7 +109,10 @@ class HotProductAlibabaHome extends StatelessWidget {
                                         horizontal: 6.0,
                                       ),
                                       child: Text(
-                                        "all ${product.imageUrls.length} colors",
+                                        StringsKeys.allColors.trParams({
+                                          'number': product.imageUrls.length
+                                              .toString(),
+                                        }),
                                         style: Theme.of(context)
                                             .textTheme
                                             .bodyMedium
@@ -148,24 +125,14 @@ class HotProductAlibabaHome extends StatelessWidget {
                                   }
 
                                   return Padding(
-                                    padding: const EdgeInsets.only(left: 5),
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 5.w,
+                                    ),
                                     child: ClipOval(
-                                      child: CachedNetworkImage(
+                                      child: CustomCachedImage(
                                         imageUrl: product.imageUrls[index - 1],
-                                        width: 30,
-                                        height: 30,
-                                        fit: BoxFit.cover,
-                                        placeholder: (c, u) =>
-                                            const ShimmerImageProductSmall(),
-                                        errorWidget: (c, u, e) => Container(
-                                          width: 30,
-                                          height: 30,
-                                          color: Colors.grey.shade200,
-                                          child: const Icon(
-                                            Icons.broken_image,
-                                            size: 16,
-                                          ),
-                                        ),
+                                        width: 33.w,
+                                        height: 33.h,
                                       ),
                                     ),
                                   );
@@ -184,8 +151,8 @@ class HotProductAlibabaHome extends StatelessWidget {
               ],
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

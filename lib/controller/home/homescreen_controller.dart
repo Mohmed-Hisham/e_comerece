@@ -7,7 +7,8 @@ import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/funcations/handle_paging_response.dart';
 import 'package:e_comerece/core/funcations/handlingdata.dart';
-import 'package:e_comerece/core/funcations/translate_data.dart';
+import 'package:e_comerece/core/loacallization/translate_data.dart';
+import 'package:e_comerece/core/servises/platform_ext.dart';
 import 'package:e_comerece/data/datasource/remote/alibaba/search_name_alibaba_data.dart';
 import 'package:e_comerece/data/datasource/remote/aliexpriess/searchtext_data.dart';
 import 'package:e_comerece/data/datasource/remote/amazon_data/search_amazon_data.dart';
@@ -16,10 +17,10 @@ import 'package:e_comerece/data/datasource/remote/api_cash/insert_cash_data.dart
 import 'package:e_comerece/data/datasource/remote/shein/search_shein_data.dart';
 import 'package:e_comerece/data/model/alibaba_model/productalibaba_home_model.dart';
 import 'package:e_comerece/data/model/aliexpriess_model/searshtextmodel.dart';
-import 'package:e_comerece/test_viwe.dart';
 import 'package:e_comerece/viwe/screen/cart/cart_view.dart';
-import 'package:e_comerece/viwe/screen/favorite_view.dart';
 import 'package:e_comerece/viwe/screen/home/homepage.dart';
+import 'package:e_comerece/viwe/screen/local_serviess/local_serviess_screen.dart';
+import 'package:e_comerece/viwe/screen/orders/orders_screen.dart';
 import 'package:e_comerece/viwe/screen/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -28,25 +29,6 @@ import 'package:e_comerece/data/model/amazon_models/search_amazon_model.dart'
     as search;
 import 'package:e_comerece/data/model/shein_models/searsh_shein_model.dart'
     as searshshein;
-
-enum PlatformSource { all, aliexpress, alibaba, amazon, shein }
-
-extension PlatformExt on PlatformSource {
-  String get name {
-    switch (this) {
-      case PlatformSource.aliexpress:
-        return 'aliexpress';
-      case PlatformSource.alibaba:
-        return 'alibaba';
-      case PlatformSource.amazon:
-        return 'amazon';
-      case PlatformSource.shein:
-        return 'shein';
-      default:
-        return 'all';
-    }
-  }
-}
 
 abstract class HomescreenController extends GetxController {
   void changepage(int i);
@@ -90,51 +72,40 @@ class HomescreenControllerImple extends HomescreenController {
   }
 
   final ScrollController scrollController = ScrollController();
-  // final ScrollController chipScrollController = ScrollController();
-
-  // void centerChip(PlatformSource platform) {
-  //   // لازم نتأكد إن الـ controller متصل
-  //   if (!chipScrollController.hasClients) return;
-
-  //   // نحاول نجيب المفتاح الخاص بالزر
-  //   final context = (Get.context ?? Get.key.currentContext);
-  //   if (context == null) return;
-
-  //   // نبحث عن الـ RenderBox الخاص بالزر اللي ضغط عليه
-  //   final renderBox = (context.findRenderObject() as RenderBox?);
-  //   if (renderBox == null) return;
-
-  //   // حجم الشاشة
-  //   final screenWidth = MediaQuery.of(context).size.width;
-
-  //   // موقع الزر بالنسبة للشاشة
-  //   final chipBox = Get.key.currentContext?.findRenderObject() as RenderBox?;
-
-  //   if (chipBox == null) return;
-
-  //   // موقع الزر في المحور الأفقي
-  //   final offset = renderBox.localToGlobal(Offset.zero).dx;
-  //   final chipWidth = renderBox.size.width;
-
-  //   // نريد جعل الزر في المنتصف
-  //   final targetScrollOffset =
-  //       chipScrollController.offset +
-  //       offset -
-  //       (screenWidth / 2) +
-  //       (chipWidth / 2);
-
-  //   chipScrollController.animateTo(
-  //     targetScrollOffset,
-  //     duration: const Duration(milliseconds: 400),
-  //     curve: Curves.easeOut,
-  //   );
-  // }
+  final ScrollController scrollContrAlibaba = ScrollController();
 
   @override
-  void onClose() {
-    scrollController.dispose();
-    super.onClose();
+  void onReady() {
+    super.onReady();
+    moveproduct();
+    startInitShow();
+    scrollContrAlibaba.addListener(() {
+      if (!alibabaHomeController.isLoading && alibabaHomeController.hasMore) {
+        final pixels = scrollContrAlibaba.position.pixels;
+        final max = scrollContrAlibaba.position.maxScrollExtent;
+        if (max > 0 && pixels >= max * 0.8) {
+          loadMoreproductAlibaba();
+        }
+      }
+    });
   }
+
+  // @override
+  // void onClose() {
+  //   searchProducts.clear();
+  //   searchProductsAliExpress.clear();
+  //   searchProductsAlibaba.clear();
+  //   searchProductsShein.clear();
+  //   super.onClose();
+  //   scrollController.dispose();
+  //   scrollContr.dispose();
+  //   scrollContrAlibaba.dispose();
+  //   aliexpressHomeController.dispose();
+  //   alibabaHomeController.dispose();
+  //   amazonHomeCon.dispose();
+  //   sheinHomController.dispose();
+  //   searchController.dispose();
+  // }
 
   void scrollToTop({bool animated = true}) {
     if (!scrollController.hasClients) return;
@@ -164,18 +135,18 @@ class HomescreenControllerImple extends HomescreenController {
 
   List<Widget> pages = [
     Homepage(),
-    FavoriteScreen(),
     CartView(),
-    TestViwe(),
+    OrdersScreen(),
+    LocalServiessScreen(),
     Setting(),
   ];
   int pageindexHome = 0;
-  int previousIndex = 0; // <-- جديد
+  int previousIndex = 0;
   List nameBottonBar = [
     {'title': 'Home', 'icon': FontAwesomeIcons.house},
-    {'title': 'Noti', 'icon': FontAwesomeIcons.bell},
     {'title': 'Cart', 'icon': FontAwesomeIcons.cartShopping},
-    {'title': 'Profile', 'icon': FontAwesomeIcons.user},
+    {'title': 'Orders', 'icon': FontAwesomeIcons.bagShopping},
+    {'title': 'Local Services', 'icon': FontAwesomeIcons.store},
     {'title': 'Settings', 'icon': FontAwesomeIcons.gear},
   ];
   int currentIndex = 0;
@@ -191,7 +162,6 @@ class HomescreenControllerImple extends HomescreenController {
   @override
   void onInit() {
     super.onInit();
-    startInitShow();
     // moveproduct();
   }
 
@@ -303,13 +273,6 @@ class HomescreenControllerImple extends HomescreenController {
 
     update(['shein']);
   }
-  //   @override
-  // loadMoreShein() {
-  //   sheinHomController.fetchproducts(isLoadMore: true);
-  //   update(['shein']);
-  // }
-
-  // HotProductsData hotProductsData = HotProductsData(Get.find());
 
   bool isSearch = false;
   onChangeSearch(String val) {
@@ -729,6 +692,7 @@ class HomescreenControllerImple extends HomescreenController {
           pageindex: pageindexSearchShein.toString(),
           endPrice: endPrice,
           startPrice: startPrice,
+          countryCode: detectLangFromQueryShein(searchController.text),
         );
 
         statusrequestsearchShein = handlingData(response);
@@ -768,9 +732,15 @@ class HomescreenControllerImple extends HomescreenController {
     }
   }
 
-  gotoditels({id, required lang, required title, String? asin}) {
+  gotoditels({
+    id,
+    required lang,
+    required title,
+    String? asin,
+    required PlatformSource platform,
+  }) {
     Get.toNamed(
-      AppRoutesname.detelspage,
+      goTODetails(platform),
       arguments: {"product_id": id, "lang": lang, "title": title, "asin": asin},
     );
   }
@@ -790,5 +760,18 @@ class HomescreenControllerImple extends HomescreenController {
         "category_id": categoryid,
       },
     );
+  }
+}
+
+String goTODetails(PlatformSource platform) {
+  switch (platform) {
+    case PlatformSource.aliexpress:
+      return AppRoutesname.detelspage;
+    case PlatformSource.alibaba:
+      return AppRoutesname.productDetailsAlibabView;
+    case PlatformSource.amazon:
+      return AppRoutesname.productDetailsAmazonView;
+    default:
+      return '';
   }
 }

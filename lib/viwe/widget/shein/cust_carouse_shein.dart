@@ -20,7 +20,7 @@ class CustCarouseShein extends StatelessWidget {
                 controller.indexchange(index);
               },
               autoPlay: true,
-              autoPlayInterval: Duration(seconds: 3),
+              autoPlayInterval: const Duration(seconds: 5),
               height: 160,
               enlargeCenterPage: true,
             ),

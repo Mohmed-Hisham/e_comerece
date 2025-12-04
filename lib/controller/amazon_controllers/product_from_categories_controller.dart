@@ -1,9 +1,10 @@
 import 'dart:developer';
 
 import 'package:e_comerece/core/class/statusrequest.dart';
+import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/funcations/handle_paging_response.dart';
 import 'package:e_comerece/core/funcations/handlingdata.dart';
-import 'package:e_comerece/core/funcations/translate_data.dart';
+import 'package:e_comerece/core/loacallization/translate_data.dart';
 import 'package:e_comerece/data/datasource/remote/amazon_data/search_amazon_data.dart';
 import 'package:e_comerece/data/datasource/remote/api_cash/get_cash_data.dart';
 import 'package:e_comerece/data/datasource/remote/api_cash/insert_cash_data.dart';
@@ -16,6 +17,11 @@ abstract class ProductFromCategoriesController extends GetxController {
   changeCat(String valnaame, String valid, int index);
   Future<void> otherProducts({bool isLoadMore = false});
   void loadMoreOtherProduct();
+  gotoditels({
+    required String asin,
+    required String lang,
+    required String title,
+  });
 }
 
 class ProductFromCategoriesControllerImpl
@@ -36,11 +42,13 @@ class ProductFromCategoriesControllerImpl
     super.onInit();
     categories = Get.arguments['categories'];
     categoryId = Get.arguments['categoryId'];
+    categoryName = Get.arguments?['categoryName'];
     otherProducts();
   }
 
   List<Datum> categories = [];
   late String categoryId;
+  String categoryName = "";
   int selectedIndex = 0;
   bool isLoading = false;
   bool hasMore = true;
@@ -48,7 +56,7 @@ class ProductFromCategoriesControllerImpl
   @override
   changeCat(valnaame, valid, index) {
     if (categoryId == valid) return;
-    // nameCat = valnaame;
+    categoryName = valnaame;
     categoryId = valid;
     selectedIndex = index;
     otherProducts();
@@ -148,5 +156,13 @@ class ProductFromCategoriesControllerImpl
   @override
   loadMoreOtherProduct() {
     otherProducts(isLoadMore: true);
+  }
+
+  @override
+  gotoditels({required asin, required lang, required title}) {
+    Get.toNamed(
+      AppRoutesname.productDetailsAmazonView,
+      arguments: {"asin": asin, "lang": lang, "title": title},
+    );
   }
 }

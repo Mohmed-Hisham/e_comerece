@@ -1,15 +1,17 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e_comerece/controller/aliexpriess/aliexprise_home_controller.dart';
 import 'package:e_comerece/controller/favorite/favorites_controller.dart';
 import 'package:e_comerece/core/constant/color.dart';
+import 'package:e_comerece/core/constant/strings_keys.dart';
 import 'package:e_comerece/core/funcations/calculateDiscount.dart';
-import 'package:e_comerece/core/funcations/translate_data.dart';
-import 'package:e_comerece/core/shared/widget_shared/shimmer_image_product.dart';
+import 'package:e_comerece/core/helper/custom_cached_image.dart';
+import 'package:e_comerece/core/loacallization/translate_data.dart';
 import 'package:e_comerece/core/shared/widget_shared/shimmerbar.dart';
 import 'package:e_comerece/viwe/widget/custgridviwe.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get_state_manager/src/simple/get_state.dart';
+import 'package:get/get_utils/src/extensions/internacionalization.dart';
 
 class SearchName extends StatelessWidget {
   final HomePageControllerImpl controller;
@@ -33,20 +35,21 @@ class SearchName extends StatelessWidget {
       },
 
       child: RefreshIndicator(
-        onRefresh: () => controller.searshText(
-          keyWord: controller.searchController.text,
-          lang: detectLangFromQuery(controller.searchController.text),
-        ),
+        color: Appcolor.primrycolor,
+        backgroundColor: Colors.transparent,
+        onRefresh: () =>
+            controller.searshText(keyWord: controller.searchController.text),
         child: Column(
           children: [
             Expanded(
               child: GridView.builder(
+                physics: const BouncingScrollPhysics(),
                 padding: const EdgeInsets.all(15),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 10,
-                  mainAxisExtent: 260,
+                  crossAxisSpacing: 10.w,
+                  mainAxisSpacing: 10.h,
+                  mainAxisExtent: 370.h,
                 ),
                 itemCount: controller.searchProducts.length,
                 itemBuilder: (context, index) {
@@ -54,31 +57,23 @@ class SearchName extends StatelessWidget {
 
                   return InkWell(
                     onTap: () {
-                      int id = item.itemId!;
+                      int id = item.itemId ?? 0;
                       controller.gotoditels(
                         id: id,
-                        title: item.title!,
+                        title: item.title ?? '',
                         lang: detectLangFromQuery(
                           controller.searchController.text,
                         ),
                       );
                     },
                     child: Custgridviwe(
-                      image: CachedNetworkImage(
-                        imageUrl: "https:${item.image!}",
-                        fit: BoxFit.cover,
-                        width: double.infinity,
-                        placeholder: (context, url) =>
-                            const Center(child: ShimmerImageProduct()),
-                        errorWidget: (context, url, error) =>
-                            const Icon(Icons.error),
-                      ),
+                      image: CustomCachedImage(imageUrl: item.image ?? ''),
                       disc: calculateDiscountPercent(
-                        item.sku!.def!.price,
-                        item.sku!.def!.promotionPrice,
+                        item.sku?.def?.price ?? 0,
+                        item.sku?.def?.promotionPrice ?? 0,
                       ),
-                      title: item.title!,
-                      price: "${item.sku!.def!.promotionPrice} \$",
+                      title: item.title ?? '',
+                      price: "${item.sku?.def?.promotionPrice ?? 0} \$",
                       icon: GetBuilder<FavoritesController>(
                         builder: (isFavoriteController) {
                           bool isFav =
@@ -90,9 +85,9 @@ class SearchName extends StatelessWidget {
                             onPressed: () {
                               isFavoriteController.toggleFavorite(
                                 item.itemId!.toString(),
-                                item.title!,
-                                item.image!,
-                                "\$${item.sku!.def!.price}",
+                                item.title ?? '',
+                                item.image ?? '',
+                                "\$${item.sku?.def?.price ?? 0}",
                                 "Aliexpress",
                               );
                             },
@@ -105,8 +100,8 @@ class SearchName extends StatelessWidget {
                           );
                         },
                       ),
-                      discprice: "${item.sku!.def!.price} \$",
-                      countsall: "${item.sales!} مبيعة",
+                      discprice: "${item.sku?.def?.price ?? 0} \$",
+                      countsall: "${item.sales ?? 0} ${StringsKeys.sales.tr}",
                     ),
                   );
                 },

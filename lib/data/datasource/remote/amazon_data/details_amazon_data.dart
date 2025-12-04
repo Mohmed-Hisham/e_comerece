@@ -9,7 +9,7 @@ class DetailsAmazonData {
     var response = await crud.getData(
       AmazonApi.productDitels(asin, lang),
       headers: AmazonApi.rapidApiHeaders,
-      // debug: true,
+      debug: true,
     );
 
     return response.fold((l) => l, (r) => r);

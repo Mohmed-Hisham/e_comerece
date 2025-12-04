@@ -8,11 +8,13 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class ProductImagesCarouselShein extends StatelessWidget {
-  const ProductImagesCarouselShein({super.key});
+  final String? tag;
+  const ProductImagesCarouselShein({super.key, this.tag});
 
   @override
   Widget build(BuildContext context) {
     return GetBuilder<ProductDetailsSheinControllerImple>(
+      tag: tag,
       id: 'imagesList',
       builder: (controller) {
         // final chewieController = controller.chewieController;
@@ -135,107 +137,3 @@ class ProductImagesCarouselShein extends StatelessWidget {
     );
   }
 }
-
-// import 'package:carousel_slider/carousel_slider.dart';
-// import 'package:e_comerece/controller/amazon_controllers/product_details_amazon_controller.dart';
-// import 'package:e_comerece/core/constant/color.dart';
-// import 'package:flutter/material.dart';
-// import 'package:get/get.dart';
-
-// class ProductImagesCarouselAmazon extends StatelessWidget {
-//   const ProductImagesCarouselAmazon({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return GetBuilder<ProductDetailsAmazonControllerImple>(
-//       id: 'index',
-//       builder: (controller) {
-//         final images = controller.getProductImages();
-//         if (images.isEmpty) return const SizedBox.shrink();
-
-//         return Column(
-//           children: [
-//             CarouselSlider(
-//               options: CarouselOptions(
-//                 onPageChanged: (index, reason) {
-//                   controller.indexchange(index);
-//                 },
-//                 autoPlay: false,
-//                 height: 300,
-//                 enlargeCenterPage: true,
-//                 viewportFraction: 0.9,
-//               ),
-//               items: images.map((imageUrl) {
-//                 return Builder(
-//                   builder: (BuildContext context) {
-//                     return Container(
-//                       width: double.infinity,
-//                       decoration: BoxDecoration(
-//                         borderRadius: BorderRadius.circular(12),
-//                         boxShadow: [
-//                           BoxShadow(
-//                             color: Colors.grey.withOpacity(0.3),
-//                             spreadRadius: 2,
-//                             blurRadius: 5,
-//                             offset: const Offset(0, 3),
-//                           ),
-//                         ],
-//                       ),
-//                       child: ClipRRect(
-//                         borderRadius: BorderRadius.circular(12),
-//                         child: Image.network(
-//                           imageUrl,
-//                           fit: BoxFit.contain,
-//                           errorBuilder: (context, error, stackTrace) {
-//                             return Container(
-//                               color: Colors.grey.shade200,
-//                               child: const Icon(
-//                                 Icons.image_not_supported,
-//                                 size: 50,
-//                                 color: Colors.grey,
-//                               ),
-//                             );
-//                           },
-//                           loadingBuilder: (context, child, loadingProgress) {
-//                             if (loadingProgress == null) return child;
-//                             return Container(
-//                               color: Colors.grey.shade200,
-//                               child: const Center(
-//                                 child: CircularProgressIndicator(),
-//                               ),
-//                             );
-//                           },
-//                         ),
-//                       ),
-//                     );
-//                   },
-//                 );
-//               }).toList(),
-//             ),
-//             const SizedBox(height: 16),
-//             Row(
-//               mainAxisAlignment: MainAxisAlignment.center,
-//               children: [
-//                 ...List.generate(
-//                   images.length,
-//                   (index) => AnimatedContainer(
-//                     margin: const EdgeInsets.only(right: 5),
-//                     duration: const Duration(milliseconds: 300),
-//                     width: controller.currentIndex == index ? 10 : 6,
-//                     height: 6,
-//                     decoration: BoxDecoration(
-//                       color: controller.currentIndex == index
-//                           ? Appcolor.primrycolor
-//                           : Appcolor.threecolor,
-//                       borderRadius: BorderRadius.circular(10),
-//                     ),
-//                   ),
-//                 ),
-//               ],
-//             ),
-//           ],
-//         );
-//       },
-//     );
-//   }
-// }

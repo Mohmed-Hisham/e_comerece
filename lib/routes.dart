@@ -1,11 +1,14 @@
 import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/middleware/middleware.dart';
-import 'package:e_comerece/viwe/screen/alibaba/alibaba_byImage_view.dart';
+import 'package:e_comerece/viwe/screen/Checkout/checkout_screen.dart';
+import 'package:e_comerece/viwe/screen/Support/chats_screen.dart';
+import 'package:e_comerece/viwe/screen/Support/messages_screen.dart';
+import 'package:e_comerece/viwe/screen/alibaba/alibaba_by_image_view.dart';
 import 'package:e_comerece/viwe/screen/alibaba/home_alibaba_view.dart';
 import 'package:e_comerece/viwe/screen/alibaba/product_details_alibab_view.dart';
-import 'package:e_comerece/viwe/screen/aliexpress/favorites_aliexpries.dart';
+import 'package:e_comerece/viwe/screen/favorite/favorites_platforms.dart';
 import 'package:e_comerece/viwe/screen/aliexpress/product_from_cat.dart';
-import 'package:e_comerece/viwe/screen/aliexpress/searchbyImage_view.dart';
+import 'package:e_comerece/viwe/screen/aliexpress/search_by_image_view.dart';
 import 'package:e_comerece/viwe/screen/amazon/amazon_home_view.dart';
 import 'package:e_comerece/viwe/screen/amazon/product_details_amazon_view.dart';
 import 'package:e_comerece/viwe/screen/amazon/product_from_cat_view.dart';
@@ -20,14 +23,19 @@ import 'package:e_comerece/viwe/screen/auth/successssginup.dart';
 import 'package:e_comerece/viwe/screen/auth/forgetpassword/veyfiycpde.dart';
 import 'package:e_comerece/viwe/screen/aliexpress/home_aliexpriess.dart';
 import 'package:e_comerece/viwe/screen/cart/cart_view.dart';
-import 'package:e_comerece/viwe/screen/favorite_view.dart';
+import 'package:e_comerece/viwe/screen/favorite/favorite_view.dart';
 import 'package:e_comerece/viwe/screen/home/homenavbar.dart';
 import 'package:e_comerece/viwe/screen/language.dart';
+import 'package:e_comerece/viwe/screen/local_serviess/local_service_details_view.dart';
+import 'package:e_comerece/viwe/screen/local_serviess/orders/local_service_order_details_view.dart';
+import 'package:e_comerece/viwe/screen/local_serviess/orders/view_local_service_orders_screen.dart';
 import 'package:e_comerece/viwe/screen/maps/add_address.dart';
 import 'package:e_comerece/viwe/screen/onboarding.dart';
 import 'package:e_comerece/viwe/screen/aliexpress/product_details_view.dart';
 import 'package:e_comerece/viwe/screen/shein/home_shein_view.dart';
+import 'package:e_comerece/viwe/screen/shein/product_by_category.dart';
 import 'package:e_comerece/viwe/screen/shein/product_details_shein_view.dart';
+import 'package:e_comerece/viwe/screen/orders/order_details_screen.dart';
 import 'package:e_comerece/viwe/screen/splashscreen/splashscreen.dart';
 import 'package:get/get_navigation/src/routes/get_route.dart';
 import 'package:get/get_navigation/src/routes/transitions_type.dart';
@@ -205,6 +213,12 @@ List<GetPage<dynamic>>? routes = [
     transition: transitionType,
     transitionDuration: Duration(milliseconds: transitionDurations),
   ),
+  GetPage(
+    name: AppRoutesname.productByCategoryShein,
+    page: () => const ProductByCategory(),
+    transition: transitionType,
+    transitionDuration: Duration(milliseconds: transitionDurations),
+  ),
   // GetPage(
   //   name: AppRoutesname.FavoritesAlibaba,
   //   page: () => const FavoritesAlibaba(),
@@ -239,6 +253,53 @@ List<GetPage<dynamic>>? routes = [
   GetPage(
     name: AppRoutesname.addAddresses,
     page: () => const AddAddress(),
+    transition: transitionType,
+    transitionDuration: Duration(milliseconds: transitionDurations),
+  ),
+  // Support
+  GetPage(
+    name: AppRoutesname.messagesScreen,
+    page: () => const MessagesScreen(),
+    transition: transitionType,
+    transitionDuration: Duration(milliseconds: transitionDurations),
+  ),
+  GetPage(
+    name: AppRoutesname.chatsScreen,
+    page: () => const ChatsScreen(),
+    transition: transitionType,
+    transitionDuration: Duration(milliseconds: transitionDurations),
+  ),
+
+  // Checkout
+  GetPage(
+    name: AppRoutesname.checkout,
+    page: () => const CheckoutScreen(),
+    transition: transitionType,
+    transitionDuration: Duration(milliseconds: transitionDurations),
+  ),
+
+  // Orders
+  GetPage(
+    name: AppRoutesname.orderDetails,
+    page: () => const OrderDetailsScreen(),
+    transition: transitionType,
+    transitionDuration: Duration(milliseconds: transitionDurations),
+  ),
+  GetPage(
+    name: AppRoutesname.localServiceDetails,
+    page: () => const LocalServiceDetailsView(),
+    transition: transitionType,
+    transitionDuration: Duration(milliseconds: transitionDurations),
+  ),
+  GetPage(
+    name: AppRoutesname.viewLocalServiceOrders,
+    page: () => const ViewLocalServiceOrdersScreen(),
+    transition: transitionType,
+    transitionDuration: Duration(milliseconds: transitionDurations),
+  ),
+  GetPage(
+    name: AppRoutesname.localServiceOrderDetailsView,
+    page: () => const LocalServiceOrderDetailsView(),
     transition: transitionType,
     transitionDuration: Duration(milliseconds: transitionDurations),
   ),

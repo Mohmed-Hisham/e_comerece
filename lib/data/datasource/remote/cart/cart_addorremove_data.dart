@@ -10,7 +10,7 @@ class CartAddorremoveData {
     String userId,
     String productid,
     String attributes,
-    String availablequantity,
+    int availablequantity,
   ) async {
     var response = await crud.postData(Appapi.addPrise, {
       "user_id": userId,

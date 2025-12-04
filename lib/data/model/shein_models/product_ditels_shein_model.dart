@@ -192,18 +192,18 @@ class Products {
       retailPrice: json["retailPrice"] == null
           ? null
           : DiscountPrice.fromJson(json["retailPrice"]),
-      businessModel: json["business_model"],
-      storeCode: json["store_code"],
+      businessModel: int.tryParse(json["business_model"]?.toString() ?? ""),
+      storeCode: int.tryParse(json["store_code"]?.toString() ?? ""),
       salePrice: json["salePrice"] == null
           ? null
           : DiscountPrice.fromJson(json["salePrice"]),
-      unitDiscount: json["unit_discount"],
+      unitDiscount: int.tryParse(json["unit_discount"]?.toString() ?? ""),
       isClearance: json["is_clearance"],
       limitCount: json["limit_count"],
       flashGoods: json["flash_goods"],
       isPriceConfigured: json["isPriceConfigured"],
-      rewardPoints: json["rewardPoints"],
-      doublePoints: json["doublePoints"],
+      rewardPoints: int.tryParse(json["rewardPoints"]?.toString() ?? ""),
+      doublePoints: int.tryParse(json["doublePoints"]?.toString() ?? ""),
       comment: json["comment"] == null
           ? null
           : Comment.fromJson(json["comment"]),
@@ -222,8 +222,8 @@ class Products {
             ),
       mallCode: json["mall_code"],
       srpPrice: json["srpPrice"],
-      srpDiscount: json["srpDiscount"],
-      showSrpDiscount: json["showSrpDiscount"],
+      srpDiscount: int.tryParse(json["srpDiscount"]?.toString() ?? ""),
+      showSrpDiscount: int.tryParse(json["showSrpDiscount"]?.toString() ?? ""),
       retailDiscountPrice: json["retailDiscountPrice"] == null
           ? null
           : DiscountPrice.fromJson(json["retailDiscountPrice"]),
@@ -232,9 +232,13 @@ class Products {
           : DiscountPrice.fromJson(json["retailOriginalDiscountPrice"]),
       retailVipDiscountPrice: json["retailVipDiscountPrice"],
       retailDiscountValue: json["retailDiscountValue"],
-      retailDiscountPercent: json["retailDiscountPercent"],
-      retailOriginalDiscount: json["retailOriginalDiscount"],
-      isNewCoupon: json["isNewCoupon"],
+      retailDiscountPercent: int.tryParse(
+        json["retailDiscountPercent"]?.toString() ?? "",
+      ),
+      retailOriginalDiscount: int.tryParse(
+        json["retailOriginalDiscount"]?.toString() ?? "",
+      ),
+      isNewCoupon: int.tryParse(json["isNewCoupon"]?.toString() ?? ""),
       discountPrice: json["discountPrice"] == null
           ? null
           : DiscountPrice.fromJson(json["discountPrice"]),
@@ -321,8 +325,8 @@ class MallList {
   factory MallList.fromJson(Map<String, dynamic> json) {
     return MallList(
       mallCode: json["mall_code"],
-      stock: json["stock"],
-      mallCodeSort: json["mall_code_sort"],
+      stock: int.tryParse(json["stock"]?.toString() ?? ""),
+      mallCodeSort: int.tryParse(json["mall_code_sort"]?.toString() ?? ""),
     );
   }
 }
@@ -385,8 +389,8 @@ class MallPrice {
   factory MallPrice.fromJson(Map<String, dynamic> json) {
     return MallPrice(
       srpPrice: json["srpPrice"],
-      srpDiscount: json["srpDiscount"],
-      showSrpDiscount: json["showSrpDiscount"],
+      srpDiscount: int.tryParse(json["srpDiscount"]?.toString() ?? ""),
+      showSrpDiscount: int.tryParse(json["showSrpDiscount"]?.toString() ?? ""),
       mallCode: json["mall_code"],
       retailPrice: json["retailPrice"] == null
           ? null
@@ -401,19 +405,23 @@ class MallPrice {
           ? null
           : DiscountPrice.fromJson(json["retailVipDiscountPrice"]),
       retailDiscountValue: json["retailDiscountValue"],
-      retailDiscountPercent: json["retailDiscountPercent"],
-      retailOriginalDiscount: json["retailOriginalDiscount"],
+      retailDiscountPercent: int.tryParse(
+        json["retailDiscountPercent"]?.toString() ?? "",
+      ),
+      retailOriginalDiscount: int.tryParse(
+        json["retailOriginalDiscount"]?.toString() ?? "",
+      ),
       salePrice: json["salePrice"] == null
           ? null
           : DiscountPrice.fromJson(json["salePrice"]),
       suggestedSalePrice: json["suggestedSalePrice"],
-      isInversion: json["isInversion"],
-      isNewCoupon: json["isNewCoupon"],
+      isInversion: int.tryParse(json["isInversion"]?.toString() ?? ""),
+      isNewCoupon: int.tryParse(json["isNewCoupon"]?.toString() ?? ""),
       discountPrice: json["discountPrice"] == null
           ? null
           : DiscountPrice.fromJson(json["discountPrice"]),
       voucherDiscountPrice: json["voucherDiscountPrice"],
-      unitDiscount: json["unit_discount"],
+      unitDiscount: int.tryParse(json["unit_discount"]?.toString() ?? ""),
       promotionStatus: json["promotion_status"],
       promotionLogoType: json["promotion_logo_type"],
       originalDiscount: json["original_discount"],
@@ -528,15 +536,15 @@ class Variant {
       goodsName: json["goods_name"],
       goodsColorImage: json["goods_color_image"],
       originalImg: json["original_img"],
-      businessModel: json["business_model"],
-      storeCode: json["store_code"],
+      businessModel: int.tryParse(json["business_model"]?.toString() ?? ""),
+      storeCode: int.tryParse(json["store_code"]?.toString() ?? ""),
       spuImage: json["spu_image"],
       goodsThumb: json["goods_thumb"],
       goodsImg: json["goods_img"],
       mallCode: json["mall_code"],
       srpPrice: json["srpPrice"],
-      srpDiscount: json["srpDiscount"],
-      showSrpDiscount: json["showSrpDiscount"],
+      srpDiscount: int.tryParse(json["srpDiscount"]?.toString() ?? ""),
+      showSrpDiscount: int.tryParse(json["showSrpDiscount"]?.toString() ?? ""),
       retailPrice: json["retailPrice"] == null
           ? null
           : DiscountPrice.fromJson(json["retailPrice"]),
@@ -550,17 +558,21 @@ class Variant {
           ? null
           : DiscountPrice.fromJson(json["retailVipDiscountPrice"]),
       retailDiscountValue: json["retailDiscountValue"],
-      retailDiscountPercent: json["retailDiscountPercent"],
-      retailOriginalDiscount: json["retailOriginalDiscount"],
+      retailDiscountPercent: int.tryParse(
+        json["retailDiscountPercent"]?.toString() ?? "",
+      ),
+      retailOriginalDiscount: int.tryParse(
+        json["retailOriginalDiscount"]?.toString() ?? "",
+      ),
       salePrice: json["salePrice"] == null
           ? null
           : DiscountPrice.fromJson(json["salePrice"]),
-      isNewCoupon: json["isNewCoupon"],
+      isNewCoupon: int.tryParse(json["isNewCoupon"]?.toString() ?? ""),
       discountPrice: json["discountPrice"] == null
           ? null
           : DiscountPrice.fromJson(json["discountPrice"]),
       voucherDiscountPrice: json["voucherDiscountPrice"],
-      unitDiscount: json["unit_discount"],
+      unitDiscount: int.tryParse(json["unit_discount"]?.toString() ?? ""),
       promotionStatus: json["promotion_status"],
       promotionLogoType: json["promotion_logo_type"],
       originalDiscount: json["original_discount"],

@@ -6,9 +6,9 @@ class ProductDitelsSheinData {
 
   ProductDitelsSheinData(this.crud);
 
-  getProductDitels(String goodssn) async {
+  getProductDitels(String goodssn, String countryCode) async {
     var response = await crud.getData(
-      SheinApi.productDitels(goodssn),
+      SheinApi.productDitels(goodssn, countryCode),
       headers: SheinApi.rapidApiHeaders,
       debug: true,
     );
@@ -16,9 +16,9 @@ class ProductDitelsSheinData {
     return response.fold((l) => l, (r) => r);
   }
 
-  getProductDitelsImageList(String goodssn) async {
+  getProductDitelsImageList(String goodssn, String countryCode) async {
     var response = await crud.getData(
-      SheinApi.productDitelsImageList(goodssn),
+      SheinApi.productDitelsImageList(goodssn, countryCode),
       headers: SheinApi.rapidApiHeaders,
       debug: true,
     );
@@ -26,9 +26,12 @@ class ProductDitelsSheinData {
     return response.fold((l) => l, (r) => r);
   }
 
-  getProductDitelsSize({required String goodsid}) async {
+  getProductDitelsSize({
+    required String goodsid,
+    required String countryCode,
+  }) async {
     var response = await crud.getData(
-      SheinApi.productDitelsSize(goodsid),
+      SheinApi.productDitelsSize(goodsid, countryCode),
       headers: SheinApi.rapidApiHeaders,
       debug: true,
     );

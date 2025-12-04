@@ -1,32 +1,30 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e_comerece/controller/favorite/favorites_controller.dart';
-import 'package:e_comerece/controller/shein/home_shein_controller.dart';
 import 'package:e_comerece/controller/shein/product_details_shein_controller.dart';
 import 'package:e_comerece/core/constant/color.dart';
+import 'package:e_comerece/core/constant/strings_keys.dart';
 import 'package:e_comerece/core/funcations/calculateDiscount.dart';
-import 'package:e_comerece/core/shared/widget_shared/loadingimage.dart';
-import 'package:e_comerece/core/shared/widget_shared/shimmer_image_product.dart';
-import 'package:e_comerece/core/shared/widget_shared/shimmerbar.dart';
+import 'package:e_comerece/core/helper/custom_cached_image.dart';
 import 'package:e_comerece/viwe/widget/custgridviwe.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
-import 'package:get/get_state_manager/src/simple/get_state.dart';
 
 class ProductFromDetails extends StatelessWidget {
-  const ProductFromDetails({super.key});
+  final String? tag;
+  const ProductFromDetails({super.key, this.tag});
 
   @override
   Widget build(BuildContext context) {
     return GetBuilder<ProductDetailsSheinControllerImple>(
+      tag: tag,
       id: 'searchProducts',
       builder: (controller) => SliverGrid.builder(
-        // padding: const EdgeInsets.all(15),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
-          crossAxisSpacing: 10,
-          mainAxisSpacing: 10,
-          mainAxisExtent: 300,
+          crossAxisSpacing: 10.w,
+          mainAxisSpacing: 10.w,
+          mainAxisExtent: 400.h,
         ),
         itemCount: controller.searchProducts.length,
         itemBuilder: (context, index) {
@@ -34,32 +32,17 @@ class ProductFromDetails extends StatelessWidget {
 
           return InkWell(
             onTap: () {
-              print(product.productUrl);
-              print(product.productUrl);
-              print(product.goodsId);
-              print("product.goodsSn => ${product.goodsSn}");
-              print("product.goodsId => ${product.goodsId}");
-              print("product.spu => ${product.spu}");
-              // controller.gotoditels(
-              //   goodssn: product.goodsSn!,
-              //   title: product.goodsName!,
-              //   goodsid: product.goodsId!,
-              // );
+              controller.gotoditels(
+                goodssn: product.goodsSn!,
+                title: product.goodsName!,
+                goodsid: product.goodsId!,
+                categoryid: product.catId!,
+              );
             },
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
+              padding: EdgeInsets.symmetric(horizontal: 10.w),
               child: Custgridviwe(
-                image: ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: CachedNetworkImage(
-                    imageUrl: 'https:${product.goodsImg}',
-                    fit: BoxFit.cover,
-                    width: double.infinity,
-                    placeholder: (context, url) => const Loadingimage(),
-                    errorWidget: (context, url, error) =>
-                        const Icon(Icons.error),
-                  ),
-                ),
+                image: CustomCachedImage(imageUrl: product.goodsImg ?? ""),
                 disc: calculateDiscountPercent(
                   product.retailPrice!.amount.toString(),
                   product.salePrice?.amount.toString(),
@@ -94,12 +77,12 @@ class ProductFromDetails extends StatelessWidget {
                   },
                 ),
 
-                discprice: product.retailPrice!.usdAmount.toString(),
-                countsall: product.premiumFlagNew?.seriesBadgeName.toString(),
-                rate: product.commentRankAverage.toString(),
+                discprice: product.retailPrice?.usdAmount.toString() ?? "",
+                countsall: product.premiumFlagNew?.seriesBadgeName ?? "",
+                rate: product.commentRankAverage?.toString() ?? "",
                 isAlibaba: true,
                 images: SizedBox(
-                  height: 30,
+                  height: 33.h,
                   child: ListView.builder(
                     cacheExtent: 500,
                     scrollDirection: Axis.horizontal,
@@ -107,15 +90,20 @@ class ProductFromDetails extends StatelessWidget {
                     itemCount: product.relatedColorNew.length + 1,
                     itemBuilder: (context, index) {
                       if (index == 0) {
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 6.0),
+                        return Container(
+                          padding: EdgeInsets.symmetric(horizontal: 6.w),
+                          alignment: Alignment.center,
                           child: Text(
-                            "all ${product.relatedColorNew.length} colors",
+                            StringsKeys.allColors.trParams({
+                              'number': product.relatedColorNew.length
+                                  .toString(),
+                            }),
                             style: Theme.of(context).textTheme.bodyMedium
                                 ?.copyWith(
                                   color: Appcolor.primrycolor,
                                   fontWeight: FontWeight.bold,
                                 ),
+                            textAlign: TextAlign.center,
                           ),
                         );
                       }
@@ -123,20 +111,14 @@ class ProductFromDetails extends StatelessWidget {
                       return Padding(
                         padding: const EdgeInsets.only(left: 5),
                         child: ClipOval(
-                          child: CachedNetworkImage(
-                            imageUrl:
-                                'https:${product.relatedColorNew.map((e) => e.colorImage).toList()[index - 1]}',
-                            width: 30,
-                            height: 30,
-                            fit: BoxFit.cover,
-                            placeholder: (c, u) =>
-                                const ShimmerImageProductSmall(),
-                            errorWidget: (c, u, e) => Container(
-                              width: 30,
-                              height: 30,
-                              color: Colors.grey.shade200,
-                              child: const Icon(Icons.broken_image, size: 16),
-                            ),
+                          child: CustomCachedImage(
+                            radius: 50,
+                            imageUrl: product.relatedColorNew
+                                .map((e) => e.colorImage)
+                                .toList()[index - 1]
+                                .toString(),
+                            width: 33.w,
+                            height: 33.h,
                           ),
                         ),
                       );

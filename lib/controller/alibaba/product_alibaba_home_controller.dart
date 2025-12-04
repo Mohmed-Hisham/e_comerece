@@ -1,11 +1,11 @@
 import 'dart:developer';
-
 import 'package:e_comerece/app_api/link_api.dart';
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/funcations/handle_paging_response.dart';
 import 'package:e_comerece/core/funcations/handlingdata.dart';
-import 'package:e_comerece/core/funcations/translate_data.dart';
+import 'package:e_comerece/core/funcations/loading_dialog.dart';
+import 'package:e_comerece/core/loacallization/translate_data.dart';
 import 'package:e_comerece/core/shared/image_manger/Image_manager_controller.dart';
 import 'package:e_comerece/data/datasource/remote/alibaba/productalibaba_home_data.dart';
 import 'package:e_comerece/data/datasource/remote/alibaba/search_name_alibaba_data.dart';
@@ -62,6 +62,8 @@ class ProductAlibabaHomeControllerImp extends ProductAlibabaHomeController {
   bool hasMore = true;
   bool hasMoresearch = true;
   bool isSearch = false;
+  FocusNode focusNode = FocusNode();
+  bool showClose = false;
 
   List<ResultList> products = [];
   List<ResultList> searchProducts = [];
@@ -82,7 +84,9 @@ class ProductAlibabaHomeControllerImp extends ProductAlibabaHomeController {
 
   @override
   Future<void> fethcProducts({isLoadMore = false}) async {
-    cashkey(String q, int p) => 'homeproduct:alibaba:$q:page=$p';
+    log("enOrAr(isArSA: true)=>${enOrAr(isArSA: true)}");
+    cashkey(String q, int p) =>
+        'homeproduct:alibaba:$q:page=$p:${enOrAr(isArSA: true)}';
     if (isLoadMore) {
       if (isLoading || !hasMore) return;
       isLoading = true;
@@ -182,7 +186,8 @@ class ProductAlibabaHomeControllerImp extends ProductAlibabaHomeController {
     startPrice = "",
     endPrice = "",
   }) async {
-    cashkey(String q, int p) => 'search:alibaba:$q:page=$p';
+    cashkey(String q, int p) =>
+        'search:alibaba:$q:page=$p:${detectLangFromQuery(searchController.text)}';
     if (isLoadMore) {
       if (isLoadingSearch || !hasMoresearch) return;
       isLoadingSearch = true;
@@ -306,6 +311,7 @@ class ProductAlibabaHomeControllerImp extends ProductAlibabaHomeController {
   onTapSearch({required keyWord}) {
     isSearch = true;
     searshText(q: keyWord);
+    focusNode.unfocus();
     update();
   }
 
@@ -326,33 +332,55 @@ class ProductAlibabaHomeControllerImp extends ProductAlibabaHomeController {
     );
   }
 
+  whenstartSearch(String q) async {
+    if (q != "") {
+      showClose = true;
+      update();
+    } else {
+      focusNode.unfocus();
+      showClose = false;
+    }
+  }
+
+  onCloseSearch() {
+    if (isSearch) {
+      isSearch = false;
+      focusNode.unfocus();
+      searchController.clear();
+      update();
+      showClose = false;
+    } else {
+      searchController.clear();
+      focusNode.unfocus();
+      showClose = false;
+      update();
+    }
+  }
+
   @override
   goToSearchByimage() {
-    // ignore: avoid_single_cascade_in_expression_statements
-    Get.put(ImageManagerController())
-      ..pickImage().then((image) {
-        if (image.path != '') {
-          Get.dialog(
-            barrierDismissible: false,
-            Center(child: CircularProgressIndicator()),
-          );
+    Get.put(ImageManagerController()).pickImage().then((image) {
+      if (image.path != '') {
+        if (!Get.isDialogOpen!) {
+          loadingDialog();
         }
-        uploadToCloudinary(
-              filePath: image.path,
-              cloudName: Appapi.cloudName,
-              uploadPreset: Appapi.uploadPreset,
-            )
-            .then((url) {
-              if (Get.isDialogOpen ?? false) Get.back();
-              if (url != null) {
-                Get.toNamed(
-                  AppRoutesname.alibabaByimageView,
-                  arguments: {'url': url, 'image': image},
-                );
-              } else {}
-            })
-            .catchError((err) {});
-      });
+      }
+      uploadToCloudinary(
+            filePath: image.path,
+            cloudName: Appapi.cloudName,
+            uploadPreset: Appapi.uploadPreset,
+          )
+          .then((url) {
+            if (Get.isDialogOpen ?? false) Get.back();
+            if (url != null) {
+              Get.toNamed(
+                AppRoutesname.alibabaByimageView,
+                arguments: {'url': url, 'image': image},
+              );
+            } else {}
+          })
+          .catchError((err) {});
+    });
   }
 
   @override

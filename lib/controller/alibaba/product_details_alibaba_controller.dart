@@ -6,6 +6,7 @@ import 'package:carousel_slider/carousel_controller.dart';
 import 'package:chewie/chewie.dart';
 import 'package:e_comerece/controller/cart/cart_from_detils.dart';
 import 'package:e_comerece/core/class/statusrequest.dart';
+import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/funcations/handle_paging_response.dart';
 import 'package:e_comerece/core/funcations/handlingdata.dart';
 import 'package:e_comerece/core/servises/selected_attributes_tomap_fordb.dart';
@@ -42,8 +43,12 @@ abstract class ProductDetailsAlibabaController extends GetxController {
   String getCurrentSkuId();
   void indexchange(int index);
   void loadMoreSearch(String lang);
-  void chaingPruduct({required int id, required String titleReload});
-  void resetStateForNewProduct();
+  void chaingPruduct({
+    required int id,
+    required String lang,
+    required String title,
+  });
+  // void resetStateForNewProduct();
 }
 
 class ProductDetailsAlibabaControllerImple
@@ -66,8 +71,6 @@ class ProductDetailsAlibabaControllerImple
   int? productId;
   String? lang;
   String? title;
-  final PageController pageController = PageController(viewportFraction: 0.7);
-  // final GlobalKey<TooltipState> tooltipKey = GlobalKey<TooltipState>();
 
   Map<String, alibaba_model.Value> selectedAttributes = {};
   alibaba_model.Base? currentSku;
@@ -110,10 +113,6 @@ class ProductDetailsAlibabaControllerImple
     lang = Get.arguments['lang'];
     title = Get.arguments['title'];
     fetchProductDetails();
-    // Future.delayed(const Duration(seconds: 1), () {
-    //   searshText();
-    // });
-    // fetchCart();
   }
 
   @override
@@ -125,14 +124,16 @@ class ProductDetailsAlibabaControllerImple
 
   @override
   fetchProductDetails({int? prodId}) async {
-    cashkey(String q) => 'detailsproduct:alibaba:$q';
+    final int resolvedId = prodId ?? productId!;
+    log("lang=>===========================$lang");
+    cashkey(String q) => 'detailsproduct:alibaba:$q:$lang';
 
     statusrequest = Statusrequest.loading;
     update();
 
     try {
       final cacheResponse = await getCashData.getCash(
-        query: cashkey(prodId.toString()),
+        query: cashkey(resolvedId.toString()),
         platform: "alibaba",
       );
 
@@ -170,7 +171,7 @@ class ProductDetailsAlibabaControllerImple
         }
       } else {
         var response = await productDitelsAlibabaData.getData(
-          prodId ?? productId!,
+          resolvedId,
           lang!,
         );
         statusrequest = handlingData(response);
@@ -184,7 +185,7 @@ class ProductDetailsAlibabaControllerImple
             _buildUiSchemasFromModel();
             initializeDefaultAttributes();
             insertCashData.insertCash(
-              query: cashkey(prodId.toString()),
+              query: cashkey(resolvedId.toString()),
               platform: "alibaba",
               data: response,
               ttlHours: "24",
@@ -263,7 +264,7 @@ class ProductDetailsAlibabaControllerImple
         update(['quantity']);
       }
     } catch (e) {
-      print('getquiqtity error: $e');
+      log('getquiqtity error: $e');
     }
   }
 
@@ -274,8 +275,9 @@ class ProductDetailsAlibabaControllerImple
   }
 
   @override
-  searshText({bool isLoadMore = false, String? titleReload}) async {
-    cashkey(String q, int p) => 'detailsproduct:alibaba:$q:page=$p';
+  searshText({bool isLoadMore = false}) async {
+    cashkey(String q, int p) =>
+        'detailsproduct:alibaba:$q:page=$p:${lang == "ar_MA" ? "ar_SA" : "en_US"}';
     if (isLoadMore) {
       if (isLoading || !hasMoresearch) return;
       isLoading = true;
@@ -289,7 +291,7 @@ class ProductDetailsAlibabaControllerImple
 
     try {
       final cacheResponse = await getCashData.getCash(
-        query: cashkey(titleReload ?? title!, pageIndexSearch),
+        query: cashkey(title!, pageIndexSearch),
         platform: "alibaba",
       );
 
@@ -317,8 +319,8 @@ class ProductDetailsAlibabaControllerImple
       } else {
         log('get from alibaba search cache=====================');
         final response = await searchNameAlibabaData.getproductsSearch(
-          lang: lang!,
-          q: titleReload ?? title!,
+          lang: lang! == "ar_MA" ? "ar_SA" : "en_US",
+          q: title!,
           pageindex: pageIndexSearch,
         );
 
@@ -334,7 +336,7 @@ class ProductDetailsAlibabaControllerImple
             } else {
               searchProducts.addAll(iterable);
               insertCashData.insertCash(
-                query: cashkey(titleReload ?? title!, pageIndexSearch),
+                query: cashkey(title!, pageIndexSearch),
                 platform: "alibaba",
                 data: response,
                 ttlHours: "24",
@@ -367,13 +369,12 @@ class ProductDetailsAlibabaControllerImple
   }
 
   @override
-  chaingPruduct({required id, required titleReload}) {
-    resetStateForNewProduct();
-
-    productId = id;
-    title = titleReload;
-
-    fetchProductDetails(prodId: id);
+  chaingPruduct({required id, required lang, required title}) {
+    Get.toNamed(
+      AppRoutesname.productDetailsAlibabView,
+      arguments: {"product_id": id, "lang": lang, "title": title},
+      preventDuplicates: false,
+    );
   }
 
   chaing() {
@@ -391,6 +392,7 @@ class ProductDetailsAlibabaControllerImple
       [];
 
   String? get subject => productDitelsAliBabaModel?.result?.item?.title;
+  String? get productLink => productDitelsAliBabaModel?.result?.item?.itemUrl;
   List<String> get imageList =>
       productDitelsAliBabaModel?.result?.item?.images ?? [];
   String? get sellerName =>
@@ -687,48 +689,44 @@ class ProductDetailsAlibabaControllerImple
     return productDitelsAliBabaModel?.result?.company?.companyContact?.name;
   }
 
-  @override
-  void resetStateForNewProduct() {
-    try {
-      if (chewieController != null) {
-        chewieController!.pause();
-        chewieController!.dispose();
-        chewieController = null;
-      }
-    } catch (_) {}
-    try {
-      if (videoPlayerController != null) {
-        videoPlayerController!.pause();
-        videoPlayerController!.dispose();
-        videoPlayerController = null;
-      }
-    } catch (_) {}
+  // @override
+  // void resetStateForNewProduct() {
+  //   try {
+  //     if (chewieController != null) {
+  //       chewieController!.pause();
+  //       chewieController!.dispose();
+  //       chewieController = null;
+  //     }
+  //   } catch (_) {}
+  //   try {
+  //     if (videoPlayerController != null) {
+  //       videoPlayerController!.pause();
+  //       videoPlayerController!.dispose();
+  //       videoPlayerController = null;
+  //     }
+  //   } catch (_) {}
 
-    productDitelsAliBabaModel = null;
-    selectedAttributes.clear();
-    currentSku = null;
-    quantity = 1;
-    priceList.clear();
-    uiSkuProperties.clear();
-    imgageAttribute = null;
-    currentIndex = 0;
+  //   productDitelsAliBabaModel = null;
+  //   selectedAttributes.clear();
+  //   currentSku = null;
+  //   quantity = 1;
+  //   priceList.clear();
+  //   uiSkuProperties.clear();
+  //   imgageAttribute = null;
+  //   currentIndex = 0;
 
-    statusrequest = Statusrequest.loading;
-    isLoading = false;
-    hasMoresearch = true;
-    pageIndexSearch = 0;
-    statusrequestsearch = Statusrequest.loading;
-    searchProducts.clear();
-    loadSearchOne = 0;
+  //   statusrequest = Statusrequest.loading;
+  //   isLoading = false;
+  //   hasMoresearch = true;
+  //   pageIndexSearch = 0;
+  //   statusrequestsearch = Statusrequest.loading;
+  //   searchProducts.clear();
+  //   loadSearchOne = 0;
 
-    cartQuantities.clear();
+  //   cartQuantities.clear();
 
-    try {
-      if (pageController.hasClients) {
-        pageController.jumpToPage(0);
-      }
-    } catch (_) {}
+  //   // PageController is now managed locally in the widget
 
-    update();
-  }
+  //   update();
+  // }
 }

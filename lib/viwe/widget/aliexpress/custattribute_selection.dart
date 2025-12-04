@@ -1,11 +1,12 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e_comerece/controller/aliexpriess/product_details_controller.dart';
+import 'package:e_comerece/core/helper/custom_cached_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_state_manager/src/simple/get_state.dart';
 
 class CustattributeSelection extends StatelessWidget {
   final ProductDetailsControllerImple controller;
-  const CustattributeSelection({super.key, required this.controller});
+  final String? tag;
+  const CustattributeSelection({super.key, required this.controller, this.tag});
 
   @override
   Widget build(BuildContext context) {
@@ -14,6 +15,7 @@ class CustattributeSelection extends StatelessWidget {
       return const SizedBox.shrink();
     }
     return GetBuilder<ProductDetailsControllerImple>(
+      tag: tag,
       id: 'selectedAttributes',
       builder: (controller) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -64,17 +66,10 @@ class CustattributeSelection extends StatelessWidget {
                           child:
                               (value.skuPropertyImagePath != null &&
                                   value.skuPropertyImagePath!.isNotEmpty)
-                              ? CachedNetworkImage(
-                                  imageUrl:
-                                      "https:${value.skuPropertyImagePath}",
+                              ? CustomCachedImage(
+                                  imageUrl: value.skuPropertyImagePath ?? '',
                                   width: 50,
                                   height: 50,
-                                  fit: BoxFit.cover,
-                                  placeholder: (context, url) => const Center(
-                                    child: CircularProgressIndicator(),
-                                  ),
-                                  errorWidget: (context, url, error) =>
-                                      const Icon(Icons.error),
                                 )
                               : Padding(
                                   padding: const EdgeInsets.symmetric(

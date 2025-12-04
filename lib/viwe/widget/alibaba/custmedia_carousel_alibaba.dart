@@ -8,12 +8,34 @@ import 'package:e_comerece/core/shared/widget_shared/open_full_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class CustmediaCarouselAlibaba extends StatelessWidget {
-  const CustmediaCarouselAlibaba({super.key});
+class CustmediaCarouselAlibaba extends StatefulWidget {
+  final String? tag;
+  const CustmediaCarouselAlibaba({super.key, this.tag});
+
+  @override
+  State<CustmediaCarouselAlibaba> createState() =>
+      _CustmediaCarouselAlibabaState();
+}
+
+class _CustmediaCarouselAlibabaState extends State<CustmediaCarouselAlibaba> {
+  late PageController _pageController;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(viewportFraction: 0.7);
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return GetBuilder<ProductDetailsAlibabaControllerImple>(
+      tag: widget.tag,
       id: 'videoPlayerController',
       builder: (controller) {
         final chewieController = controller.chewieController;
@@ -34,7 +56,7 @@ class CustmediaCarouselAlibaba extends StatelessWidget {
             SizedBox(
               height: 300,
               child: PageView.builder(
-                controller: controller.pageController,
+                controller: _pageController,
                 onPageChanged: (value) {
                   final index = value % itemCount;
                   controller.indexchange(index);
@@ -65,11 +87,11 @@ class CustmediaCarouselAlibaba extends StatelessWidget {
                   }
 
                   return AnimatedBuilder(
-                    animation: controller.pageController,
+                    animation: _pageController,
                     builder: (context, child) {
                       double value = 1.0;
-                      if (controller.pageController.position.haveDimensions) {
-                        value = (controller.pageController.page! - index);
+                      if (_pageController.position.haveDimensions) {
+                        value = (_pageController.page! - index);
                         value = (1 - (value.abs() * 0.3)).clamp(0.8, 1.0);
                       }
                       return Center(

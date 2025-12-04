@@ -1,7 +1,12 @@
+import 'dart:convert';
+import 'dart:developer';
+
 import 'package:carousel_slider/carousel_controller.dart';
 import 'package:chewie/chewie.dart';
 import 'package:e_comerece/controller/cart/cart_from_detils.dart';
 import 'package:e_comerece/core/class/statusrequest.dart';
+import 'package:e_comerece/core/constant/routesname.dart';
+import 'package:e_comerece/core/funcations/displayattributes.dart';
 import 'package:e_comerece/core/funcations/handle_paging_response.dart';
 import 'package:e_comerece/core/funcations/handlingdata.dart';
 import 'package:e_comerece/core/servises/serviese.dart';
@@ -13,7 +18,6 @@ import 'package:e_comerece/data/datasource/remote/cart/cartviwe_data.dart';
 import 'package:e_comerece/data/model/cartmodel.dart';
 import 'package:e_comerece/data/model/aliexpriess_model/itemdetelis_model.dart';
 import 'package:e_comerece/data/model/aliexpriess_model/searshtextmodel.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:video_player/video_player.dart';
 
@@ -30,7 +34,11 @@ abstract class ProductDetailsController extends GetxController {
   void updateCurrentSku();
   void indexchange(int index);
   void loadMoreSearch(String lang);
-  void chaingPruduct({required int id, required String titleReload});
+  void chaingPruduct({
+    required int id,
+    required String title,
+    required String lang,
+  });
 }
 
 class ProductDetailsControllerImple extends ProductDetailsController {
@@ -45,11 +53,12 @@ class ProductDetailsControllerImple extends ProductDetailsController {
   GetCashData getCashData = GetCashData(Get.find());
 
   Statusrequest statusrequest = Statusrequest.loading;
+  Statusrequest statusrequestquantity = Statusrequest.loading;
   ItemDetailsModel? itemDetailsModel;
   int? productId;
   String? lang;
   String? title;
-  final PageController pageController = PageController(viewportFraction: 0.7);
+  bool inCart = false;
 
   Map<String, String> selectedAttributes = {};
   SkuPriceList? currentSku;
@@ -97,39 +106,68 @@ class ProductDetailsControllerImple extends ProductDetailsController {
   }
 
   @override
-  fetchProductDetails({int? prodId}) async {
+  fetchProductDetails() async {
     statusrequest = Statusrequest.loading;
     update();
-    var response = await productDetailsData.getData(
-      prodId ?? productId!,
-      lang!,
+    cashkey(String q) => 'productdetails:alexpress:$q:$lang';
+    final cashe = await getCashData.getCash(
+      query: cashkey(productId!.toString()),
+      platform: "aliexpress",
     );
-    statusrequest = handlingData(response);
+    if (cashe["status"] == "success") {
+      log("get product from aliexpress cache server=====================");
+      statusrequest = handlingData(cashe);
 
-    if (Statusrequest.success == statusrequest) {
-      if (handle200(response)) {
-        itemDetailsModel = ItemDetailsModel.fromJson(response);
-        _buildUiSchemasFromModel();
-        initializeDefaultAttributes();
+      if (Statusrequest.success == statusrequest) {
+        if (handle200(cashe["data"])) {
+          itemDetailsModel = ItemDetailsModel.fromJson(cashe["data"]);
+          _buildUiSchemasFromModel();
+          initializeDefaultAttributes();
 
-        if (videoUrlString != null &&
-            videoUrlString!.isNotEmpty &&
-            videoUrlString != "0") {
-          print("videoUrl==============>$videoUrlString");
-          await initializeVideoPlayer();
+          statusrequest = Statusrequest.success;
         } else {
-          print("$videoUrlString");
-          print('no video');
+          statusrequest = Statusrequest.failuer;
         }
-
-        statusrequest = Statusrequest.success;
-      } else {
-        statusrequest = Statusrequest.failuer;
       }
-    }
-    update(['selectedAttributes']);
 
-    update();
+      update();
+      if (videoUrlString != null &&
+          videoUrlString!.isNotEmpty &&
+          videoUrlString != "0") {
+        await initializeVideoPlayer();
+      } else {}
+      update(['selectedAttributes']);
+    } else {
+      log("get product from aliexpress api server=====================");
+      var response = await productDetailsData.getData(productId!, lang!);
+      statusrequest = handlingData(response);
+
+      if (Statusrequest.success == statusrequest) {
+        if (handle200(response)) {
+          itemDetailsModel = ItemDetailsModel.fromJson(response);
+          _buildUiSchemasFromModel();
+          initializeDefaultAttributes();
+
+          statusrequest = Statusrequest.success;
+          insertCashData.insertCash(
+            query: cashkey(productId!.toString()),
+            platform: "aliexpress",
+            data: response,
+            ttlHours: "24",
+          );
+        } else {
+          statusrequest = Statusrequest.failuer;
+        }
+      }
+
+      update();
+      if (videoUrlString != null &&
+          videoUrlString!.isNotEmpty &&
+          videoUrlString != "0") {
+        await initializeVideoPlayer();
+      }
+      update(['selectedAttributes']);
+    }
   }
 
   @override
@@ -208,16 +246,25 @@ class ProductDetailsControllerImple extends ProductDetailsController {
 
   @override
   getquiqtity(attributes) async {
+    statusrequestquantity = Statusrequest.loading;
+    update();
     try {
       final Map<String, dynamic> newQty = await addorrmoveController
           .cartquintty(productId!.toString(), attributes);
       if (newQty['quantity'] == 0) {
         quantity = 1;
+        inCart = false;
       } else {
         quantity = newQty['quantity'];
+        inCart = true;
         update(['quantity']);
       }
+      statusrequestquantity = Statusrequest.success;
+      update(['quantity']);
     } catch (e) {
+      inCart = false;
+      statusrequestquantity = Statusrequest.failuer;
+      update(['quantity']);
       print('getquiqtity error: $e');
     }
   }
@@ -246,7 +293,10 @@ class ProductDetailsControllerImple extends ProductDetailsController {
 
     try {
       final cashe = await getCashData.getCash(
-        query: cashkey(titleReload ?? title!, pageIndexSearch),
+        query: cashkey(
+          itemDetailsModel!.result!.item!.catId!.toString(),
+          pageIndexSearch,
+        ),
         platform: "aliexpress",
       );
       if (cashe["status"] == "success") {
@@ -275,8 +325,9 @@ class ProductDetailsControllerImple extends ProductDetailsController {
         print("get search aliexpress from api=====================");
         final response = await searchtextData.getData(
           lang: lang!,
-          keyWord: titleReload ?? title!,
+          keyWord: title!,
           pageindex: pageIndexSearch,
+          categoryId: itemDetailsModel!.result!.item!.catId!.toString(),
         );
 
         statusrequestsearch = handlingData(response);
@@ -292,7 +343,10 @@ class ProductDetailsControllerImple extends ProductDetailsController {
             } else {
               searchProducts.addAll(iterable);
               insertCashData.insertCash(
-                query: cashkey(titleReload ?? title!, pageIndexSearch),
+                query: cashkey(
+                  itemDetailsModel!.result!.item!.catId!.toString(),
+                  pageIndexSearch,
+                ),
                 platform: "aliexpress",
                 data: response,
                 ttlHours: "24",
@@ -325,8 +379,13 @@ class ProductDetailsControllerImple extends ProductDetailsController {
   }
 
   @override
-  chaingPruduct({required id, required titleReload}) {
-    fetchProductDetails(prodId: id);
+  chaingPruduct({required id, required title, required lang}) {
+    Get.toNamed(
+      AppRoutesname.detelspage,
+      arguments: {"product_id": id, "lang": lang, "title": title},
+      preventDuplicates: false,
+    );
+    // fetchProductDetails(prodId: id);
     // searshText(titleReload: titleReload);
   }
 
@@ -438,7 +497,7 @@ extension ProductDetailsUi on ProductDetailsControllerImple {
             return Amount(
               formatedAmount: raw.contains(RegExp('[A-Za-z]'))
                   ? raw
-                  : '${currencyPrefix}${raw}',
+                  : '$currencyPrefix$raw',
               value: value,
             );
           }
@@ -457,6 +516,7 @@ extension ProductDetailsUi on ProductDetailsControllerImple {
 
   // UI getters
   String? get subject => itemDetailsModel?.result?.item?.title;
+  String? get productLink => itemDetailsModel?.result?.item?.itemUrl;
   List<String> get imageList => itemDetailsModel?.result?.item?.images ?? [];
   String? get sellerName => itemDetailsModel?.result?.seller?.storeTitle;
   String? get videoUrlString =>

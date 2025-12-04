@@ -1,10 +1,17 @@
 import 'package:e_comerece/controller/alibaba/product_details_alibaba_controller.dart';
 import 'package:e_comerece/core/constant/color.dart';
+import 'package:e_comerece/core/constant/strings_keys.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class ProductPropertiesAlibaba extends StatelessWidget {
   final ProductDetailsAlibabaControllerImple controller;
-  const ProductPropertiesAlibaba({super.key, required this.controller});
+  final String? tag;
+  const ProductPropertiesAlibaba({
+    super.key,
+    required this.controller,
+    this.tag,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +22,7 @@ class ProductPropertiesAlibaba extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Product Details',
+          StringsKeys.specifications.tr,
           style: Theme.of(
             context,
           ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),

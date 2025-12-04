@@ -1,14 +1,15 @@
 import 'package:e_comerece/controller/auth/login_controller.dart';
-import 'package:e_comerece/core/class/handlingdataviwe.dart';
 import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/constant/imagesassets.dart';
-import 'package:e_comerece/core/constant/routesname.dart';
+import 'package:e_comerece/core/constant/strings_keys.dart';
 import 'package:e_comerece/core/funcations/validate.dart';
+import 'package:e_comerece/core/helper/scroll_when_keyboard_opens.dart';
 import 'package:e_comerece/viwe/widget/Positioned/login_step_one/positioned_left_3.dart';
 import 'package:e_comerece/viwe/widget/Positioned/login_step_one/positioned_left_4.dart';
 import 'package:e_comerece/viwe/widget/auth/custombuttonauth.dart';
 import 'package:e_comerece/viwe/widget/auth/custtextfeld.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 class Login extends StatelessWidget {
@@ -26,24 +27,26 @@ class Login extends StatelessWidget {
             Form(
               key: controller.formState,
               child: SingleChildScrollView(
+                controller: controller.scrollController,
+                physics: const BouncingScrollPhysics(),
                 child: Column(
-                  spacing: 10,
+                  spacing: 15.h,
                   children: [
-                    SizedBox(height: 150),
+                    SizedBox(height: 160.h),
 
                     Container(
-                      height: 80,
-                      width: 80,
-                      padding: EdgeInsets.all(5),
+                      height: 90.h,
+                      width: 90.w,
+                      padding: EdgeInsets.all(10.r),
                       decoration: BoxDecoration(
                         color: Appcolor.white,
-                        borderRadius: BorderRadius.circular(100),
+                        borderRadius: BorderRadius.circular(110.r),
                       ),
                       child: ClipRRect(
-                        borderRadius: BorderRadius.circular(100),
+                        borderRadius: BorderRadius.circular(110.r),
                         child: Image.asset(
-                          height: 40,
-                          width: 40,
+                          height: 50.h,
+                          width: 50.w,
                           AppImagesassets.avatar,
                           fit: BoxFit.cover,
                         ),
@@ -54,12 +57,11 @@ class Login extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          "Hello,".tr,
-
+                          StringsKeys.hello.tr,
                           style: Theme.of(context).textTheme.headlineLarge!
                               .copyWith(
                                 fontWeight: FontWeight.bold,
-                                fontSize: 25,
+                                fontSize: 30.sp,
                               ),
                         ),
                         Text(
@@ -67,7 +69,7 @@ class Login extends StatelessWidget {
                           style: Theme.of(context).textTheme.headlineLarge!
                               .copyWith(
                                 fontWeight: FontWeight.bold,
-                                fontSize: 25,
+                                fontSize: 30.sp,
                               ),
                         ),
                       ],
@@ -75,11 +77,19 @@ class Login extends StatelessWidget {
 
                     GetBuilder<LoginControllerimplment>(
                       builder: (cont) => Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 30),
+                        padding: EdgeInsets.symmetric(horizontal: 35.w),
                         child: Custtextfeld(
+                          focusNode: controller.focus,
+                          onTap: () {
+                            scrollWhenKeyboardOpens(
+                              controller.scrollController,
+                              context,
+                              110.h,
+                            );
+                          },
                           obscureText: controller.visibility,
                           controller: controller.passowrd,
-                          hint: "passwordHint".tr,
+                          hint: StringsKeys.passwordHint.tr,
                           suffixIcon: IconButton(
                             onPressed: () => controller.visibilityFun(),
 
@@ -87,65 +97,66 @@ class Login extends StatelessWidget {
                                 ? Icon(
                                     Icons.lock_outline_rounded,
                                     color: Appcolor.gray,
+                                    size: 25.sp,
                                   )
                                 : Icon(
                                     Icons.lock_open_rounded,
                                     color: Appcolor.primrycolor,
+                                    size: 25.sp,
                                   ),
                           ),
                           validator: (val) {
-                            return vlidateInPut(
-                              val: val!,
-                              min: 6,
-                              max: 100,
-                              type: 'password',
-                            );
+                            return vlidateInPut(val: val!, min: 6, max: 100);
                           },
                         ),
                       ),
                     ),
-                    SizedBox(height: 50),
+                    SizedBox(height: 60.h),
                     InkWell(
                       onTap: () {
+                        controller.focus.unfocus();
                         controller.goToForgetpassword();
                       },
-                      child: Text("forgotPassword".tr),
+                      child: Text(
+                        StringsKeys.forgotPassword.tr,
+                        style: TextStyle(fontSize: 16.sp),
+                      ),
                     ),
                     Custombuttonauth(
-                      inputtext: "Next".tr,
+                      inputtext: StringsKeys.next.tr,
                       onPressed: () {
                         controller.login();
                       },
                     ),
-                    SizedBox(height: 3),
+                    SizedBox(height: 10.h),
                     InkWell(
                       onTap: () {
-                        Get.offAllNamed(AppRoutesname.loginStepOne);
+                        Get.back();
                       },
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Container(
-                            height: 35,
-                            width: 35,
+                            height: 45.h,
+                            width: 45.w,
                             decoration: BoxDecoration(
                               color: Appcolor.primrycolor,
-                              borderRadius: BorderRadius.circular(100),
+                              borderRadius: BorderRadius.circular(100.r),
                             ),
                             child: Icon(
                               Icons.arrow_back,
                               color: Appcolor.white,
-                              size: 20,
+                              size: 30.sp,
                             ),
                           ),
-                          SizedBox(width: 5),
+                          SizedBox(width: 15.w),
 
                           Text(
-                            " Not you?",
+                            StringsKeys.notYou.tr,
                             style: Theme.of(context).textTheme.headlineSmall!
                                 .copyWith(
                                   fontWeight: FontWeight.bold,
-                                  fontSize: 15,
+                                  fontSize: 20.sp,
                                 ),
                           ),
                         ],

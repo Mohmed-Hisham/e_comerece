@@ -2,18 +2,22 @@ import 'package:e_comerece/app_api/link_api.dart';
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/funcations/handlingdata.dart';
+import 'package:e_comerece/core/funcations/loading_dialog.dart';
 import 'package:e_comerece/core/shared/image_manger/Image_manager_controller.dart';
 import 'package:e_comerece/data/datasource/remote/aliexpriess/search_By_image_data.dart';
 import 'package:e_comerece/data/datasource/remote/upload_to_cloudinary.dart';
 import 'package:e_comerece/data/model/aliexpriess_model/searchbyimage_model.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
 abstract class SearchByimageController extends GetxController {
   Future<void> fetchShearchByimage(String imageUrl);
   void pickimage();
-  void gotoditels({required int id, required String lang});
+  void gotoditels({
+    required int id,
+    required String lang,
+    required String title,
+  });
   void gotoshearchname(String nameCat, int categoryId);
 }
 
@@ -25,7 +29,7 @@ class SearchByimageControllerllerImple extends SearchByimageController {
   List<CategoryList> catgories = [];
   String? imageUrl;
   XFile? image;
-
+  bool viewport = false;
   bool isLoading = false;
 
   @override
@@ -58,11 +62,21 @@ class SearchByimageControllerllerImple extends SearchByimageController {
     fetchShearchByimage(imageUrl!);
   }
 
+  showPicker(double height) {
+    if (height >= 75 && height <= 300) {
+      viewport = true;
+      update(["viewport"]);
+    } else if (height < 105) {
+      viewport = false;
+      update(["viewport"]);
+    }
+  }
+
   @override
-  gotoditels({required id, required lang}) {
+  gotoditels({required id, required lang, required title}) {
     Get.toNamed(
       AppRoutesname.detelspage,
-      arguments: {"product_id": id, "lang": lang},
+      arguments: {"product_id": id, "lang": lang, "title": title},
     );
   }
 
@@ -80,39 +94,28 @@ class SearchByimageControllerllerImple extends SearchByimageController {
 
   @override
   pickimage() {
-    Get.put(ImageManagerController())
-      ..pickImage().then((image) {
-        if (image.path != '') {
-          this.image = image;
-          Get.dialog(
-            barrierDismissible: false,
-            // PopScope(
-            //   canPop: false,
-            //   onPopInvokedWithResult: (bool didPop, dynamic result) {
-            //     if (didPop) return;
-            //   },
-            //   child:,
-            // ),
-            Center(child: CircularProgressIndicator()),
-          );
-          uploadToCloudinary(
-                filePath: image.path,
-                cloudName: Appapi.cloudName,
-                uploadPreset: Appapi.uploadPreset,
-              )
-              .then((url) {
-                if (Get.isDialogOpen ?? false) Get.back();
-                if (url != null) {
-                  print('Uploaded to: $url');
-                  fetchShearchByimage(url);
-                } else {
-                  print('Upload failed');
-                }
-              })
-              .catchError((err) {
-                print('Error: $err');
-              });
+    Get.put(ImageManagerController()).pickImage().then((image) {
+      if (image.path != '') {
+        this.image = image;
+        if (!Get.isDialogOpen!) {
+          loadingDialog();
         }
-      });
+        uploadToCloudinary(
+              filePath: image.path,
+              cloudName: Appapi.cloudName,
+              uploadPreset: Appapi.uploadPreset,
+            )
+            .then((url) {
+              if (Get.isDialogOpen ?? false) Get.back();
+              if (url != null) {
+                // print('Uploaded to: $url');
+                fetchShearchByimage(url);
+              } else {
+                // print('Upload failed');
+              }
+            })
+            .catchError((err) {});
+      }
+    });
   }
 }

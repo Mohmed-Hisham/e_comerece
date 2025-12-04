@@ -191,61 +191,73 @@ class Product {
       businessModel: json["business_model"],
       mallCode: json["mall_code"],
       isOnSale: json["is_on_sale"],
-      retailPrice: json["retailPrice"] == null
+      retailPrice: json["retailPrice"] == null || json["retailPrice"] is List
           ? null
           : DiscountPrice.fromJson(json["retailPrice"]),
-      salePrice: json["salePrice"] == null
+      salePrice: json["salePrice"] == null || json["salePrice"] is List
           ? null
           : DiscountPrice.fromJson(json["salePrice"]),
-      discountPrice: json["discountPrice"] == null
+      discountPrice:
+          json["discountPrice"] == null || json["discountPrice"] is List
           ? null
           : DiscountPrice.fromJson(json["discountPrice"]),
       isInversion: json["isInversion"],
-      retailDiscountPrice: json["retailDiscountPrice"] == null
+      retailDiscountPrice:
+          json["retailDiscountPrice"] == null ||
+              json["retailDiscountPrice"] is List
           ? null
           : DiscountPrice.fromJson(json["retailDiscountPrice"]),
       retailDiscountPercent: json["retailDiscountPercent"],
       isNewCoupon: json["isNewCoupon"],
       isSrpInversion: json["isSrpInversion"],
       srpDiscount: json["srpDiscount"],
-      srpDiscountPrice: json["srpDiscountPrice"] == null
+      srpDiscountPrice:
+          json["srpDiscountPrice"] == null || json["srpDiscountPrice"] is List
           ? null
           : DiscountPrice.fromJson(json["srpDiscountPrice"]),
       unitDiscount: json["unit_discount"],
       originalDiscount: json["original_discount"],
-      premiumFlagNew: json["premiumFlagNew"] == null
+      premiumFlagNew:
+          json["premiumFlagNew"] == null || json["premiumFlagNew"] is List
           ? null
           : PremiumFlagNew.fromJson(json["premiumFlagNew"]),
-      productInfoLabels: json["productInfoLabels"] == null
+      productInfoLabels:
+          json["productInfoLabels"] == null || json["productInfoLabels"] is List
           ? null
           : ProductInfoLabels.fromJson(json["productInfoLabels"]),
       quickship: json["quickship"],
-      couponPrices: json["coupon_prices"] == null
+      couponPrices:
+          json["coupon_prices"] == null || json["coupon_prices"] is! List
           ? []
           : List<CouponPrice>.from(
               json["coupon_prices"]!.map((x) => CouponPrice.fromJson(x)),
             ),
       videoUrl: json["video_url"],
-      relatedColorNew: json["relatedColorNew"] == null
+      relatedColorNew:
+          json["relatedColorNew"] == null || json["relatedColorNew"] is! List
           ? []
           : List<RelatedColorNew>.from(
               json["relatedColorNew"]!.map((x) => RelatedColorNew.fromJson(x)),
             ),
       isClearance: json["is_clearance"],
-      productMaterial: json["productMaterial"] == null
+      productMaterial:
+          json["productMaterial"] == null || json["productMaterial"] is List
           ? null
           : ProductMaterial.fromJson(json["productMaterial"]),
       isShowPlusSize: json["is_show_plus_size"],
-      actTagFromCcc: json["actTagFromCcc"] == null
+      actTagFromCcc:
+          json["actTagFromCcc"] == null || json["actTagFromCcc"] is List
           ? null
           : ActTagFromCcc.fromJson(json["actTagFromCcc"]),
-      rankInfo: json["rankInfo"] == null
+      rankInfo: json["rankInfo"] == null || json["rankInfo"] is List
           ? null
           : ActTagFromCcc.fromJson(json["rankInfo"]),
       commentNumShow: json["comment_num_show"],
       commentRankAverage: json["comment_rank_average"],
       commentNum: json["comment_num"],
-      percentOverallFit: json["percent_overall_fit"] == null
+      percentOverallFit:
+          json["percent_overall_fit"] == null ||
+              json["percent_overall_fit"] is List
           ? null
           : PercentOverallFit.fromJson(json["percent_overall_fit"]),
       isSingleSku: json["is_single_sku"],
@@ -667,34 +679,42 @@ class ProductMaterial {
 
   factory ProductMaterial.fromJson(Map<String, dynamic> json) {
     return ProductMaterial(
-      pictureBelt: json["pictureBelt"] == null
+      pictureBelt: json["pictureBelt"] == null || json["pictureBelt"] is List
           ? null
           : PictureBelt.fromJson(json["pictureBelt"]),
-      upperRightPositionInfo: json["upperRightPositionInfo"] == null
+      upperRightPositionInfo:
+          json["upperRightPositionInfo"] == null ||
+              json["upperRightPositionInfo"] is List
           ? null
           : UpperTPositionInfo.fromJson(json["upperRightPositionInfo"]),
-      lowerRightPositionInfo: json["lowerRightPositionInfo"] == null
+      lowerRightPositionInfo:
+          json["lowerRightPositionInfo"] == null ||
+              json["lowerRightPositionInfo"] is List
           ? null
           : LowerRightPositionInfo.fromJson(json["lowerRightPositionInfo"]),
-      salesLabel: json["salesLabel"] == null
+      salesLabel: json["salesLabel"] == null || json["salesLabel"] is List
           ? null
           : SalesLabel.fromJson(json["salesLabel"]),
       showAddButtonLabel: json["showAddButtonLabel"],
       showAddButtonLabelStyle: json["showAddButtonLabelStyle"],
-      trendLabel: json["trendLabel"] == null
+      trendLabel: json["trendLabel"] == null || json["trendLabel"] is List
           ? null
           : ProductMaterialTrendLabel.fromJson(json["trendLabel"]),
-      v2ProductAttributeLabelList: json["v2ProductAttributeLabelList"] == null
+      v2ProductAttributeLabelList:
+          json["v2ProductAttributeLabelList"] == null ||
+              json["v2ProductAttributeLabelList"] is! List
           ? []
           : List<V2ProductAttributeLabelList>.from(
               json["v2ProductAttributeLabelList"]!.map(
                 (x) => V2ProductAttributeLabelList.fromJson(x),
               ),
             ),
-      fullPriceUi: json["fullPriceUI"] == null
+      fullPriceUi: json["fullPriceUI"] == null || json["fullPriceUI"] is List
           ? null
           : FullPriceUi.fromJson(json["fullPriceUI"]),
-      upperLeftPositionInfo: json["upperLeftPositionInfo"] == null
+      upperLeftPositionInfo:
+          json["upperLeftPositionInfo"] == null ||
+              json["upperLeftPositionInfo"] is List
           ? null
           : UpperTPositionInfo.fromJson(json["upperLeftPositionInfo"]),
     );
@@ -750,11 +770,13 @@ class FullPriceUi {
       discountPrice: json["discountPrice"],
       description: json["description"],
       color: json["color"],
-      leadingIcon: json["leadingIcon"] == null
+      leadingIcon: json["leadingIcon"] == null || json["leadingIcon"] is List
           ? null
           : LeadingIcon.fromJson(json["leadingIcon"]),
       trailingIcon: json["trailingIcon"],
-      bi: json["bi"] == null ? null : Bi.fromJson(json["bi"]),
+      bi: json["bi"] == null || json["bi"] is List
+          ? null
+          : Bi.fromJson(json["bi"]),
       endTime: json["endTime"],
       s3Price: json["s3Price"],
       retailPrice: json["retailPrice"],
@@ -803,7 +825,8 @@ class LowerRightPositionInfo {
 
   factory LowerRightPositionInfo.fromJson(Map<String, dynamic> json) {
     return LowerRightPositionInfo(
-      twoColumnStyle: json["twoColumnStyle"] == null
+      twoColumnStyle:
+          json["twoColumnStyle"] == null || json["twoColumnStyle"] is List
           ? null
           : LowerRightPositionInfoTwoColumnStyle.fromJson(
               json["twoColumnStyle"],
@@ -938,17 +961,19 @@ class ProductMaterialTrendLabel {
 
   factory ProductMaterialTrendLabel.fromJson(Map<String, dynamic> json) {
     return ProductMaterialTrendLabel(
-      trendWordCategory: json["trendWordCategory"] == null
+      trendWordCategory:
+          json["trendWordCategory"] == null || json["trendWordCategory"] is List
           ? null
           : TrendWordCategory.fromJson(json["trendWordCategory"]),
-      trendIpImg: json["trendIpImg"] == null
+      trendIpImg: json["trendIpImg"] == null || json["trendIpImg"] is List
           ? null
           : TrendIpImg.fromJson(json["trendIpImg"]),
-      trendIpBigImg: json["trendIpBigImg"] == null
+      trendIpBigImg:
+          json["trendIpBigImg"] == null || json["trendIpBigImg"] is List
           ? null
           : TrendIpImg.fromJson(json["trendIpBigImg"]),
       trendIpLang: json["trendIpLang"],
-      trendLabel: json["trendLabel"] == null
+      trendLabel: json["trendLabel"] == null || json["trendLabel"] is List
           ? null
           : TrendLabelTrendLabel.fromJson(json["trendLabel"]),
       routingUrl: json["routingUrl"],
@@ -1037,7 +1062,8 @@ class UpperTPositionInfo {
 
   factory UpperTPositionInfo.fromJson(Map<String, dynamic> json) {
     return UpperTPositionInfo(
-      twoColumnStyle: json["twoColumnStyle"] == null
+      twoColumnStyle:
+          json["twoColumnStyle"] == null || json["twoColumnStyle"] is List
           ? null
           : UpperLeftPositionInfoTwoColumnStyle.fromJson(
               json["twoColumnStyle"],
@@ -1207,7 +1233,9 @@ class PromotionInfo {
       saleNumScene: json["saleNumScene"],
       buyLimitType: json["buyLimitType"],
       languageKey: json["language_key"],
-      aggregateMemberResult: json["aggregateMemberResult"] == null
+      aggregateMemberResult:
+          json["aggregateMemberResult"] == null ||
+              json["aggregateMemberResult"] is List
           ? null
           : AggregateMemberResult.fromJson(json["aggregateMemberResult"]),
       promotionActivityPriority: json["promotionActivityPriority"],
@@ -1239,7 +1267,9 @@ class PromotionInfo {
       vcId: json["vcId"],
       discountValue: json["discountValue"],
       isOver: json["isOver"],
-      tips: json["tips"] == null ? null : Tips.fromJson(json["tips"]),
+      tips: json["tips"] == null || json["tips"] is List
+          ? null
+          : Tips.fromJson(json["tips"]),
     );
   }
 }
@@ -1276,14 +1306,16 @@ class RuleElement {
     return RuleElement(
       type: json["type"],
       value: json["value"],
-      discount: json["discount"] == null
+      discount: json["discount"] == null || json["discount"] is List
           ? null
           : Discount.fromJson(json["discount"]),
-      valueAmount: json["value_amount"] == null
+      valueAmount: json["value_amount"] == null || json["value_amount"] is List
           ? null
           : DiscountPrice.fromJson(json["value_amount"]),
       maxDiscount: json["max_discount"],
-      maxDiscountAmount: json["max_discount_amount"] == null
+      maxDiscountAmount:
+          json["max_discount_amount"] == null ||
+              json["max_discount_amount"] is List
           ? null
           : DiscountPrice.fromJson(json["max_discount_amount"]),
       deliveryId: json["delivery_id"],
@@ -1315,7 +1347,7 @@ class Discount {
       enjoyGoodsNum: (json["enjoy_goods_num"] is int)
           ? json["enjoy_goods_num"]
           : (json["enjoy_goods_num"] as num?)?.toInt(),
-      valueAmount: json["value_amount"] == null
+      valueAmount: json["value_amount"] == null || json["value_amount"] is List
           ? null
           : DiscountPrice.fromJson(json["value_amount"]),
       giftCoupons: json["gift_coupons"] == null

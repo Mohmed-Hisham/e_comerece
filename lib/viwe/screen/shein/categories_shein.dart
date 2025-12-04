@@ -1,9 +1,12 @@
+import 'dart:developer';
+
 import 'package:e_comerece/controller/shein/home_shein_controller.dart';
 import 'package:e_comerece/core/class/handlingdataviwe.dart';
 import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/constant/wantedcategory.dart';
 import 'package:e_comerece/core/shared/widget_shared/shimmer_categories.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 class CategoriesShein extends StatelessWidget {
@@ -13,14 +16,14 @@ class CategoriesShein extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetBuilder<HomeSheinControllerImpl>(
       builder: (controller) {
-        print("controller.categories.length=>${controller.categories.length}");
         return Handlingdataviwe(
           shimmer: CategoriesShimmer(),
           statusrequest: controller.statusrequestcat,
           widget: SizedBox(
-            height: 100,
+            height: 110.h,
             child: ListView.builder(
-              padding: EdgeInsets.only(left: 10),
+              physics: const BouncingScrollPhysics(),
+              padding: EdgeInsets.only(left: 10.w),
               scrollDirection: Axis.horizontal,
               itemCount: controller.categories.length,
               itemBuilder: (context, index) {
@@ -30,48 +33,52 @@ class CategoriesShein extends StatelessWidget {
                     categoryIcons[id] ?? Icons.category_outlined;
 
                 return Container(
-                  width: 100,
+                  width: 110.w,
                   alignment: Alignment.center,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           InkWell(
                             onTap: () {
-                              // controller.gotoshearchname(
-                              //   category.name ?? "",
-                              //   category.id!,
-                              // );
+                              log(category.catId.toString());
+                              controller.goTOProductByCat(
+                                category.catId.toString(),
+                                category.catName ?? "",
+                              );
                             },
-
-                            child: Container(
-                              height: 50,
-                              width: 50,
-                              decoration: BoxDecoration(
-                                color: Appcolor.white,
-                                border: Border.all(
-                                  color: Appcolor.threecolor,
-                                  width: 3,
+                            // create circle with border
+                            child: ClipOval(
+                              child: Container(
+                                height: 60.h,
+                                width: 60.w,
+                                decoration: BoxDecoration(
+                                  color: Appcolor.white,
+                                  border: Border.all(
+                                    color: Appcolor.threecolor,
+                                    width: 3.w,
+                                  ),
+                                  borderRadius: BorderRadius.circular(40.r),
                                 ),
-                                borderRadius: BorderRadius.circular(50),
+                                child: Icon(iconToShow, color: Appcolor.black2),
                               ),
-                              child: Icon(iconToShow, color: Appcolor.black2),
                             ),
                           ),
                         ],
                       ),
                       Container(
-                        alignment: Alignment.centerLeft,
-                        padding: const EdgeInsets.all(4),
-                        width: 100,
+                        alignment: Alignment.center,
+                        padding: EdgeInsets.all(4.w),
+                        width: 110.w,
                         child: Text(
                           category.catName!,
                           textAlign: TextAlign.start,
-                          maxLines: 2,
+                          maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            fontSize: 12,
+                          style: TextStyle(
+                            fontSize: 14.sp,
                             color: Appcolor.soecendcolor,
                             fontWeight: FontWeight.w900,
                           ),

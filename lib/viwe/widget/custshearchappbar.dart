@@ -1,8 +1,10 @@
 import 'package:e_comerece/core/constant/color.dart';
-import 'package:e_comerece/core/funcations/translate_data.dart';
+import 'package:e_comerece/core/constant/strings_keys.dart';
+import 'package:e_comerece/core/loacallization/translate_data.dart';
 import 'package:e_comerece/core/funcations/validate.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get/get.dart';
 
 class Custshearchappbar extends StatelessWidget {
   final void Function()? favoriteOnPressed;
@@ -10,8 +12,11 @@ class Custshearchappbar extends StatelessWidget {
   final void Function()? onTapSearch;
   final void Function()? onTapClose;
   final bool showClose;
+  final bool isLocalService;
+  final String? hintText;
   final TextEditingController mycontroller;
   final Function(String)? onChanged;
+  final FocusNode? focusNode;
   const Custshearchappbar({
     super.key,
     this.favoriteOnPressed,
@@ -21,6 +26,9 @@ class Custshearchappbar extends StatelessWidget {
     this.imageOnPressed,
     this.onTapClose,
     this.showClose = false,
+    this.isLocalService = false,
+    this.focusNode,
+    this.hintText,
   });
 
   @override
@@ -42,12 +50,19 @@ class Custshearchappbar extends StatelessWidget {
                 validator: (value) {
                   return vlidateInPut(val: value!, min: 3, max: 100);
                 },
+                focusNode: focusNode,
                 onChanged: onChanged,
                 controller: mycontroller,
+                textInputAction: TextInputAction.search,
+                onFieldSubmitted: (value) {
+                  if (value.isNotEmpty) {
+                    onTapSearch?.call();
+                  }
+                },
                 decoration: InputDecoration(
                   filled: true,
                   fillColor: Appcolor.somgray,
-                  hintText: "Shearch item",
+                  hintText: hintText ?? StringsKeys.searchHint.tr,
                   hintStyle: TextStyle(color: Appcolor.black),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(15),
@@ -71,7 +86,15 @@ class Custshearchappbar extends StatelessWidget {
                         ),
                       IconButton(
                         onPressed: onTapSearch,
-                        icon: Icon(Icons.search, color: Appcolor.primrycolor),
+                        icon: Transform(
+                          alignment: Alignment.center,
+                          transform: Matrix4.identity()
+                            ..scale(langDirection() ? 1.0 : -1.0, 1.0, 1.0),
+                          child: Icon(
+                            Icons.search,
+                            color: Appcolor.primrycolor,
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -81,12 +104,21 @@ class Custshearchappbar extends StatelessWidget {
           ),
           IconButton(
             onPressed: favoriteOnPressed,
-            icon: FaIcon(
-              langDirection()
-                  ? FontAwesomeIcons.heart
-                  : FontAwesomeIcons.solidHeart,
-              color: langDirection() ? Appcolor.primrycolor : Appcolor.white,
-            ),
+            icon: isLocalService
+                ? FaIcon(
+                    FontAwesomeIcons.cartShopping,
+                    color: langDirection()
+                        ? Appcolor.white
+                        : Appcolor.primrycolor,
+                  )
+                : FaIcon(
+                    langDirection()
+                        ? FontAwesomeIcons.solidHeart
+                        : FontAwesomeIcons.heart,
+                    color: langDirection()
+                        ? Appcolor.white
+                        : Appcolor.primrycolor,
+                  ),
           ),
           imageOnPressed == null
               ? const SizedBox.shrink()
@@ -94,7 +126,9 @@ class Custshearchappbar extends StatelessWidget {
                   onPressed: imageOnPressed,
                   icon: Icon(
                     Icons.image_search_rounded,
-                    color: Appcolor.white,
+                    color: langDirection()
+                        ? Appcolor.white
+                        : Appcolor.primrycolor,
                     size: 30,
                   ),
                 ),

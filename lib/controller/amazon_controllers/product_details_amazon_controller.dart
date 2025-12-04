@@ -4,9 +4,10 @@ import 'package:carousel_slider/carousel_controller.dart';
 import 'package:chewie/chewie.dart';
 import 'package:e_comerece/controller/cart/cart_from_detils.dart';
 import 'package:e_comerece/core/class/statusrequest.dart';
+import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/funcations/handle_paging_response.dart';
 import 'package:e_comerece/core/funcations/handlingdata.dart';
-import 'package:e_comerece/core/funcations/translate_data.dart';
+import 'package:e_comerece/core/loacallization/translate_data.dart';
 import 'package:e_comerece/core/servises/serviese.dart';
 import 'package:e_comerece/data/datasource/remote/amazon_data/details_amazon_data.dart';
 import 'package:e_comerece/data/datasource/remote/amazon_data/search_amazon_data.dart';
@@ -40,6 +41,7 @@ abstract class ProductDetailsAmazonController extends GetxController {
   int getMinQuantity();
   void indexchange(int index);
   void resetStateForNewProduct();
+  void gotoditels({required asin, required lang, required title});
 }
 
 class ProductDetailsAmazonControllerImple
@@ -59,10 +61,6 @@ class ProductDetailsAmazonControllerImple
   String? asin;
   String? lang;
   String? title;
-  PageController pageController = PageController(
-    initialPage: 10000 ~/ 2,
-    viewportFraction: 0.7,
-  );
 
   // Amazon variation management
   Map<String, String> selectedVariations = {};
@@ -87,7 +85,7 @@ class ProductDetailsAmazonControllerImple
   // bool hasMoresearch = true;
   int pageIndexSearch = 0;
   Statusrequest statusrequestsearch = Statusrequest.none;
-  List<dynamic> searchProducts = [];
+  List<search.Product> searchProducts = [];
   int loadSearchOne = 0;
 
   bool isInCart = false;
@@ -107,9 +105,9 @@ class ProductDetailsAmazonControllerImple
   @override
   void onInit() {
     super.onInit();
-    asin = Get.arguments['asin'];
-    lang = Get.arguments['lang'];
-    title = Get.arguments['title'];
+    asin = Get.arguments?["asin"];
+    lang = Get.arguments?["lang"];
+    title = Get.arguments?["title"];
     fetchProductDetails();
   }
 
@@ -117,6 +115,7 @@ class ProductDetailsAmazonControllerImple
   void onClose() {
     videoPlayerController?.dispose();
     chewieController?.dispose();
+
     super.onClose();
   }
 
@@ -129,6 +128,7 @@ class ProductDetailsAmazonControllerImple
       asin: asinParam ?? asin!,
       lang: lang!,
     );
+    log("response: $response");
 
     statusrequest = handlingData(response);
 
@@ -141,7 +141,6 @@ class ProductDetailsAmazonControllerImple
           initializeDefaultVariations();
 
           statusrequest = Statusrequest.success;
-
           getquiqtity(jsonEncode(selectedVariations));
         } catch (e, st) {
           log(st.toString());
@@ -164,7 +163,8 @@ class ProductDetailsAmazonControllerImple
 
   @override
   searshText({bool isLoadMore = false, bool other = false}) async {
-    cashkey(String q, int p) => 'productdetails:amazon:$q:page=$p';
+    cashkey(String q, int p) =>
+        'productdetails:lang:${enOrArAmazon()}amazon:$q:page=$p';
 
     if (isLoadMore) {
       if (isLoading || !hasMore) return;
@@ -319,7 +319,9 @@ class ProductDetailsAmazonControllerImple
 
   // Amazon-specific getter methods
   String? get productTitle => detailsAmazonModel?.data?.productTitle;
-  String? get productPrice => detailsAmazonModel?.data?.productPrice.toString();
+  String? get productPrice =>
+      detailsAmazonModel?.data?.productPrice ??
+      detailsAmazonModel?.data?.productOriginalPrice;
   String? get productOriginalPrice =>
       detailsAmazonModel?.data?.productOriginalPrice;
   String? get currency => detailsAmazonModel?.data?.currency;
@@ -576,12 +578,15 @@ class ProductDetailsAmazonControllerImple
 
     cartQuantities.clear();
 
-    try {
-      if (pageController.hasClients) {
-        pageController.jumpToPage(0);
-      }
-    } catch (_) {}
-
     update();
+  }
+
+  @override
+  gotoditels({required asin, required lang, required title}) {
+    Get.toNamed(
+      AppRoutesname.productDetailsAmazonView,
+      arguments: {"asin": asin, "lang": lang, "title": title},
+      preventDuplicates: false,
+    );
   }
 }

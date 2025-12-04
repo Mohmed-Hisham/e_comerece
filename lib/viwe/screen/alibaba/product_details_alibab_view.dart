@@ -2,7 +2,10 @@ import 'package:e_comerece/controller/alibaba/product_details_alibaba_controller
 import 'package:e_comerece/controller/cart/cart_from_detils.dart';
 import 'package:e_comerece/controller/favorite/toggleFavorite_controller.dart';
 import 'package:e_comerece/core/class/handlingdataviwe.dart';
-import 'package:e_comerece/core/funcations/translate_data.dart';
+import 'package:e_comerece/core/constant/routesname.dart';
+import 'package:e_comerece/core/constant/strings_keys.dart';
+import 'package:e_comerece/core/helper/pagination_listener.dart';
+import 'package:e_comerece/core/loacallization/translate_data.dart';
 import 'package:e_comerece/core/servises/extract_image_urls.dart';
 import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/shared/widget_shared/shimmerbar.dart';
@@ -10,7 +13,7 @@ import 'package:e_comerece/viwe/screen/alibaba/product_for_page_detils_alibaba.d
 import 'package:e_comerece/viwe/widget/Positioned/positioned_app_bar.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_right_1.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_right_2.dart';
-import 'package:e_comerece/viwe/widget/alibaba/SellerInfo_alibaba.dart';
+import 'package:e_comerece/viwe/widget/Positioned/positioned_support.dart';
 import 'package:e_comerece/viwe/widget/alibaba/add_to_cart_button_alibaba.dart';
 import 'package:e_comerece/viwe/widget/alibaba/attribute_selector_alibaba.dart';
 import 'package:e_comerece/viwe/widget/alibaba/custmedia_carousel_alibaba.dart';
@@ -18,6 +21,7 @@ import 'package:e_comerece/viwe/widget/alibaba/price_section_alibaba.dart';
 import 'package:e_comerece/viwe/widget/alibaba/product_description_html_alibaba.dart';
 import 'package:e_comerece/viwe/widget/alibaba/product_properties_alibaba.dart';
 import 'package:e_comerece/viwe/widget/alibaba/quantity_section_alibaba.dart';
+import 'package:e_comerece/viwe/widget/alibaba/seller_info_alibaba.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -26,63 +30,39 @@ class ProductDetailsAlibabView extends StatelessWidget {
   const ProductDetailsAlibabView({super.key});
   @override
   Widget build(BuildContext context) {
-    Get.put(ProductDetailsAlibabaControllerImple());
-    // Get.put(AddorrmoveControllerimple());
+    String? productId = Get.arguments['product_id']?.toString();
+    Get.put(ProductDetailsAlibabaControllerImple(), tag: productId);
     AddorrmoveControllerimple cartcontroller = Get.put(
       AddorrmoveControllerimple(),
     );
     Get.put(TogglefavoriteController());
     return Scaffold(
-      body: Stack(
-        children: [
-          const PositionedRight1(),
-          const PositionedRight2(),
+      body: GetBuilder<ProductDetailsAlibabaControllerImple>(
+        tag: productId,
+        builder: (controller) {
+          return Stack(
+            children: [
+              const PositionedRight1(),
+              const PositionedRight2(),
 
-          Container(
-            padding: EdgeInsets.only(top: 85.h),
-            child: GetBuilder<ProductDetailsAlibabaControllerImple>(
-              builder: (controller) {
-                return Handlingdataviwe(
+              Container(
+                padding: EdgeInsets.only(top: 85.h),
+                child: Handlingdataviwe(
                   isproductdetails: true,
                   ontryagain: () => controller.fetchProductDetails(),
-
-                  // isSliver: true,
-                  // shimmer: ShimmerProductDetails(),
                   statusrequest: controller.statusrequest,
-                  widget: NotificationListener<ScrollNotification>(
-                    onNotification: (scrollInfo) {
-                      if (scrollInfo is ScrollUpdateNotification) {
-                        if (scrollInfo.metrics.axis == Axis.vertical) {
-                          if (!controller.isLoading &&
-                              scrollInfo.metrics.pixels >=
-                                  scrollInfo.metrics.maxScrollExtent * 0.8) {
-                            // final pixels = scrollInfo.metrics.pixels;
-                            // final max = scrollInfo.metrics.maxScrollExtent;
-                            final atEdge = scrollInfo.metrics.atEdge;
-                            final pixels = scrollInfo.metrics.pixels;
-                            final maxScrollExtent =
-                                scrollInfo.metrics.maxScrollExtent;
-                            if (atEdge && pixels == maxScrollExtent) {
-                              if (controller.loadSearchOne == 0) {
-                                controller.searshText();
-                                controller.loadSearchOne = 1;
-                              } else {
-                                controller.loadMoreSearch(
-                                  detectLangFromQuery(controller.title!),
-                                );
-                              }
-                            }
-
-                            // if (max > 0 && pixels >= max * 0.8) {
-                            //   print("1  ");
-
-                            // }
-                          }
-                        }
+                  widget: PaginationListener(
+                    isLoading: controller.isLoading,
+                    onLoadMore: () {
+                      if (controller.loadSearchOne == 0) {
+                        controller.searshText();
+                        controller.loadSearchOne = 1;
+                      } else {
+                        controller.loadMoreSearch(
+                          detectLangFromQuery(controller.title!),
+                        );
                       }
-                      return false;
                     },
-
                     child: CustomScrollView(
                       physics: const BouncingScrollPhysics(),
                       slivers: [
@@ -91,16 +71,18 @@ class ProductDetailsAlibabView extends StatelessWidget {
                             context,
                             controller,
                             cartcontroller,
+                            productId,
                           ),
                         ),
-                        ProductForPageDetilsAlibaba(),
+                        ProductForPageDetilsAlibaba(tag: productId),
 
                         GetBuilder<ProductDetailsAlibabaControllerImple>(
+                          tag: productId,
                           id: 'searshText',
                           builder: (controller) {
                             if (controller.isLoading &&
                                 controller.hasMoresearch &&
-                                controller.pageIndexSearch > 0) {
+                                controller.pageIndexSearch > 1) {
                               return SliverToBoxAdapter(
                                 child: ShimmerBar(
                                   height: 8,
@@ -117,12 +99,32 @@ class ProductDetailsAlibabView extends StatelessWidget {
                       ],
                     ),
                   ),
-                );
-              },
-            ),
-          ),
-          PositionedAppBar(title: "Product Details", onPressed: Get.back),
-        ],
+                ),
+              ),
+              PositionedAppBar(
+                title: StringsKeys.productDetailsTitle.tr,
+                onPressed: Get.back,
+              ),
+              PositionedSupport(
+                onPressed: () {
+                  Get.toNamed(
+                    AppRoutesname.messagesScreen,
+                    arguments: {
+                      "platform": 'alibaba',
+                      "link_Product":
+                          controller
+                              .productDitelsAliBabaModel
+                              ?.result
+                              ?.item
+                              ?.itemUrl ??
+                          "",
+                    },
+                  );
+                },
+              ),
+            ],
+          );
+        },
       ),
     );
   }
@@ -131,6 +133,7 @@ class ProductDetailsAlibabView extends StatelessWidget {
     BuildContext context,
     ProductDetailsAlibabaControllerImple controller,
     AddorrmoveControllerimple cartController,
+    String? tag,
   ) {
     final html =
         controller.productDitelsAliBabaModel?.result?.item?.description?.html ??
@@ -140,27 +143,27 @@ class ProductDetailsAlibabView extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(""),
-        CustmediaCarouselAlibaba(),
+        CustmediaCarouselAlibaba(tag: tag),
         Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildProductTitle(context, controller),
+              _buildProductTitle(context, controller, tag),
               const SizedBox(height: 12),
-              _buildAttributesSection(context),
+              _buildAttributesSection(context, tag),
               const SizedBox(height: 16),
-              PriceSectionAlibaba(),
+              PriceSectionAlibaba(tag: tag),
               const SizedBox(height: 16),
-              QuantitySectionAlibaba(),
+              QuantitySectionAlibaba(tag: tag),
               const SizedBox(height: 16),
-              AddToCartButtonAlibaba(cartController: cartController),
+              AddToCartButtonAlibaba(cartController: cartController, tag: tag),
               const SizedBox(height: 16),
-              ProductPropertiesAlibaba(controller: controller),
+              ProductPropertiesAlibaba(controller: controller, tag: tag),
               const SizedBox(height: 16),
-              SellerinfoAlibaba(controller: controller),
+              SellerinfoAlibaba(controller: controller, tag: tag),
               const SizedBox(height: 16),
-              ProductDescriptionHtmlAlibaba(images: images),
+              ProductDescriptionHtmlAlibaba(images: images, tag: tag),
               const SizedBox(height: 16),
             ],
           ),
@@ -172,6 +175,7 @@ class ProductDetailsAlibabView extends StatelessWidget {
   Widget _buildProductTitle(
     BuildContext context,
     ProductDetailsAlibabaControllerImple controller,
+    String? tag,
   ) {
     final subject = controller.subject;
     if (subject == null) return const SizedBox.shrink();
@@ -179,7 +183,6 @@ class ProductDetailsAlibabView extends StatelessWidget {
       id: 'fetchCart',
       builder: (cot) {
         bool isInCart = cot.isCart[controller.productId.toString()] ?? false;
-        print("build title");
         return Row(
           children: [
             Expanded(
@@ -196,14 +199,9 @@ class ProductDetailsAlibabView extends StatelessWidget {
     );
   }
 
-  Widget _buildAttributesSection(
-    BuildContext context,
-    // ProductDetailsAlibabaControllerImple controller,
-  ) {
-    // final properties = controller.getAvailableProperties();
-    // if (properties.isEmpty) return const SizedBox.shrink();
-
+  Widget _buildAttributesSection(BuildContext context, String? tag) {
     return GetBuilder<ProductDetailsAlibabaControllerImple>(
+      tag: tag,
       id: 'selectedAttributes',
       builder: (controller) {
         final properties = controller.getAvailableProperties();
@@ -214,7 +212,7 @@ class ProductDetailsAlibabView extends StatelessWidget {
             final prop = properties[index];
             if (prop.values.first.image != null &&
                 prop.values.first.image != '') {
-              text = 'duble tap to see full image';
+              text = StringsKeys.doubleTapImageInstruction.tr;
             }
             return AttributeSelectorAlibaba(
               controller: controller,

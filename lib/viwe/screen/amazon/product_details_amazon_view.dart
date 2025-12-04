@@ -3,8 +3,10 @@ import 'package:e_comerece/controller/amazon_controllers/product_details_amazon_
 import 'package:e_comerece/controller/cart/cart_from_detils.dart';
 import 'package:e_comerece/controller/favorite/toggleFavorite_controller.dart';
 import 'package:e_comerece/core/class/handlingdataviwe.dart';
-import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/color.dart';
+import 'package:e_comerece/core/constant/routesname.dart';
+import 'package:e_comerece/core/funcations/extractn_umbers.dart';
+import 'package:e_comerece/core/helper/format_price.dart';
 import 'package:e_comerece/core/shared/widget_shared/loadingimage.dart';
 import 'package:e_comerece/core/shared/widget_shared/open_full_image.dart';
 import 'package:e_comerece/core/shared/widget_shared/shimmerbar.dart';
@@ -12,37 +14,40 @@ import 'package:e_comerece/viwe/screen/amazon/product_for_page_detils_amazon.dar
 import 'package:e_comerece/viwe/widget/Positioned/positioned_app_bar.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_right_1.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_right_2.dart';
+import 'package:e_comerece/viwe/widget/Positioned/positioned_support.dart';
 import 'package:e_comerece/viwe/widget/amazon/product_images_carousel_amazon.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'dart:convert';
+import 'package:e_comerece/core/constant/strings_keys.dart';
 
 class ProductDetailsAmazonView extends StatelessWidget {
   const ProductDetailsAmazonView({super.key});
   @override
   Widget build(BuildContext context) {
-    Get.put(ProductDetailsAmazonControllerImple());
+    final String asin = Get.arguments['asin'];
+    Get.put(ProductDetailsAmazonControllerImple(), tag: asin);
     // Get.put(AddorrmoveControllerimple());
     AddorrmoveControllerimple cartcontroller = Get.put(
       AddorrmoveControllerimple(),
     );
     Get.put(TogglefavoriteController());
     return Scaffold(
-      body: Stack(
-        children: [
-          const PositionedRight1(),
-          const PositionedRight2(),
+      body: GetBuilder<ProductDetailsAmazonControllerImple>(
+        tag: asin,
+        builder: (controller) {
+          return Stack(
+            children: [
+              const PositionedRight1(),
+              const PositionedRight2(),
 
-          Container(
-            padding: EdgeInsets.only(top: 65),
-            child: GetBuilder<ProductDetailsAmazonControllerImple>(
-              builder: (controller) {
-                return Handlingdataviwe(
+              Container(
+                padding: EdgeInsets.only(top: 110.h),
+                child: Handlingdataviwe(
                   isproductdetails: true,
                   ontryagain: () => controller.fetchProductDetails(),
-
-                  // isSliver: true,
-                  // shimmer: ShimmerProductDetails(),
                   statusrequest: controller.statusrequest,
                   widget: NotificationListener<ScrollNotification>(
                     onNotification: (scrollInfo) {
@@ -77,40 +82,51 @@ class ProductDetailsAmazonView extends StatelessWidget {
                             context,
                             controller,
                             cartcontroller,
+                            asin,
                           ),
                         ),
 
                         SliverPadding(
                           padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                          sliver: ProductForPageDetilsAmazon(),
+                          sliver: ProductForPageDetilsAmazon(tag: asin),
                         ),
                         GetBuilder<ProductDetailsAmazonControllerImple>(
+                          tag: asin,
                           id: 'product',
                           builder: (con) {
-                            if (con.isLoading &&
-                                con.pageIndexSearch > 0 &&
-                                con.statusrequestsearch ==
-                                    Statusrequest.loading) {
-                              return SliverToBoxAdapter(
-                                child: ShimmerBar(
-                                  height: 10,
-                                  animationDuration: 1,
-                                ),
-                              );
-                            } else {
-                              return SliverToBoxAdapter(child: Container());
-                            }
+                            return SliverToBoxAdapter(
+                              child: ShimmerBar(
+                                height: 10,
+                                animationDuration: 1,
+                              ),
+                            );
                           },
                         ),
+                        SliverToBoxAdapter(child: SizedBox(height: 5.h)),
                       ],
                     ),
                   ),
-                );
-              },
-            ),
-          ),
-          PositionedAppBar(title: "Product Details", onPressed: Get.back),
-        ],
+                ),
+              ),
+              PositionedAppBar(
+                title: StringsKeys.productDetailsTitle.tr,
+                onPressed: Get.back,
+              ),
+              PositionedSupport(
+                onPressed: () {
+                  Get.toNamed(
+                    AppRoutesname.messagesScreen,
+                    arguments: {
+                      "platform": 'alibaba',
+                      "link_Product":
+                          controller.detailsAmazonModel?.data?.productUrl,
+                    },
+                  );
+                },
+              ),
+            ],
+          );
+        },
       ),
     );
   }
@@ -119,12 +135,12 @@ class ProductDetailsAmazonView extends StatelessWidget {
     BuildContext context,
     ProductDetailsAmazonControllerImple controller,
     AddorrmoveControllerimple cartController,
+    String asin,
   ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(""),
-        ProductImagesCarouselAmazon(),
+        ProductImagesCarouselAmazon(tag: asin),
         Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -132,13 +148,13 @@ class ProductDetailsAmazonView extends StatelessWidget {
             children: [
               _buildProductTitle(context, controller),
               const SizedBox(height: 12),
-              _buildVariationsSection(context, controller),
+              _buildVariationsSection(context, controller, asin),
               const SizedBox(height: 16),
-              _buildPriceSection(context, controller),
+              _buildPriceSection(context, controller, asin),
               const SizedBox(height: 16),
-              _buildQuantitySection(context, controller),
+              _buildQuantitySection(context, controller, asin),
               const SizedBox(height: 16),
-              _buildAddToCartButton(context, controller, cartController),
+              _buildAddToCartButton(context, controller, cartController, asin),
               const SizedBox(height: 16),
               _buildProductInfo(context, controller),
               const SizedBox(height: 16),
@@ -162,7 +178,6 @@ class ProductDetailsAmazonView extends StatelessWidget {
       id: 'fetchCart',
       builder: (cot) {
         bool isInCart = cot.isCart[controller.asin.toString()] ?? false;
-        print("build title");
         return Row(
           children: [
             Expanded(
@@ -182,8 +197,10 @@ class ProductDetailsAmazonView extends StatelessWidget {
   Widget _buildVariationsSection(
     BuildContext context,
     ProductDetailsAmazonControllerImple controller,
+    String asin,
   ) {
     return GetBuilder<ProductDetailsAmazonControllerImple>(
+      tag: asin,
       id: 'selectedVariations',
       builder: (controller) {
         final dimensions = controller.productVariationsDimensions;
@@ -216,7 +233,7 @@ class ProductDetailsAmazonView extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Color: double tap to open full image',
+          StringsKeys.colorVariationInstruction.tr,
           style: Theme.of(context).textTheme.titleMedium,
         ),
         const SizedBox(height: 8),
@@ -250,7 +267,7 @@ class ProductDetailsAmazonView extends StatelessWidget {
                 child: Row(
                   spacing: 5,
                   children: [
-                    Container(
+                    SizedBox(
                       height: 40,
                       width: 40,
                       child: ClipRRect(
@@ -298,7 +315,10 @@ class ProductDetailsAmazonView extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Size:', style: Theme.of(context).textTheme.titleMedium),
+        Text(
+          StringsKeys.size.tr,
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
         const SizedBox(height: 8),
         Wrap(
           spacing: 8,
@@ -318,7 +338,7 @@ class ProductDetailsAmazonView extends StatelessWidget {
                   ),
                   borderRadius: BorderRadius.circular(8),
                   color: isSelected
-                      ? Appcolor.primrycolor.withOpacity(0.1)
+                      ? Appcolor.primrycolor.withValues(alpha: 0.1)
                       : null,
                 ),
                 child: Text(
@@ -341,8 +361,10 @@ class ProductDetailsAmazonView extends StatelessWidget {
   Widget _buildPriceSection(
     BuildContext context,
     ProductDetailsAmazonControllerImple controller,
+    String asin,
   ) {
     return GetBuilder<ProductDetailsAmazonControllerImple>(
+      tag: asin,
       id: 'quantity',
       builder: (controller) {
         return Column(
@@ -378,7 +400,7 @@ class ProductDetailsAmazonView extends StatelessWidget {
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: Text(
-                  '${controller.couponDiscountPercentage}% OFF',
+                  '${controller.couponDiscountPercentage}% ${StringsKeys.off.tr}',
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 12,
@@ -395,8 +417,10 @@ class ProductDetailsAmazonView extends StatelessWidget {
   Widget _buildQuantitySection(
     BuildContext context,
     ProductDetailsAmazonControllerImple controller,
+    String asin,
   ) {
     return GetBuilder<ProductDetailsAmazonControllerImple>(
+      tag: asin,
       id: 'quantity',
       builder: (controller) {
         return Column(
@@ -404,7 +428,7 @@ class ProductDetailsAmazonView extends StatelessWidget {
             Row(
               children: [
                 Text(
-                  'Quantity:',
+                  StringsKeys.quantity.tr,
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 const SizedBox(width: 16),
@@ -429,7 +453,7 @@ class ProductDetailsAmazonView extends StatelessWidget {
             Row(
               children: [
                 Text(
-                  'Total Price:',
+                  StringsKeys.totalPrice.tr,
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 const SizedBox(width: 16),
@@ -452,48 +476,88 @@ class ProductDetailsAmazonView extends StatelessWidget {
     BuildContext context,
     ProductDetailsAmazonControllerImple controller,
     AddorrmoveControllerimple cartController,
+    String asin,
   ) {
     return GetBuilder<ProductDetailsAmazonControllerImple>(
+      tag: asin,
       id: 'quantity',
       builder: (controller) {
         return SizedBox(
           width: double.infinity,
-          child: ElevatedButton(
-            onPressed: () {
-              print('Current ASIN: ${controller.getCurrentAsin()}');
-              print('Product Title: ${controller.productTitle}');
-              print('Product Photo: ${controller.productPhoto}');
-              print('Current Price: ${controller.getCurrentPriceFormatted()}');
-              print('Quantity: ${controller.quantity}');
-              print('Variations: ${jsonEncode(controller.selectedVariations)}');
-              // Add to cart logic here
-              cartController.add(
-                controller.getCurrentAsin() ?? '',
-                controller.productTitle ?? '',
-                controller.productPhoto ?? '',
-                controller.getCurrentPriceFormatted(),
-                'Amazon',
-                controller.quantity.toString(),
-                jsonEncode(controller.selectedVariations),
-                '1000', // Available quantity - you might want to get this from API
-                tier: '',
-              );
-              controller.incart();
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: controller.isInCart
-                  ? Appcolor.black2
-                  : Appcolor.primrycolor,
-              padding: const EdgeInsets.symmetric(vertical: 16),
-            ),
-            child: Text(
-              controller.isInCart ? 'Update Cart' : 'Add to Cart',
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
+          child: Row(
+            children: [
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () {
+                    print('Current ASIN: ${controller.getCurrentAsin()}');
+                    print('Product Title: ${controller.productTitle}');
+                    print('Product Photo: ${controller.productPhoto}');
+                    print(
+                      'Current Price: ${controller.getCurrentPriceFormatted()}',
+                    );
+                    print('Quantity: ${controller.quantity}');
+                    print(
+                      'Variations: ${jsonEncode(controller.selectedVariations)}',
+                    );
+                    // Add to cart logic here
+                    cartController.add(
+                      controller.getCurrentAsin() ?? '',
+                      controller.productTitle ?? '',
+                      controller.productPhoto ?? '',
+                      extractPrice(controller.getCurrentPriceFormatted()),
+                      'Amazon',
+                      controller.quantity,
+                      jsonEncode(controller.selectedVariations),
+                      1000, // Available quantity - you might want to get this from API
+                      tier: '',
+                      porductink: controller.productUrl ?? '',
+                    );
+                    controller.incart();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: controller.isInCart
+                        ? Appcolor.black2
+                        : Appcolor.primrycolor,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                  ),
+                  child: Text(
+                    controller.isInCart
+                        ? StringsKeys.updateCart.tr
+                        : StringsKeys.addToCart.tr,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
               ),
-            ),
+              GetBuilder<TogglefavoriteController>(
+                builder: (favoritesController) {
+                  favoritesController.currentStatus = controller.isFavorite;
+                  return IconButton(
+                    onPressed: () {
+                      controller.changisfavorite();
+                      favoritesController.toggleFavorite(
+                        controller.getCurrentAsin() ?? '',
+                        controller.productTitle ?? '',
+                        controller.productPhoto ?? '',
+                        extractNumbers(controller.productPrice.toString()),
+                        "Amazon",
+                      );
+                    },
+                    icon: FaIcon(
+                      controller.isFavorite
+                          ? FontAwesomeIcons.solidHeart
+                          : FontAwesomeIcons.heart,
+                      color: controller.isFavorite
+                          ? Appcolor.reed
+                          : Appcolor.reed,
+                    ),
+                  );
+                },
+              ),
+            ],
           ),
         );
       },
@@ -508,22 +572,31 @@ class ProductDetailsAmazonView extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Product Information',
+          StringsKeys.productInformation.tr,
           style: Theme.of(
             context,
           ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 12),
         if (controller.productByline != null)
-          _buildInfoRow('Brand', controller.productByline!),
+          _buildInfoRow(StringsKeys.brand.tr, controller.productByline!),
         if (controller.productStarRating != null)
-          _buildInfoRow('Rating', '${controller.productStarRating} ⭐'),
+          _buildInfoRow(
+            StringsKeys.rating.tr,
+            '${controller.productStarRating} ⭐',
+          ),
         if (controller.productNumRatings != null)
-          _buildInfoRow('Reviews', '${controller.productNumRatings} reviews'),
+          _buildInfoRow(
+            StringsKeys.reviews.tr,
+            '${controller.productNumRatings} ${StringsKeys.reviews.tr}',
+          ),
         if (controller.productAvailability != null)
-          _buildInfoRow('Availability', controller.productAvailability!),
+          _buildInfoRow(
+            StringsKeys.availability.tr,
+            controller.productAvailability!,
+          ),
         if (controller.delivery != null)
-          _buildInfoRow('Delivery', controller.delivery!),
+          _buildInfoRow(StringsKeys.delivery.tr, controller.delivery!),
         if (controller.isPrime == true)
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -531,9 +604,9 @@ class ProductDetailsAmazonView extends StatelessWidget {
               color: Colors.blue,
               borderRadius: BorderRadius.circular(4),
             ),
-            child: const Text(
-              'PRIME',
-              style: TextStyle(
+            child: Text(
+              StringsKeys.prime.tr,
+              style: const TextStyle(
                 color: Colors.white,
                 fontSize: 12,
                 fontWeight: FontWeight.bold,
@@ -573,7 +646,7 @@ class ProductDetailsAmazonView extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Description',
+          StringsKeys.description.tr,
           style: Theme.of(
             context,
           ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
@@ -589,7 +662,7 @@ class ProductDetailsAmazonView extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'About this product',
+                StringsKeys.aboutThisProduct.tr,
                 style: Theme.of(
                   context,
                 ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
@@ -617,7 +690,7 @@ class ProductDetailsAmazonView extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Top Reviews',
+          StringsKeys.topReviews.tr,
           style: Theme.of(
             context,
           ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
@@ -656,7 +729,7 @@ class ProductDetailsAmazonView extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'By ${review.reviewAuthor} • ${review.reviewDate}',
+                  '${StringsKeys.byAuthor.tr} ${review.reviewAuthor} • ${review.reviewDate}',
                   style: Theme.of(
                     context,
                   ).textTheme.bodySmall?.copyWith(color: Colors.grey),

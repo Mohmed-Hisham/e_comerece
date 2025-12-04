@@ -3,18 +3,25 @@ import 'package:e_comerece/controller/favorite/favorites_controller.dart';
 import 'package:e_comerece/core/class/handlingdataviwe.dart';
 import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/constant/imagesassets.dart';
-import 'package:e_comerece/core/funcations/translate_data.dart';
+import 'package:e_comerece/core/constant/routesname.dart';
+import 'package:e_comerece/core/constant/sliver_divder.dart';
+import 'package:e_comerece/core/constant/sliver_spacer.dart';
+import 'package:e_comerece/core/constant/strings_keys.dart';
+import 'package:e_comerece/core/helper/pagination_listener.dart';
 import 'package:e_comerece/core/shared/image_manger/Image_manager_controller.dart';
 import 'package:e_comerece/core/shared/widget_shared/shimmerbar.dart';
 import 'package:e_comerece/viwe/screen/aliexpress/categories_list.dart';
 import 'package:e_comerece/viwe/screen/aliexpress/hot_products_grid.dart';
 import 'package:e_comerece/viwe/screen/aliexpress/search_name.dart';
+import 'package:e_comerece/viwe/screen/shein/cust_label_container.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_app_bar.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_left_2.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_right_2.dart';
+import 'package:e_comerece/viwe/widget/Positioned/positioned_support.dart';
 import 'package:e_comerece/viwe/widget/aliexpress/custcarouselaliexpriss.dart';
 import 'package:e_comerece/viwe/widget/custshearchappbar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 class HomePage1 extends StatelessWidget {
@@ -27,28 +34,35 @@ class HomePage1 extends StatelessWidget {
     Get.lazyPut(() => ImageManagerController());
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: GetBuilder<HomePageControllerImpl>(
         builder: (controller) {
-          print("build");
           return Stack(
             children: [
               PositionedRight1(),
               PositionedRight2(),
-              PositionedAppBar(title: "Aliexpress", onPressed: Get.back),
+              PositionedAppBar(
+                title: StringsKeys.aliexpress.tr,
+                onPressed: Get.back,
+              ),
 
               Column(
                 children: [
-                  SizedBox(height: 65),
+                  SizedBox(height: 110.h),
                   Custshearchappbar(
+                    focusNode: controller.focusNode,
                     mycontroller: controller.searchController,
                     onChanged: (val) {
                       controller.onChangeSearch(val);
+                      controller.whenstartSearch(val);
+                    },
+
+                    showClose: controller.showClose,
+                    onTapClose: () {
+                      controller.onCloseSearch();
                     },
                     onTapSearch: () {
                       controller.onTapSearch(
-                        lang: detectLangFromQuery(
-                          controller.searchController.text,
-                        ),
                         keyWord: controller.searchController.text,
                       );
                     },
@@ -63,39 +77,19 @@ class HomePage1 extends StatelessWidget {
                   Expanded(
                     child: controller.isSearch
                         ? Handlingdataviwe(
-                            // shimmer: ShimmerGrideviwe(),
                             statusrequest: controller.statusrequestsearch,
                             widget: SearchName(controller: controller),
                           )
-                        : NotificationListener<ScrollNotification>(
-                            onNotification: (scrollInfo) {
-                              if (scrollInfo is ScrollUpdateNotification) {
-                                if (scrollInfo.metrics.axis == Axis.vertical) {
-                                  if (!controller.isLoading &&
-                                      controller.hasMore) {
-                                    // final pixels = scrollInfo.metrics.pixels;
-                                    // final max =
-                                    // scrollInfo.metrics.maxScrollExtent;
-                                    final atEdge = scrollInfo.metrics.atEdge;
-                                    final pixels = scrollInfo.metrics.pixels;
-                                    final maxScrollExtent =
-                                        scrollInfo.metrics.maxScrollExtent;
-                                    if (atEdge && pixels == maxScrollExtent) {
-                                      controller.loadMore();
-                                    }
-
-                                    // if (max > 0 && pixels >= max * 0.8) {
-                                    //   controller.loadMore();
-                                    // }
-                                  }
-                                }
-                              }
-                              return false;
-                            },
+                        : PaginationListener(
+                            isLoading: controller.isLoading,
+                            fetchAtEnd: true,
+                            onLoadMore: controller.loadMore,
                             child: RefreshIndicator(
-                              onRefresh: () =>
-                                  controller.fetchHomePageData(isrefresh: true),
+                              color: Appcolor.primrycolor,
+                              backgroundColor: Colors.transparent,
+                              onRefresh: () => controller.fetchProducts(),
                               child: CustomScrollView(
+                                physics: const BouncingScrollPhysics(),
                                 slivers: [
                                   const SliverToBoxAdapter(
                                     child: Custcarouselaliexpriss(
@@ -106,57 +100,42 @@ class HomePage1 extends StatelessWidget {
                                       ],
                                     ),
                                   ),
-                                  const SliverToBoxAdapter(
-                                    child: Padding(
-                                      padding: EdgeInsets.only(
-                                        left: 8.0,
-                                        right: 8.0,
-                                      ),
-                                      child: Text(
-                                        'Categories',
-                                        style: TextStyle(
-                                          fontSize: 22,
-                                          fontWeight: FontWeight.bold,
-                                          color: Appcolor.black,
+
+                                  SliverSpacer(10.h),
+                                  SliverToBoxAdapter(
+                                    child: Row(
+                                      children: [
+                                        CustLabelContainer(
+                                          text: StringsKeys.categories.tr,
                                         ),
-                                      ),
+                                      ],
                                     ),
                                   ),
 
-                                  const SliverToBoxAdapter(
-                                    child: SizedBox(height: 8),
-                                  ),
+                                  SliverSpacer(15.h),
 
                                   const SliverToBoxAdapter(
                                     child: CategoriesList(),
                                   ),
 
-                                  const SliverToBoxAdapter(
-                                    child: Divider(height: 10),
-                                  ),
+                                  const SliverDivider(10),
 
-                                  const SliverToBoxAdapter(
-                                    child: Padding(
-                                      padding: EdgeInsets.symmetric(
-                                        horizontal: 8.0,
-                                      ),
-                                      child: Text(
-                                        'Hot Deals',
-                                        style: TextStyle(
-                                          fontSize: 22,
-                                          fontWeight: FontWeight.bold,
-                                          color: Appcolor.black,
+                                  SliverSpacer(10.h),
+                                  SliverToBoxAdapter(
+                                    child: Row(
+                                      children: [
+                                        CustLabelContainer(
+                                          text: StringsKeys.hotDeals.tr,
                                         ),
-                                      ),
+                                      ],
                                     ),
                                   ),
-                                  const SliverToBoxAdapter(
-                                    child: SizedBox(height: 16),
-                                  ),
+                                  SliverSpacer(15.h),
+
                                   HotProductsGrid(),
 
                                   if (controller.hasMore &&
-                                      controller.pageIndex > 0)
+                                      controller.pageIndex > 1)
                                     const SliverToBoxAdapter(
                                       child: ShimmerBar(
                                         height: 8,
@@ -169,6 +148,14 @@ class HomePage1 extends StatelessWidget {
                           ),
                   ),
                 ],
+              ),
+              PositionedSupport(
+                onPressed: () {
+                  Get.toNamed(
+                    AppRoutesname.messagesScreen,
+                    arguments: {"platform": 'aliexpress'},
+                  );
+                },
               ),
             ],
           );

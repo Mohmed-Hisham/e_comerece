@@ -1,9 +1,11 @@
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
+import 'package:e_comerece/core/constant/strings_keys.dart';
+import 'package:e_comerece/core/funcations/error_dialog.dart';
 import 'package:e_comerece/core/funcations/handlingdata.dart';
+import 'package:e_comerece/core/funcations/loading_dialog.dart';
 import 'package:e_comerece/data/datasource/remote/auth/forgetpassword/checkemail_data.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 
 abstract class Forgetpassowrd extends GetxController {
@@ -15,24 +17,18 @@ class Forgetpassowrdlment extends Forgetpassowrd {
   CheckemailData checkemailData = CheckemailData(Get.find());
   late TextEditingController email;
   GlobalKey<FormState> formState = GlobalKey<FormState>();
-
   Statusrequest? statusrequest;
+  ScrollController scrollController = ScrollController();
+  FocusNode focus = FocusNode();
 
   @override
   goToveyfiycode() async {
     if (formState.currentState!.validate()) {
       statusrequest = Statusrequest.loading;
+      focus.unfocus();
       update();
       if (!Get.isDialogOpen!) {
-        Get.dialog(
-          PopScope(
-            canPop: false,
-            onPopInvokedWithResult: (bool didPop, dynamic result) {
-              if (didPop) return;
-            },
-            child: Center(child: CircularProgressIndicator()),
-          ),
-        );
+        loadingDialog();
       }
 
       var response = await checkemailData.postData(email: email.text);
@@ -46,7 +42,10 @@ class Forgetpassowrdlment extends Forgetpassowrd {
             arguments: {"email": email.text},
           );
         } else {
-          Get.defaultDialog(title: "خطأ", middleText: "الايميل غير موجود");
+          errorDialog(
+            StringsKeys.accountNotFound.tr,
+            StringsKeys.accountNotFound.tr,
+          );
           statusrequest = Statusrequest.failuer;
         }
       }
@@ -64,6 +63,8 @@ class Forgetpassowrdlment extends Forgetpassowrd {
   void dispose() {
     super.dispose();
     email.dispose();
+    focus.dispose();
+    scrollController.dispose();
   }
 
   @override

@@ -6,5 +6,9 @@ blurDilog(Widget content, BuildContext context) {
     blur: 5,
     barrierColor: Colors.black.withValues(alpha: 0.2),
     dialog: content,
-  ).show(context, transitionType: DialogTransitionType.rightToLeft);
+  ).show(
+    context,
+    transitionType: DialogTransitionType.rightToLeft,
+    transitionDuration: const Duration(milliseconds: 400),
+  );
 }

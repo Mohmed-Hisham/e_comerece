@@ -1,14 +1,17 @@
 import 'package:e_comerece/controller/alibaba/product_details_alibaba_controller.dart';
 import 'package:e_comerece/core/constant/color.dart';
+import 'package:e_comerece/core/constant/strings_keys.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get_state_manager/src/simple/get_state.dart';
+import 'package:get/get.dart';
 
 class QuantitySectionAlibaba extends StatelessWidget {
-  const QuantitySectionAlibaba({super.key});
+  final String? tag;
+  const QuantitySectionAlibaba({super.key, this.tag});
 
   @override
   Widget build(BuildContext context) {
     return GetBuilder<ProductDetailsAlibabaControllerImple>(
+      tag: tag,
       id: 'quantity',
       builder: (controller) {
         final minQuantity = controller.getMinQuantity();
@@ -31,13 +34,15 @@ class QuantitySectionAlibaba extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Quantity',
+                      StringsKeys.quantity.tr,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     Text(
-                      'Min: $minQuantity',
+                      StringsKeys.minQuantityLabel.trParams({
+                        'min': minQuantity.toString(),
+                      }),
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: Appcolor.black2,
                         fontWeight: FontWeight.bold,

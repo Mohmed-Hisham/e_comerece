@@ -5,7 +5,8 @@ import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/funcations/handle_paging_response.dart';
 import 'package:e_comerece/core/funcations/handlingdata.dart';
-import 'package:e_comerece/core/funcations/translate_data.dart';
+import 'package:e_comerece/core/funcations/loading_dialog.dart';
+import 'package:e_comerece/core/loacallization/translate_data.dart';
 import 'package:e_comerece/core/shared/image_manger/Image_manager_controller.dart';
 import 'package:e_comerece/data/datasource/remote/aliexpriess/category_data.dart';
 import 'package:e_comerece/data/datasource/remote/aliexpriess/hotproductssdata.dart';
@@ -21,13 +22,13 @@ import 'package:get/get.dart';
 
 abstract class AliexpriseHomeController extends GetxController {
   Future<void> fetchHomePageData();
-  Future<void> searshText({required String keyWord, required String lang});
+  Future<void> searshText({required String keyWord});
   // Future<void> fetchOnrefresh();
   Future<void> fetchCategories();
   Future<void> fetchProducts({required bool isLoadMore});
   void loadMore();
   void loadMoreSearch(String lang);
-  void onTapSearch({required String keyWord, required String lang});
+  void onTapSearch({required String keyWord});
   void onChangeSearch(String value);
   void goTofavorite();
   void gotoditels({
@@ -59,13 +60,14 @@ class HomePageControllerImpl extends AliexpriseHomeController {
 
   int pageIndex = 0;
   int pageIndexSearch = 0;
-
+  FocusNode focusNode = FocusNode();
   bool isLoading = false;
 
   bool hasMore = true;
   bool hasMoresearch = true;
 
   bool isSearch = false;
+  bool showClose = false;
 
   int currentIndex = 0;
 
@@ -79,11 +81,11 @@ class HomePageControllerImpl extends AliexpriseHomeController {
   fetchCategories() async {
     statusrequestcat = Statusrequest.loading;
     log("start fetch categories=====================");
-
+    cashkey(String q) => 'categories:alexpress:${enOrAr()}';
     // update();
     try {
       final cacheResponse = await getCashData.getCash(
-        query: 'categories:alexpress',
+        query: cashkey('categories:alexpress'),
         platform: "aliexpress",
       );
       log("cacheResponse===================== ${cacheResponse["status"]}");
@@ -125,7 +127,7 @@ class HomePageControllerImpl extends AliexpriseHomeController {
 
               categories.assignAll(mainCategories);
               insertCashData.insertCash(
-                query: 'categories:alexpress',
+                query: cashkey('categories:alexpress'),
                 platform: "aliexpress",
                 data: categoryResponse,
                 ttlHours: "24",
@@ -142,7 +144,7 @@ class HomePageControllerImpl extends AliexpriseHomeController {
 
   @override
   fetchProducts({isLoadMore = false}) async {
-    cashkey(String q, int p) => 'homeproduct:alexpress:$q:page=$p';
+    cashkey(String q, int p) => 'homeproduct:alexpress:$q:page=$p ${enOrAr()}';
 
     if (isLoadMore) {
       if (isLoading || !hasMore) return;
@@ -269,12 +271,8 @@ class HomePageControllerImpl extends AliexpriseHomeController {
   }
 
   @override
-  searshText({
-    required String keyWord,
-    required String lang,
-    bool isLoadMore = false,
-  }) async {
-    cashkey(String q, int p) => 'search:aliexpress:$q:page=$p';
+  searshText({required String keyWord, bool isLoadMore = false}) async {
+    cashkey(String q, int p) => 'search:aliexpress:$q:page=$p ${enOrAr()}';
     if (isLoadMore) {
       if (isLoading || !hasMoresearch) return;
       isLoading = true;
@@ -362,22 +360,50 @@ class HomePageControllerImpl extends AliexpriseHomeController {
 
   @override
   loadMoreSearch(lang) {
-    searshText(keyWord: searchController.text, isLoadMore: true, lang: lang);
+    searshText(keyWord: searchController.text, isLoadMore: true);
   }
 
   @override
   onChangeSearch(String val) {
     if (val == "") {
       isSearch = false;
+      focusNode.unfocus();
       update();
     }
   }
 
   @override
-  onTapSearch({required keyWord, required lang}) {
+  onTapSearch({required keyWord}) {
     isSearch = true;
-    searshText(keyWord: keyWord, lang: lang);
+
+    searshText(keyWord: keyWord);
     update();
+  }
+
+  whenstartSearch(String q) async {
+    if (q != "") {
+      showClose = true;
+      update();
+    } else {
+      focusNode.unfocus();
+      showClose = false;
+    }
+  }
+
+  onCloseSearch() {
+    if (isSearch) {
+      isSearch = false;
+      focusNode.unfocus();
+      searchController.clear();
+      update();
+      showClose = false;
+      // update(['initShow']);
+    } else {
+      searchController.clear();
+      focusNode.unfocus();
+      showClose = false;
+      // update(['initShow']);
+    }
   }
 
   @override
@@ -396,35 +422,28 @@ class HomePageControllerImpl extends AliexpriseHomeController {
 
   @override
   goToSearchByimage() {
-    // ignore: avoid_single_cascade_in_expression_statements
-    Get.put(ImageManagerController())
-      ..pickImage().then((image) {
-        if (image.path != '') {
-          Get.dialog(
-            PopScope(
-              canPop: false,
-              onPopInvokedWithResult: (bool didPop, dynamic result) {
-                if (didPop) return;
-              },
-              child: Center(child: CircularProgressIndicator()),
-            ),
-          );
+    Get.put(ImageManagerController()).pickImage().then((image) {
+      if (image.path != '') {
+        if (!Get.isDialogOpen!) {
+          loadingDialog();
         }
-        uploadToCloudinary(
-              filePath: image.path,
-              cloudName: Appapi.cloudName,
-              uploadPreset: Appapi.uploadPreset,
-            )
-            .then((url) {
-              if (Get.isDialogOpen ?? false) Get.back();
-              if (url != null) {
-                Get.toNamed(
-                  AppRoutesname.searchByimagealiexpress,
-                  arguments: {'url': url, 'image': image},
-                );
-              } else {}
-            })
-            .catchError((err) {});
-      });
+      }
+      uploadToCloudinary(
+            filePath: image.path,
+            cloudName: Appapi.cloudName,
+            uploadPreset: Appapi.uploadPreset,
+          )
+          .then((url) {
+            log("url $url");
+            if (Get.isDialogOpen ?? false) Get.back();
+            if (url != null) {
+              Get.toNamed(
+                AppRoutesname.searchByimagealiexpress,
+                arguments: {'url': url, 'image': image},
+              );
+            } else {}
+          })
+          .catchError((err) {});
+    });
   }
 }

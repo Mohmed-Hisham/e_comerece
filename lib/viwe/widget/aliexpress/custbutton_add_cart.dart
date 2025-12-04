@@ -1,15 +1,20 @@
+import 'dart:convert';
 import 'package:e_comerece/controller/aliexpriess/product_details_controller.dart';
 import 'package:e_comerece/controller/cart/cart_from_detils.dart';
 import 'package:e_comerece/controller/favorite/favorites_controller.dart';
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/color.dart';
+import 'package:e_comerece/core/constant/strings_keys.dart';
+import 'package:e_comerece/core/funcations/displayattributes.dart';
 import 'package:e_comerece/viwe/screen/aliexpress/add_to_cart_bottom_sheet.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 class CustbuttonAddCart extends StatelessWidget {
   final AddorrmoveControllerimple addcontroller;
-  const CustbuttonAddCart({super.key, required this.addcontroller});
+  final String? tag;
+  const CustbuttonAddCart({super.key, required this.addcontroller, this.tag});
 
   @override
   Widget build(BuildContext context) {
@@ -20,6 +25,7 @@ class CustbuttonAddCart extends StatelessWidget {
         color: Colors.transparent,
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
         child: GetBuilder<ProductDetailsControllerImple>(
+          tag: tag,
           id: 'selectedAttributes',
           builder: (controller) {
             if (controller.statusrequest == Statusrequest.loading ||
@@ -46,6 +52,21 @@ class CustbuttonAddCart extends StatelessWidget {
                         ),
                         child: IconButton(
                           onPressed: () {
+                            String price =
+                                controller
+                                    .itemDetailsModel!
+                                    .result!
+                                    .item!
+                                    .sku!
+                                    .def!
+                                    .promotionPrice ??
+                                controller
+                                    .itemDetailsModel!
+                                    .result!
+                                    .item!
+                                    .sku!
+                                    .def!
+                                    .price!;
                             favorite.toggleFavorite(
                               controller.productId.toString(),
                               controller.itemDetailsModel!.result!.item!.title!,
@@ -54,20 +75,14 @@ class CustbuttonAddCart extends StatelessWidget {
                                   .result!
                                   .item!
                                   .images[0],
-                              controller
-                                  .itemDetailsModel!
-                                  .result!
-                                  .item!
-                                  .sku!
-                                  .def!
-                                  .promotionPrice!,
+                              price,
                               "Aliexpress",
                             );
                           },
                           icon: Icon(
                             isFav ? Icons.favorite : Icons.favorite,
                             color: isFav ? Colors.red : Colors.white,
-                            size: 25,
+                            size: 26.sp,
                           ),
                         ),
                       );
@@ -87,24 +102,14 @@ class CustbuttonAddCart extends StatelessWidget {
                             controller.currentSku?.skuVal?.availQuantity == null
                         ? null
                         : () {
-                            // Map<String, dynamic> cc = buildDisplayAttributes(controller);
-                            // print("  ${jsonEncode(buildDisplayAttributes(controller))}");
-                            // print(cc['Color']['name']);
-                            // print(cc['Color']['image']);
-                            // print(cc['Compatibility by Model']['name']);
-                            // print(cc['Compatibility by Model']['image']);
-                            // print(controller.productId.runtimeType);
-
-                            // print("controller.quantity=>${controller.quantity}");
-
-                            // controller.getquiqtity(
-                            //   jsonEncode(buildDisplayAttributes(controller)),
-                            // );
-                            // print(".quantity=>${controller.quantity}");
+                            controller.getquiqtity(
+                              jsonEncode(buildDisplayAttributes(controller)),
+                            );
                             Get.bottomSheet(
                               AddToCartBottomSheet(
                                 controller: controller,
                                 addcontroller: addcontroller,
+                                tag: controller.productId.toString(),
                               ),
                               backgroundColor: Colors.white,
                               elevation: 10,
@@ -116,7 +121,7 @@ class CustbuttonAddCart extends StatelessWidget {
                               ),
                             );
                           },
-                    child: Text("add to cart"),
+                    child: Text(StringsKeys.addToCart.tr),
                   ),
                 ],
               );

@@ -6,7 +6,7 @@ class CartRemoveData {
 
   CartRemoveData(this.crud);
 
-  removeCart(String userId, String cartId) async {
+  removeCart(int userId, int cartId) async {
     var response = await crud.postData(Appapi.removcart, {
       "user_id": userId,
       "cart_id": cartId,

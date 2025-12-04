@@ -2,10 +2,12 @@ import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e_comerece/controller/cart/cart_controller.dart';
 import 'package:e_comerece/core/constant/color.dart';
-import 'package:e_comerece/core/funcations/translate_data.dart';
+import 'package:e_comerece/core/loacallization/translate_data.dart';
 import 'package:e_comerece/core/shared/widget_shared/fix_url.dart';
+import 'package:e_comerece/core/shared/widget_shared/loadingimage.dart';
 import 'package:e_comerece/data/model/cartmodel.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 
 class CartItemCard extends StatelessWidget {
@@ -16,14 +18,23 @@ class CartItemCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final attributes = jsonDecode(cartItem.cartAttributes!);
-    final controller = Get.find<CartController>();
+    final controller = Get.find<CartControllerImpl>();
     return Padding(
       padding: const EdgeInsets.all(10.0),
       child: InkWell(
         onTap: () {
-          controller.gotoproductdetails(
-            int.parse(cartItem.productId!.toString()),
-            enOrAr(),
+          final plat = cartItem.cartPlatform!.toLowerCase();
+          controller.gotoditels(
+            id: plat == "aliexpress" || plat == "alibaba"
+                ? int.parse(cartItem.productId!)
+                : cartItem.productId!,
+            lang: plat == "amazon" ? enOrArAmazon() : enOrAr(),
+            title: cartItem.cartProductTitle!,
+            asin: cartItem.productId ?? "",
+            goodssn: cartItem.goodsSn ?? "",
+            goodsid: cartItem.productId ?? "",
+            categoryid: cartItem.categoryId ?? "",
+            platform: cartItem.cartPlatform!.toLowerCase(),
           );
         },
         child: Row(
@@ -38,6 +49,9 @@ class CartItemCard extends StatelessWidget {
                     width: 75,
                     height: 75,
                     fit: BoxFit.cover,
+                    placeholder: (context, url) => const Loadingimage(),
+                    errorWidget: (context, url, error) =>
+                        const Center(child: Icon(Icons.broken_image)),
                   ),
                 ),
                 Positioned(
@@ -76,6 +90,7 @@ class CartItemCard extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
+                      color: Appcolor.black,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -89,6 +104,7 @@ class CartItemCard extends StatelessWidget {
                           color: Colors.red,
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
+                          fontFamily: "asian",
                         ),
                       ),
                       const SizedBox(width: 20),
@@ -116,7 +132,7 @@ class CartItemCard extends StatelessWidget {
                 ],
               ),
             ),
-            GetBuilder<CartController>(
+            GetBuilder<CartControllerImpl>(
               id: "1",
               builder: (addRemoveController) => Row(
                 children: [
@@ -131,10 +147,16 @@ class CartItemCard extends StatelessWidget {
                       onPressed: () {
                         addRemoveController.addprise(cartModel: cartItem);
                       },
-                      icon: const Icon(Icons.add, size: 20),
+                      icon: FaIcon(FontAwesomeIcons.plus, size: 20),
                     ),
                   ),
-                  Text('  ${cartItem.cartQuantity}  '),
+                  Text(
+                    '  ${cartItem.cartQuantity}  ',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Appcolor.black,
+                    ),
+                  ),
                   Container(
                     height: 35,
                     width: 35,
@@ -146,7 +168,7 @@ class CartItemCard extends StatelessWidget {
                       onPressed: () {
                         addRemoveController.removprise(cartModel: cartItem);
                       },
-                      icon: const Icon(Icons.remove, size: 20),
+                      icon: FaIcon(FontAwesomeIcons.minus, size: 20),
                     ),
                   ),
                 ],
@@ -188,24 +210,6 @@ class CartItemCard extends StatelessWidget {
     );
   }
 
-  String? _normalizeUrl(String? url) {
-    if (url == null || url.trim().isEmpty) return null;
-    url = url.trim();
-    // لو الرابط يبدأ بـ "//" ضيف https:
-    if (url.startsWith('//')) return 'https:$url';
-    // لو لا يبدأ ببروتوكول لكن يحتوي على مسار صورة (مثلاً endsWith jpg/png/webp)
-    if (!RegExp(r'^[a-zA-Z0-9+.-]+://').hasMatch(url) &&
-        RegExp(
-          r'\.(png|jpg|jpeg|webp|gif|svg)$',
-          caseSensitive: false,
-        ).hasMatch(url)) {
-      return 'https://$url';
-    }
-    // لو البروتوكول http أو https موجود رجعه كما هو
-    if (url.startsWith('http://') || url.startsWith('https://')) return url;
-    return null;
-  }
-
   String _valueToText(dynamic value) {
     if (value == null) return '';
     if (value is String) return value.trim();
@@ -228,7 +232,7 @@ class CartItemCard extends StatelessWidget {
   String? _extractImageUrl(dynamic value) {
     if (value == null) return null;
     if (value is String) {
-      final candidate = _normalizeUrl(value);
+      final candidate = secureUrl(value);
       if (candidate != null) return candidate;
       return null;
     }
@@ -245,13 +249,13 @@ class CartItemCard extends StatelessWidget {
       for (final k in imgKeys) {
         final v = value[k];
         if (v is String) {
-          final candidate = _normalizeUrl(v);
+          final candidate = secureUrl(v);
           if (candidate != null) return candidate;
         }
       }
       // لو الماب نفسها عبارة عن رابط
       final stringRepr = value.toString();
-      final candidate = _normalizeUrl(stringRepr);
+      final candidate = secureUrl(stringRepr);
       if (candidate != null) return candidate;
       return null;
     }
@@ -274,7 +278,7 @@ class CartItemCard extends StatelessWidget {
     final List<Widget> widgets = [];
 
     attributes.forEach((rawKey, rawValue) {
-      final key = rawKey ?? '';
+      final key = rawKey;
       // نص العرض: نحاول بناء نص لطيف من القيمة
       String displayText = '';
       String? imageUrl;

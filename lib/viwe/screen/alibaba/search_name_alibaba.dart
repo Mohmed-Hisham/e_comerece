@@ -1,18 +1,18 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e_comerece/controller/alibaba/product_alibaba_home_controller.dart';
 import 'package:e_comerece/controller/favorite/favorites_controller.dart';
 import 'package:e_comerece/core/constant/color.dart';
-import 'package:e_comerece/core/funcations/translate_data.dart';
-import 'package:e_comerece/core/shared/widget_shared/loadingimage.dart';
-import 'package:e_comerece/core/shared/widget_shared/shimmer_image_product.dart';
+import 'package:e_comerece/core/constant/strings_keys.dart';
+import 'package:e_comerece/core/helper/custom_cached_image.dart';
+import 'package:e_comerece/core/helper/pagination_listener.dart';
+import 'package:e_comerece/core/loacallization/translate_data.dart';
 import 'package:e_comerece/core/shared/widget_shared/shimmerbar.dart';
 import 'package:e_comerece/viwe/screen/alibaba/extension_geter_product_home.dart';
 import 'package:e_comerece/viwe/screen/alibaba/seetings_alibaba.dart';
 import 'package:e_comerece/viwe/widget/custgridviwe.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
-import 'package:get/get_state_manager/src/simple/get_state.dart';
 
 class SearchNameAlibaba extends StatelessWidget {
   final ProductAlibabaHomeControllerImp controller;
@@ -20,39 +20,28 @@ class SearchNameAlibaba extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return NotificationListener<ScrollNotification>(
-      onNotification: (scrollInfo) {
-        if (scrollInfo is ScrollUpdateNotification) {
-          if (scrollInfo.metrics.axis == Axis.vertical) {
-            if (!controller.isLoadingSearch) {
-              final atEdge = scrollInfo.metrics.atEdge;
-              final pixels = scrollInfo.metrics.pixels;
-              final maxScrollExtent = scrollInfo.metrics.maxScrollExtent;
-              if (atEdge && pixels == maxScrollExtent) {
-                print("end");
-                controller.loadMoreSearch();
-              }
-            }
-          }
-        }
-        return true;
-      },
+    return RefreshIndicator(
+      color: Appcolor.primrycolor,
+      backgroundColor: Colors.transparent,
+      onRefresh: () =>
+          controller.searshText(q: controller.searchController.text),
+      child: Column(
+        children: [
+          SeetingsAlibaba(),
 
-      child: RefreshIndicator(
-        onRefresh: () =>
-            controller.searshText(q: controller.searchController.text),
-        child: Column(
-          children: [
-            SeetingsAlibaba(),
-
-            Expanded(
+          Expanded(
+            child: PaginationListener(
+              onLoadMore: controller.loadMoreSearch,
+              isLoading: controller.isLoadingSearch,
+              fetchAtEnd: true,
               child: GridView.builder(
+                physics: const BouncingScrollPhysics(),
                 padding: const EdgeInsets.all(15),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
                   crossAxisSpacing: 10,
                   mainAxisSpacing: 10,
-                  mainAxisExtent: 280,
+                  mainAxisExtent: 330.h,
                 ),
                 itemCount: controller.searchProducts.length,
                 itemBuilder: (context, index) {
@@ -70,14 +59,7 @@ class SearchNameAlibaba extends StatelessWidget {
                       );
                     },
                     child: Custgridviwe(
-                      image: CachedNetworkImage(
-                        imageUrl: "https:${item.mainImageUrl}",
-                        fit: BoxFit.cover,
-                        width: double.infinity,
-                        placeholder: (context, url) => const Loadingimage(),
-                        errorWidget: (context, url, error) =>
-                            const Icon(Icons.error),
-                      ),
+                      image: CustomCachedImage(imageUrl: item.mainImageUrl),
                       disc: item.skuPriceFormatted,
                       title: item.titel,
                       price: item.skuPriceFormatted,
@@ -115,7 +97,7 @@ class SearchNameAlibaba extends StatelessWidget {
                         child: ListView.builder(
                           cacheExtent: 500,
                           scrollDirection: Axis.horizontal,
-                          physics: const ClampingScrollPhysics(),
+                          physics: const BouncingScrollPhysics(),
                           itemCount: item.imageUrls.length + 1,
                           itemBuilder: (context, index) {
                             if (index == 0) {
@@ -124,7 +106,9 @@ class SearchNameAlibaba extends StatelessWidget {
                                   horizontal: 6.0,
                                 ),
                                 child: Text(
-                                  "all ${item.imageUrls.length} colors",
+                                  StringsKeys.allColors.trParams({
+                                    'number': item.imageUrls.length.toString(),
+                                  }),
                                   style: Theme.of(context).textTheme.bodyMedium
                                       ?.copyWith(
                                         color: Appcolor.primrycolor,
@@ -139,22 +123,10 @@ class SearchNameAlibaba extends StatelessWidget {
                             return Padding(
                               padding: const EdgeInsets.only(left: 5),
                               child: ClipOval(
-                                child: CachedNetworkImage(
+                                child: CustomCachedImage(
                                   imageUrl: img,
                                   width: 30,
                                   height: 30,
-                                  fit: BoxFit.cover,
-                                  placeholder: (c, u) =>
-                                      const ShimmerImageProductSmall(),
-                                  errorWidget: (c, u, e) => Container(
-                                    width: 30,
-                                    height: 30,
-                                    color: Colors.grey.shade200,
-                                    child: const Icon(
-                                      Icons.broken_image,
-                                      size: 16,
-                                    ),
-                                  ),
                                 ),
                               ),
                             );
@@ -166,12 +138,12 @@ class SearchNameAlibaba extends StatelessWidget {
                 },
               ),
             ),
-            if (controller.isLoadingSearch &&
-                controller.hasMoresearch &&
-                controller.pageIndexSearch > 0)
-              ShimmerBar(height: 8, animationDuration: 1),
-          ],
-        ),
+          ),
+          if (controller.isLoadingSearch &&
+              controller.hasMoresearch &&
+              controller.pageIndexSearch > 0)
+            ShimmerBar(height: 8, animationDuration: 1),
+        ],
       ),
     );
   }

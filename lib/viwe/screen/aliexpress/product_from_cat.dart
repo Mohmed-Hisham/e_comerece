@@ -1,19 +1,21 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e_comerece/controller/aliexpriess/shearchname_controller.dart';
 import 'package:e_comerece/controller/favorite/favorites_controller.dart';
 import 'package:e_comerece/core/class/handlingdataviwe.dart';
 import 'package:e_comerece/core/constant/color.dart';
+import 'package:e_comerece/core/constant/strings_keys.dart';
 import 'package:e_comerece/core/constant/wantedcategory.dart';
 import 'package:e_comerece/core/funcations/calculateDiscount.dart';
-import 'package:e_comerece/core/funcations/translate_data.dart';
+import 'package:e_comerece/core/helper/custom_cached_image.dart';
+import 'package:e_comerece/core/helper/pagination_listener.dart';
+import 'package:e_comerece/core/loacallization/translate_data.dart';
 import 'package:e_comerece/core/shared/widget_shared/custmenubutton.dart';
-import 'package:e_comerece/core/shared/widget_shared/shimmer_image_product.dart';
 import 'package:e_comerece/core/shared/widget_shared/shimmerbar.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_app_bar.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_left_2.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_right_2.dart';
 import 'package:e_comerece/viwe/widget/custgridviwe.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 
@@ -41,9 +43,6 @@ class ProductFromCat extends StatelessWidget {
           ),
           GetBuilder<ShearchnameControllerImple>(
             builder: (controller) {
-              // final int itemCount = controller.categorymodel.isNotEmpty
-              //     ? controller.categorymodel.length
-              //     : controller.categorymodelFromImage.length;
               final int itemCount = controller.categorymodel.length;
               if (itemCount > 0 &&
                   controller.categoryId.toString().isNotEmpty) {
@@ -52,6 +51,9 @@ class ProductFromCat extends StatelessWidget {
                   final selectedIndex = controller.categorymodel.indexWhere(
                     (cat) => cat.id == controller.categoryId,
                   );
+                  if (selectedIndex == 0 || selectedIndex == 1) {
+                    return;
+                  }
 
                   if (selectedIndex != -1) {
                     // نحسب البوزيشن اللي نسكرول ليه (كل عنصر عرضه 100)
@@ -74,10 +76,11 @@ class ProductFromCat extends StatelessWidget {
 
               return Column(
                 children: [
-                  SizedBox(height: 70),
+                  SizedBox(height: 110.h),
                   SizedBox(
-                    height: 100,
+                    height: 110.h,
                     child: ListView.builder(
+                      physics: const BouncingScrollPhysics(),
                       controller: scrollController,
                       scrollDirection: Axis.horizontal,
                       itemCount: itemCount,
@@ -126,15 +129,17 @@ class ProductFromCat extends StatelessWidget {
                           },
                           child: Container(
                             margin: const EdgeInsets.only(left: 5),
-                            width: 100,
+                            width: 120.w,
                             alignment: Alignment.center,
                             child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Container(
-                                      height: 50,
-                                      width: 50,
+                                      height: 60.h,
+                                      width: 55.w,
                                       decoration: BoxDecoration(
                                         color: Appcolor.white,
                                         border: Border.all(
@@ -170,7 +175,7 @@ class ProductFromCat extends StatelessWidget {
                                                   child: Text(
                                                     sub.name ?? 'Unknown',
                                                     style: TextStyle(
-                                                      fontSize: 14,
+                                                      fontSize: 14.sp,
                                                       fontWeight:
                                                           FontWeight.bold,
                                                     ),
@@ -185,33 +190,18 @@ class ProductFromCat extends StatelessWidget {
                                 ),
                                 Container(
                                   padding: const EdgeInsets.all(4),
-                                  width: 100,
+                                  width: 110.w,
                                   child: Text(
                                     currentName,
-                                    textAlign: TextAlign.start,
-                                    maxLines: 2,
+                                    maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
-                                      fontSize: 12,
+                                    style: TextStyle(
+                                      fontSize: 14.sp,
                                       color: Appcolor.black2,
                                       fontWeight: FontWeight.w900,
                                     ),
                                   ),
                                 ),
-                                // AnimatedContainer(
-                                //   duration: const Duration(milliseconds: 500),
-                                //   curve: Curves.easeInOut,
-                                //   width: isSelected ? 80 : 0,
-                                //   height: 6,
-                                //   decoration: BoxDecoration(
-                                //     color: controller.categoryId == currentId
-                                //         ? (isSelected
-                                //               ? Appcolor.primrycolor
-                                //               : Colors.transparent)
-                                //         : Colors.transparent,
-                                //     borderRadius: BorderRadius.circular(10),
-                                //   ),
-                                // ),
                               ],
                             ),
                           ),
@@ -219,37 +209,35 @@ class ProductFromCat extends StatelessWidget {
                       },
                     ),
                   ),
-                  SizedBox(height: 10),
+                  Divider(color: Appcolor.gray, thickness: 1.h),
+                  SizedBox(height: 10.h),
                   Expanded(
-                    child: NotificationListener<ScrollNotification>(
-                      onNotification: (scrollInfo) {
-                        final atEdge = scrollInfo.metrics.atEdge;
-                        final pixels = scrollInfo.metrics.pixels;
-                        final maxScrollExtent =
-                            scrollInfo.metrics.maxScrollExtent;
-                        if (atEdge && pixels == maxScrollExtent) {
-                          controller.loadMoreSearch();
-                        }
-                        return true;
+                    child: PaginationListener(
+                      fetchAtEnd: true,
+                      onLoadMore: () {
+                        controller.loadMoreSearch();
                       },
                       child: Handlingdataviwe(
                         // shimmer: ShimmerGrideviwe(),
                         statusrequest: controller.statusrequest,
                         widget: RefreshIndicator(
+                          color: Appcolor.primrycolor,
+                          backgroundColor: Colors.transparent,
                           onRefresh: () => controller.fetchShearchname(
                             controller.nameCat!,
                             controller.categoryId!,
                             isLoadMore: false,
                           ),
                           child: GridView.builder(
+                            physics: const BouncingScrollPhysics(),
                             key: Key(controller.categoryId.toString()),
                             padding: const EdgeInsets.symmetric(horizontal: 10),
                             gridDelegate:
-                                const SliverGridDelegateWithFixedCrossAxisCount(
+                                SliverGridDelegateWithFixedCrossAxisCount(
                                   crossAxisCount: 2,
-                                  crossAxisSpacing: 10,
-                                  mainAxisSpacing: 10,
-                                  mainAxisExtent: 260,
+                                  crossAxisSpacing: 10.w,
+                                  mainAxisSpacing: 10.h,
+                                  mainAxisExtent: 370.h,
                                 ),
                             itemCount: controller.items.length,
                             itemBuilder: (context, index) {
@@ -258,29 +246,23 @@ class ProductFromCat extends StatelessWidget {
                               return InkWell(
                                 onTap: () {
                                   controller.gotoditels(
-                                    id: product.item!.itemId!,
+                                    id: product.item?.itemId ?? 0,
                                     lang: enOrAr(),
-                                    title: product.item!.title!,
+                                    title: product.item?.title ?? "",
                                   );
                                 },
                                 child: Custgridviwe(
-                                  image: CachedNetworkImage(
-                                    imageUrl: "https:${product.item!.image!}",
-                                    fit: BoxFit.cover,
-                                    width: double.infinity,
-                                    placeholder: (context, url) => const Center(
-                                      child: ShimmerImageProduct(),
-                                    ),
-                                    errorWidget: (context, url, error) =>
-                                        const Icon(Icons.error),
+                                  image: CustomCachedImage(
+                                    imageUrl: product.item?.image ?? "",
                                   ),
                                   disc: calculateDiscountPercent(
-                                    product.item!.sku!.def!.price!,
-                                    product.item!.sku!.def!.promotionPrice!,
+                                    product.item?.sku?.def?.price ?? 0,
+                                    product.item?.sku?.def?.promotionPrice ?? 0,
                                   ),
-                                  title: product.item!.title!,
+                                  title: product.item?.title ?? "",
                                   price:
-                                      product.item!.sku!.def!.promotionPrice!,
+                                      product.item?.sku?.def?.promotionPrice ??
+                                      "0",
                                   icon: GetBuilder<FavoritesController>(
                                     builder: (isFavoriteController) {
                                       bool isFav =
@@ -292,14 +274,16 @@ class ProductFromCat extends StatelessWidget {
                                       return IconButton(
                                         onPressed: () {
                                           isFavoriteController.toggleFavorite(
-                                            product.item!.itemId!.toString(),
-                                            product.item!.title!,
-                                            product.item!.itemUrl!,
+                                            product.item?.itemId.toString() ??
+                                                "",
+                                            product.item?.title ?? "",
+                                            product.item?.itemUrl ?? "",
                                             product
-                                                .item!
-                                                .sku!
-                                                .def!
-                                                .promotionPrice!,
+                                                    .item
+                                                    ?.sku
+                                                    ?.def
+                                                    ?.promotionPrice ??
+                                                "",
                                             "Aliexpress",
                                           );
                                         },
@@ -314,8 +298,10 @@ class ProductFromCat extends StatelessWidget {
                                       );
                                     },
                                   ),
-                                  discprice: product.item!.sku!.def!.price!,
-                                  countsall: "${product.item!.sales!} مبيعة",
+                                  discprice:
+                                      product.item?.sku?.def?.price ?? "",
+                                  countsall:
+                                      "${product.item?.sales} ${StringsKeys.sales.tr}",
                                 ),
                               );
                             },

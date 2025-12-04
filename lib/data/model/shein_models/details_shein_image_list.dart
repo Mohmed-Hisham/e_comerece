@@ -164,15 +164,15 @@ class Data {
       businessModel: json["business_model"],
       mallCode: json["mall_code"],
       isOnSale: json["is_on_sale"],
-      retailPrice: json["retailPrice"] == null
-          ? null
-          : DiscountPrice.fromJson(json["retailPrice"]),
-      salePrice: json["salePrice"] == null
-          ? null
-          : DiscountPrice.fromJson(json["salePrice"]),
-      discountPrice: json["discountPrice"] == null
-          ? null
-          : DiscountPrice.fromJson(json["discountPrice"]),
+      retailPrice: (json["retailPrice"] is Map<String, dynamic>)
+          ? DiscountPrice.fromJson(json["retailPrice"])
+          : null,
+      salePrice: (json["salePrice"] is Map<String, dynamic>)
+          ? DiscountPrice.fromJson(json["salePrice"])
+          : null,
+      discountPrice: (json["discountPrice"] is Map<String, dynamic>)
+          ? DiscountPrice.fromJson(json["discountPrice"])
+          : null,
       isInversion: json["isInversion"],
       retailDiscountPrice: json["retailDiscountPrice"] == null
           ? null
@@ -191,12 +191,12 @@ class Data {
           : List<PromotionInfo>.from(
               json["promotionInfo"]!.map((x) => PromotionInfo.fromJson(x)),
             ),
-      premiumFlagNew: json["premiumFlagNew"] == null
-          ? null
-          : PremiumFlagNew.fromJson(json["premiumFlagNew"]),
-      productInfoLabels: json["productInfoLabels"] == null
-          ? null
-          : DynamicExt.fromJson(json["productInfoLabels"]),
+      premiumFlagNew: (json["premiumFlagNew"] is Map<String, dynamic>)
+          ? PremiumFlagNew.fromJson(json["premiumFlagNew"])
+          : null,
+      productInfoLabels: (json["productInfoLabels"] is Map<String, dynamic>)
+          ? DynamicExt.fromJson(json["productInfoLabels"])
+          : null,
       quickship: json["quickship"],
       couponPrices: json["coupon_prices"] == null
           ? []
@@ -211,29 +211,31 @@ class Data {
               json["relatedColorNew"]!.map((x) => RelatedColorNew.fromJson(x)),
             ),
       isClearance: json["is_clearance"],
-      productMaterial: json["productMaterial"] == null
-          ? null
-          : ProductMaterial.fromJson(json["productMaterial"]),
+      productMaterial: (json["productMaterial"] is Map<String, dynamic>)
+          ? ProductMaterial.fromJson(json["productMaterial"])
+          : null,
       isShowPlusSize: json["is_show_plus_size"],
-      actTagFromCcc: json["actTagFromCcc"] == null
-          ? null
-          : ActTagFromCcc.fromJson(json["actTagFromCcc"]),
-      rankInfo: json["rankInfo"] == null
-          ? null
-          : ActTagFromCcc.fromJson(json["rankInfo"]),
+      actTagFromCcc: (json["actTagFromCcc"] is Map<String, dynamic>)
+          ? ActTagFromCcc.fromJson(json["actTagFromCcc"])
+          : null,
+      rankInfo: (json["rankInfo"] is Map<String, dynamic>)
+          ? ActTagFromCcc.fromJson(json["rankInfo"])
+          : null,
       commentNumShow: json["comment_num_show"],
       commentRankAverage: json["comment_rank_average"],
       commentNum: json["comment_num"],
-      percentOverallFit: json["percent_overall_fit"] == null
-          ? null
-          : PercentOverallFit.fromJson(json["percent_overall_fit"]),
+      percentOverallFit: (json["percent_overall_fit"] is Map<String, dynamic>)
+          ? PercentOverallFit.fromJson(json["percent_overall_fit"])
+          : null,
       isSingleSku: json["is_single_sku"],
-      ext: json["ext"] == null ? null : DynamicExt.fromJson(json["ext"]),
+      ext: (json["ext"] is Map<String, dynamic>)
+          ? DynamicExt.fromJson(json["ext"])
+          : null,
       isShowAdditionalDiscount: json["isShowAdditionalDiscount"],
       usePositionInfo: json["usePositionInfo"],
-      dynamicExt: json["dynamic_ext"] == null
-          ? null
-          : DynamicExt.fromJson(json["dynamic_ext"]),
+      dynamicExt: (json["dynamic_ext"] is Map<String, dynamic>)
+          ? DynamicExt.fromJson(json["dynamic_ext"])
+          : null,
       productUrl: json["productUrl"],
       isProductAvailable: json["isProductAvailable"],
     );
@@ -983,7 +985,9 @@ class PromotionInfo {
       languageKey: json["language_key"],
       aggregateMemberResult: json["aggregateMemberResult"] == null
           ? null
-          : DynamicExt.fromJson(json["aggregateMemberResult"]),
+          : (json["aggregateMemberResult"] is Map<String, dynamic>)
+          ? DynamicExt.fromJson(json["aggregateMemberResult"])
+          : null,
       promotionActivityPriority: json["promotionActivityPriority"],
       promotionLogoType: json["promotion_logo_type"],
       rules: json["rules"] == null
@@ -1000,9 +1004,10 @@ class PromotionInfo {
       maxDiscountConvertByAppCurrency:
           json["max_discount_convert_by_app_currency"] == null
           ? null
-          : DiscountPrice.fromJson(
-              json["max_discount_convert_by_app_currency"],
-            ),
+          : (json["max_discount_convert_by_app_currency"]
+                is Map<String, dynamic>)
+          ? DiscountPrice.fromJson(json["max_discount_convert_by_app_currency"])
+          : null,
     );
   }
 }
@@ -1028,15 +1033,15 @@ class Rule {
 
   factory Rule.fromJson(Map<String, dynamic> json) {
     return Rule(
-      type: json["type"],
-      value: json["value"],
+      type: (json["type"] as num?)?.toInt(),
+      value: (json["value"] as num?)?.toInt(),
       discount: json["discount"] == null
           ? null
           : Discount.fromJson(json["discount"]),
       valueAmount: json["value_amount"] == null
           ? null
           : DiscountPrice.fromJson(json["value_amount"]),
-      maxDiscount: json["max_discount"],
+      maxDiscount: (json["max_discount"] as num?)?.toInt(),
       maxDiscountAmount: json["max_discount_amount"] == null
           ? null
           : DiscountPrice.fromJson(json["max_discount_amount"]),
@@ -1062,9 +1067,9 @@ class Discount {
 
   factory Discount.fromJson(Map<String, dynamic> json) {
     return Discount(
-      type: json["type"],
-      value: json["value"],
-      enjoyGoodsNum: json["enjoy_goods_num"],
+      type: (json["type"] as num?)?.toInt(),
+      value: (json["value"] as num?)?.toInt(),
+      enjoyGoodsNum: (json["enjoy_goods_num"] as num?)?.toInt(),
       valueAmount: json["value_amount"] == null
           ? null
           : DiscountPrice.fromJson(json["value_amount"]),

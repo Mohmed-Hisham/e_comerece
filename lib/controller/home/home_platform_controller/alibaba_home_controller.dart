@@ -2,6 +2,7 @@ import 'package:e_comerece/controller/home/homescreen_controller.dart';
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/funcations/handle_paging_response.dart';
 import 'package:e_comerece/core/funcations/handlingdata.dart';
+import 'package:e_comerece/core/loacallization/translate_data.dart';
 import 'package:e_comerece/core/helper/db_database.dart';
 import 'package:e_comerece/data/datasource/remote/alibaba/productalibaba_home_data.dart';
 import 'package:get/get.dart';
@@ -25,7 +26,7 @@ class AlibabaHomeController extends GetxController {
   }
 
   Future<void> fethcProductsAlibaba({isLoadMore = false}) async {
-    final String platform = 'alibaba';
+    final String platform = 'alibaba-lang-${enOrAr(isArSA: true)}';
     String cacheKey(int p) => 'hotProducts:$platform:page=$p';
     if (isLoadMore) {
       if (isLoading || !hasMore) return;

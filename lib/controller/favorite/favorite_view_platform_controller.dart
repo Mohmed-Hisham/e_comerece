@@ -1,6 +1,9 @@
+import 'dart:developer';
+
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/funcations/handlingdata.dart';
+import 'package:e_comerece/core/loacallization/translate_data.dart';
 import 'package:e_comerece/core/servises/serviese.dart';
 import 'package:e_comerece/data/datasource/remote/favorite/favorite_data.dart';
 import 'package:e_comerece/data/datasource/remote/favorite/viwefavorite_data.dart';
@@ -10,7 +13,14 @@ import 'package:get/get.dart';
 abstract class FavoriteViewPlatformController extends GetxController {
   void getFavoritesPlatform({required String platform});
   void removeFavorite(String productId);
-  void goToProductDetails(int productId, String lang, String title);
+  void goToProductDetails(
+    int productId,
+    String lang,
+    String title,
+    String asin,
+    String goodsSn,
+    String categoryid,
+  );
 }
 
 class FavoriteViewPlatformControllerImpl
@@ -37,6 +47,7 @@ class FavoriteViewPlatformControllerImpl
     if (Statusrequest.success == statusrequest) {
       if (response['status'] == "success") {
         List responseData = response['data'];
+        log(responseData.toString());
         favorites = responseData.map((e) => FavoriteModel.fromJson(e)).toList();
 
         statusrequest = Statusrequest.success;
@@ -66,7 +77,7 @@ class FavoriteViewPlatformControllerImpl
   }
 
   @override
-  goToProductDetails(productId, lang, title) {
+  goToProductDetails(productId, lang, title, asin, goodsSn, categoryid) {
     print(platform);
     switch (platform) {
       case "Aliexpress":
@@ -79,6 +90,23 @@ class FavoriteViewPlatformControllerImpl
         Get.toNamed(
           AppRoutesname.productDetailsAlibabView,
           arguments: {"product_id": productId, "lang": lang, "title": title},
+        );
+        break;
+      case "Amazon":
+        Get.toNamed(
+          AppRoutesname.productDetailsAmazonView,
+          arguments: {"asin": asin, "lang": enOrArAmazon(), "title": title},
+        );
+      case "Shein":
+        Get.toNamed(
+          AppRoutesname.productDetailsSheinView,
+          arguments: {
+            "goods_sn": goodsSn,
+            "title": title,
+            "goods_id": productId.toString(),
+            "category_id": categoryid,
+            "lang": enOrArShein(),
+          },
         );
         break;
     }

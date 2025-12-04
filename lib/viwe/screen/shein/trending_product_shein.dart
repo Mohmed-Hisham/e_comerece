@@ -1,14 +1,15 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e_comerece/controller/favorite/favorites_controller.dart';
 import 'package:e_comerece/controller/shein/home_shein_controller.dart';
+import 'package:e_comerece/core/constant/strings_keys.dart';
 import 'package:e_comerece/core/class/handlingdataviwe.dart';
 import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/funcations/calculateDiscount.dart';
-import 'package:e_comerece/core/shared/widget_shared/loadingimage.dart';
-import 'package:e_comerece/core/shared/widget_shared/shimmer_image_product.dart';
-import 'package:e_comerece/viwe/screen/shein/extension_geter_trending_product.dart';
+import 'package:e_comerece/core/helper/custom_cached_image.dart';
+import 'package:e_comerece/core/loacallization/translate_data.dart';
+import 'package:e_comerece/viwe/widget/shein/extension_geter_trending_product.dart';
 import 'package:e_comerece/viwe/widget/custgridviwe.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 
@@ -19,13 +20,12 @@ class TrendingProductShein extends GetView<HomeSheinControllerImpl> {
   Widget build(BuildContext context) {
     return Handlingdataviwe(
       isSliver: true,
-      // shimmer: ShimmerSliverGridviwe(),
       statusrequest: controller.statusrequestproduct,
       widget: SliverGrid.builder(
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
-          mainAxisSpacing: 10,
-          mainAxisExtent: 300,
+          mainAxisSpacing: 10.w,
+          mainAxisExtent: 400.h,
         ),
 
         itemCount: controller.products.length,
@@ -34,39 +34,29 @@ class TrendingProductShein extends GetView<HomeSheinControllerImpl> {
 
           return InkWell(
             onTap: () {
-              print(product.productUrl);
-              print(product.productId);
-              print("product.goodsSn => ${product.goodsSn}");
-              print("product.goodsId => ${product.goodsId}");
-              print("product.categoryId => ${product.categoryId}");
-
               controller.gotoditels(
-                goodssn: product.goodsSn!,
-                title: product.goodsName!,
-                goodsid: product.goodsId!,
+                goodssn: product.goodsSn ?? '',
+                title: product.goodsName ?? '',
+                goodsid: product.goodsId ?? '',
                 categoryid: product.categoryId,
+                lang: enOrArShein(),
               );
             },
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
+              padding: EdgeInsets.symmetric(horizontal: 10.w),
               child: Custgridviwe(
                 image: ClipRRect(
                   borderRadius: BorderRadius.circular(10),
-                  child: CachedNetworkImage(
-                    imageUrl: product.mainImageUrl,
-                    fit: BoxFit.cover,
-                    width: double.infinity,
-                    placeholder: (context, url) => const Loadingimage(),
-                    errorWidget: (context, url, error) =>
-                        const Icon(Icons.error),
+                  child: RepaintBoundary(
+                    child: CustomCachedImage(imageUrl: product.mainImageUrl),
                   ),
                 ),
                 disc: calculateDiscountPercent(
                   product.salePrice?.amountWithSymbol.toString(),
                   product.retailPrice?.usdAmount.toString(),
                 ),
-                title: product.goodsName!,
-                price: product.salePrice!.amountWithSymbol.toString(),
+                title: product.goodsName ?? '',
+                price: product.salePrice?.amountWithSymbol.toString() ?? '',
                 icon: GetBuilder<FavoritesController>(
                   builder: (controller) {
                     bool isFav =
@@ -77,12 +67,12 @@ class TrendingProductShein extends GetView<HomeSheinControllerImpl> {
                       onPressed: () {
                         controller.toggleFavorite(
                           product.goodsId.toString(),
-                          product.goodsName!,
+                          product.goodsName ?? '',
                           product.mainImageUrl,
-                          product.salePrice!.amountWithSymbol.toString(),
+                          product.salePrice?.amountWithSymbol.toString() ?? '',
+                          "Shein",
                           goodsSn: product.goodsSn ?? "",
                           categoryid: product.categoryId,
-                          "Shein",
                         );
                       },
                       icon: FaIcon(
@@ -95,51 +85,45 @@ class TrendingProductShein extends GetView<HomeSheinControllerImpl> {
                   },
                 ),
 
-                discprice: product.retailPrice!.usdAmount.toString(),
+                discprice: product.retailPrice?.usdAmount.toString() ?? '',
                 countsall: product.brandName,
                 rate: product.commentRankAverageValue.toString(),
                 isAlibaba: true,
                 images: SizedBox(
-                  height: 30,
+                  height: 38.h,
                   child: ListView.builder(
                     cacheExtent: 500,
                     scrollDirection: Axis.horizontal,
-                    physics: const ClampingScrollPhysics(),
+                    physics: const BouncingScrollPhysics(),
                     itemCount: product.relatedColorImages.length + 1,
                     itemBuilder: (context, index) {
-                      // log(product.detailImageList.length.toString());
-                      // log(product.detailImageList.toString());
                       if (index == 0) {
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 6.0),
+                        return Container(
+                          padding: EdgeInsets.symmetric(horizontal: 6.w),
+                          alignment: Alignment.center,
                           child: Text(
-                            "all ${product.relatedColorImages.length} colors",
+                            StringsKeys.allColors.trParams({
+                              'number': product.relatedColorImages.length
+                                  .toString(),
+                            }),
                             style: Theme.of(context).textTheme.bodyMedium
                                 ?.copyWith(
                                   color: Appcolor.primrycolor,
                                   fontWeight: FontWeight.bold,
                                 ),
+                            textAlign: TextAlign.center,
                           ),
                         );
                       }
 
                       return Padding(
-                        padding: const EdgeInsets.only(left: 5),
-                        child: ClipOval(
-                          child: CachedNetworkImage(
-                            imageUrl:
-                                '${product.relatedColorImages[index - 1]}',
-                            width: 30,
-                            height: 30,
-                            fit: BoxFit.cover,
-                            placeholder: (c, u) =>
-                                const ShimmerImageProductSmall(),
-                            errorWidget: (c, u, e) => Container(
-                              width: 30,
-                              height: 30,
-                              color: Colors.grey.shade200,
-                              child: const Icon(Icons.broken_image, size: 16),
-                            ),
+                        padding: EdgeInsets.only(left: 5.w),
+                        child: RepaintBoundary(
+                          child: CustomCachedImage(
+                            radius: 50,
+                            imageUrl: product.relatedColorImages[index - 1],
+                            width: 37.w,
+                            height: 35.h,
                           ),
                         ),
                       );

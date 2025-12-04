@@ -2,8 +2,11 @@ import 'dart:convert';
 import 'package:e_comerece/controller/aliexpriess/product_details_controller.dart';
 import 'package:e_comerece/controller/cart/cart_from_detils.dart';
 import 'package:e_comerece/core/constant/color.dart';
+import 'package:e_comerece/core/constant/strings_keys.dart';
 import 'package:e_comerece/core/funcations/displayattributes.dart';
+import 'package:e_comerece/core/helper/format_price.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 class Buildaddtocartbutton extends StatelessWidget {
@@ -40,30 +43,31 @@ class Buildaddtocartbutton extends StatelessWidget {
                   ?.toString() ??
               '0';
 
-          final stock =
-              controller.currentSku?.skuVal?.availQuantity?.toString() ?? '0';
-          // print("stock=>$stock");
-          // print("quantity=>${controller.quantity}");
-          // print("price=>$price");
-          // print("imageUrl=>$imageUrl");
-          // print("subject=>$subject");
-          // print("productId=>$productId");
-          print("attributesJson=>$attributesJson");
+          final stock = controller.currentSku?.skuVal?.availQuantity ?? 0;
 
           cartController.add(
             productId,
             subject,
             controller.imgageAttribute ?? imageUrl,
-            price,
+            extractPrice(price),
             "aliexpress",
-            controller.quantity.toString(),
+            controller.quantity,
             attributesJson,
             stock,
             tier: "",
+            porductink: controller.productLink ?? "",
           );
           Get.back();
         },
-        child: const Text("Add to Cart"),
+        child: controller.inCart
+            ? Text(
+                StringsKeys.updateCart.tr,
+                style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.bold),
+              )
+            : Text(
+                StringsKeys.addToCart.tr,
+                style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.bold),
+              ),
       ),
     );
   }

@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:get/get_state_manager/src/simple/get_state.dart';
 
 class Custbuildpricedisplay extends StatelessWidget {
-  const Custbuildpricedisplay({super.key});
+  final String? tag;
+  const Custbuildpricedisplay({super.key, this.tag});
 
   @override
   Widget build(BuildContext context) {
     return GetBuilder<ProductDetailsControllerImple>(
+      tag: tag,
       id: 'selectedAttributes',
       builder: (controller) {
         final price = controller.currentSku?.skuVal?.skuActivityAmount;

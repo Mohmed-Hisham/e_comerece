@@ -4,8 +4,10 @@ import 'package:carousel_slider/carousel_controller.dart';
 import 'package:chewie/chewie.dart';
 import 'package:e_comerece/controller/cart/cart_from_detils.dart';
 import 'package:e_comerece/core/class/statusrequest.dart';
+import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/funcations/handle_paging_response.dart';
 import 'package:e_comerece/core/funcations/handlingdata.dart';
+import 'package:e_comerece/core/loacallization/translate_data.dart';
 import 'package:e_comerece/core/servises/serviese.dart';
 import 'package:e_comerece/data/datasource/remote/api_cash/get_cash_data.dart';
 import 'package:e_comerece/data/datasource/remote/api_cash/insert_cash_data.dart';
@@ -52,7 +54,7 @@ abstract class ProductDetailsSheinController extends GetxController {
   List<String> get imageList;
   String? get sellerName;
   String? get videoUrlString;
-  bool isProductAvailable();
+  // bool isProductAvailable();
   String getUnitName();
 }
 
@@ -112,6 +114,7 @@ class ProductDetailsSheinControllerImple extends ProductDetailsSheinController {
 
   bool isOneSearch = true;
   String label = '';
+  String lang = '';
 
   @override
   void onInit() {
@@ -120,6 +123,7 @@ class ProductDetailsSheinControllerImple extends ProductDetailsSheinController {
     goodsid = Get.arguments['goods_id'];
     title = Get.arguments['title'];
     categoryid = Get.arguments['category_id'];
+    lang = Get.arguments['lang'];
     fetchProductDetails();
   }
 
@@ -134,27 +138,57 @@ class ProductDetailsSheinControllerImple extends ProductDetailsSheinController {
   fetchProductDetails({String? prodId}) async {
     statusrequest = Statusrequest.loading;
     update();
+    cashkey(String sn) => 'productdetails:shein:$sn';
     try {
-      // Shein product details API expects goods_sn; we will use title or id to fetch
-      // Here assume backend accepts goods_sn via title if provided; otherwise use id as string
-      // final goodsSn =
-      //     Get.parameters['goods_sn'] ?? (title ?? productId?.toString() ?? '');
-      var response = await productDitelsSheinData.getProductDitels(
-        goodssn ?? '',
+      final cacheResponse = await getCashData.getCash(
+        query: cashkey(goodssn ?? ''),
+        platform: "shein",
       );
-      statusrequest = handlingData(response);
 
-      if (Statusrequest.success == statusrequest) {
-        if (response is Map && (response['success'] == true)) {
-          productDitelsSheinModel = shein_model.ProductDitelsSheinDart.fromJson(
-            Map<String, dynamic>.from(response),
-          );
-          initializeDefaultAttributes();
-          await fetchImageListFromApi();
-          await fetchSizeProductDetails();
-          statusrequest = Statusrequest.success;
-        } else {
-          statusrequest = Statusrequest.failuer;
+      if (cacheResponse["status"] == "success") {
+        log("get from shein cache server product details=====================");
+        final response = cacheResponse["data"];
+        statusrequest = handlingData(response);
+        if (Statusrequest.success == statusrequest) {
+          if (response is Map && (response['success'] == true)) {
+            productDitelsSheinModel =
+                shein_model.ProductDitelsSheinDart.fromJson(
+                  Map<String, dynamic>.from(response),
+                );
+            initializeDefaultAttributes();
+            await fetchImageListFromApi();
+            await fetchSizeProductDetails();
+            statusrequest = Statusrequest.success;
+          } else {
+            statusrequest = Statusrequest.failuer;
+          }
+        }
+      } else {
+        var response = await productDitelsSheinData.getProductDitels(
+          goodssn ?? '',
+          lang,
+        );
+        statusrequest = handlingData(response);
+
+        if (Statusrequest.success == statusrequest) {
+          if (response is Map && (response['success'] == true)) {
+            productDitelsSheinModel =
+                shein_model.ProductDitelsSheinDart.fromJson(
+                  Map<String, dynamic>.from(response),
+                );
+            initializeDefaultAttributes();
+            await fetchImageListFromApi();
+            await fetchSizeProductDetails();
+            insertCashData.insertCash(
+              query: cashkey(goodssn ?? ''),
+              platform: "shein",
+              data: response,
+              ttlHours: "24",
+            );
+            statusrequest = Statusrequest.success;
+          } else {
+            statusrequest = Statusrequest.failuer;
+          }
         }
       }
     } catch (e, st) {
@@ -168,24 +202,61 @@ class ProductDetailsSheinControllerImple extends ProductDetailsSheinController {
   fetchImageListFromApi() async {
     statusrequestImagesList = Statusrequest.loading;
     update(['imagesList']);
+    cashkey(String sn) => 'productimages:shein:$sn';
     try {
-      var response = await productDitelsSheinData.getProductDitelsImageList(
-        goodssn!,
+      final cacheResponse = await getCashData.getCash(
+        query: cashkey(goodssn!),
+        platform: "shein",
       );
-      statusrequestImagesList = handlingData(response);
 
-      if (Statusrequest.success == statusrequestImagesList) {
-        if (response is Map<String, dynamic> && (response['success'] == true)) {
-          final imageList = shein_image_list.DetailsSheinImageList.fromJson(
-            Map<String, dynamic>.from(response),
-          );
-          imageListFromApi = imageList.data?.detailImage ?? [];
-          // goodsSnimage = imageList.data?.goodsImg;
-          imageListFromApi.insert(0, imageList.data?.goodsImg ?? '');
-          // initializeDefaultAttributes();
-          statusrequestImagesList = Statusrequest.success;
-        } else {
-          statusrequestImagesList = Statusrequest.failuer;
+      if (cacheResponse["status"] == "success") {
+        log("get from shein cache server images=====================");
+        final response = cacheResponse["data"];
+        statusrequestImagesList = handlingData(response);
+
+        if (Statusrequest.success == statusrequestImagesList) {
+          if (response is Map<String, dynamic> &&
+              (response['success'] == true)) {
+            final imageList = shein_image_list.DetailsSheinImageList.fromJson(
+              Map<String, dynamic>.from(response),
+            );
+            imageListFromApi = imageList.data?.detailImage ?? [];
+            // goodsSnimage = imageList.data?.goodsImg;
+            imageListFromApi.insert(0, imageList.data?.goodsImg ?? '');
+            // initializeDefaultAttributes();
+            statusrequestImagesList = Statusrequest.success;
+          } else {
+            statusrequestImagesList = Statusrequest.failuer;
+          }
+        }
+      } else {
+        var response = await productDitelsSheinData.getProductDitelsImageList(
+          goodssn!,
+          lang,
+        );
+        print("respons=========: $response");
+        statusrequestImagesList = handlingData(response);
+
+        if (Statusrequest.success == statusrequestImagesList) {
+          if (response is Map<String, dynamic> &&
+              (response['success'] == true)) {
+            final imageList = shein_image_list.DetailsSheinImageList.fromJson(
+              Map<String, dynamic>.from(response),
+            );
+            imageListFromApi = imageList.data?.detailImage ?? [];
+            // goodsSnimage = imageList.data?.goodsImg;
+            imageListFromApi.insert(0, imageList.data?.goodsImg ?? '');
+            // initializeDefaultAttributes();
+            insertCashData.insertCash(
+              query: cashkey(goodssn!),
+              platform: "shein",
+              data: response,
+              ttlHours: "24",
+            );
+            statusrequestImagesList = Statusrequest.success;
+          } else {
+            statusrequestImagesList = Statusrequest.failuer;
+          }
         }
       }
     } catch (e, st) {
@@ -199,24 +270,59 @@ class ProductDetailsSheinControllerImple extends ProductDetailsSheinController {
   fetchSizeProductDetails() async {
     statusrequestSize = Statusrequest.loading;
     update();
+    cashkey(String id) => 'productsizes:shein:$id';
     try {
-      var response = await productDitelsSheinData.getProductDitelsSize(
-        goodsid: goodsid!,
+      final cacheResponse = await getCashData.getCash(
+        query: cashkey(goodsid!),
+        platform: "shein",
       );
-      statusrequestSize = handlingData(response);
 
-      if (Statusrequest.success == statusrequestSize) {
-        if (response is Map<String, dynamic> && (response['success'] == true)) {
-          final sizeList = shein_size.DetailsSheinSize.fromJson(
-            Map<String, dynamic>.from(response),
-          );
+      if (cacheResponse["status"] == "success") {
+        log("get from shein cache server sizes=====================");
+        final response = cacheResponse["data"];
+        statusrequestSize = handlingData(response);
 
-          sizeAttributes = sizeList.data?.secondSaleAttributes ?? [];
-          initDefaultSelections();
+        if (Statusrequest.success == statusrequestSize) {
+          if (response is Map<String, dynamic> &&
+              (response['success'] == true)) {
+            final sizeList = shein_size.DetailsSheinSize.fromJson(
+              Map<String, dynamic>.from(response),
+            );
 
-          statusrequestSize = Statusrequest.success;
-        } else {
-          statusrequestSize = Statusrequest.failuer;
+            sizeAttributes = sizeList.data?.secondSaleAttributes ?? [];
+            initDefaultSelections();
+
+            statusrequestSize = Statusrequest.success;
+          } else {
+            statusrequestSize = Statusrequest.failuer;
+          }
+        }
+      } else {
+        var response = await productDitelsSheinData.getProductDitelsSize(
+          goodsid: goodsid!,
+          countryCode: lang,
+        );
+        statusrequestSize = handlingData(response);
+
+        if (Statusrequest.success == statusrequestSize) {
+          if (response is Map<String, dynamic> &&
+              (response['success'] == true)) {
+            final sizeList = shein_size.DetailsSheinSize.fromJson(
+              Map<String, dynamic>.from(response),
+            );
+
+            sizeAttributes = sizeList.data?.secondSaleAttributes ?? [];
+            initDefaultSelections();
+            insertCashData.insertCash(
+              query: cashkey(goodsid!),
+              platform: "shein",
+              data: response,
+              ttlHours: "24",
+            );
+            statusrequestSize = Statusrequest.success;
+          } else {
+            statusrequestSize = Statusrequest.failuer;
+          }
         }
       }
     } catch (e, st) {
@@ -308,11 +414,33 @@ class ProductDetailsSheinControllerImple extends ProductDetailsSheinController {
     fetchProductDetails(prodId: id);
   }
 
+  @override
+  gotoditels({
+    required goodssn,
+    required title,
+    required goodsid,
+    required categoryid,
+  }) {
+    Get.toNamed(
+      AppRoutesname.productDetailsSheinView,
+      arguments: {
+        "goods_sn": goodssn,
+        "title": title,
+        "goods_id": goodsid,
+        "category_id": categoryid,
+        "lang": lang,
+      },
+      preventDuplicates: false,
+    );
+  }
+
   // ===== Helpers & Getters =====
   shein_model.Products? get _product => productDitelsSheinModel?.data?.products;
 
   @override
   String? get subject => _product?.goodsName;
+
+  String? get productLink => _product?.productUrl;
 
   @override
   List<String> get imageList {
@@ -466,15 +594,14 @@ class ProductDetailsSheinControllerImple extends ProductDetailsSheinController {
     }
   }
 
-  @override
-  bool isProductAvailable() {
-    // Consider stock info across malls; if any mall stock > 0 -> available
-    final malls = _product?.mallList ?? currentVariant?.mallList ?? [];
-    for (final mall in malls) {
-      if (mall.stock != null && mall.stock! > 0) return true;
-    }
-    return false;
-  }
+  // @override
+  // bool isProductAvailable() {
+  //   final malls = _product?.mallList ?? currentVariant?.mallList ?? [];
+  //   for (final mall in malls) {
+  //     if (mall.stock != null && mall.stock! > 0) return true;
+  //   }
+  //   return false;
+  // }
 
   @override
   String getUnitName() {
@@ -565,6 +692,7 @@ class ProductDetailsSheinControllerImple extends ProductDetailsSheinController {
         final response = await productByCategoriesData.getproductbycategories(
           categoryId: categoryid!,
           pageindex: pageindex.toString(),
+          countryCode: detectLangFromQueryShein(title ?? "SA"),
         );
 
         statusrequestsearch = handlingData(response);

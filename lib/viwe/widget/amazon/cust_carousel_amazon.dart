@@ -20,7 +20,7 @@ class CustCarouselAmazon extends StatelessWidget {
                 controller.indexchange(index);
               },
               autoPlay: true,
-              autoPlayInterval: Duration(seconds: 3),
+              autoPlayInterval: Duration(seconds: 4),
               height: 160,
               enlargeCenterPage: true,
             ),

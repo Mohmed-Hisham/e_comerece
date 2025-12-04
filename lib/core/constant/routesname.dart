@@ -38,8 +38,8 @@ class AppRoutesname {
 
   static const String homeSheinView = "/HomeSheinView";
   static const String productDetailsSheinView = "/ProductDetailsSheinView";
+  static const String productByCategoryShein = "/productByCategoryShein";
   // static const String CategoriesShein = "/CategoriesShein";
-  // static const String ProductDetailsShein = "/ProductDetailsShein";
 
   // Amazon
   static const String homeAmazonView = "/HomeAmazonView";
@@ -48,4 +48,18 @@ class AppRoutesname {
 
   // address
   static const String addAddresses = "/AddAddresses";
+  static const String checkout = "/checkout";
+
+  // Support
+  static const String chatsScreen = "/chatsScreen";
+  static const String messagesScreen = "/messagesScreen";
+
+  // Orders
+  static const String orderDetails = "/order-details";
+
+  // local service
+  static const String localServiceDetails = "/local-service-details";
+  static const String viewLocalServiceOrders = "/view-local-service-orders";
+  static const String localServiceOrderDetailsView =
+      "/local-service-order-details-view";
 }

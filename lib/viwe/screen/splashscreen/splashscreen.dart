@@ -1,8 +1,10 @@
 import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/constant/imagesassets.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
+import 'package:e_comerece/core/constant/strings_keys.dart';
 import 'package:e_comerece/viwe/widget/onboarding/custombutton.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 class Splashscreen extends StatelessWidget {
@@ -13,57 +15,56 @@ class Splashscreen extends StatelessWidget {
     return Scaffold(
       body: Column(
         mainAxisAlignment: MainAxisAlignment.end,
-        // crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           Center(
             child: Padding(
-              padding: const EdgeInsets.only(right: 40),
+              padding: EdgeInsets.only(right: 35.w),
               child: Image.asset(
                 AppImagesassets.applogo,
-                width: 140,
-                height: 130,
+                width: 250.w,
+                height: 150.h,
                 fit: BoxFit.cover,
               ),
             ),
           ),
           Text(
-            "SaltK",
+            StringsKeys.appName.tr,
             style: Theme.of(context).textTheme.headlineLarge!.copyWith(
               fontWeight: FontWeight.bold,
-              fontSize: 40,
+              fontSize: 60.sp,
             ),
           ),
 
-          SizedBox(height: 100),
+          SizedBox(height: 150.h),
 
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+            padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
             child: CustombuttonOnBoarding(
               onTap: () {
-                Get.offAllNamed(AppRoutesname.sginin);
+                Get.toNamed(AppRoutesname.sginin);
               },
-              title: "Let's get started",
+              title: StringsKeys.letsGetStarted,
             ),
           ),
           InkWell(
             onTap: () {
-              Get.offAllNamed(AppRoutesname.loginStepOne);
+              Get.toNamed(AppRoutesname.loginStepOne);
             },
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  "I already have an account? ",
+                  StringsKeys.alreadyHaveAccount.tr,
                   style: Theme.of(context).textTheme.headlineSmall!.copyWith(
                     fontWeight: FontWeight.bold,
-                    fontSize: 15,
+                    fontSize: 18.sp,
                   ),
                 ),
-                SizedBox(width: 5),
+                SizedBox(width: 5.w),
 
                 Container(
-                  height: 35,
-                  width: 35,
+                  height: 35.h,
+                  width: 35.w,
                   decoration: BoxDecoration(
                     color: Appcolor.primrycolor,
                     borderRadius: BorderRadius.circular(100),
@@ -71,13 +72,13 @@ class Splashscreen extends StatelessWidget {
                   child: Icon(
                     Icons.arrow_forward,
                     color: Appcolor.white,
-                    size: 20,
+                    size: 20.sp,
                   ),
                 ),
               ],
             ),
           ),
-          SizedBox(height: 40),
+          SizedBox(height: 100.h),
         ],
       ),
     );

@@ -1,29 +1,32 @@
-import 'package:get/get_utils/src/get_utils/get_utils.dart';
+import 'package:e_comerece/core/constant/strings_keys.dart';
+import 'package:get/get.dart';
+
+enum ValidateType { username, email }
 
 vlidateInPut({
   required String val,
   required int min,
   required int max,
-  String? type,
+  ValidateType? type,
 }) {
   if (val.isEmpty) {
-    return "can't be Empty";
+    return StringsKeys.cantBeEmpty.tr;
   }
-  if (type == "username") {
+  if (type == ValidateType.username) {
     if (!GetUtils.isUsername(val)) {
-      return "Not Valid Username";
+      return StringsKeys.notValidUsername.tr;
     }
   }
-  if (type == "email") {
+  if (type == ValidateType.email) {
     if (!GetUtils.isEmail(val)) {
-      return "Not Valid Email";
+      return StringsKeys.notValidEmail.tr;
     }
   }
 
   if (val.length < min) {
-    return "can't be less then $min";
+    return "${StringsKeys.cantBeLessThan.tr} $min";
   }
   if (val.length > max) {
-    return "can't be larger then $max";
+    return "${StringsKeys.cantBeLargerThan.tr} $max";
   }
 }

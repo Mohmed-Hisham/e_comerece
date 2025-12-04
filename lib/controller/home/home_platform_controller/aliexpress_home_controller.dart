@@ -2,6 +2,7 @@ import 'package:e_comerece/controller/home/homescreen_controller.dart';
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/funcations/handle_paging_response.dart';
 import 'package:e_comerece/core/funcations/handlingdata.dart';
+import 'package:e_comerece/core/loacallization/translate_data.dart';
 import 'package:e_comerece/core/helper/db_database.dart';
 import 'package:e_comerece/data/datasource/remote/aliexpriess/hotproductssdata.dart';
 import 'package:e_comerece/data/model/aliexpriess_model/hotproductmodel.dart';
@@ -22,7 +23,7 @@ class AliexpressHomeController extends GetxController {
   }
 
   fetchProductsAliExpress({isLoadMore = false}) async {
-    final String platform = 'aliExpress';
+    final String platform = 'aliExpress-lang-${enOrAr()}';
     String cacheKey(int p) => 'hotProducts:$platform:page=$p';
     if (isLoadMore) {
       if (isLoading || !hasMore) return;

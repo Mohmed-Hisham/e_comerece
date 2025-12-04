@@ -11,9 +11,10 @@ class SearchSheinData {
     required String pageindex,
     required String startPrice,
     required String endPrice,
+    required String countryCode,
   }) async {
     var response = await crud.getData(
-      SheinApi.searchproduct(q, pageindex, startPrice, endPrice),
+      SheinApi.searchproduct(q, pageindex, startPrice, endPrice, countryCode),
       headers: SheinApi.rapidApiHeaders,
       debug: true,
     );

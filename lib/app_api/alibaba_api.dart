@@ -3,7 +3,7 @@ class AlibabaApi {
 
   static const Map<String, String> rapidApiHeaders = {
     'X-RapidAPI-Host': 'alibaba-datahub.p.rapidapi.com',
-    'X-RapidAPI-Key': '154f05712emsh78a06e9450717a1p10be2cjsn534236a10e6a',
+    'X-RapidAPI-Key': '1bd0905b8fmshd7e930954808aeep1f3f99jsn4f9f6ee455a3',
   };
 
   static String productHome(

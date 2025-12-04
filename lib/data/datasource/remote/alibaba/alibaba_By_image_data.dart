@@ -1,6 +1,6 @@
 import 'package:e_comerece/app_api/alibaba_api.dart';
 import 'package:e_comerece/core/class/crud.dart';
-import 'package:e_comerece/core/funcations/translate_data.dart';
+import 'package:e_comerece/core/loacallization/translate_data.dart';
 
 class AlibabaByImageData {
   Crud crud;
@@ -11,7 +11,7 @@ class AlibabaByImageData {
     var response = await crud.getData(
       AlibabaApi.searshByimage(
         imageUrl: imageUrl,
-        lang: enOrAr(is_ar_SA: true),
+        lang: enOrAr(isArSA: true),
         pageindex: pageindex,
       ),
       headers: AlibabaApi.rapidApiHeaders,

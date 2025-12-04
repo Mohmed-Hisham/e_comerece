@@ -8,12 +8,33 @@ import 'package:e_comerece/core/shared/widget_shared/open_full_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_state_manager/src/simple/get_state.dart';
 
-class CustmediaCarousel extends StatelessWidget {
-  const CustmediaCarousel({super.key});
+class CustmediaCarousel extends StatefulWidget {
+  final String? tag;
+  const CustmediaCarousel({super.key, this.tag});
+
+  @override
+  State<CustmediaCarousel> createState() => _CustmediaCarouselState();
+}
+
+class _CustmediaCarouselState extends State<CustmediaCarousel> {
+  late PageController _pageController;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(viewportFraction: 0.7);
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return GetBuilder<ProductDetailsControllerImple>(
+      tag: widget.tag,
       id: 'index',
       builder: (controller) {
         final chewieController = controller.chewieController;
@@ -33,7 +54,7 @@ class CustmediaCarousel extends StatelessWidget {
             SizedBox(
               height: 300,
               child: PageView.builder(
-                controller: controller.pageController,
+                controller: _pageController,
                 onPageChanged: (value) {
                   final index = value % itemCount;
                   controller.indexchange(index);
@@ -64,11 +85,11 @@ class CustmediaCarousel extends StatelessWidget {
                   }
 
                   return AnimatedBuilder(
-                    animation: controller.pageController,
+                    animation: _pageController,
                     builder: (context, child) {
                       double value = 1.0;
-                      if (controller.pageController.position.haveDimensions) {
-                        value = (controller.pageController.page! - index);
+                      if (_pageController.position.haveDimensions) {
+                        value = (_pageController.page! - index);
                         value = (1 - (value.abs() * 0.3)).clamp(0.8, 1.0);
                       }
                       return Center(

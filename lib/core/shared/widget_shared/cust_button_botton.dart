@@ -1,21 +1,22 @@
 import 'package:e_comerece/core/constant/color.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CustButtonBotton extends StatelessWidget {
   final String? title;
-  final void Function() onTap;
+  final void Function()? onTap;
 
-  const CustButtonBotton({super.key, required this.onTap, this.title});
+  const CustButtonBotton({super.key, this.onTap, this.title});
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
       child: Container(
-        padding: EdgeInsets.all(8),
+        padding: EdgeInsets.all(10.r),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(15),
-          border: Border.all(color: Appcolor.primrycolor, width: 1.5),
+          borderRadius: BorderRadius.circular(19.r),
+          border: Border.all(color: Appcolor.primrycolor, width: 1.5.r),
         ),
         child: Text(
           title ?? "Cancel",

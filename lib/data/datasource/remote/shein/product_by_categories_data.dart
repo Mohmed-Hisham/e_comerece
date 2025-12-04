@@ -8,9 +8,10 @@ class ProductByCategoriesData {
   getproductbycategories({
     required String categoryId,
     required String pageindex,
+    required String countryCode,
   }) async {
     var response = await crud.getData(
-      SheinApi.productByCategories(categoryId, pageindex),
+      SheinApi.productByCategories(categoryId, pageindex, countryCode),
       headers: SheinApi.rapidApiHeaders,
       debug: true,
     );

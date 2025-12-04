@@ -10,12 +10,14 @@ class SearchtextData {
     required String keyWord,
     required int pageindex,
     required String lang,
+    String? categoryId,
   }) async {
     var response = await crud.getData(
       AliaxpressApi.searshText(
         keyWord: keyWord,
         pageindex: pageindex,
         lang: lang,
+        categoryId: categoryId,
 
         //  enOrAr(),
       ),

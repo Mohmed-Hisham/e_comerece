@@ -1,6 +1,9 @@
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
+import 'package:e_comerece/core/constant/strings_keys.dart';
+import 'package:e_comerece/core/funcations/error_dialog.dart';
 import 'package:e_comerece/core/funcations/handlingdata.dart';
+import 'package:e_comerece/core/funcations/loading_dialog.dart';
 import 'package:e_comerece/core/servises/serviese.dart';
 import 'package:e_comerece/data/datasource/remote/auth/login_data.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +15,9 @@ abstract class LoginStepOneController extends GetxController {
 }
 
 class LLoginStepOneControllerimplment extends LoginStepOneController {
+  ScrollController scrollController = ScrollController();
+  final emailFocus = FocusNode();
+
   LoginData loginData = LoginData(Get.find());
   late TextEditingController email;
   MyServises myServises = Get.find();
@@ -35,6 +41,8 @@ class LLoginStepOneControllerimplment extends LoginStepOneController {
   void dispose() {
     super.dispose();
     email.dispose();
+    emailFocus.dispose();
+    scrollController.dispose();
   }
 
   @override
@@ -44,37 +52,32 @@ class LLoginStepOneControllerimplment extends LoginStepOneController {
       statusrequest = Statusrequest.loading;
       update();
       if (!Get.isDialogOpen!) {
-        Get.dialog(
-          PopScope(
-            canPop: false,
-            onPopInvokedWithResult: (bool didPop, dynamic result) {
-              if (didPop) return;
-            },
-            child: Center(child: CircularProgressIndicator()),
-          ),
-        );
+        loadingDialog();
       }
       var response = await loginData.loginStepOne(email: email.text);
-      print(response);
       statusrequest = handlingData(response);
       if (Get.isDialogOpen ?? false) Get.back();
 
       if (Statusrequest.success == statusrequest) {
         if (response['status'] == 'not_approve') {
-          Get.offNamed(
+          Get.toNamed(
             AppRoutesname.verFiyCodeSignUp,
             arguments: {"email": email.text},
           );
         } else if (response['status'] == 'success') {
-          Get.offNamed(
+          Get.toNamed(
             AppRoutesname.login,
             arguments: {
               "email": email.text,
               "name": response['data']['user_name'],
             },
           );
+          email.clear();
         } else {
-          Get.defaultDialog(title: "خطأ", middleText: "الحساب غير موجود");
+          errorDialog(
+            StringsKeys.accountNotFound.tr,
+            StringsKeys.accountNotFound.tr,
+          );
           statusrequest = Statusrequest.failuer;
         }
       }

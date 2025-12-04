@@ -1,6 +1,8 @@
 import 'package:e_comerece/controller/aliexpriess/product_details_controller.dart';
 import 'package:e_comerece/core/constant/color.dart';
+import 'package:e_comerece/core/constant/strings_keys.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class Custpackageinfo extends StatelessWidget {
   final ProductDetailsControllerImple controller;
@@ -19,7 +21,7 @@ class Custpackageinfo extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Package Information',
+          StringsKeys.packageInformation.tr,
           style: Theme.of(context).textTheme.titleLarge,
         ),
         const SizedBox(height: 8),
@@ -28,7 +30,7 @@ class Custpackageinfo extends StatelessWidget {
             TextSpan(
               children: [
                 TextSpan(
-                  text: 'Weight:  ',
+                  text: '${StringsKeys.weight.tr}:  ',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: Appcolor.black,
@@ -49,14 +51,14 @@ class Custpackageinfo extends StatelessWidget {
             TextSpan(
               children: [
                 TextSpan(
-                  text: 'Dimensions:  ',
+                  text: '${StringsKeys.dimensions.tr}:  ',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: Appcolor.black,
                   ),
                 ),
                 TextSpan(
-                  text: '${length} x ${width} x ${height} cm',
+                  text: '$length x $width x $height cm',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: Colors.blueAccent,

@@ -1,9 +1,10 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'package:e_comerece/controller/alibaba/product_details_alibaba_controller.dart';
 import 'package:e_comerece/controller/cart/cart_from_detils.dart';
 import 'package:e_comerece/controller/favorite/toggleFavorite_controller.dart';
 import 'package:e_comerece/core/constant/color.dart';
+import 'package:e_comerece/core/constant/strings_keys.dart';
+import 'package:e_comerece/core/helper/format_price.dart';
 import 'package:e_comerece/core/servises/selected_attributes_tomap_fordb.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -11,19 +12,25 @@ import 'package:get/get.dart';
 
 class AddToCartButtonAlibaba extends StatelessWidget {
   final AddorrmoveControllerimple cartController;
-  const AddToCartButtonAlibaba({super.key, required this.cartController});
+  final String? tag;
+  const AddToCartButtonAlibaba({
+    super.key,
+    required this.cartController,
+    this.tag,
+  });
 
   @override
   Widget build(BuildContext context) {
     return GetBuilder<ProductDetailsAlibabaControllerImple>(
+      tag: tag,
       id: 'quantity',
       builder: (controller) {
         final bool isInCart = controller.isInCart;
         final bool isAvailable = controller.isProductAvailable();
-        log("isInCart=>$isInCart");
-        log("quantity=>${controller.quantity}");
-        log("cartquantity=>${controller.cartquantityDB}");
-        print("isfav=>${controller.isFavorite}");
+        // log("isInCart=>$isInCart");
+        // log("quantity=>${controller.quantity}");
+        // log("cartquantity=>${controller.cartquantityDB}");
+        // print("isfav=>${controller.isFavorite}");
 
         if (isInCart && controller.quantity == controller.cartquantityDB) {}
 
@@ -32,7 +39,7 @@ class AddToCartButtonAlibaba extends StatelessWidget {
           children: [
             if (isInCart)
               Text(
-                'This item (with the chosen options) is already in your cart.',
+                StringsKeys.itemInCartMessage.tr,
                 style: const TextStyle(fontSize: 11),
               ),
             Row(
@@ -54,23 +61,26 @@ class AddToCartButtonAlibaba extends StatelessWidget {
                               ).values.first['image'];
 
                               await cartController.add(
+                                porductink: controller.productLink ?? "",
                                 controller.productId.toString(),
                                 controller.subject.toString(),
-                                imageurl ?? controller.imageList[0].toString(),
-                                controller.getCurrentPriceFormatted(),
-                                'alibaba',
-                                controller.quantity.toString(),
+                                imageurl == ""
+                                    ? controller.imageList[0].toString()
+                                    : "",
+                                extractPrice(
+                                  controller.getCurrentPriceFormatted(),
+                                ),
+                                'Alibaba',
+                                controller.quantity,
                                 jsonEncode(
                                   selectedAttributesToMapForDb(
                                     controller.selectedAttributes,
                                   ),
                                 ),
 
-                                controller
-                                        .getCurrentPriceList()
-                                        ?.maxQuantity
-                                        .toString() ??
-                                    '',
+                                controller.getCurrentPriceList()?.maxQuantity ??
+                                    0,
+
                                 tier: jsonEncode(
                                   priceListToMap(controller.priceListFromModel),
                                 ),
@@ -113,10 +123,10 @@ class AddToCartButtonAlibaba extends StatelessWidget {
                             (isInCart &&
                                     controller.quantity !=
                                         controller.cartquantityDB)
-                                ? 'ubdate quantity'
+                                ? StringsKeys.updateQuantity.tr
                                 : isInCart
-                                ? 'Added to Cart'
-                                : 'Add to Cart',
+                                ? StringsKeys.addedToCartLabel.tr
+                                : StringsKeys.addToCart.tr,
                             style: const TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
@@ -159,7 +169,7 @@ class AddToCartButtonAlibaba extends StatelessWidget {
 
             if (isInCart)
               Text(
-                "Try changing size, color, or model to add it again.",
+                StringsKeys.changeOptionsMessage.tr,
                 style: const TextStyle(fontSize: 12),
               ),
           ],

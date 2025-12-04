@@ -1,0 +1,130 @@
+import 'package:e_comerece/controller/local_service/local_service_controller.dart';
+import 'package:e_comerece/core/constant/routesname.dart';
+import 'package:e_comerece/viwe/screen/local_serviess/search_local_service_view.dart';
+import 'package:e_comerece/viwe/widget/Positioned/positioned_app_bar.dart';
+import 'package:e_comerece/viwe/widget/Positioned/positioned_left_2.dart';
+import 'package:e_comerece/viwe/widget/Positioned/positioned_right_2.dart';
+import 'package:e_comerece/viwe/widget/custshearchappbar.dart';
+import 'package:e_comerece/viwe/widget/local_service/local_service_data.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
+
+class LocalServiessScreen extends StatelessWidget {
+  const LocalServiessScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    Get.put(LocalServiceController());
+    // Get.put(FavoritesController());
+
+    return Scaffold(
+      body: GetBuilder<LocalServiceController>(
+        builder: (controller) {
+          return Stack(
+            children: [
+              PositionedRight1(),
+              PositionedRight2(),
+              PositionedAppBar(title: "الخدمات المحلية "),
+
+              Column(
+                children: [
+                  SizedBox(height: 95.h),
+                  Custshearchappbar(
+                    hintText: "بحث عن خدمه",
+                    mycontroller: controller.searchController,
+                    // showClose: controller.showClose,
+                    onTapClose: () {
+                      // controller.onCloseSearch();
+                    },
+                    onChanged: (val) {
+                      controller.checkSearch(val);
+                      // controller.onChangeSearch(val);
+                      // controller.whenstartSearch(val);
+                    },
+                    onTapSearch: () {
+                      controller.onSearchItems();
+                      // controller.onTapSearch();
+                      // controller.searchFocusNode.unfocus();
+                    },
+                    isLocalService: true,
+                    favoriteOnPressed: () {
+                      Get.toNamed(AppRoutesname.viewLocalServiceOrders);
+                    },
+                  ),
+                  SizedBox(height: 10.h),
+
+                  Expanded(
+                    child: controller.isSearch
+                        ? SearchLocalServiceView()
+                        : NotificationListener<ScrollNotification>(
+                            onNotification: (scrollInfo) {
+                              // if (scrollInfo is ScrollUpdateNotification) {
+                              //   if (scrollInfo.metrics.axis == Axis.vertical) {
+                              //     if (!controller.isLoading &&
+                              //         controller.hasMore) {
+                              //       final atEdge = scrollInfo.metrics.atEdge;
+                              //       final pixels = scrollInfo.metrics.pixels;
+                              //       final maxScrollExtent =
+                              //           scrollInfo.metrics.maxScrollExtent;
+                              //       if (atEdge && pixels == maxScrollExtent) {
+                              //         if (controller.firstShowOther) {
+                              //           controller.otherProducts();
+                              //           controller.firstShowOther = false;
+                              //         } else {
+                              //           controller.loadMoreOtherProduct();
+                              //         }
+                              //       }
+                              //     }
+                              //   }
+                              // }
+                              return false;
+                            },
+                            child: CustomScrollView(
+                              controller: controller.scrollController,
+                              physics: const BouncingScrollPhysics(),
+                              slivers: [
+                                // const SliverToBoxAdapter(
+                                //   child: CustCarouselAmazon(
+                                //     items: [
+                                //       AppImagesassets.tset,
+                                //       AppImagesassets.tset,
+                                //       AppImagesassets.tset,
+                                //       AppImagesassets.tset,
+                                //     ],
+                                //   ),
+                                // ),
+                                LocalServiceData(),
+
+                                // if (controller.isLoading &&
+                                //         controller.hasMore ||
+                                //     controller.statusrequestOtherProduct ==
+                                //         Statusrequest.loading)
+                                //   const SliverToBoxAdapter(
+                                //     child: ShimmerBar(
+                                //       height: 8,
+                                //       animationDuration: 1,
+                                //     ),
+                                //   ),
+                              ],
+                            ),
+                          ),
+                  ),
+                  SizedBox(height: 50.h),
+                ],
+              ),
+              // PositionedSupport(
+              //   onPressed: () {
+              //     Get.toNamed(
+              //       AppRoutesname.messagesScreen,
+              //       arguments: {"platform": 'amazon'},
+              //     );
+              //   },
+              // ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+}

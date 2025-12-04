@@ -7,16 +7,19 @@ class CartAddData {
   CartAddData(this.crud);
 
   addcart({
-    required String userId,
+    required int userId,
     required String productid,
     required String producttitle,
     required String productimage,
-    required String productprice,
+    required double productprice,
     required String platform,
-    required String quantity,
+    required String productLink,
+    required int quantity,
     required String attributes,
-    required String availableqQuantity,
+    required int availableqQuantity,
     String? tier,
+    String? goodsSn,
+    String? categoryId,
   }) async {
     var respons = await crud.postData(Appapi.addCart, {
       "user_id": userId,
@@ -29,7 +32,10 @@ class CartAddData {
       "available_quantity": availableqQuantity,
       "platform": platform,
       "cart_tier": tier,
-    });
+      "goods_sn": goodsSn,
+      "category_id": categoryId,
+      "product_link": productLink,
+    }, sendJson: true);
 
     return respons.fold((l) => l, (r) => r);
   }
@@ -43,7 +49,7 @@ class CartAddData {
       "user_id": userId,
       "product_id": productid,
       "attributes": attributes,
-    });
+    }, sendJson: true);
 
     return respons.fold((l) => l, (r) => r);
   }

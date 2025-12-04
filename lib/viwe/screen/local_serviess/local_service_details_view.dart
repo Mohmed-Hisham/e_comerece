@@ -1,0 +1,216 @@
+import 'package:e_comerece/controller/local_service/local_service_details_controller.dart';
+import 'package:e_comerece/core/constant/color.dart';
+import 'package:e_comerece/core/helper/custom_cached_image.dart';
+import 'package:e_comerece/viwe/widget/Positioned/positioned_app_bar.dart';
+
+import 'package:e_comerece/viwe/widget/auth/custombuttonauth.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
+
+class LocalServiceDetailsView extends StatelessWidget {
+  const LocalServiceDetailsView({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    LocalServiceDetailsController controller = Get.put(
+      LocalServiceDetailsController(),
+    );
+    return Scaffold(
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: Container(
+          margin: EdgeInsets.all(8.r),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.5),
+            shape: BoxShape.circle,
+          ),
+          child: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.black),
+            onPressed: () => Get.back(),
+          ),
+        ),
+      ),
+      bottomNavigationBar: Container(
+        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
+        child: Custombuttonauth(
+          inputtext: "Chat for Service",
+          onPressed: () {
+            controller.goToChat();
+          },
+        ),
+      ),
+      body: Stack(
+        children: [
+          // 1. Header Image (Fixed Background)
+          Positioned(
+            top: -5.h,
+            left: 0,
+            right: 0,
+            height: 380.h,
+            child: Hero(
+              tag: controller.service.serviceId!,
+              child: CustomCachedImage(
+                radius: 15.r,
+                imageUrl:
+                    "https://res.cloudinary.com/dgonvbimk/image/upload/v1766790189/pg0ne5gqx5hwyk7uyxhj.jpg",
+              ),
+            ),
+          ),
+
+          // 2. Custom App Bar
+
+          // 3. Scrollable Content
+          Positioned.fill(
+            child: ListView(
+              physics: const BouncingScrollPhysics(),
+              children: [
+                SizedBox(height: 280.h), // Space for the image
+                Container(
+                  constraints: BoxConstraints(
+                    minHeight: MediaQuery.of(context).size.height - 350.h,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(30.r),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.1),
+                        blurRadius: 10,
+                        spreadRadius: 5,
+                      ),
+                    ],
+                  ),
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 20.w,
+                      vertical: 25.h,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Drag Handle (Optional visual cue)
+                        Center(
+                          child: Container(
+                            width: 50.w,
+                            height: 5.h,
+                            decoration: BoxDecoration(
+                              color: Colors.grey.withValues(alpha: 0.3),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 20.h),
+
+                        // Title and Price
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                controller.service.serviceName!,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .headlineMedium
+                                    ?.copyWith(
+                                      color: Appcolor.black,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 24.sp,
+                                    ),
+                              ),
+                            ),
+                            SizedBox(width: 10.w),
+                            Text(
+                              "${controller.service.servicePrice} \$",
+                              style: Theme.of(context).textTheme.headlineSmall
+                                  ?.copyWith(
+                                    color: Appcolor.primrycolor,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 22.sp,
+                                  ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 15.h),
+
+                        // Location
+                        if (controller.service.serviceCity != null)
+                          Row(
+                            children: [
+                              Container(
+                                padding: EdgeInsets.all(8.r),
+                                decoration: BoxDecoration(
+                                  color: Appcolor.primrycolor.withValues(
+                                    alpha: 0.1,
+                                  ),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Icon(
+                                  Icons.location_on,
+                                  color: Appcolor.primrycolor,
+                                  size: 20.sp,
+                                ),
+                              ),
+                              SizedBox(width: 10.w),
+                              Text(
+                                controller.service.serviceCity!,
+                                style: Theme.of(context).textTheme.bodyLarge
+                                    ?.copyWith(
+                                      color: Colors.grey[700],
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                              ),
+                            ],
+                          ),
+
+                        Padding(
+                          padding: EdgeInsets.symmetric(vertical: 20.h),
+                          child: Divider(color: Colors.grey[200], thickness: 1),
+                        ),
+
+                        // Description Title
+                        Text(
+                          "About Service",
+                          style: Theme.of(context).textTheme.titleLarge
+                              ?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20.sp,
+                                color: Appcolor.black,
+                              ),
+                        ),
+                        SizedBox(height: 10.h),
+
+                        // Description Text
+                        Text(
+                          controller.service.serviceDesc!,
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(
+                                color: Colors.grey[600],
+                                height: 1.6,
+                                fontSize: 16.sp,
+                              ),
+                        ),
+                        SizedBox(height: 50.h),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // PositionedAppBar(
+          //   title: controller.service.serviceName!,
+          //   onPressed: Get.back,
+          //   // color: Colors.transparent, // Ensure it looks good over image
+          //   // If the widget doesn't support transparency, it might sit on top.
+          //   // Assuming it handles itself well or we might need to adjust.
+          // ),
+        ],
+      ),
+    );
+  }
+}

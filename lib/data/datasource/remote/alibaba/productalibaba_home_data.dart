@@ -1,6 +1,6 @@
 import 'package:e_comerece/app_api/alibaba_api.dart';
 import 'package:e_comerece/core/class/crud.dart';
-import 'package:e_comerece/core/funcations/translate_data.dart';
+import 'package:e_comerece/core/loacallization/translate_data.dart';
 
 class ProductalibabaHomeData {
   Crud crud;
@@ -16,7 +16,7 @@ class ProductalibabaHomeData {
       AlibabaApi.productHome(
         "fashion",
         pageindex,
-        enOrAr(is_ar_SA: true),
+        enOrAr(isArSA: true),
         '',
         '',
       ),

@@ -1,21 +1,21 @@
 import 'package:e_comerece/controller/alibaba/product_details_alibaba_controller.dart';
 import 'package:e_comerece/core/constant/color.dart';
+import 'package:e_comerece/core/constant/strings_keys.dart';
 import 'package:e_comerece/data/model/alibaba_model/product_ditels_alibaba_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class PriceSectionAlibaba extends StatelessWidget {
-  const PriceSectionAlibaba({super.key});
+  final String? tag;
+  const PriceSectionAlibaba({super.key, this.tag});
 
   @override
   Widget build(BuildContext context) {
     return GetBuilder<ProductDetailsAlibabaControllerImple>(
+      tag: tag,
       id: 'quantity',
       builder: (controller) {
-        print("build PriceSection");
         final currentPrice = controller.getCurrentPrice();
-        // final formattedPrice = controller.getCurrentPriceFormatted();
-        // final quantityFormatted = controller.getCurrentQuantityFormatted();
         final totalPrice = controller.getTotalPriceFormatted();
         final List<PriceList> priceList = controller.priceList;
 
@@ -42,7 +42,7 @@ class PriceSectionAlibaba extends StatelessWidget {
                   String maxQuantity = '';
 
                   if (price.maxQuantity == -1) {
-                    maxQuantity = 'Unlimited';
+                    maxQuantity = StringsKeys.unlimited.tr;
                   } else {
                     maxQuantity = price.maxQuantity.toString();
                   }
@@ -53,7 +53,7 @@ class PriceSectionAlibaba extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            'Price',
+                            StringsKeys.price.tr,
                             style: Theme.of(context).textTheme.titleMedium
                                 ?.copyWith(
                                   fontWeight: FontWeight.bold,
@@ -72,7 +72,10 @@ class PriceSectionAlibaba extends StatelessWidget {
                       ),
 
                       Text(
-                        'For ${price.minQuantity} - ${maxQuantity}',
+                        StringsKeys.quantityRange.trParams({
+                          'min': price.minQuantity.toString(),
+                          'max': maxQuantity,
+                        }),
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: Appcolor.black2,
                           fontWeight: FontWeight.bold,
@@ -87,7 +90,10 @@ class PriceSectionAlibaba extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Total (${controller.quantity} ${controller.getUnitName()}):',
+                    StringsKeys.totalWithQuantity.trParams({
+                      'quantity': controller.quantity.toString(),
+                      'unit': controller.getUnitName(),
+                    }),
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
                       fontWeight: FontWeight.w600,
                     ),
@@ -102,7 +108,9 @@ class PriceSectionAlibaba extends StatelessWidget {
                 ],
               ),
               Text(
-                'price $currentPrice',
+                StringsKeys.priceWithAmount.trParams({
+                  'price': currentPrice.toString(),
+                }),
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: Appcolor.primrycolor,
                   fontWeight: FontWeight.bold,

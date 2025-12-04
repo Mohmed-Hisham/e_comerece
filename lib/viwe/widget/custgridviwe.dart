@@ -1,9 +1,10 @@
 import 'package:e_comerece/core/constant/color.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class Custgridviwe extends StatelessWidget {
   final Widget image;
-  final String disc;
+  final String? disc;
   final String discprice;
   final String title;
   final String price;
@@ -17,7 +18,7 @@ class Custgridviwe extends StatelessWidget {
   const Custgridviwe({
     super.key,
     required this.image,
-    required this.disc,
+    this.disc,
     required this.title,
     required this.price,
     this.onChangeIcon,
@@ -110,100 +111,110 @@ class Custgridviwe extends StatelessWidget {
               ],
             ),
           ),
-          Text(
-            title,
-            style: TextStyle(
-              color: Appcolor.black,
-              fontWeight: FontWeight.bold,
-              fontSize: 14,
-            ),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-          Row(
-            spacing: 10,
-            children: [
-              Expanded(
-                child: Text(
-                  price,
-                  // "20\$"
-                  style: TextStyle(
-                    color: Appcolor.primrycolor,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'signika',
-                    fontSize: 17,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.start,
-                ),
+          Padding(
+            padding: EdgeInsets.all(5.sp),
+            child: Text(
+              title,
+              style: TextStyle(
+                color: Appcolor.black,
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
               ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 5.sp),
+            child: Row(
+              spacing: 10,
+              children: [
+                Expanded(
+                  child: Text(
+                    price,
+                    // "20\$"
+                    style: TextStyle(
+                      color: Appcolor.primrycolor,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'signika',
+                      fontSize: 17,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.start,
+                  ),
+                ),
 
-              isAlibaba || isAmazon
-                  ? Row(
-                      spacing: 3,
-                      children: [
-                        const Icon(
-                          Icons.star,
-                          color: Appcolor.threecolor,
-                          size: 18,
-                        ),
-                        Text(
-                          rate ?? "",
-                          style: Theme.of(context).textTheme.bodyMedium!
-                              .copyWith(
-                                color: Appcolor.primrycolor,
-                                fontWeight: FontWeight.w800,
-                              ),
-                        ),
-                        SizedBox(width: 5),
-                      ],
-                    )
-                  : const SizedBox.shrink(),
-            ],
+                isAlibaba || isAmazon
+                    ? Row(
+                        spacing: 3,
+                        children: [
+                          const Icon(
+                            Icons.star,
+                            color: Appcolor.threecolor,
+                            size: 18,
+                          ),
+                          Text(
+                            rate ?? "",
+                            style: Theme.of(context).textTheme.bodyMedium!
+                                .copyWith(
+                                  color: Appcolor.primrycolor,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                          ),
+                          SizedBox(width: 5),
+                        ],
+                      )
+                    : const SizedBox.shrink(),
+              ],
+            ),
           ),
 
           price == discprice
               ? const SizedBox.shrink()
-              : Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  spacing: 6,
-                  children: [
-                    Text(
-                      discprice,
+              : Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 5.sp),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    spacing: 6,
+                    children: [
+                      Text(
+                        discprice,
 
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.grey,
-                        decoration: TextDecoration.lineThrough,
-                        decorationColor: Colors.grey,
-                        decorationThickness: 2.0,
-                        decorationStyle: TextDecorationStyle.solid,
-                      ),
-                    ),
-                    Row(
-                      children: [
-                        Text(
-                          disc,
-                          // "20\$"
-                          style: TextStyle(
-                            color: Appcolor.primrycolor,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'signika',
-                          ),
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey,
+                          decoration: TextDecoration.lineThrough,
+                          decorationColor: Colors.grey,
+                          decorationThickness: 2.0,
+                          decorationStyle: TextDecorationStyle.solid,
                         ),
-                        const SizedBox(width: 3),
-                        if (discprice.isNotEmpty)
-                          Text(
-                            "OFF",
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: Appcolor.primrycolor,
+                      ),
+                      if (disc != null)
+                        Row(
+                          children: [
+                            Text(
+                              disc ?? "",
+                              // "20\$"
+                              style: TextStyle(
+                                color: Appcolor.primrycolor,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'signika',
+                              ),
                             ),
-                          ),
-                      ],
-                    ),
-                  ],
+                            const SizedBox(width: 3),
+                            if (discprice.isNotEmpty)
+                              Text(
+                                "OFF",
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: Appcolor.primrycolor,
+                                ),
+                              ),
+                          ],
+                        ),
+                    ],
+                  ),
                 ),
 
           // Expanded(

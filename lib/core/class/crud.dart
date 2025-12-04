@@ -18,31 +18,32 @@ class Crud {
         http.Response response;
 
         if (sendJson) {
-          log('data: ${jsonEncode(data)}');
+          // log('data: ${jsonEncode(data)}');
+
           response = await http.post(
             Uri.parse(linlurl),
             headers: {'Content-Type': 'application/json; charset=utf-8'},
             body: jsonEncode(data),
           );
+          log('response======: ${response.statusCode}');
+          // log('response======: ${response.body}');
         } else {
-          // الافتراضي: تحويل كل القيم إلى String وإرسال كـ application/x-www-form-urlencoded
           final Map<String, String> bodyFields = {};
           data.forEach((key, value) {
-            // تجاهل القيم التي تساوي null أو ترسل كـ '' حسب تفضيلك:
             bodyFields[key] = value == null ? '' : value.toString();
           });
 
-          response = await http.post(
-            Uri.parse(linlurl),
-            body:
-                bodyFields, // http يضع Content-Type تلقائياً كـ application/x-www-form-urlencoded
-          );
+          response = await http.post(Uri.parse(linlurl), body: bodyFields);
         }
 
         if (response.statusCode == 200 || response.statusCode == 201) {
           final Map respnsebody = jsonDecode(response.body);
-          log('respnsebody: $respnsebody');
+          // log('respnsebody: $respnsebody');
           return Right(respnsebody);
+        } else if (response.statusCode == 400 || response.statusCode == 401) {
+          return const Left(Statusrequest.failuer);
+        } else if (response.statusCode == 404 || response.statusCode == 500) {
+          return const Left(Statusrequest.noData);
         } else {
           return const Left(Statusrequest.serverfailuer);
         }
@@ -50,15 +51,16 @@ class Crud {
         return const Left(Statusrequest.oflinefailuer);
       }
     } catch (e, st) {
-      print('Exception Error in Crud: $e \n $st');
+      log('Exception Error in Crud: $e \n $st');
       return const Left(Statusrequest.failuerException);
     }
   }
+  // --------------------------------------------------------------------------
 
   Future<Either<Statusrequest, Map<String, dynamic>>> getData(
     String linkUrl, {
     Map<String, String>? headers,
-    Duration timeout = const Duration(seconds: 15),
+    Duration timeout = const Duration(minutes: 1),
     http.Client? client,
     bool debug = false,
   }) async {
@@ -75,8 +77,8 @@ class Crud {
       final body = response.body;
 
       if (debug) {
-        print('GET $uri -> $statusCode');
-        print('GET Response: $body');
+        log('GET $uri -> $statusCode');
+        log('GET Response: $body');
       }
 
       if (statusCode == 204 || body.trim().isEmpty) {
@@ -96,13 +98,13 @@ class Crud {
           }
 
           if (debug) {
-            print('Unexpected JSON type: ${decoded.runtimeType}');
+            log('Unexpected JSON type: ${decoded.runtimeType}');
           }
           return const Left(Statusrequest.failuer);
         } on FormatException catch (e, st) {
           if (debug) {
-            print('JSON Format Error: $e\n$st');
-            print('Response body: $body');
+            log('JSON Format Error: $e\n$st');
+            log('Response body: $body');
           }
           return const Left(Statusrequest.failuerException);
         }
@@ -110,26 +112,26 @@ class Crud {
 
       if (statusCode >= 500) {
         if (debug) {
-          print('Server Error $statusCode: ${response.body}');
+          log('Server Error $statusCode: ${response.body}');
         }
         return const Left(Statusrequest.serverfailuer);
       } else if (statusCode >= 400) {
         if (debug) {
-          print('Client Error $statusCode: ${response.body}');
+          log('Client Error $statusCode: ${response.body}');
         }
         return const Left(Statusrequest.failuer);
       }
 
       return const Left(Statusrequest.failuer);
     } on TimeoutException catch (e, st) {
-      if (debug) print('Timeout Error: $e\n$st');
+      if (debug) log('Timeout Error: $e\n$st');
       return const Left(Statusrequest.serverfailuer);
     } on SocketException catch (e, st) {
-      if (debug) print('Socket Error: $e\n$st');
+      if (debug) log('Socket Error: $e\n$st');
       return const Left(Statusrequest.oflinefailuer);
     } catch (e, st) {
       if (debug) {
-        print('Unhandled Exception: $e\n$st');
+        log('Unhandled Exception: $e\n$st');
       }
       return const Left(Statusrequest.failuerException);
     } finally {
@@ -137,29 +139,3 @@ class Crud {
     }
   }
 }
-
-// import 'dart:convert';
-// import 'package:dartz/dartz.dart';
-// import 'package:e_comerece/core/class/statusrequest.dart';
-// import 'package:e_comerece/core/funcations/checkinternet.dart';
-// import 'package:http/http.dart' as http;
-
-// class Crud {
-//   Future<Either<Statusrequest, Map>> postData(String linlurl, Map data) async {
-//     try {
-//       if (await checkinternet()) {
-//         var response = await http.post(Uri.parse(linlurl), body: data);
-//         if (response.statusCode == 200 || response.statusCode == 201) {
-//           Map respnsebody = jsonDecode(response.body);
-//           return Right(respnsebody);
-//         } else {
-//           return const Left(Statusrequest.serverfailuer);
-//         }
-//       } else {
-//         return const Left(Statusrequest.oflinefailuer);
-//       }
-//     } catch (e) {
-//       return const Left(Statusrequest.failuerException);
-//     }
-//   }
-// }

@@ -133,51 +133,58 @@ class AddressControllerImpl extends AddressController {
   @override
   fetchAddresses() async {
     userId = myServises.sharedPreferences.getString("user_id");
-    log("fetchAddresses");
+    log("userId $userId");
     try {
-      log("userId $userId");
       if (userId == null) return;
       fetchAddressesstatusrequest = Statusrequest.loading;
       final response = await getAddressesData.getAddress(userId: userId!);
 
-      log("fetchAddresses $response");
-
       fetchAddressesstatusrequest = handlingData(response);
+      log("fetchAddressesstatusrequest $fetchAddressesstatusrequest");
 
       if (fetchAddressesstatusrequest == Statusrequest.success) {
-        if (response['status'] == 'success' && response['data'] != null) {
+        if (response['status'] == 'success' && response['data'].isNotEmpty) {
           addresses.clear();
 
-          // ✅ الحالة الأولى: لو الداتا عبارة عن List
           if (response['data'] is List) {
             addresses = (response['data'] as List)
                 .map((e) => Datum.fromJson(e as Map<String, dynamic>))
                 .toList();
-          }
-          // ✅ الحالة الثانية: لو رجعت داتا واحدة فقط (Map)
-          else if (response['data'] is Map) {
+            int myaddressId =
+                myServises.sharedPreferences.getInt("default_address") ?? 0;
+            if (myaddressId != addresses[0].addressId!) {
+              myServises.sharedPreferences.setInt(
+                "default_address",
+                addresses[0].addressId!,
+              );
+            }
+            log(
+              "myaddressId ${myServises.sharedPreferences.getInt("default_address")}",
+            );
+          } else if (response['data'] is Map) {
             addresses = [
               Datum.fromJson(response['data'] as Map<String, dynamic>),
             ];
           }
 
           fetchAddressesstatusrequest = Statusrequest.success;
-        } else {
-          fetchAddressesstatusrequest = Statusrequest.failuer;
         }
+        //  else {
+        //   fetchAddressesstatusrequest = Statusrequest.failuer;
+        // }
       }
 
       update();
     } catch (e) {
-      print(e);
       fetchAddressesstatusrequest = Statusrequest.failuer;
       update();
     }
+    log("fetchAddressesstatusrequest $fetchAddressesstatusrequest");
   }
 
   @override
   addAddress(Datum address) async {
-    // if (userId == null) return;
+    if (userId == null) return;
 
     try {
       addAddressesstatusrequest = Statusrequest.loading;
@@ -216,37 +223,47 @@ class AddressControllerImpl extends AddressController {
     if (userId == null) return;
 
     try {
-      updateAddressesstatusrequest = Statusrequest.loading;
+      fetchAddressesstatusrequest = Statusrequest.loading;
+      update();
 
       final response = await updateAddressesData.updateAddress(
         data: address.toJson(),
       );
 
-      updateAddressesstatusrequest = handlingData(response);
+      fetchAddressesstatusrequest = handlingData(response);
 
-      if (updateAddressesstatusrequest == Statusrequest.success) {
+      if (fetchAddressesstatusrequest == Statusrequest.success) {
         if (response['status'] == 'success' && response['data'] != null) {
           Future.delayed(const Duration(seconds: 1), () {
             showCustomGetSnack(isGreen: true, text: "تم التعديل بنجاح");
           });
           fetchAddresses();
-          updateAddressesstatusrequest = Statusrequest.success;
+          fetchAddressesstatusrequest = Statusrequest.success;
         }
       } else {
-        updateAddressesstatusrequest = Statusrequest.failuer;
+        fetchAddressesstatusrequest = Statusrequest.failuer;
       }
 
       // update();
     } catch (e) {
       print(e);
-      updateAddressesstatusrequest = Statusrequest.failuer;
-      // update();
+      fetchAddressesstatusrequest = Statusrequest.failuer;
+      update();
     }
   }
 
   @override
   deleteAddress({required int addressId}) async {
     if (userId == null) return;
+    int defaultAddressId =
+        myServises.sharedPreferences.getInt("default_address") ?? 0;
+    if (addressId == defaultAddressId) {
+      myServises.sharedPreferences.setInt(
+        "default_address",
+        addresses[0].addressId!,
+      );
+      updateAddress(Datum(isDefault: 1, addressId: addresses[0].addressId!));
+    }
 
     try {
       updateAddressesstatusrequest = Statusrequest.loading;

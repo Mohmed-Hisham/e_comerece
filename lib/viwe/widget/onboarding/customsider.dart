@@ -1,10 +1,11 @@
 import 'package:e_comerece/controller/onboardingcontrooler.dart';
 import 'package:e_comerece/core/constant/color.dart';
-import 'package:e_comerece/core/servises/serviese.dart';
+import 'package:e_comerece/core/constant/strings_keys.dart';
 import 'package:e_comerece/data/datasource/static/static.dart';
 import 'package:e_comerece/viwe/widget/onboarding/custombutton.dart';
 import 'package:e_comerece/viwe/widget/onboarding/onboardingtext.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 class CustomsiderOnboarding extends GetView<Onboardingcontroolerimplement> {
@@ -13,7 +14,7 @@ class CustomsiderOnboarding extends GetView<Onboardingcontroolerimplement> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 40),
+      margin: EdgeInsets.symmetric(horizontal: 30.w),
       decoration: BoxDecoration(
         boxShadow: [
           BoxShadow(
@@ -56,16 +57,13 @@ class CustomsiderOnboarding extends GetView<Onboardingcontroolerimplement> {
               Expanded(child: OnboardingText()),
               index == 2
                   ? CustombuttonOnBoarding(
-                      title: "Got it",
+                      title: StringsKeys.gotIt.tr,
                       onTap: () {
-                        // MyServises myServises = Get.find();
-                        // var a = myServises.sharedPreferences.clear();
-                        // print(a);
                         controller.next();
                       },
                     )
                   : SizedBox(),
-              SizedBox(height: 10),
+              SizedBox(height: 10.h),
             ],
           );
         },

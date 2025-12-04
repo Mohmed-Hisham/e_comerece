@@ -1,5 +1,6 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e_comerece/controller/aliexpriess/product_details_controller.dart';
+import 'package:e_comerece/core/constant/strings_keys.dart';
+import 'package:e_comerece/core/helper/custom_cached_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -38,12 +39,7 @@ class Buildheader extends StatelessWidget {
         if (imageUrl != null)
           ClipRRect(
             borderRadius: BorderRadiusGeometry.circular(10),
-            child: CachedNetworkImage(
-              imageUrl: "https:$imageUrl",
-              width: 80,
-              height: 80,
-              fit: BoxFit.cover,
-            ),
+            child: CustomCachedImage(imageUrl: imageUrl, width: 80, height: 80),
           ),
         const SizedBox(width: 16),
         Expanded(
@@ -62,7 +58,7 @@ class Buildheader extends StatelessWidget {
                 ).textTheme.titleLarge?.copyWith(color: Colors.red),
               ),
               Text(
-                'Stock: ${controller.currentSku?.skuVal?.availQuantity ?? ''}',
+                '${StringsKeys.stock.tr}: ${controller.currentSku?.skuVal?.availQuantity ?? ''}',
               ),
             ],
           ),
@@ -71,7 +67,6 @@ class Buildheader extends StatelessWidget {
           icon: const Icon(Icons.close),
           onPressed: () {
             Get.back();
-            // controller.quantity.value = 1;
           },
         ),
       ],

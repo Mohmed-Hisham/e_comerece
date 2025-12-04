@@ -6,10 +6,12 @@ import 'package:get/get_state_manager/src/simple/get_state.dart';
 class ProductDescriptionHtmlAlibaba extends StatelessWidget {
   final List<String> images;
   final double height;
+  final String? tag;
   const ProductDescriptionHtmlAlibaba({
     super.key,
     required this.images,
     this.height = 200,
+    this.tag,
   });
 
   @override
@@ -17,6 +19,7 @@ class ProductDescriptionHtmlAlibaba extends StatelessWidget {
     if (images.isEmpty) return const SizedBox.shrink();
 
     return GetBuilder<ProductDetailsAlibabaControllerImple>(
+      tag: tag,
       id: 'index',
       builder: (controller) => ImagesCarouselHtml(
         carouselController: controller.carouselController,

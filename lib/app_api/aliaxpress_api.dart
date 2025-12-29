@@ -2,11 +2,7 @@ class AliaxpressApi {
   static const String server = "https://aliexpress-datahub.p.rapidapi.com";
   static const Map<String, String> rapidApiHeaders = {
     'X-RapidAPI-Host': 'aliexpress-datahub.p.rapidapi.com',
-<<<<<<< HEAD
     'X-RapidAPI-Key': '45cc5937a8msh845aaea38c15ddbp17dfaajsn8a6743f59232',
-=======
-    'X-RapidAPI-Key': '1bd0905b8fmshd7e930954808aeep1f3f99jsn4f9f6ee455a3',
->>>>>>> 911b6c07c4e18f884b5e8de3f7551d8c0f6b5a50
   };
   static String getcategory({required String lang}) {
     return "$server/category_list_1?locale=$lang";

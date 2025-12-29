@@ -145,8 +145,43 @@ class SupabaseService extends GetxService {
           .select()
           .eq('user_id', userId)
           .order('updated_at', ascending: false);
-      return List<Map<String, dynamic>>.from(response);
+
+      final List<Map<String, dynamic>> chats = List<Map<String, dynamic>>.from(
+        response,
+      );
+
+      for (var chat in chats) {
+        try {
+          final lastMsg = await client
+              .from('messages')
+              .select()
+              .eq('chat_id', chat['id'])
+              .order('created_at', ascending: false)
+              .limit(1)
+              .maybeSingle();
+
+          if (lastMsg != null) {
+            chat['last_message'] = lastMsg['content'];
+            chat['last_sender_type'] = lastMsg['sender_type'];
+            chat['updated_at'] = lastMsg['created_at'];
+          }
+        } catch (e) {
+          log("Error fetching last message for chat ${chat['id']}: $e");
+        }
+      }
+
+      // Re-sort locally in case the last message times changed the order (optional but good)
+      chats.sort((a, b) {
+        DateTime timeA =
+            DateTime.tryParse(a['updated_at'].toString()) ?? DateTime(1970);
+        DateTime timeB =
+            DateTime.tryParse(b['updated_at'].toString()) ?? DateTime(1970);
+        return timeB.compareTo(timeA);
+      });
+
+      return chats;
     } catch (e) {
+      log("Error fetching user chats: $e");
       return [];
     }
   }

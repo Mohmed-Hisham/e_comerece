@@ -18,6 +18,7 @@ class LocalServiceController extends GetxController {
   ScrollController scrollController = ScrollController();
   TextEditingController searchController = TextEditingController();
   bool isSearch = false;
+  bool isLoading = false;
 
   checkSearch(val) {
     if (val == "") {
@@ -65,13 +66,18 @@ class LocalServiceController extends GetxController {
 
   Future<void> fetchLocalService({bool isLoadMore = false}) async {
     if (isLoadMore) {
+      isLoading = true;
+      update();
       page++;
     } else {
       fetchstatusrequest = Statusrequest.loading;
       update();
     }
 
-    var response = await getLocalService.gtelocalService(page: page);
+    var response = await getLocalService.gtelocalService(
+      page: page,
+      pagesize: 6,
+    );
     var status = handlingData(response);
 
     if (Statusrequest.success == status) {
@@ -83,7 +89,7 @@ class LocalServiceController extends GetxController {
 
         if (newServices.isEmpty) {
           if (isLoadMore) {
-            page--; // Revert page increment if no new data
+            page--;
           } else {
             fetchstatusrequest = Statusrequest.noData;
           }
@@ -101,6 +107,7 @@ class LocalServiceController extends GetxController {
     } else {
       fetchstatusrequest = status;
     }
+    isLoading = false;
     update();
   }
 }

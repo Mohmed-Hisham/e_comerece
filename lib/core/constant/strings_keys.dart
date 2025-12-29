@@ -205,4 +205,8 @@ class StringsKeys {
   static const String inStock = "inStock";
   static const String mall = "mall";
   static const String attribute = "attribute";
+  static const String supportChatTitle = "supportChatTitle";
+  static const String serviceOrderTitle = "serviceOrderTitle";
+  static const String customerSupportTitle = "customerSupportTitle";
+  static const String noMessagesYet = "noMessagesYet";
 }

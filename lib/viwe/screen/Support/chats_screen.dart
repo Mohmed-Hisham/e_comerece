@@ -1,3 +1,4 @@
+import 'package:e_comerece/core/constant/strings_keys.dart';
 import 'package:e_comerece/controller/support_controller/support_screen_controller.dart';
 import 'package:e_comerece/core/class/handlingdataviwe.dart';
 import 'package:e_comerece/core/constant/color.dart';
@@ -22,15 +23,20 @@ class ChatsScreen extends StatelessWidget {
           children: [
             PositionedRight1(),
             PositionedRight2(),
-            PositionedAppBar(title: "Support Chat", onPressed: Get.back),
+            PositionedAppBar(
+              title: StringsKeys.supportChatTitle.tr,
+              onPressed: Get.back,
+            ),
 
             Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 SizedBox(height: 90.h),
                 Handlingdataviwe(
                   statusrequest: controller.getChatsstatusrequest,
                   widget: Expanded(
                     child: ListView.separated(
+                      physics: const BouncingScrollPhysics(),
                       padding: EdgeInsets.only(
                         top: 20.h,
                         bottom: 20.h,
@@ -51,15 +57,19 @@ class ChatsScreen extends StatelessWidget {
 
                         if (chat.type == 'service') {
                           leadingIcon = Icons.design_services_rounded;
-                          titleText = "Service Order";
+                          titleText = StringsKeys.serviceOrderTitle.tr;
                           if (chat.referenceId != null) {
                             titleText += " #${chat.referenceId}";
                           }
-                          iconBgColor = Appcolor.primrycolor.withOpacity(0.1);
+                          iconBgColor = Appcolor.primrycolor.withValues(
+                            alpha: 0.1,
+                          );
                         } else {
                           leadingIcon = Icons.support_agent_rounded;
-                          titleText = "Customer Support";
-                          iconBgColor = Appcolor.soecendcolor.withOpacity(0.1);
+                          titleText = StringsKeys.customerSupportTitle.tr;
+                          iconBgColor = Appcolor.soecendcolor.withValues(
+                            alpha: 0.1,
+                          );
                         }
 
                         return Container(
@@ -68,7 +78,7 @@ class ChatsScreen extends StatelessWidget {
                             borderRadius: BorderRadius.circular(16.r),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.05),
+                                color: Colors.black.withValues(alpha: 0.05),
                                 blurRadius: 10,
                                 offset: const Offset(0, 4),
                               ),
@@ -152,7 +162,9 @@ class ChatsScreen extends StatelessWidget {
                                               Expanded(
                                                 child: Text(
                                                   chat.lastMessage ??
-                                                      "No messages yet",
+                                                      StringsKeys
+                                                          .noMessagesYet
+                                                          .tr,
                                                   maxLines: 1,
                                                   overflow:
                                                       TextOverflow.ellipsis,

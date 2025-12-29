@@ -233,6 +233,10 @@ class MyTrenslition extends Translations {
       StringsKeys.inStock: "متوفر",
       StringsKeys.mall: "متجر",
       StringsKeys.attribute: "السمة",
+      StringsKeys.supportChatTitle: "محادثات الدعم",
+      StringsKeys.serviceOrderTitle: "طلب خدمة",
+      StringsKeys.customerSupportTitle: "دعم العملاء",
+      StringsKeys.noMessagesYet: "لا توجد رسائل بعد",
     },
     "en": {
       // Splashscreen
@@ -463,6 +467,10 @@ class MyTrenslition extends Translations {
       StringsKeys.inStock: "in stock",
       StringsKeys.mall: "Mall",
       StringsKeys.attribute: "Attribute",
+      StringsKeys.supportChatTitle: "Support Chat",
+      StringsKeys.serviceOrderTitle: "Service Order",
+      StringsKeys.customerSupportTitle: "Customer Support",
+      StringsKeys.noMessagesYet: "No messages yet",
     },
   };
 }

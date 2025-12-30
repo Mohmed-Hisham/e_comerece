@@ -4,9 +4,9 @@ extension ResultListExtensions on ResultList {
   String get mainImageUrl {
     final img = item?.image;
     if (img == null || img.isEmpty) return '';
-    if (img.startsWith('//')) return '$img';
+    if (img.startsWith('//')) return img;
     if (img.startsWith('http')) return img;
-    return '$img';
+    return img;
   }
 
   List<String> get imageUrls {

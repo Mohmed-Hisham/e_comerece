@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
+import 'package:e_comerece/core/constant/strings_keys.dart';
 import 'package:e_comerece/core/funcations/handlingdata.dart';
 import 'package:e_comerece/core/servises/custom_getx_snak_bar.dart';
 import 'package:e_comerece/core/servises/location_servisess.dart';
@@ -26,6 +27,7 @@ abstract class AddressController extends GetxController {
   Future<void> addAddress(Datum address);
   Future<void> updateAddress(Datum address);
   Future<void> deleteAddress({required int addressId});
+  void goToAddAddress();
 }
 
 class AddressControllerImpl extends AddressController {
@@ -95,7 +97,7 @@ class AddressControllerImpl extends AddressController {
       Marker marker = Marker(
         markerId: const MarkerId("1"),
         position: latLng,
-        infoWindow: const InfoWindow(title: "My Location"),
+        infoWindow: InfoWindow(title: StringsKeys.myLocation.tr),
       );
 
       newmarker.add(marker);
@@ -200,20 +202,29 @@ class AddressControllerImpl extends AddressController {
           fetchAddresses();
           addAddressesstatusrequest = Statusrequest.success;
           Future.delayed(const Duration(seconds: 1), () {
-            showCustomGetSnack(isGreen: true, text: "تم الاضافة بنجاح");
+            showCustomGetSnack(
+              isGreen: true,
+              text: StringsKeys.addAddressSuccess.tr,
+            );
           });
         }
       } else {
         addAddressesstatusrequest = Statusrequest.failuer;
         Future.delayed(const Duration(seconds: 1), () {
-          showCustomGetSnack(isGreen: false, text: "لم يتم الاضافة بنجاح");
+          showCustomGetSnack(
+            isGreen: false,
+            text: StringsKeys.addAddressFailed.tr,
+          );
         });
       }
     } catch (e) {
-      print(e);
+      // print(e);
       addAddressesstatusrequest = Statusrequest.failuer;
       Future.delayed(const Duration(seconds: 1), () {
-        showCustomGetSnack(isGreen: false, text: "لم يتم الاضافة بنجاح");
+        showCustomGetSnack(
+          isGreen: false,
+          text: StringsKeys.addAddressFailed.tr,
+        );
       });
     }
   }
@@ -235,19 +246,34 @@ class AddressControllerImpl extends AddressController {
       if (fetchAddressesstatusrequest == Statusrequest.success) {
         if (response['status'] == 'success' && response['data'] != null) {
           Future.delayed(const Duration(seconds: 1), () {
-            showCustomGetSnack(isGreen: true, text: "تم التعديل بنجاح");
+            showCustomGetSnack(
+              isGreen: true,
+              text: StringsKeys.updateAddressSuccess.tr,
+            );
           });
           fetchAddresses();
           fetchAddressesstatusrequest = Statusrequest.success;
         }
       } else {
         fetchAddressesstatusrequest = Statusrequest.failuer;
+        Future.delayed(const Duration(seconds: 1), () {
+          showCustomGetSnack(
+            isGreen: false,
+            text: StringsKeys.updateAddressFailed.tr,
+          );
+        });
       }
 
       // update();
     } catch (e) {
-      print(e);
+      // print(e);
       fetchAddressesstatusrequest = Statusrequest.failuer;
+      Future.delayed(const Duration(seconds: 1), () {
+        showCustomGetSnack(
+          isGreen: false,
+          text: StringsKeys.updateAddressFailed.tr,
+        );
+      });
       update();
     }
   }
@@ -285,14 +311,14 @@ class AddressControllerImpl extends AddressController {
 
       // update();
     } catch (e) {
-      print(e);
+      // print(e);
       updateAddressesstatusrequest = Statusrequest.failuer;
       update();
     }
   }
 
   @override
-  void addAddess() {
+  void goToAddAddress() {
     Get.toNamed(AppRoutesname.addAddresses);
   }
 

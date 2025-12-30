@@ -7,7 +7,7 @@ import 'package:e_comerece/core/constant/imagesassets.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/constant/sliver_spacer.dart';
 import 'package:e_comerece/core/helper/pagination_listener.dart';
-import 'package:e_comerece/core/shared/image_manger/Image_manager_controller.dart';
+import 'package:e_comerece/core/shared/image_manger/image_manag_controller.dart';
 import 'package:e_comerece/core/shared/widget_shared/animations.dart';
 import 'package:e_comerece/core/shared/widget_shared/shimmerbar.dart';
 import 'package:e_comerece/viwe/screen/alibaba/product_home_alibaba.dart';

@@ -248,6 +248,11 @@ class StringsKeys {
   static const String priceApproved = "priceApproved";
   static const String completeOrder = "completeOrder";
   static const String date = "date";
+  static const String myLocation = "myLocation";
+  static const String addAddressSuccess = "addAddressSuccess";
+  static const String addAddressFailed = "addAddressFailed";
+  static const String updateAddressSuccess = "updateAddressSuccess";
+  static const String updateAddressFailed = "updateAddressFailed";
   static const String reorder = "reorder";
   static const String reordering = "reordering";
   static const String cancelOrder = "cancelOrder";

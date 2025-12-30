@@ -23,19 +23,13 @@ class TogglefavoriteController extends GetxController {
     String platform,
   ) async {
     String id = myServises.sharedPreferences.getString("user_id")!;
-    print('start');
-    print('currentStatus:$currentStatus');
 
     update();
 
     if (currentStatus == true) {
-      var response = await favoriteData.remove(
-        userId: id,
-        productid: productId,
-      );
-      print('remove:$response');
+      await favoriteData.remove(userId: id, productid: productId);
     } else {
-      var response = await favoriteData.addfavorite(
+      await favoriteData.addfavorite(
         userId: id,
         productid: productId.toString(),
         producttitle: productTitle,
@@ -43,7 +37,6 @@ class TogglefavoriteController extends GetxController {
         productprice: productPrice,
         platform: platform,
       );
-      print('add :$response');
       if (Get.isDialogOpen ?? false) return;
       Get.rawSnackbar(
         titleText: const SizedBox.shrink(),

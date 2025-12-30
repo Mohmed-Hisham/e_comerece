@@ -46,7 +46,7 @@ class SheinHomController extends GetxController {
     try {
       final cache = await DBHelper.getCache(key: cacheKey(pageindexHotProduct));
       if (cache != null) {
-        print("get product Shein from cache=====================");
+        log("get product Shein from cache=====================");
         statusrequestproduct = handlingData(cache);
         if (statusrequestproduct == Statusrequest.success) {
           if (cache['success'] == true) {
@@ -66,7 +66,7 @@ class SheinHomController extends GetxController {
           }
         }
       } else {
-        print("fetch product Shein from api=====================");
+        log("fetch product Shein from api=====================");
         final response = await trendaingSheinData.getTrendingproduct(
           pageindexHotProduct,
         );

@@ -28,14 +28,11 @@ Future<String?> uploadToCloudinary({
     final response = await http.Response.fromStream(streamedResponse);
     if (response.statusCode == 200) {
       final map = json.decode(response.body);
-      // الرابط النهائي
       return map['secure_url'] as String?;
     } else {
-      print('Upload failed: ${response.statusCode} ${response.body}');
       return null;
     }
   } catch (e) {
-    print('Upload error: $e');
     return null;
   }
 }

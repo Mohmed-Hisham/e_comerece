@@ -10,7 +10,7 @@ class ShimmerProductDetails extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SizedBox(height: 30),
-        Container(
+        SizedBox(
           height: 250,
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,

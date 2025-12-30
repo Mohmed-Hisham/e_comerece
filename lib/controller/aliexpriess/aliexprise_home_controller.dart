@@ -7,7 +7,7 @@ import 'package:e_comerece/core/funcations/handle_paging_response.dart';
 import 'package:e_comerece/core/funcations/handlingdata.dart';
 import 'package:e_comerece/core/funcations/loading_dialog.dart';
 import 'package:e_comerece/core/loacallization/translate_data.dart';
-import 'package:e_comerece/core/shared/image_manger/Image_manager_controller.dart';
+import 'package:e_comerece/core/shared/image_manger/image_manag_controller.dart';
 import 'package:e_comerece/data/datasource/remote/aliexpriess/category_data.dart';
 import 'package:e_comerece/data/datasource/remote/aliexpriess/hotproductssdata.dart';
 import 'package:e_comerece/data/datasource/remote/aliexpriess/searchtext_data.dart';

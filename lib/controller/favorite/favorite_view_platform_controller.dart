@@ -78,7 +78,6 @@ class FavoriteViewPlatformControllerImpl
 
   @override
   goToProductDetails(productId, lang, title, asin, goodsSn, categoryid) {
-    print(platform);
     switch (platform) {
       case "Aliexpress":
         Get.toNamed(

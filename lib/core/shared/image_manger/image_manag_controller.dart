@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -12,11 +14,11 @@ class ImageManagerController extends GetxController {
       );
       if (pickedImage != null) {
         image = pickedImage;
-        print(image!.path);
+        log(image!.path);
         return image!;
       }
     } catch (e) {
-      print('pickImage error: $e');
+      log('pickImage error: $e');
     }
 
     return XFile('');

@@ -8,7 +8,7 @@ import 'package:e_comerece/core/constant/sliver_divder.dart';
 import 'package:e_comerece/core/constant/sliver_spacer.dart';
 import 'package:e_comerece/core/constant/strings_keys.dart';
 import 'package:e_comerece/core/helper/pagination_listener.dart';
-import 'package:e_comerece/core/shared/image_manger/Image_manager_controller.dart';
+import 'package:e_comerece/core/shared/image_manger/image_manag_controller.dart';
 import 'package:e_comerece/core/shared/widget_shared/shimmerbar.dart';
 import 'package:e_comerece/viwe/screen/aliexpress/categories_list.dart';
 import 'package:e_comerece/viwe/screen/aliexpress/hot_products_grid.dart';

@@ -273,12 +273,12 @@ class PriceList {
     return PriceList(
       price: (json["price"] ?? json["minPrice"])?.toDouble(),
       priceFormatted: json["priceFormatted"],
-      minQuantity: (json["minQuantity"] ?? json["minPrice"]) != null
-          ? (json["minQuantity"] ?? json["minPrice"]).toDouble().toInt()
-          : null,
-      maxQuantity: (json["maxQuantity"] ?? json["maxPrice"]) != null
-          ? (json["maxQuantity"] ?? json["maxPrice"]).toDouble().toInt()
-          : null,
+      minQuantity: (json["minQuantity"] ?? json["minPrice"])
+          ?.toDouble()
+          .toInt(),
+      maxQuantity: (json["maxQuantity"] ?? json["maxPrice"])
+          ?.toDouble()
+          .toInt(),
       quantityFormatted: json["quantityFormatted"] ?? json["unit"],
     );
   }

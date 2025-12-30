@@ -3,7 +3,7 @@ import 'package:e_comerece/controller/shein/home_shein_controller.dart';
 import 'package:e_comerece/core/constant/strings_keys.dart';
 import 'package:e_comerece/core/class/handlingdataviwe.dart';
 import 'package:e_comerece/core/constant/color.dart';
-import 'package:e_comerece/core/funcations/calculateDiscount.dart';
+import 'package:e_comerece/core/funcations/calculate_discount.dart';
 import 'package:e_comerece/core/helper/custom_cached_image.dart';
 import 'package:e_comerece/core/loacallization/translate_data.dart';
 import 'package:e_comerece/viwe/widget/shein/extension_geter_trending_product.dart';

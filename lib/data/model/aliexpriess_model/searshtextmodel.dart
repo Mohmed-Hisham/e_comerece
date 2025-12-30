@@ -5,16 +5,8 @@ class SearshTextModel {
 
   SearshTextModel.fromJson(Map<String, dynamic> json) {
     resultSearshTextModel = json['result'] != null
-        ? new ResultSearshTextModel.fromJson(json['result'])
+        ? ResultSearshTextModel.fromJson(json['result'])
         : null;
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    if (this.resultSearshTextModel != null) {
-      data['result'] = this.resultSearshTextModel!.toJson();
-    }
-    return data;
   }
 }
 
@@ -32,40 +24,17 @@ class ResultSearshTextModel {
   });
 
   ResultSearshTextModel.fromJson(Map<String, dynamic> json) {
-    status = json['status'] != null
-        ? new Status.fromJson(json['status'])
-        : null;
+    status = json['status'] != null ? Status.fromJson(json['status']) : null;
     settings = json['settings'] != null
-        ? new Settings.fromJson(json['settings'])
+        ? Settings.fromJson(json['settings'])
         : null;
-    base = json['base'] != null ? new Base.fromJson(json['base']) : null;
+    base = json['base'] != null ? Base.fromJson(json['base']) : null;
     if (json['resultList'] != null) {
       resultListSearshTextModel = <ResultListSearshTextModel>[];
       json['resultList'].forEach((v) {
-        resultListSearshTextModel!.add(
-          new ResultListSearshTextModel.fromJson(v),
-        );
+        resultListSearshTextModel!.add(ResultListSearshTextModel.fromJson(v));
       });
     }
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    if (this.status != null) {
-      data['status'] = this.status!.toJson();
-    }
-    if (this.settings != null) {
-      data['settings'] = this.settings!.toJson();
-    }
-    if (this.base != null) {
-      data['base'] = this.base!.toJson();
-    }
-    if (this.resultListSearshTextModel != null) {
-      data['resultList'] = this.resultListSearshTextModel!
-          .map((v) => v.toJson())
-          .toList();
-    }
-    return data;
   }
 }
 
@@ -109,22 +78,6 @@ class Status {
     pmu = json['pmu'];
     mu = json['mu'];
   }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['code'] = this.code;
-    data['data'] = this.data;
-    data['executionTime'] = this.executionTime;
-    data['requestTime'] = this.requestTime;
-    data['requestId'] = this.requestId;
-    data['endpoint'] = this.endpoint;
-    data['apiVersion'] = this.apiVersion;
-    data['functionsVersion'] = this.functionsVersion;
-    data['la'] = this.la;
-    data['pmu'] = this.pmu;
-    data['mu'] = this.mu;
-    return data;
-  }
 }
 
 class Settings {
@@ -161,20 +114,6 @@ class Settings {
     locale = json['locale'];
     currency = json['currency'];
   }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['q'] = this.q;
-    data['catId'] = this.catId;
-    data['sort'] = this.sort;
-    data['page'] = this.page;
-    data['startPrice'] = this.startPrice;
-    data['endPrice'] = this.endPrice;
-    data['region'] = this.region;
-    data['locale'] = this.locale;
-    data['currency'] = this.currency;
-    return data;
-  }
 }
 
 class Base {
@@ -191,15 +130,6 @@ class Base {
     page = json['page'];
     sortValues = json['sortValues'].cast<String>();
   }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['totalResults'] = this.totalResults;
-    data['pageSize'] = this.pageSize;
-    data['page'] = this.page;
-    data['sortValues'] = this.sortValues;
-    return data;
-  }
 }
 
 class ResultListSearshTextModel {
@@ -208,15 +138,7 @@ class ResultListSearshTextModel {
   ResultListSearshTextModel({this.item});
 
   ResultListSearshTextModel.fromJson(Map<String, dynamic> json) {
-    item = json['item'] != null ? new Item.fromJson(json['item']) : null;
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    if (this.item != null) {
-      data['item'] = this.item!.toJson();
-    }
-    return data;
+    item = json['item'] != null ? Item.fromJson(json['item']) : null;
   }
 }
 
@@ -246,21 +168,7 @@ class Item {
     itemUrl = json['itemUrl'];
     image = json['image'];
     video = json['video'];
-    sku = json['sku'] != null ? new Sku.fromJson(json['sku']) : null;
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['itemId'] = this.itemId;
-    data['title'] = this.title;
-    data['sales'] = this.sales;
-    data['itemUrl'] = this.itemUrl;
-    data['image'] = this.image;
-    data['video'] = this.video;
-    if (this.sku != null) {
-      data['sku'] = this.sku!.toJson();
-    }
-    return data;
+    sku = json['sku'] != null ? Sku.fromJson(json['sku']) : null;
   }
 }
 
@@ -270,15 +178,7 @@ class Sku {
   Sku({this.def});
 
   Sku.fromJson(Map<String, dynamic> json) {
-    def = json['def'] != null ? new Def.fromJson(json['def']) : null;
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    if (this.def != null) {
-      data['def'] = this.def!.toJson();
-    }
-    return data;
+    def = json['def'] != null ? Def.fromJson(json['def']) : null;
   }
 }
 
@@ -291,12 +191,5 @@ class Def {
   Def.fromJson(Map<String, dynamic> json) {
     price = json['price'];
     promotionPrice = json['promotionPrice'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['price'] = this.price;
-    data['promotionPrice'] = this.promotionPrice;
-    return data;
   }
 }

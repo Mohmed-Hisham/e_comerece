@@ -1,6 +1,5 @@
 import 'dart:developer';
 import 'dart:math' as math;
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e_comerece/controller/cart/cart_from_detils.dart';
 import 'package:e_comerece/controller/shein/product_details_shein_controller.dart';
 import 'package:e_comerece/core/class/handlingdataviwe.dart';

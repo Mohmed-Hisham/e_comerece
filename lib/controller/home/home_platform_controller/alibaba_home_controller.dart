@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:e_comerece/controller/home/homescreen_controller.dart';
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/funcations/handle_paging_response.dart';
@@ -41,7 +43,7 @@ class AlibabaHomeController extends GetxController {
 
     final cache = await DBHelper.getCache(key: cacheKey(pageindexALiba));
     if (cache != null) {
-      print("get product AliBaba from cache=====================");
+      log("get product AliBaba from cache=====================");
       final status = handlingData(cache);
       if (status == Statusrequest.success) {
         if (handle200(cache)) {
@@ -65,7 +67,7 @@ class AlibabaHomeController extends GetxController {
         hasMore = false;
       }
     } else {
-      print("get product AliBaba from api=====================");
+      log("get product AliBaba from api=====================");
       final hotProductsResponse = await productalibabaHomeData.getproductHome(
         pageindex: pageindexALiba,
       );

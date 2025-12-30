@@ -242,7 +242,7 @@ class Sku {
     List<Base> baseList = [];
     if (baseRaw is List) {
       baseList = baseRaw
-          .where((e) => e is Map<String, dynamic>)
+          .whereType<Map<String, dynamic>>()
           .map((e) => Base.fromJson(Map<String, dynamic>.from(e as Map)))
           .toList();
     } else if (baseRaw is Map<String, dynamic>) {
@@ -254,7 +254,7 @@ class Sku {
     List<Prop> propsList = [];
     if (propsRaw is List) {
       propsList = propsRaw
-          .where((e) => e is Map<String, dynamic>)
+          .whereType<Map<String, dynamic>>()
           .map((e) => Prop.fromJson(Map<String, dynamic>.from(e as Map)))
           .toList();
     } else if (propsRaw is Map<String, dynamic>) {

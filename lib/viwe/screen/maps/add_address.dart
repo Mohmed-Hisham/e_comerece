@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:e_comerece/controller/addresses/address_controller.dart';
 import 'package:e_comerece/core/class/handlingdataviwe.dart';
 import 'package:e_comerece/core/constant/color.dart';
@@ -33,23 +31,21 @@ class _CustGoogleMapState extends State<AddAddress> {
         builder: (getxcontroller) {
           return Stack(
             children: [
-              Container(
-                child: GoogleMap(
-                  zoomControlsEnabled: false,
-                  onTap: (position) {
-                    getxcontroller.ubdataCameraPosition(
-                      isontap: true,
-                      latLngg: position,
-                    );
-                  },
-                  markers: getxcontroller.newmarker,
-                  onMapCreated: (controller) {
-                    getxcontroller.mapController = controller;
-                    getxcontroller.ubdataCameraPosition();
-                  },
+              GoogleMap(
+                zoomControlsEnabled: false,
+                onTap: (position) {
+                  getxcontroller.ubdataCameraPosition(
+                    isontap: true,
+                    latLngg: position,
+                  );
+                },
+                markers: getxcontroller.newmarker,
+                onMapCreated: (controller) {
+                  getxcontroller.mapController = controller;
+                  getxcontroller.ubdataCameraPosition();
+                },
 
-                  initialCameraPosition: getxcontroller.initialCameraPosition,
-                ),
+                initialCameraPosition: getxcontroller.initialCameraPosition,
               ),
 
               Positioned(

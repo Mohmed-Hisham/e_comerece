@@ -1,7 +1,7 @@
 import 'package:e_comerece/controller/amazon_controllers/product_details_amazon_controller.dart';
 import 'package:e_comerece/controller/favorite/favorites_controller.dart';
 import 'package:e_comerece/core/constant/color.dart';
-import 'package:e_comerece/core/funcations/calculateDiscount.dart';
+import 'package:e_comerece/core/funcations/calculate_discount.dart';
 import 'package:e_comerece/core/funcations/extractn_umbers.dart';
 import 'package:e_comerece/core/loacallization/translate_data.dart';
 import 'package:e_comerece/viwe/widget/custgridviwe.dart';

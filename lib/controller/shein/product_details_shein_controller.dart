@@ -48,6 +48,12 @@ abstract class ProductDetailsSheinController extends GetxController {
   void loadMoreSearch();
   void chaingPruduct({required String id, required String titleReload});
   void resetStateForNewProduct();
+  gotoditels({
+    required goodssn,
+    required title,
+    required goodsid,
+    required categoryid,
+  });
 
   // Simple getters for UI
   String? get subject;
@@ -234,7 +240,7 @@ class ProductDetailsSheinControllerImple extends ProductDetailsSheinController {
           goodssn!,
           lang,
         );
-        print("respons=========: $response");
+        log("respons=========: $response");
         statusrequestImagesList = handlingData(response);
 
         if (Statusrequest.success == statusrequestImagesList) {

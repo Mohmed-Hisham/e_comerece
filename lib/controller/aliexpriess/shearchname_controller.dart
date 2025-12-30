@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/funcations/handle_paging_response.dart';
@@ -56,7 +58,7 @@ class ShearchnameControllerImple extends ShearchnameController {
         platform: "aliexpress",
       );
       if (cashe["status"] == "success") {
-        print(
+        log(
           "get productCategory aliexpress from cache server =====================",
         );
         final response = cashe["data"];
@@ -84,7 +86,7 @@ class ShearchnameControllerImple extends ShearchnameController {
           }
         }
       } else {
-        print("get productCategory aliexpress from API =====================");
+        log("get productCategory aliexpress from API =====================");
         final response = await shearshnameData.getData(
           keyWord: nameCat,
           categoryId: categoryId,

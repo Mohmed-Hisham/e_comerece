@@ -1,4 +1,4 @@
-import 'package:e_comerece/core/shared/image_manger/Image_manager_controller.dart';
+import 'package:e_comerece/core/shared/image_manger/image_manag_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';

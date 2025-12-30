@@ -280,6 +280,11 @@ class MyTrenslition extends Translations {
       StringsKeys.priceApproved: "السعر الذي تم تحديده: @price",
       StringsKeys.completeOrder: "إتمام الطلب",
       StringsKeys.date: "التاريخ",
+      StringsKeys.myLocation: "موقعي",
+      StringsKeys.addAddressSuccess: "تم إضافة العنوان بنجاح",
+      StringsKeys.addAddressFailed: "فشل إضافة العنوان",
+      StringsKeys.updateAddressSuccess: "تم تعديل العنوان بنجاح",
+      StringsKeys.updateAddressFailed: "فشل تعديل العنوان",
     },
     "en": {
       // Splashscreen
@@ -557,6 +562,11 @@ class MyTrenslition extends Translations {
       StringsKeys.priceApproved: "Quoted Price: @price",
       StringsKeys.completeOrder: "Complete Order",
       StringsKeys.date: "Date",
+      StringsKeys.myLocation: "My Location",
+      StringsKeys.addAddressSuccess: "Address added successfully",
+      StringsKeys.addAddressFailed: "Failed to add address",
+      StringsKeys.updateAddressSuccess: "Address updated successfully",
+      StringsKeys.updateAddressFailed: "Failed to update address",
     },
   };
 }

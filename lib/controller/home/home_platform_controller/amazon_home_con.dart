@@ -40,7 +40,7 @@ class AmazonHomeCon extends GetxController {
     try {
       final cache = await DBHelper.getCache(key: cacheKey(offset));
       if (cache != null) {
-        print("get product amazon from cache=====================");
+        log("get product amazon from cache=====================");
         final status = handlingData(cache);
         if (status == Statusrequest.success) {
           if (cache['status'] == 'OK') {
@@ -67,7 +67,7 @@ class AmazonHomeCon extends GetxController {
 
         isLoading = false;
       } else {
-        print(" get product amazon from API=====================");
+        log(" get product amazon from API=====================");
         final hotProductsResponse = await hotDealsData.getHotDeals(offset);
 
         final status = handlingData(hotProductsResponse);

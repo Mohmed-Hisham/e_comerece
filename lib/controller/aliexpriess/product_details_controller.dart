@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:developer';
 
 import 'package:carousel_slider/carousel_controller.dart';
@@ -6,7 +5,6 @@ import 'package:chewie/chewie.dart';
 import 'package:e_comerece/controller/cart/cart_from_detils.dart';
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
-import 'package:e_comerece/core/funcations/displayattributes.dart';
 import 'package:e_comerece/core/funcations/handle_paging_response.dart';
 import 'package:e_comerece/core/funcations/handlingdata.dart';
 import 'package:e_comerece/core/servises/serviese.dart';
@@ -265,7 +263,7 @@ class ProductDetailsControllerImple extends ProductDetailsController {
       inCart = false;
       statusrequestquantity = Statusrequest.failuer;
       update(['quantity']);
-      print('getquiqtity error: $e');
+      // print('getquiqtity error: $e');
     }
   }
 
@@ -300,7 +298,7 @@ class ProductDetailsControllerImple extends ProductDetailsController {
         platform: "aliexpress",
       );
       if (cashe["status"] == "success") {
-        print("get search aliexpress from cache server =====================");
+        log("get search aliexpress from cache server =====================");
         final response = cashe["data"];
         statusrequestsearch = handlingData(response);
         if (statusrequestsearch == Statusrequest.success) {
@@ -322,7 +320,7 @@ class ProductDetailsControllerImple extends ProductDetailsController {
           }
         }
       } else {
-        print("get search aliexpress from api=====================");
+        log("get search aliexpress from api=====================");
         final response = await searchtextData.getData(
           lang: lang!,
           keyWord: title!,

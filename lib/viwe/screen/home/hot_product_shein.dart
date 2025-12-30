@@ -1,10 +1,8 @@
-import 'dart:developer';
-
 import 'package:e_comerece/controller/favorite/favorites_controller.dart';
 import 'package:e_comerece/controller/home/homescreen_controller.dart';
 import 'package:e_comerece/core/class/handlingdataviwe.dart';
 import 'package:e_comerece/core/constant/color.dart';
-import 'package:e_comerece/core/funcations/calculateDiscount.dart';
+import 'package:e_comerece/core/funcations/calculate_discount.dart';
 import 'package:e_comerece/core/helper/custom_cached_image.dart';
 import 'package:e_comerece/core/shared/widget_shared/shimmer_list_horizontal.dart';
 import 'package:e_comerece/viwe/widget/shein/extension_geter_trending_product.dart';

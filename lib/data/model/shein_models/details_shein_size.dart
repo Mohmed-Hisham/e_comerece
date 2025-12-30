@@ -145,8 +145,6 @@ class Data {
   final String? productUrl;
 
   factory Data.fromJson(Map<String, dynamic> json) {
-    print('sizeTemplate = ${json["sizeTemplate"]}');
-    print('sizeTemplate runtimeType = ${json["sizeTemplate"].runtimeType}');
     return Data(
       brand: json["brand"],
       sizeTemplate: json["sizeTemplate"] == null

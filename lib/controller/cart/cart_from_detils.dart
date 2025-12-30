@@ -1,5 +1,3 @@
-import 'dart:developer' show log;
-
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/strings_keys.dart';
 import 'package:flutter/material.dart';
@@ -161,7 +159,6 @@ class AddorrmoveControllerimple extends AddorrmoveController {
       productid: productid.toString(),
       attributes: attributes,
     );
-    log("response=>${response}");
 
     statusRequest = handlingData(response);
     if (Statusrequest.success == statusRequest) {

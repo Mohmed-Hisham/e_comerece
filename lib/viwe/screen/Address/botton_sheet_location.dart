@@ -58,7 +58,7 @@ class BottonSheetLocation extends StatelessWidget {
                         children: [
                           IconButton(
                             onPressed: () {
-                              controller.addAddess();
+                              controller.goToAddAddress();
                             },
                             icon: FaIcon(
                               FontAwesomeIcons.plus,

@@ -3,7 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e_comerece/controller/favorite/favorites_controller.dart';
 import 'package:e_comerece/controller/home/homescreen_controller.dart';
 import 'package:e_comerece/core/constant/color.dart';
-import 'package:e_comerece/core/funcations/calculateDiscount.dart';
+import 'package:e_comerece/core/funcations/calculate_discount.dart';
 import 'package:e_comerece/core/funcations/extractn_umbers.dart';
 import 'package:e_comerece/core/loacallization/translate_data.dart';
 import 'package:e_comerece/core/servises/platform_ext.dart';
@@ -38,7 +38,6 @@ class SearchAmazon extends StatelessWidget {
         return InkWell(
           onTap: () {
             log(item.productUrl.toString());
-            print(item.asin.toString());
             controller.gotoditels(
               platform: PlatformSource.amazon,
               asin: item.asin.toString(),

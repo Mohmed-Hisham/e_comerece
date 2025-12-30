@@ -159,12 +159,6 @@ class HomescreenControllerImple extends HomescreenController {
 
   bool showClose = false;
 
-  @override
-  void onInit() {
-    super.onInit();
-    // moveproduct();
-  }
-
   startInitShow({int delayMs = 160}) {
     Future.delayed(Duration(milliseconds: delayMs), () {
       if (!initShow) {

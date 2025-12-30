@@ -2,7 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e_comerece/controller/favorite/favorites_controller.dart';
 import 'package:e_comerece/controller/home/homescreen_controller.dart';
 import 'package:e_comerece/core/constant/color.dart';
-import 'package:e_comerece/core/funcations/calculateDiscount.dart';
+import 'package:e_comerece/core/funcations/calculate_discount.dart';
 import 'package:e_comerece/core/servises/safe_image_url.dart';
 import 'package:e_comerece/core/shared/widget_shared/loadingimage.dart';
 import 'package:e_comerece/core/shared/widget_shared/shimmer_image_product.dart';

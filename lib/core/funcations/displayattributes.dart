@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:e_comerece/controller/aliexpriess/product_details_controller.dart';
 
 // >> الدالة الآن تُرجع Map أكثر تعقيداً <<
@@ -27,7 +29,7 @@ Map<String, Map<String, String?>> buildDisplayAttributes(
         };
       }
     } catch (e) {
-      print("Error building display attributes for attrID $attributeId: $e");
+      log("Error building display attributes for attrID $attributeId: $e");
     }
   });
 

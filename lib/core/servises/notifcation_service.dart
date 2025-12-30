@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:e_comerece/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -7,14 +9,14 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  print('Handling a background message ${message.messageId}');
+  log('Handling a background message ${message.messageId}');
 }
 
 // background notification tap callback (لا تستخدم closure هنا)
 @pragma('vm:entry-point')
 void notificationTapBackground(NotificationResponse response) {
   // هذا سينفذ عندما المستخدم يضغط على إشعار في الخلفية/ميت
-  print('notification tapped (background): ${response.payload}');
+  log('notification tapped (background): ${response.payload}');
 }
 
 class NotifcationService {
@@ -30,7 +32,7 @@ class NotifcationService {
 
     /// Called when massages are received while the app is in the foreground
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
-      print('Received a message while in the foreground: ${message.messageId}');
+      log('Received a message while in the foreground: ${message.messageId}');
       await _showFlutterNotification(message);
     });
 
@@ -47,7 +49,7 @@ class NotifcationService {
   /// fetches the FCM token for this device
   static Future<String> getFcmToken() async {
     String? token = await _firebaseMessaging.getToken();
-    print('Firebase Messaging Token: $token');
+    log('Firebase Messaging Token: $token');
     return token!;
   }
 
@@ -108,7 +110,7 @@ class NotifcationService {
       onDidReceiveBackgroundNotificationResponse: notificationTapBackground,
       onDidReceiveNotificationResponse: (NotificationResponse response) {
         // هذا يشتغل في foreground/background عندما التطبيق مفتوح
-        print('Notification tapped: ${response.payload}');
+        log('Notification tapped: ${response.payload}');
       },
     );
   }
@@ -119,7 +121,7 @@ class NotifcationService {
         .getInitialMessage();
     if (initialMessage != null) {
       // _showFlutterNotification(initialMessage);
-      print(
+      log(
         'App opened from terminated state via notification${initialMessage.data}',
       );
     }

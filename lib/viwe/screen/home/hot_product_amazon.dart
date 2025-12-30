@@ -1,5 +1,4 @@
 import 'dart:developer';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e_comerece/controller/favorite/favorites_controller.dart';
 import 'package:e_comerece/controller/home/homescreen_controller.dart';
 import 'package:e_comerece/core/class/handlingdataviwe.dart';
@@ -7,7 +6,6 @@ import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/loacallization/translate_data.dart';
 import 'package:e_comerece/core/helper/custom_cached_image.dart';
 import 'package:e_comerece/core/servises/platform_ext.dart';
-import 'package:e_comerece/core/shared/widget_shared/loadingimage.dart';
 import 'package:e_comerece/core/shared/widget_shared/shimmer_list_horizontal.dart';
 import 'package:e_comerece/viwe/widget/custgridviwe.dart';
 import 'package:flutter/material.dart';

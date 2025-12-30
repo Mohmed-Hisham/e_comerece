@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e_comerece/controller/amazon_controllers/product_details_amazon_controller.dart';
 import 'package:e_comerece/controller/cart/cart_from_detils.dart';
-import 'package:e_comerece/controller/favorite/toggleFavorite_controller.dart';
+import 'package:e_comerece/controller/favorite/toggle_favorite_controller.dart';
 import 'package:e_comerece/core/class/handlingdataviwe.dart';
 import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
@@ -489,16 +489,16 @@ class ProductDetailsAmazonView extends StatelessWidget {
               Expanded(
                 child: ElevatedButton(
                   onPressed: () {
-                    print('Current ASIN: ${controller.getCurrentAsin()}');
-                    print('Product Title: ${controller.productTitle}');
-                    print('Product Photo: ${controller.productPhoto}');
-                    print(
-                      'Current Price: ${controller.getCurrentPriceFormatted()}',
-                    );
-                    print('Quantity: ${controller.quantity}');
-                    print(
-                      'Variations: ${jsonEncode(controller.selectedVariations)}',
-                    );
+                    // print('Current ASIN: ${controller.getCurrentAsin()}');
+                    // print('Product Title: ${controller.productTitle}');
+                    // print('Product Photo: ${controller.productPhoto}');
+                    // print(
+                    //   'Current Price: ${controller.getCurrentPriceFormatted()}',
+                    // );
+                    // print('Quantity: ${controller.quantity}');
+                    // print(
+                    //   'Variations: ${jsonEncode(controller.selectedVariations)}',
+                    // );
                     // Add to cart logic here
                     cartController.add(
                       controller.getCurrentAsin() ?? '',

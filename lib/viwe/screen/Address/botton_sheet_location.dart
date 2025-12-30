@@ -75,78 +75,83 @@ class BottonSheetLocation extends StatelessWidget {
                     ],
                   ),
                   Expanded(
-                    child: ListView.builder(
-                      physics: physics,
-                      itemCount: controller.addresses.length,
-                      itemBuilder: (context, index) {
-                        final address = controller.addresses[index];
-                        return Container(
-                          margin: const EdgeInsets.only(bottom: 5),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20.r),
-                            border: Border.all(color: Appcolor.primrycolor),
-                          ),
-                          child: ListTile(
-                            trailing: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                IconButton(
-                                  onPressed: () {
-                                    Get.defaultDialog(
-                                      title: StringsKeys.deleteAddress.tr,
-                                      middleText: StringsKeys
-                                          .deleteAddressConfirmation
-                                          .tr,
-                                      textConfirm: StringsKeys.delete.tr,
-                                      textCancel: StringsKeys.cancel.tr,
-                                      onConfirm: () {
-                                        controller.deleteAddress(
-                                          addressId: address.addressId!,
-                                        );
-                                      },
-                                    );
-                                  },
-                                  icon: FaIcon(
-                                    FontAwesomeIcons.deleteLeft,
-                                    color: Appcolor.primrycolor,
-                                  ),
-                                ),
+                    child: RadioGroup<int?>(
+                      groupValue: controller.addresses
+                          .firstWhereOrNull((e) => e.isDefault == 1)
+                          ?.addressId,
+                      onChanged: (valueId) {
+                        if (valueId != null) {
+                          Datum addressupdate = Datum(
+                            addressId: valueId,
+                            isDefault: 1,
+                          );
 
-                                IconButton(
-                                  onPressed: () {
-                                    blurDilog(
-                                      EditAddress(index: index),
-                                      context,
-                                    );
-                                  },
-                                  icon: FaIcon(
-                                    FontAwesomeIcons.penToSquare,
-                                    color: Appcolor.primrycolor,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            dense: true,
-                            leading: Radio(
-                              value: address.isDefault,
-                              groupValue: 1,
-                              onChanged: (value) {
-                                Datum addressupdate = Datum(
-                                  addressId: address.addressId,
-                                  isDefault: 1,
-                                );
-
-                                controller.updateAddress(addressupdate);
-                              },
-                              activeColor: Colors.orange,
-                            ),
-                            title: Text(address.addressTitle.toString()),
-                            subtitle: Text(
-                              "${address.city} -${address.street} -${address.buildingNumber} -${address.floor} -${address.apartment}",
-                            ),
-                          ),
-                        );
+                          controller.updateAddress(addressupdate);
+                        }
                       },
+                      child: ListView.builder(
+                        physics: physics,
+                        itemCount: controller.addresses.length,
+                        itemBuilder: (context, index) {
+                          final address = controller.addresses[index];
+                          return Container(
+                            margin: const EdgeInsets.only(bottom: 5),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20.r),
+                              border: Border.all(color: Appcolor.primrycolor),
+                            ),
+                            child: ListTile(
+                              trailing: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  IconButton(
+                                    onPressed: () {
+                                      Get.defaultDialog(
+                                        title: StringsKeys.deleteAddress.tr,
+                                        middleText: StringsKeys
+                                            .deleteAddressConfirmation
+                                            .tr,
+                                        textConfirm: StringsKeys.delete.tr,
+                                        textCancel: StringsKeys.cancel.tr,
+                                        onConfirm: () {
+                                          controller.deleteAddress(
+                                            addressId: address.addressId!,
+                                          );
+                                        },
+                                      );
+                                    },
+                                    icon: FaIcon(
+                                      FontAwesomeIcons.deleteLeft,
+                                      color: Appcolor.primrycolor,
+                                    ),
+                                  ),
+                                  IconButton(
+                                    onPressed: () {
+                                      blurDilog(
+                                        EditAddress(index: index),
+                                        context,
+                                      );
+                                    },
+                                    icon: FaIcon(
+                                      FontAwesomeIcons.penToSquare,
+                                      color: Appcolor.primrycolor,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              dense: true,
+                              leading: Radio<int?>(
+                                value: address.addressId,
+                                activeColor: Colors.orange,
+                              ),
+                              title: Text(address.addressTitle.toString()),
+                              subtitle: Text(
+                                "${address.city} -${address.street} -${address.buildingNumber} -${address.floor} -${address.apartment}",
+                              ),
+                            ),
+                          );
+                        },
+                      ),
                     ),
                   ),
                   if (showButtonBack)

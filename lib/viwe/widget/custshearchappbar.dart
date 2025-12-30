@@ -88,8 +88,11 @@ class Custshearchappbar extends StatelessWidget {
                         onPressed: onTapSearch,
                         icon: Transform(
                           alignment: Alignment.center,
-                          transform: Matrix4.identity()
-                            ..scale(langDirection() ? 1.0 : -1.0, 1.0, 1.0),
+                          transform: Matrix4.diagonal3Values(
+                            langDirection() ? 1.0 : -1.0,
+                            1.0,
+                            1.0,
+                          ),
                           child: Icon(
                             Icons.search,
                             color: Appcolor.primrycolor,

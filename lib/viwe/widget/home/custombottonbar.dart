@@ -19,7 +19,7 @@ class Custombottonbar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: 60,
       child: IconButton(
         onPressed: onPressed,

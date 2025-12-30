@@ -459,7 +459,7 @@ class ProductDetailsAlibabaControllerImple
     // Build propMap string from selected attributes
     List<String> propMapParts = [];
     for (var entry in selectedAttributes.entries) {
-      propMapParts.add('${entry.key}:${entry.value}');
+      propMapParts.add('${entry.key}:${entry.value.id}');
     }
     String targetPropMap = propMapParts.join(';');
 
@@ -613,7 +613,7 @@ class ProductDetailsAlibabaControllerImple
 
     final values = getValuesForProperty(propertyName);
     for (var value in values) {
-      if (value.id == valueId) {
+      if (value.id == valueId.id) {
         return value.name ?? '';
       }
     }
@@ -621,7 +621,7 @@ class ProductDetailsAlibabaControllerImple
   }
 
   bool isAttributeSelected(String propertyName, alibaba_model.Value valueId) {
-    return selectedAttributes[propertyName] == valueId;
+    return selectedAttributes[propertyName]?.id == valueId.id;
   }
 
   double getTotalPrice() {

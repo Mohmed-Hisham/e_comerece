@@ -2,51 +2,52 @@ import 'package:e_comerece/core/constant/color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class OrderTrackingWidget extends StatelessWidget {
+class ServiceRequestTrackingWidget extends StatelessWidget {
   final String currentStatus;
 
-  const OrderTrackingWidget({super.key, required this.currentStatus});
+  const ServiceRequestTrackingWidget({super.key, required this.currentStatus});
 
   List<TrackingStep> _getTrackingSteps() {
     return [
       TrackingStep(
-        status: 'pending_approval',
-        title: 'قيد المراجعة',
-        icon: Icons.pending_actions,
+        status: 'new',
+        title: 'خدمة جديدة',
+        icon: Icons.new_releases_outlined,
+      ),
+      TrackingStep(
+        status: 'in_chat',
+        title: 'في المحادثة',
+        icon: Icons.chat_outlined,
+      ),
+      TrackingStep(
+        status: 'price_quoted',
+        title: 'تحديد السعر',
+        icon: Icons.attach_money,
       ),
       TrackingStep(
         status: 'approved',
-        title: 'تم الموافقة',
+        title: 'تمت الموافقة',
         icon: Icons.check_circle_outline,
       ),
-      TrackingStep(
-        status: 'processing',
-        title: 'قيد التنفيذ',
-        icon: Icons.autorenew, // Or Icons.engineering, Icons.construction
-      ),
-      TrackingStep(
-        status: 'ordered',
-        title: 'تم الطلب',
-        icon: Icons.shopping_bag_outlined,
-      ),
-      TrackingStep(
-        status: 'completed',
-        title: 'تم التسليم',
-        icon: Icons.done_all,
-      ),
+      TrackingStep(status: 'completed', title: 'مكتمل', icon: Icons.done_all),
     ];
   }
 
   int _getCurrentStepIndex() {
     final steps = _getTrackingSteps();
     final index = steps.indexWhere((step) => step.status == currentStatus);
-    return index == -1 ? 0 : index;
+    // If status is not found (e.g. cancelled), or if it matches, return index.
+    // Logic below handles 'cancelled' separately, so this index is for the steps progress.
+    if (index == -1) {
+      // If we want 'completed' to show full progress, checks are needed.
+      // But for linear progression, if status is 'cancelled', index is -1.
+      return 0;
+    }
+    return index;
   }
 
   Color _getStepColor(int stepIndex, int currentIndex) {
-    if (currentStatus == 'rejected' || currentStatus == 'declined') {
-      return Appcolor.reed;
-    } else if (currentStatus == 'cancelled') {
+    if (currentStatus == 'cancelled') {
       return Appcolor.gray;
     } else if (stepIndex <= currentIndex) {
       return Appcolor.primrycolor;
@@ -59,15 +60,13 @@ class OrderTrackingWidget extends StatelessWidget {
     final steps = _getTrackingSteps();
     final currentIndex = _getCurrentStepIndex();
 
-    // Handle rejected or cancelled status
-    if (currentStatus == 'rejected' ||
-        currentStatus == 'declined' ||
-        currentStatus == 'cancelled') {
+    // Handle cancelled status
+    if (currentStatus == 'cancelled' || currentStatus == 'rejected') {
       return _buildRejectedOrCancelledStatus();
     }
 
     return Container(
-      padding: EdgeInsets.all(20.w),
+      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 10.h),
       decoration: BoxDecoration(
         color: Appcolor.white,
         borderRadius: BorderRadius.circular(16),
@@ -83,7 +82,7 @@ class OrderTrackingWidget extends StatelessWidget {
         children: [
           // Title
           Text(
-            'تتبع الطلب',
+            'تتبع الخدمة',
             style: TextStyle(
               fontSize: 18.sp,
               fontWeight: FontWeight.bold,
@@ -93,61 +92,61 @@ class OrderTrackingWidget extends StatelessWidget {
           SizedBox(height: 20.h),
 
           // Tracking Steps
-          Row(
-            children: List.generate(steps.length * 2 - 1, (index) {
-              if (index.isOdd) {
-                // Connector line
-                final lineIndex = index ~/ 2;
-                return Expanded(
-                  child: Container(
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: List.generate(steps.length * 2 - 1, (index) {
+                if (index.isOdd) {
+                  // Connector line
+                  final lineIndex = index ~/ 2;
+                  return Container(
+                    width: 30.w, // Fixed width for connector
                     height: 2,
                     color: _getStepColor(lineIndex + 1, currentIndex),
-                  ),
-                );
-              } else {
-                // Step circle
-                final stepIndex = index ~/ 2;
-                final step = steps[stepIndex];
-                final isActive = stepIndex <= currentIndex;
-                final stepColor = _getStepColor(stepIndex, currentIndex);
+                  );
+                } else {
+                  // Step circle
+                  final stepIndex = index ~/ 2;
+                  final step = steps[stepIndex];
+                  final isActive = stepIndex <= currentIndex;
+                  final stepColor = _getStepColor(stepIndex, currentIndex);
 
-                return Column(
-                  children: [
-                    Container(
-                      width: 50.w,
-                      height: 50.w,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: isActive ? stepColor : Appcolor.white,
-                        border: Border.all(color: stepColor, width: 2),
-                      ),
-                      child: Icon(
-                        step.icon,
-                        color: isActive ? Appcolor.white : stepColor,
-                        size: 24.sp,
-                      ),
-                    ),
-                    SizedBox(height: 8.h),
-                    SizedBox(
-                      width: 70.w,
-                      child: Text(
-                        step.title,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 12.sp,
-                          fontWeight: isActive
-                              ? FontWeight.bold
-                              : FontWeight.normal,
-                          color: isActive ? stepColor : Appcolor.gray,
+                  return Column(
+                    children: [
+                      Container(
+                        width: 40.w,
+                        height: 40.w,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: isActive ? stepColor : Appcolor.white,
+                          border: Border.all(color: stepColor, width: 2),
+                        ),
+                        child: Icon(
+                          step.icon,
+                          color: isActive ? Appcolor.white : stepColor,
+                          size: 20.sp,
                         ),
                       ),
-                    ),
-                  ],
-                );
-              }
-            }),
+                      SizedBox(height: 8.h),
+                      SizedBox(
+                        width: 60.w,
+                        child: Text(
+                          step.title,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 10.sp,
+                            fontWeight: isActive
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                            color: isActive ? stepColor : Appcolor.gray,
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                }
+              }),
+            ),
           ),
         ],
       ),
@@ -155,8 +154,7 @@ class OrderTrackingWidget extends StatelessWidget {
   }
 
   Widget _buildRejectedOrCancelledStatus() {
-    final isRejected =
-        currentStatus == 'rejected' || currentStatus == 'declined';
+    final isRejected = currentStatus == 'rejected';
     return Container(
       padding: EdgeInsets.all(20.w),
       decoration: BoxDecoration(
@@ -190,7 +188,7 @@ class OrderTrackingWidget extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  isRejected ? 'طلب مرفوض' : 'طلب ملغي',
+                  isRejected ? 'خدمة مرفوضة' : 'خدمة ملغية',
                   style: TextStyle(
                     fontSize: 18.sp,
                     fontWeight: FontWeight.bold,
@@ -201,7 +199,7 @@ class OrderTrackingWidget extends StatelessWidget {
                 Text(
                   isRejected
                       ? 'تم رفض طلبك من قبل الإدارة'
-                      : 'تم إلغاء هذا الطلب',
+                      : 'تم إلغاء هذه الخدمة',
                   style: TextStyle(fontSize: 14.sp, color: Appcolor.gray),
                 ),
               ],

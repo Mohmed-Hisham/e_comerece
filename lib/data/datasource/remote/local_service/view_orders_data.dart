@@ -6,13 +6,9 @@ class ViewOrdersData {
 
   ViewOrdersData(this.crud);
 
-  Future<dynamic> viewOrders({
-    required String userid,
-    required String status,
-  }) async {
-    var response = await crud.postData(Appapi.getOrderlocalService, {
+  Future<dynamic> viewOrders({required String userid}) async {
+    var response = await crud.postData(Appapi.viewlocalServiceUser, {
       "userid": userid,
-      "state": status,
     });
 
     return response.fold((l) => l, (r) => r);

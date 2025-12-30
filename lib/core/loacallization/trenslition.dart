@@ -237,6 +237,8 @@ class MyTrenslition extends Translations {
       StringsKeys.serviceOrderTitle: "طلب خدمة",
       StringsKeys.customerSupportTitle: "دعم العملاء",
       StringsKeys.noMessagesYet: "لا توجد رسائل بعد",
+      StringsKeys.localServicesTitle: "الخدمات المحلية",
+      StringsKeys.searchServiceHint: "بحث عن خدمة",
     },
     "en": {
       // Splashscreen
@@ -471,6 +473,8 @@ class MyTrenslition extends Translations {
       StringsKeys.serviceOrderTitle: "Service Order",
       StringsKeys.customerSupportTitle: "Customer Support",
       StringsKeys.noMessagesYet: "No messages yet",
+      StringsKeys.localServicesTitle: "Local Services",
+      StringsKeys.searchServiceHint: "Search for a service",
     },
   };
 }

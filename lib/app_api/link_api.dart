@@ -63,6 +63,10 @@ class Appapi {
   static const String searchlocalService = "$server/local_services/search.php";
   static const String addlocalService =
       "$server/local_services/service_request/add.php";
+  static const String viewlocalServiceRequestDetails =
+      "$server/local_services/service_request/view_by_request.php";
+  static const String viewlocalServiceUser =
+      "$server/local_services/service_request/view_by_user.php";
   static const String addOrderlocalService =
       "$server/local_services/order/add.php";
   static const String getOrderlocalService =

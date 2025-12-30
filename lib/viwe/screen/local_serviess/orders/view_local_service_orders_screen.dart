@@ -4,7 +4,7 @@ import 'package:e_comerece/viwe/widget/Positioned/positioned_app_bar.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_right_1.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_right_2.dart';
 import 'package:e_comerece/viwe/widget/local_service/local_service_order_card.dart';
-import 'package:e_comerece/viwe/widget/local_service/local_service_order_state.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -27,8 +27,7 @@ class ViewLocalServiceOrdersScreen extends StatelessWidget {
           Column(
             children: [
               SizedBox(height: 100.h),
-              const LocalServiceOrderState(),
-              SizedBox(height: 10.h),
+
               Expanded(
                 child: GetBuilder<ViewOrdersLocalServiceController>(
                   builder: (controller) {
@@ -44,9 +43,7 @@ class ViewLocalServiceOrdersScreen extends StatelessWidget {
                             horizontal: 16.w,
                             vertical: 10.h,
                           ),
-                          physics: const AlwaysScrollableScrollPhysics(
-                            parent: BouncingScrollPhysics(),
-                          ),
+                          physics: const BouncingScrollPhysics(),
                           itemCount: controller.data.length,
                           itemBuilder: (context, index) {
                             return LocalServiceOrderCard(

@@ -209,4 +209,6 @@ class StringsKeys {
   static const String serviceOrderTitle = "serviceOrderTitle";
   static const String customerSupportTitle = "customerSupportTitle";
   static const String noMessagesYet = "noMessagesYet";
+  static const String localServicesTitle = "localServicesTitle";
+  static const String searchServiceHint = "searchServiceHint";
 }

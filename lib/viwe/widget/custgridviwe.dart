@@ -5,11 +5,11 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 class Custgridviwe extends StatelessWidget {
   final Widget image;
   final String? disc;
-  final String discprice;
+  final String? discprice;
   final String title;
-  final String price;
+  final String? price;
   final Function()? onChangeIcon;
-  final Widget icon;
+  final Widget? icon;
   final String? countsall;
   final bool isAlibaba;
   final bool isAmazon;
@@ -20,10 +20,10 @@ class Custgridviwe extends StatelessWidget {
     required this.image,
     this.disc,
     required this.title,
-    required this.price,
+    this.price,
     this.onChangeIcon,
-    required this.icon,
-    required this.discprice,
+    this.icon,
+    this.discprice,
     this.countsall,
     this.isAlibaba = false,
     this.isAmazon = false,
@@ -91,23 +91,24 @@ class Custgridviwe extends StatelessWidget {
                       ),
                     ),
                   ),
-                Positioned(
-                  top: 3,
-                  right: 3,
-                  child: Container(
-                    alignment: Alignment.center,
-                    height: 40,
-                    width: 40,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withAlpha(
-                        (0.6.clamp(0.0, 1.0) * 255).round(),
+                if (icon != null)
+                  Positioned(
+                    top: 3,
+                    right: 3,
+                    child: Container(
+                      alignment: Alignment.center,
+                      height: 40,
+                      width: 40,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withAlpha(
+                          (0.6.clamp(0.0, 1.0) * 255).round(),
+                        ),
+                        borderRadius: BorderRadius.circular(50),
                       ),
-                      borderRadius: BorderRadius.circular(50),
-                    ),
 
-                    child: icon,
+                      child: icon,
+                    ),
                   ),
-                ),
               ],
             ),
           ),
@@ -124,51 +125,52 @@ class Custgridviwe extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
             ),
           ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 5.sp),
-            child: Row(
-              spacing: 10,
-              children: [
-                Expanded(
-                  child: Text(
-                    price,
-                    // "20\$"
-                    style: TextStyle(
-                      color: Appcolor.primrycolor,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'signika',
-                      fontSize: 17,
+          if (price != null)
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 5.sp),
+              child: Row(
+                spacing: 10,
+                children: [
+                  Expanded(
+                    child: Text(
+                      price!,
+                      // "20\$"
+                      style: TextStyle(
+                        color: Appcolor.primrycolor,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'signika',
+                        fontSize: 17,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.start,
                     ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.start,
                   ),
-                ),
 
-                isAlibaba || isAmazon
-                    ? Row(
-                        spacing: 3,
-                        children: [
-                          const Icon(
-                            Icons.star,
-                            color: Appcolor.threecolor,
-                            size: 18,
-                          ),
-                          Text(
-                            rate ?? "",
-                            style: Theme.of(context).textTheme.bodyMedium!
-                                .copyWith(
-                                  color: Appcolor.primrycolor,
-                                  fontWeight: FontWeight.w800,
-                                ),
-                          ),
-                          SizedBox(width: 5),
-                        ],
-                      )
-                    : const SizedBox.shrink(),
-              ],
+                  isAlibaba || isAmazon
+                      ? Row(
+                          spacing: 3,
+                          children: [
+                            const Icon(
+                              Icons.star,
+                              color: Appcolor.threecolor,
+                              size: 18,
+                            ),
+                            Text(
+                              rate ?? "",
+                              style: Theme.of(context).textTheme.bodyMedium!
+                                  .copyWith(
+                                    color: Appcolor.primrycolor,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                            ),
+                            SizedBox(width: 5),
+                          ],
+                        )
+                      : const SizedBox.shrink(),
+                ],
+              ),
             ),
-          ),
 
           price == discprice
               ? const SizedBox.shrink()
@@ -179,7 +181,7 @@ class Custgridviwe extends StatelessWidget {
                     spacing: 6,
                     children: [
                       Text(
-                        discprice,
+                        discprice ?? "",
 
                         style: TextStyle(
                           fontSize: 16,
@@ -203,7 +205,7 @@ class Custgridviwe extends StatelessWidget {
                               ),
                             ),
                             const SizedBox(width: 3),
-                            if (discprice.isNotEmpty)
+                            if (discprice != null && discprice!.isNotEmpty)
                               Text(
                                 "OFF",
                                 style: TextStyle(

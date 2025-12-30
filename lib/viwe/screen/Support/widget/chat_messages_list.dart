@@ -1,0 +1,95 @@
+import 'package:e_comerece/core/constant/color.dart';
+import 'package:e_comerece/core/constant/sliver_spacer.dart';
+import 'package:e_comerece/core/funcations/format_date.dart';
+import 'package:e_comerece/data/model/support_model/get_message_model.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+class ChatMessagesList extends StatelessWidget {
+  final List<Message> messages;
+  final ScrollController scrollController;
+
+  const ChatMessagesList({
+    super.key,
+    required this.messages,
+    required this.scrollController,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    if (messages.isEmpty) {
+      return const Center(child: Text("Start a conversation"));
+    }
+    return CustomScrollView(
+      reverse: true,
+      controller: scrollController,
+      physics: const BouncingScrollPhysics(),
+      slivers: [
+        SliverSpacer(40.h),
+        SliverList.builder(
+          itemCount: messages.length,
+          itemBuilder: (context, index) {
+            final message = messages[index];
+            bool isUser = message.senderType == 'user';
+
+            return Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(10.r),
+                  topRight: Radius.circular(10.r),
+                  bottomLeft: isUser
+                      ? Radius.circular(0)
+                      : Radius.circular(10.r),
+                  bottomRight: isUser
+                      ? Radius.circular(10.r)
+                      : Radius.circular(0),
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: isUser
+                    ? CrossAxisAlignment.end
+                    : CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 10),
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: isUser ? Appcolor.soecendcolor : Appcolor.black2,
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(10.r),
+                        topRight: Radius.circular(10.r),
+                        bottomLeft: isUser
+                            ? Radius.circular(0)
+                            : Radius.circular(10.r),
+                        bottomRight: isUser
+                            ? Radius.circular(10.r)
+                            : Radius.circular(0),
+                      ),
+                    ),
+                    width: 280.w,
+                    child: Text(
+                      message.message ?? "",
+                      textAlign: TextAlign.end,
+                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                        color: Appcolor.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 10),
+                    child: Text(
+                      custformatDate(message.createdAt ?? DateTime.now()),
+                    ),
+                  ),
+                  SizedBox(height: 15.h),
+                ],
+              ),
+            );
+          },
+        ),
+      ],
+    );
+  }
+}

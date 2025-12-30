@@ -1,38 +1,49 @@
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/funcations/handlingdata.dart';
 import 'package:e_comerece/data/datasource/remote/local_service/get_details_order_local_service_data.dart';
-import 'package:e_comerece/data/model/local_service/get_details_order_local_service_model.dart';
 import 'package:e_comerece/data/datasource/remote/local_service/cancel_order_data.dart';
-import 'package:flutter/material.dart'; // For Widget/Material types in dialog
+import 'package:e_comerece/data/model/local_service/service_request_details_model.dart';
+import 'package:e_comerece/data/model/local_service/service_request_model.dart';
+import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:get/get.dart';
 
 class LocalServiceOrderDetailsController extends GetxController {
   GetDetailsOrderLocalServiceData getDetailsOrderLocalServiceData =
       GetDetailsOrderLocalServiceData(Get.find());
 
-  late GetDetailsOrderLocalServiceModel orderDetails;
+  late ServiceRequestDetailData requestDetails;
   Statusrequest statusrequest = Statusrequest.none;
-  late int orderId;
-
   CancelOrderData cancelOrderData = CancelOrderData(Get.find());
+  int? requestId;
 
   @override
   void onInit() {
-    orderId = Get.arguments['order_id'];
-    getData();
+    if (Get.arguments != null && Get.arguments['service_request'] != null) {
+      ServiceRequestData request = Get.arguments['service_request'];
+      requestId = request.requestId;
+      getData();
+    }
     super.onInit();
   }
 
   getData() async {
+    if (requestId == null) return;
     statusrequest = Statusrequest.loading;
     update();
-    var response = await getDetailsOrderLocalServiceData.getDetailsOrder(
-      orderId: orderId,
+    var response = await getDetailsOrderLocalServiceData.getDetailsRequest(
+      requestId: requestId!,
     );
     statusrequest = handlingData(response);
     if (Statusrequest.success == statusrequest) {
       if (response['status'] == 'success') {
-        orderDetails = GetDetailsOrderLocalServiceModel.fromJson(response);
+        ServiceRequestDetailsModel model = ServiceRequestDetailsModel.fromJson(
+          response,
+        );
+        if (model.data != null && model.data!.isNotEmpty) {
+          requestDetails = model.data![0];
+        } else {
+          statusrequest = Statusrequest.failuer;
+        }
       } else {
         statusrequest = Statusrequest.failuer;
       }
@@ -40,39 +51,16 @@ class LocalServiceOrderDetailsController extends GetxController {
     update();
   }
 
-  cancelOrder() async {
-    if (orderDetails.data?.order?.status == 'cancelled') return;
-
-    statusrequest = Statusrequest.loading;
-    update();
-
-    Get.dialog(
-      const Center(child: CircularProgressIndicator()),
-      barrierDismissible: false,
+  goToChat() {
+    Get.toNamed(
+      AppRoutesname.messagesScreen,
+      arguments: {
+        'service_request_details': requestDetails,
+        'chat_id':
+            null, // Start new or find existing logic handled by controller
+        'platform':
+            'service_request', // Custom type to identify this flow if needed
+      },
     );
-
-    var response = await cancelOrderData.cancelOrder(
-      orderId.toString(),
-      "cancelled", // or the appropriate status string expected by backend
-    );
-
-    Get.back(); // Close loading dialog
-
-    statusrequest = handlingData(response);
-    if (Statusrequest.success == statusrequest) {
-      if (response['status'] == 'success') {
-        Get.defaultDialog(
-          title: "نجاح",
-          middleText: "تم إلغاء الطلب بنجاح",
-          onConfirm: () {
-            getData(); // Refresh data
-            Get.back(); // Close success dialog
-          },
-        );
-      } else {
-        Get.defaultDialog(title: "تنبيه", middleText: "فشل إلغاء الطلب");
-      }
-    }
-    update();
   }
 }

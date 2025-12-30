@@ -19,6 +19,7 @@ class LocalServiceController extends GetxController {
   TextEditingController searchController = TextEditingController();
   bool isSearch = false;
   bool isLoading = false;
+  bool showClose = false;
 
   checkSearch(val) {
     if (val == "") {
@@ -109,5 +110,28 @@ class LocalServiceController extends GetxController {
     }
     isLoading = false;
     update();
+  }
+
+  onCloseSearch() {
+    if (isSearch) {
+      isSearch = false;
+      searchController.clear();
+      update();
+      showClose = false;
+      // update(['initShow']);
+    } else {
+      searchController.clear();
+      showClose = false;
+      // update(['initShow']);
+    }
+  }
+
+  whenstartSearch(String q) async {
+    if (q != "") {
+      showClose = true;
+      update();
+    } else {
+      showClose = false;
+    }
   }
 }

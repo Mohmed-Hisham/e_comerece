@@ -7,7 +7,6 @@ import 'package:e_comerece/viwe/screen/alibaba/alibaba_by_image_view.dart';
 import 'package:e_comerece/viwe/screen/alibaba/home_alibaba_view.dart';
 import 'package:e_comerece/viwe/screen/alibaba/product_details_alibab_view.dart';
 import 'package:e_comerece/viwe/screen/favorite/favorites_platforms.dart';
-import 'package:e_comerece/viwe/screen/favorite/favorites_platforms.dart';
 import 'package:e_comerece/viwe/screen/aliexpress/product_from_cat.dart';
 import 'package:e_comerece/viwe/screen/aliexpress/search_by_image_view.dart';
 import 'package:e_comerece/viwe/screen/amazon/amazon_home_view.dart';
@@ -25,7 +24,6 @@ import 'package:e_comerece/viwe/screen/auth/forgetpassword/veyfiycpde.dart';
 import 'package:e_comerece/viwe/screen/aliexpress/home_aliexpriess.dart';
 import 'package:e_comerece/viwe/screen/cart/cart_view.dart';
 import 'package:e_comerece/viwe/screen/favorite/favorite_view.dart';
-import 'package:e_comerece/viwe/screen/favorite/favorite_view.dart';
 import 'package:e_comerece/viwe/screen/home/homenavbar.dart';
 import 'package:e_comerece/viwe/screen/language.dart';
 import 'package:e_comerece/viwe/screen/local_serviess/local_service_details_view.dart';
@@ -37,7 +35,6 @@ import 'package:e_comerece/viwe/screen/aliexpress/product_details_view.dart';
 import 'package:e_comerece/viwe/screen/shein/home_shein_view.dart';
 import 'package:e_comerece/viwe/screen/shein/product_by_category.dart';
 import 'package:e_comerece/viwe/screen/shein/product_details_shein_view.dart';
-import 'package:e_comerece/viwe/screen/orders/order_details_screen.dart';
 import 'package:e_comerece/viwe/screen/orders/order_details_screen.dart';
 import 'package:e_comerece/viwe/screen/splashscreen/splashscreen.dart';
 import 'package:get/get_navigation/src/routes/get_route.dart';
@@ -222,15 +219,6 @@ List<GetPage<dynamic>>? routes = [
     transition: transitionType,
     transitionDuration: Duration(milliseconds: transitionDurations),
   ),
-  // GetPage(
-  //   name: AppRoutesname.FavoritesAlibaba,
-  //   page: () => const FavoritesAlibaba(),
-  // ),
-
-  // GetPage(
-  //   name: AppRoutesname.ProductDetailsSheinView,
-  //   page: () => const ProductDetailsSheinView(),
-  // ),
 
   // Amazon
   GetPage(

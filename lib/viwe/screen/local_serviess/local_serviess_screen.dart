@@ -1,3 +1,4 @@
+import 'package:e_comerece/core/constant/strings_keys.dart';
 import 'package:e_comerece/controller/local_service/local_service_controller.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/shared/widget_shared/shimmerbar.dart';
@@ -27,27 +28,24 @@ class LocalServiessScreen extends StatelessWidget {
             children: [
               PositionedRight1(),
               PositionedRight2(),
-              PositionedAppBar(title: "الخدمات المحلية "),
+              PositionedAppBar(title: StringsKeys.localServicesTitle.tr),
 
               Column(
                 children: [
                   SizedBox(height: 95.h),
                   Custshearchappbar(
-                    hintText: "بحث عن خدمه",
+                    hintText: StringsKeys.searchServiceHint.tr,
                     mycontroller: controller.searchController,
-                    // showClose: controller.showClose,
+                    showClose: controller.showClose,
                     onTapClose: () {
-                      // controller.onCloseSearch();
+                      controller.onCloseSearch();
                     },
                     onChanged: (val) {
                       controller.checkSearch(val);
-                      // controller.onChangeSearch(val);
-                      // controller.whenstartSearch(val);
+                      controller.whenstartSearch(val);
                     },
                     onTapSearch: () {
                       controller.onSearchItems();
-                      // controller.onTapSearch();
-                      // controller.searchFocusNode.unfocus();
                     },
                     isLocalService: true,
                     favoriteOnPressed: () {

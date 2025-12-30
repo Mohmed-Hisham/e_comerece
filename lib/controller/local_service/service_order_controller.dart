@@ -4,6 +4,7 @@ import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/funcations/handlingdata.dart';
 import 'package:e_comerece/core/servises/serviese.dart';
+import 'package:e_comerece/core/servises/supabase_service.dart';
 import 'package:e_comerece/data/datasource/remote/local_service/add_service_request_data.dart';
 import 'package:e_comerece/viwe/screen/home/homenavbar.dart';
 import 'package:flutter/material.dart';
@@ -22,11 +23,15 @@ class ServiceOrderController extends GetxController {
 
   Statusrequest statusRequest = Statusrequest.none;
 
+  String? chatId;
+
   @override
   void onInit() {
     service = Get.arguments['service_model'];
     quotedPrice = Get.arguments['quoted_price'];
+    chatId = Get.arguments['chat_id'];
     log("quotedPrice $quotedPrice");
+    log("chatId $chatId");
     super.onInit();
   }
 
@@ -63,6 +68,28 @@ class ServiceOrderController extends GetxController {
     if (Statusrequest.success == statusRequest) {
       if (response['status'] == 'success') {
         Get.snackbar("Success", "Order placed successfully");
+
+        if (chatId != null) {
+          try {
+            // Update chat status to closed
+            await Get.find<SupabaseService>().updateChatStatus(
+              chatId: chatId!,
+              status: 'closed',
+            );
+
+            // Send "Chat Ended" message
+            String userid = myServises.sharedPreferences.getString("user_id")!;
+            await Get.find<SupabaseService>().sendMessage(
+              chatId: chatId!,
+              senderId: userid,
+              content: "chat ended",
+              senderType: 'admin',
+            );
+          } catch (e) {
+            log("Error closing chat: $e");
+          }
+        }
+
         Get.offAllNamed(AppRoutesname.homepage);
       } else {
         Get.snackbar("Error", "Failed to place order");

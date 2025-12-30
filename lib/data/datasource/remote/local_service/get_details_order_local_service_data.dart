@@ -13,4 +13,12 @@ class GetDetailsOrderLocalServiceData {
 
     return response.fold((l) => l, (r) => r);
   }
+
+  Future<dynamic> getDetailsRequest({required int requestId}) async {
+    var response = await crud.postData(Appapi.viewlocalServiceRequestDetails, {
+      "requestid": requestId,
+    });
+
+    return response.fold((l) => l, (r) => r);
+  }
 }

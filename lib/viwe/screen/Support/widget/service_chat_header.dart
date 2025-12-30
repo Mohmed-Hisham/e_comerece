@@ -28,7 +28,8 @@ class ServiceChatHeader extends StatelessWidget {
         children: [
           CustomCachedImage(
             imageUrl:
-                "https://res.cloudinary.com/dgonvbimk/image/upload/v1766790189/pg0ne5gqx5hwyk7uyxhj.jpg", // Using fixed image as per details view
+                service.serviceImage ??
+                "", // Using fixed image as per details view
             width: 60.w,
             height: 60.h,
             radius: 10.r,

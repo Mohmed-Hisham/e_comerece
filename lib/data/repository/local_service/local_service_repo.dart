@@ -7,14 +7,8 @@ class LocalServiceRepo {
 
   LocalServiceRepo(this.viewOrdersData);
 
-  Future<Either<Statusrequest, Map>> getOrders(
-    String userid,
-    String status,
-  ) async {
-    var response = await viewOrdersData.viewOrders(
-      userid: userid,
-      status: status,
-    );
+  Future<Either<Statusrequest, Map>> getOrders(String userid) async {
+    var response = await viewOrdersData.viewOrders(userid: userid);
     if (response is Statusrequest) {
       return Left(response);
     } else {

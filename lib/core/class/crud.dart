@@ -35,7 +35,8 @@ class Crud {
 
           response = await http.post(Uri.parse(linlurl), body: bodyFields);
         }
-
+        log('cod: ${response.statusCode}');
+        // log('response======: ${response.body}');
         if (response.statusCode == 200 || response.statusCode == 201) {
           final Map respnsebody = jsonDecode(response.body);
           // log('respnsebody: $respnsebody');

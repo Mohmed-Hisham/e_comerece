@@ -1,35 +1,31 @@
 import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
-import 'package:e_comerece/core/helper/custom_cached_image.dart';
-import 'package:e_comerece/viwe/screen/local_serviess/orders/local_service_order_details_view.dart';
-import 'package:e_comerece/data/model/local_service/get_order_local_service_model.dart';
+import 'package:e_comerece/data/model/local_service/service_request_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:jiffy/jiffy.dart';
 
 class LocalServiceOrderCard extends StatelessWidget {
-  final Order order;
+  final ServiceRequestData order;
 
   const LocalServiceOrderCard({super.key, required this.order});
 
   Color _getStatusColor(String? status) {
     switch (status?.toLowerCase()) {
-      case 'pending_approval':
+      case 'new':
         return Appcolor.threecolor;
+      case 'price_quoted':
+        return const Color(0xff2196F3);
       case 'approved':
         return const Color(0xff4CAF50);
       case 'rejected':
       case 'declined':
         return Appcolor.reed;
-      case 'ordered':
-        return const Color(0xff2196F3);
       case 'completed':
         return const Color(0xff2E7D32);
       case 'cancelled':
         return Appcolor.gray;
-      case 'processing':
-        return Colors.indigo;
       default:
         return Appcolor.primrycolor;
     }
@@ -37,21 +33,19 @@ class LocalServiceOrderCard extends StatelessWidget {
 
   String _getStatusLabel(String? status) {
     switch (status?.toLowerCase()) {
-      case 'pending_approval':
-        return 'قيد المراجعة';
+      case 'new':
+        return 'جديد';
+      case 'price_quoted':
+        return 'تم تحديد السعر';
       case 'approved':
         return 'تم الموافقة';
       case 'rejected':
       case 'declined':
         return 'مرفوض';
-      case 'ordered':
-        return 'تم الطلب';
       case 'completed':
         return 'مكتمل';
       case 'cancelled':
         return 'ملغي';
-      case 'processing':
-        return 'قيد التنفيذ';
       default:
         return status ?? 'غير معروف';
     }
@@ -63,7 +57,7 @@ class LocalServiceOrderCard extends StatelessWidget {
       onTap: () {
         Get.toNamed(
           AppRoutesname.localServiceOrderDetailsView,
-          arguments: {"order_id": order.ordersServicesId},
+          arguments: {"service_request": order},
         );
       },
       child: Container(
@@ -104,7 +98,7 @@ class LocalServiceOrderCard extends StatelessWidget {
                       ),
                       SizedBox(width: 12.w),
                       Text(
-                        '#${order.ordersServicesId ?? 'N/A'}',
+                        '#${order.requestId ?? 'N/A'}',
                         style: TextStyle(
                           fontSize: 16.sp,
                           fontWeight: FontWeight.bold,
@@ -120,21 +114,21 @@ class LocalServiceOrderCard extends StatelessWidget {
                     ),
                     decoration: BoxDecoration(
                       color: _getStatusColor(
-                        order.orderStatus,
+                        order.status,
                       ).withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(20.r),
                       border: Border.all(
                         color: _getStatusColor(
-                          order.orderStatus,
+                          order.status,
                         ).withValues(alpha: 0.2),
                       ),
                     ),
                     child: Text(
-                      _getStatusLabel(order.orderStatus),
+                      _getStatusLabel(order.status),
                       style: TextStyle(
                         fontSize: 12.sp,
                         fontWeight: FontWeight.bold,
-                        color: _getStatusColor(order.orderStatus),
+                        color: _getStatusColor(order.status),
                       ),
                     ),
                   ),
@@ -157,16 +151,14 @@ class LocalServiceOrderCard extends StatelessWidget {
                     child: SizedBox(
                       width: 80.w,
                       height: 80.h,
-                      child: order.serviceImage != null
-                          ? CustomCachedImage(imageUrl: order.serviceImage!)
-                          : Container(
-                              color: Appcolor.gray.withValues(alpha: 0.1),
-                              child: Icon(
-                                Icons.image_not_supported_outlined,
-                                color: Appcolor.gray,
-                                size: 30.sp,
-                              ),
-                            ),
+                      child: Container(
+                        color: Appcolor.gray.withValues(alpha: 0.1),
+                        child: Icon(
+                          Icons.design_services_outlined,
+                          color: Appcolor.gray,
+                          size: 30.sp,
+                        ),
+                      ),
                     ),
                   ),
                   SizedBox(width: 16.w),
@@ -175,7 +167,7 @@ class LocalServiceOrderCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          order.serviceName ?? 'Unknown Service',
+                          'Service Request #${order.serviceId ?? '?'}',
                           style: TextStyle(
                             fontSize: 16.sp,
                             fontWeight: FontWeight.bold,
@@ -186,18 +178,18 @@ class LocalServiceOrderCard extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                         ),
                         SizedBox(height: 8.h),
-                        if (order.serviceCity != null)
+                        if (order.quotedPrice != null)
                           Row(
                             children: [
                               Icon(
-                                Icons.location_on_outlined,
+                                Icons.monetization_on_outlined,
                                 size: 14.sp,
                                 color: Appcolor.gray,
                               ),
                               SizedBox(width: 4.w),
                               Expanded(
                                 child: Text(
-                                  order.serviceCity!,
+                                  "${order.quotedPrice}",
                                   style: TextStyle(
                                     fontSize: 12.sp,
                                     color: Appcolor.gray,
@@ -210,7 +202,7 @@ class LocalServiceOrderCard extends StatelessWidget {
                             ],
                           ),
                         SizedBox(height: 6.h),
-                        if (order.orderCreateAt != null)
+                        if (order.createdAt != null)
                           Row(
                             children: [
                               Icon(
@@ -221,7 +213,7 @@ class LocalServiceOrderCard extends StatelessWidget {
                               SizedBox(width: 4.w),
                               Text(
                                 Jiffy.parse(
-                                  order.orderCreateAt.toString(),
+                                  order.createdAt.toString(),
                                 ).fromNow(),
                                 style: TextStyle(
                                   fontSize: 12.sp,

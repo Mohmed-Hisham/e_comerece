@@ -8,6 +8,8 @@ import 'package:e_comerece/data/datasource/remote/Support/get_chats_data.dart';
 import 'package:e_comerece/data/datasource/remote/local_service/get_details_local_service_data.dart';
 import 'package:e_comerece/data/model/local_service/get_local_service_model.dart';
 import 'package:e_comerece/data/model/support_model/get_chats_model.dart';
+import 'package:e_comerece/data/model/local_service/service_request_details_model.dart'
+    as details;
 import 'package:e_comerece/data/model/support_model/get_message_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -44,20 +46,19 @@ class SupportScreenControllerImp extends SupportScreenController {
   bool hasShownSupportSnack = false;
 
   late TextEditingController messsageController;
-  TextEditingController nameController = .new();
 
   List<Message> messageList = [];
   List<Chat> chatList = [];
   String? chatid;
   String? plateform;
   Service? serviceModel;
+  details.ServiceRequestDetailData? serviceRequestDetails;
   String? type;
   String? serviceid;
   @override
   void onClose() {
     super.onClose();
     messsageController.dispose();
-    nameController.dispose();
     scrollController.dispose();
   }
 
@@ -96,6 +97,10 @@ class SupportScreenControllerImp extends SupportScreenController {
       serviceModel = Get.arguments['service_model'];
     }
 
+    if (Get.arguments?['service_request_details'] != null) {
+      serviceRequestDetails = Get.arguments['service_request_details'];
+    }
+
     String? autoMessage = Get.arguments?['auto_message'];
     // String? referenceId = Get.arguments?['reference_id'];
 
@@ -106,6 +111,7 @@ class SupportScreenControllerImp extends SupportScreenController {
           ? TextEditingController()
           : TextEditingController(text: "$linkProduct\n\n\n");
     }
+    checkChatStatus();
   }
 
   Stream<List<Message>>? messagesStream;
@@ -146,7 +152,6 @@ class SupportScreenControllerImp extends SupportScreenController {
     sendMessagestatusrequest = Statusrequest.success;
     update();
     messsageController.clear();
-    nameController.clear();
     return chatid;
   }
 
@@ -213,4 +218,51 @@ class SupportScreenControllerImp extends SupportScreenController {
     }
     update();
   }
+
+  bool isChatClosed = false;
+
+  void checkChatStatus() async {
+    if (chatid == null) return;
+    try {
+      final chatData = await Get.find<SupabaseService>().getChatById(chatid!);
+      if (chatData != null && chatData['status'] == 'closed') {
+        isChatClosed = true;
+        update();
+      }
+    } catch (e) {
+      log("Error checking chat status: $e");
+    }
+  }
+
+  // Future<void> endChatAndConfirm(String price) async {
+  //   if (chatid != null) {
+  //     // 1. Update status to closed
+  //     await Get.find<SupabaseService>().updateChatStatus(
+  //       chatId: chatid!,
+  //       status: 'closed',
+  //     );
+
+  //     // 2. Send "Chat Ended" message
+  //     String userid = myServises.sharedPreferences.getString("user_id")!;
+  //     await Get.find<SupabaseService>().sendMessage(
+  //       chatId: chatid!,
+  //       senderId: userid,
+  //       content: "تم إنهاء المحادثة",
+  //       senderType:
+  //           'user', // Can be system if we implement system type handling
+  //     );
+
+  //     isChatClosed = true;
+  //     update();
+  //   }
+
+  //   // 3. Navigate to Order Screen
+  //   Get.to(
+  //     () => const ServiceOrderScreen(),
+  //     arguments: {
+  //       'service_model': serviceModel,
+  //       'quoted_price': double.parse(price),
+  //     },
+  //   );
+  // }
 }

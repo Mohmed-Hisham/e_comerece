@@ -44,7 +44,7 @@ class ChatInputField extends StatelessWidget {
                         minLines: 2,
                         maxLines: 10,
                         hint: isInputDisabled
-                            ? "تم إنهاء المحادثة"
+                            ? StringsKeys.chatEnded.tr
                             : StringsKeys.yourMessage.tr,
                         controller: controller.messsageController,
                       ),
@@ -58,7 +58,9 @@ class ChatInputField extends StatelessWidget {
                 margin: EdgeInsets.only(right: 15.w),
                 width: 40.w,
                 height: 40.h,
-                child: CircularProgressIndicator(color: Appcolor.primrycolor),
+                child: const CircularProgressIndicator(
+                  color: Appcolor.primrycolor,
+                ),
               ),
               statusrequest: controller.sendMessagestatusrequest,
               widget: Container(
@@ -91,7 +93,6 @@ class ChatInputField extends StatelessWidget {
                               platform: controller.plateform ?? '',
                               referenceid: refId,
                               imagelink: "",
-                            
                             );
                             if (controller.chatid == null) {
                               controller.scrollToBottom();

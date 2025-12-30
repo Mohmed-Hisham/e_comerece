@@ -1,5 +1,6 @@
 import 'package:e_comerece/controller/local_service/view_orders_local_service_controller.dart';
 import 'package:e_comerece/core/class/handlingdataviwe.dart';
+import 'package:e_comerece/core/constant/strings_keys.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_app_bar.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_right_1.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_right_2.dart';
@@ -18,16 +19,15 @@ class ViewLocalServiceOrdersScreen extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
-          PositionedRight1(),
-          PositionedRight2(),
+          const PositionedRight1(),
+          const PositionedRight2(),
           PositionedAppBar(
-            title: "طلبات الخدمات المحلية",
+            title: StringsKeys.localServiceOrdersTitle.tr,
             onPressed: () => Get.back(),
           ),
           Column(
             children: [
               SizedBox(height: 100.h),
-
               Expanded(
                 child: GetBuilder<ViewOrdersLocalServiceController>(
                   builder: (controller) {

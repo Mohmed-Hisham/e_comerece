@@ -1,7 +1,9 @@
+import 'package:e_comerece/core/constant/strings_keys.dart';
 import 'package:e_comerece/data/model/ordres/get_order_with_id_model.dart';
 import 'package:e_comerece/viwe/screen/orders/widget/order_section_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 
 class DeliveryAddressCard extends StatelessWidget {
   final Address address;
@@ -11,33 +13,51 @@ class DeliveryAddressCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return OrderSectionCard(
-      title: 'عنوان التوصيل',
+      title: StringsKeys.deliveryAddress.tr,
       icon: Icons.location_on,
       children: [
-        OrderInfoRow(label: 'العنوان', value: address.title ?? 'غير متوفر'),
+        OrderInfoRow(
+          label: StringsKeys.addressLabel.tr,
+          value: address.title ?? StringsKeys.notAvailable.tr,
+        ),
         const OrderSectionDivider(),
-        OrderInfoRow(label: 'المدينة', value: address.city ?? 'غير متوفر'),
+        OrderInfoRow(
+          label: StringsKeys.city.tr,
+          value: address.city ?? StringsKeys.notAvailable.tr,
+        ),
         const OrderSectionDivider(),
-        OrderInfoRow(label: 'الشارع', value: address.street ?? 'غير متوفر'),
+        OrderInfoRow(
+          label: StringsKeys.street.tr,
+          value: address.street ?? StringsKeys.notAvailable.tr,
+        ),
         const OrderSectionDivider(),
         Row(
           children: [
             Expanded(
               child: OrderInfoRow(
-                label: 'المبنى',
+                label: StringsKeys.buildingNumber.tr,
                 value: address.buildingNumber ?? '-',
               ),
             ),
             SizedBox(width: 12.w),
             Expanded(
-              child: OrderInfoRow(label: 'الطابق', value: address.floor ?? '-'),
+              child: OrderInfoRow(
+                label: StringsKeys.floor.tr,
+                value: address.floor ?? '-',
+              ),
             ),
           ],
         ),
         const OrderSectionDivider(),
-        OrderInfoRow(label: 'الشقة', value: address.apartment ?? 'غير متوفر'),
+        OrderInfoRow(
+          label: StringsKeys.apartment.tr,
+          value: address.apartment ?? StringsKeys.notAvailable.tr,
+        ),
         const OrderSectionDivider(),
-        OrderInfoRow(label: 'رقم الهاتف', value: address.phone ?? 'غير متوفر'),
+        OrderInfoRow(
+          label: StringsKeys.phone.tr,
+          value: address.phone ?? StringsKeys.notAvailable.tr,
+        ),
       ],
     );
   }

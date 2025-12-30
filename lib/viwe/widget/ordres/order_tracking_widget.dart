@@ -1,6 +1,8 @@
 import 'package:e_comerece/core/constant/color.dart';
+import 'package:e_comerece/core/constant/strings_keys.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 
 class OrderTrackingWidget extends StatelessWidget {
   final String currentStatus;
@@ -11,27 +13,27 @@ class OrderTrackingWidget extends StatelessWidget {
     return [
       TrackingStep(
         status: 'pending_approval',
-        title: 'قيد المراجعة',
+        title: StringsKeys.orderStatusPendingApproval.tr,
         icon: Icons.pending_actions,
       ),
       TrackingStep(
         status: 'approved',
-        title: 'تم الموافقة',
+        title: StringsKeys.orderStatusApproved.tr,
         icon: Icons.check_circle_outline,
       ),
       TrackingStep(
         status: 'processing',
-        title: 'قيد التنفيذ',
-        icon: Icons.autorenew, // Or Icons.engineering, Icons.construction
+        title: StringsKeys.orderStatusProcessing.tr,
+        icon: Icons.autorenew,
       ),
       TrackingStep(
         status: 'ordered',
-        title: 'تم الطلب',
+        title: StringsKeys.orderStatusOrdered.tr,
         icon: Icons.shopping_bag_outlined,
       ),
       TrackingStep(
         status: 'completed',
-        title: 'تم التسليم',
+        title: StringsKeys.orderStatusCompleted.tr,
         icon: Icons.done_all,
       ),
     ];
@@ -83,7 +85,7 @@ class OrderTrackingWidget extends StatelessWidget {
         children: [
           // Title
           Text(
-            'تتبع الطلب',
+            StringsKeys.orderTrackingTitle.tr,
             style: TextStyle(
               fontSize: 18.sp,
               fontWeight: FontWeight.bold,
@@ -190,7 +192,9 @@ class OrderTrackingWidget extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  isRejected ? 'طلب مرفوض' : 'طلب ملغي',
+                  isRejected
+                      ? StringsKeys.orderStatusRejectedTitle.tr
+                      : StringsKeys.orderStatusCancelledTitle.tr,
                   style: TextStyle(
                     fontSize: 18.sp,
                     fontWeight: FontWeight.bold,
@@ -200,8 +204,8 @@ class OrderTrackingWidget extends StatelessWidget {
                 SizedBox(height: 4.h),
                 Text(
                   isRejected
-                      ? 'تم رفض طلبك من قبل الإدارة'
-                      : 'تم إلغاء هذا الطلب',
+                      ? StringsKeys.orderRejectedBody.tr
+                      : StringsKeys.orderCancelledBody.tr,
                   style: TextStyle(fontSize: 14.sp, color: Appcolor.gray),
                 ),
               ],

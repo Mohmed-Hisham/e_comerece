@@ -1,9 +1,11 @@
 import 'dart:convert';
 import 'package:e_comerece/core/constant/color.dart';
+import 'package:e_comerece/core/constant/strings_keys.dart';
+import 'package:e_comerece/core/helper/custom_cached_image.dart';
 import 'package:e_comerece/data/model/ordres/get_order_with_id_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:get/get.dart';
 
 class OrderDetailProductItem extends StatelessWidget {
   final Item item;
@@ -21,16 +23,9 @@ class OrderDetailProductItem extends StatelessWidget {
     }
   }
 
-  String _getImageUrl(String? image) {
-    if (image == null || image.isEmpty) return '';
-    if (image.startsWith('http')) return image;
-    return 'https:$image';
-  }
-
   @override
   Widget build(BuildContext context) {
     final attributes = _parseAttributes();
-    final imageUrl = _getImageUrl(item.productImage);
     final price = double.tryParse(item.productPrice ?? '0') ?? 0;
     final total = price * (item.quantity ?? 1);
 
@@ -46,32 +41,12 @@ class OrderDetailProductItem extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Product Image
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: CachedNetworkImage(
-              imageUrl: imageUrl,
-              width: 80.w,
-              height: 80.w,
-              fit: BoxFit.cover,
-              placeholder: (context, url) => Container(
-                color: Appcolor.gray.withValues(alpha: 0.1),
-                child: Center(
-                  child: CircularProgressIndicator(
-                    color: Appcolor.primrycolor,
-                    strokeWidth: 2,
-                  ),
-                ),
-              ),
-              errorWidget: (context, url, error) => Container(
-                color: Appcolor.gray.withValues(alpha: 0.1),
-                child: Icon(
-                  Icons.image_not_supported,
-                  color: Appcolor.gray,
-                  size: 30.sp,
-                ),
-              ),
-            ),
+          CustomCachedImage(
+            imageUrl: item.productImage ?? '',
+            width: 80.w,
+            height: 80.w,
           ),
+
           SizedBox(width: 12.w),
 
           // Product Details
@@ -81,7 +56,7 @@ class OrderDetailProductItem extends StatelessWidget {
               children: [
                 // Product Title
                 Text(
-                  item.productTitle ?? 'منتج',
+                  item.productTitle ?? StringsKeys.product.tr,
                   style: TextStyle(
                     fontSize: 14.sp,
                     fontWeight: FontWeight.w600,
@@ -100,7 +75,8 @@ class OrderDetailProductItem extends StatelessWidget {
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Text(
-                    item.productPlatform?.toUpperCase() ?? 'PLATFORM',
+                    item.productPlatform?.toUpperCase() ??
+                        StringsKeys.platform.tr,
                     style: TextStyle(
                       fontSize: 10.sp,
                       fontWeight: FontWeight.bold,
@@ -149,7 +125,7 @@ class OrderDetailProductItem extends StatelessWidget {
                     Row(
                       children: [
                         Text(
-                          'الكمية: ',
+                          '${StringsKeys.quantity.tr}: ',
                           style: TextStyle(
                             fontSize: 13.sp,
                             color: Appcolor.gray,

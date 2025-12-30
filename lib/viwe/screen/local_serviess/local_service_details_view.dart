@@ -1,4 +1,5 @@
 import 'package:e_comerece/controller/local_service/local_service_details_controller.dart';
+import 'package:e_comerece/core/constant/strings_keys.dart';
 import 'package:e_comerece/viwe/screen/local_serviess/widget/service_details_content.dart';
 import 'package:e_comerece/viwe/screen/local_serviess/widget/service_details_image.dart';
 import 'package:e_comerece/viwe/widget/auth/custombuttonauth.dart';
@@ -22,7 +23,7 @@ class LocalServiceDetailsView extends StatelessWidget {
         leading: Container(
           margin: EdgeInsets.all(8.r),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.5),
+            color: Colors.white.withValues(alpha: 0.5),
             shape: BoxShape.circle,
           ),
           child: IconButton(
@@ -34,7 +35,7 @@ class LocalServiceDetailsView extends StatelessWidget {
       bottomNavigationBar: Container(
         padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
         child: Custombuttonauth(
-          inputtext: "Chat for Service",
+          inputtext: StringsKeys.chatForService.tr,
           onPressed: () {
             controller.goToChat();
           },

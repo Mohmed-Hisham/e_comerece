@@ -1,5 +1,6 @@
 import 'package:e_comerece/controller/orders/order_details_controller.dart';
 import 'package:e_comerece/core/constant/color.dart';
+import 'package:e_comerece/core/constant/strings_keys.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -31,8 +32,8 @@ class OrderActionButtons extends StatelessWidget {
                       loading: controller.isReordering,
                       icon: Icons.refresh,
                       label: controller.isReordering
-                          ? 'جاري التحميل...'
-                          : 'إعادة الطلب',
+                          ? StringsKeys.reordering.tr
+                          : StringsKeys.reorder.tr,
                       color: Appcolor.primrycolor,
                     ),
                   ),
@@ -45,8 +46,8 @@ class OrderActionButtons extends StatelessWidget {
                       loading: controller.isCancelling,
                       icon: Icons.cancel_outlined,
                       label: controller.isCancelling
-                          ? 'جاري الإلغاء...'
-                          : 'إلغاء الطلب',
+                          ? StringsKeys.cancelling.tr
+                          : StringsKeys.cancelOrder.tr,
                       color: Appcolor.reed,
                     ),
                   ),
@@ -62,8 +63,8 @@ class OrderActionButtons extends StatelessWidget {
                   loading: controller.isCancelling,
                   icon: Icons.cancel_outlined,
                   label: controller.isCancelling
-                      ? 'جاري الإلغاء...'
-                      : 'إلغاء الطلب',
+                      ? StringsKeys.cancelling.tr
+                      : StringsKeys.cancelOrder.tr,
                   color: Appcolor.reed,
                 ),
               )
@@ -77,8 +78,8 @@ class OrderActionButtons extends StatelessWidget {
                   loading: controller.isReordering,
                   icon: Icons.refresh,
                   label: controller.isReordering
-                      ? 'جاري التحميل...'
-                      : 'إعادة الطلب',
+                      ? StringsKeys.reordering.tr
+                      : StringsKeys.reorder.tr,
                   color: Appcolor.primrycolor,
                 ),
               ),

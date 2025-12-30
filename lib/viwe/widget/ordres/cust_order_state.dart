@@ -60,6 +60,8 @@ class CustStateOrders extends StatelessWidget {
                     Expanded(
                       child: Text(
                         controller.getStatusTitle(status),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           fontSize: 18.sp,
                           fontWeight: FontWeight.bold,

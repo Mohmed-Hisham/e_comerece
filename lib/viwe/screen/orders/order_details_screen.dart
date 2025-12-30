@@ -1,6 +1,7 @@
 import 'package:e_comerece/controller/orders/order_details_controller.dart';
 import 'package:e_comerece/core/class/handlingdataviwe.dart';
 import 'package:e_comerece/core/constant/color.dart';
+import 'package:e_comerece/core/constant/strings_keys.dart';
 import 'package:e_comerece/viwe/screen/orders/widget/delivery_address_card.dart';
 import 'package:e_comerece/viwe/screen/orders/widget/general_order_summary_card.dart';
 import 'package:e_comerece/viwe/screen/orders/widget/order_action_buttons.dart';
@@ -31,7 +32,7 @@ class OrderDetailsScreen extends StatelessWidget {
             child: Column(
               children: [
                 PositionedAppBar(
-                  title: 'تفاصيل الطلب',
+                  title: StringsKeys.orderDetailsTitle.tr,
                   onPressed: () => Get.back(),
                 ),
                 Expanded(
@@ -92,7 +93,7 @@ class OrderDetailsScreen extends StatelessWidget {
           ],
 
           // Products Section
-          _buildSectionTitle('المنتجات', Icons.shopping_bag),
+          _buildSectionTitle(StringsKeys.products.tr, Icons.shopping_bag),
           SizedBox(height: 12.h),
 
           ...order.items.map((item) => OrderDetailProductItem(item: item)),

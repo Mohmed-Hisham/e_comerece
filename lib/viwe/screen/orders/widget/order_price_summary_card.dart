@@ -1,7 +1,9 @@
 import 'package:e_comerece/core/constant/color.dart';
+import 'package:e_comerece/core/constant/strings_keys.dart';
 import 'package:e_comerece/viwe/screen/orders/widget/order_section_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 
 class OrderPriceSummaryCard extends StatelessWidget {
   final double subtotal;
@@ -20,14 +22,18 @@ class OrderPriceSummaryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return OrderSectionCard(
-      title: 'ملخص الطلب',
+      title: StringsKeys.orderSummary.tr,
       icon: Icons.account_balance_wallet,
       children: [
-        OrderPriceRow(label: 'المجموع الفرعي', value: subtotal),
+        OrderPriceRow(label: StringsKeys.subtotal.tr, value: subtotal),
         const OrderSectionDivider(),
-        OrderPriceRow(label: 'الخصم', value: discountAmount, isDiscount: true),
+        OrderPriceRow(
+          label: StringsKeys.discount.tr,
+          value: discountAmount,
+          isDiscount: true,
+        ),
         const OrderSectionDivider(),
-        OrderPriceRow(label: 'الشحن', value: shippingAmount),
+        OrderPriceRow(label: StringsKeys.shipping.tr, value: shippingAmount),
         SizedBox(height: 12.h),
         Container(
           padding: EdgeInsets.all(12.w),
@@ -39,7 +45,7 @@ class OrderPriceSummaryCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'الإجمالي',
+                StringsKeys.totalAmount.tr,
                 style: TextStyle(
                   fontSize: 18.sp,
                   fontWeight: FontWeight.bold,

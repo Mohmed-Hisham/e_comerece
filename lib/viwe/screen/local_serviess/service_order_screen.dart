@@ -19,7 +19,7 @@ class ServiceOrderScreen extends StatelessWidget {
         leading: Container(
           margin: EdgeInsets.all(8.r),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.5),
+            color: Colors.white.withValues(alpha: 0.5),
             shape: BoxShape.circle,
           ),
           child: IconButton(

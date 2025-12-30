@@ -1,7 +1,9 @@
 import 'package:e_comerece/core/constant/color.dart';
+import 'package:e_comerece/core/constant/strings_keys.dart';
 import 'package:e_comerece/viwe/widget/auth/custombuttonauth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 
 class PriceApprovalCard extends StatelessWidget {
   final String price;
@@ -21,10 +23,10 @@ class PriceApprovalCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(15.r),
-        border: Border.all(color: Appcolor.primrycolor.withOpacity(0.3)),
+        border: Border.all(color: Appcolor.primrycolor.withValues(alpha: 0.3)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 5),
           ),
@@ -35,11 +37,14 @@ class PriceApprovalCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(Icons.monetization_on_outlined, color: Appcolor.primrycolor),
+              const Icon(
+                Icons.monetization_on_outlined,
+                color: Appcolor.primrycolor,
+              ),
               SizedBox(width: 10.w),
               Expanded(
                 child: Text(
-                  "Price Approved: $price",
+                  StringsKeys.priceApproved.trParams({'price': price}),
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: Appcolor.black,
@@ -49,7 +54,10 @@ class PriceApprovalCard extends StatelessWidget {
             ],
           ),
           SizedBox(height: 15.h),
-          Custombuttonauth(inputtext: "Complete Order", onPressed: onConfirm),
+          Custombuttonauth(
+            inputtext: StringsKeys.completeOrder.tr,
+            onPressed: onConfirm,
+          ),
         ],
       ),
     );

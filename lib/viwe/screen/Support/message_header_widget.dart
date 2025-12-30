@@ -1,7 +1,9 @@
+import 'package:e_comerece/core/constant/strings_keys.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/data/model/local_service/service_request_details_model.dart';
+import 'package:get/get.dart';
 import 'package:jiffy/jiffy.dart';
 
 class ServiceRequestHeader extends StatefulWidget {
@@ -60,7 +62,7 @@ class _ServiceRequestHeaderState extends State<ServiceRequestHeader> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "تعديل الخدمة #${widget.request.requestId ?? 'N/A'}",
+                        "${StringsKeys.serviceAmendment.tr} #${widget.request.requestId ?? StringsKeys.notAvailable.tr}",
                         style: TextStyle(
                           fontSize: 16.sp,
                           fontWeight: FontWeight.bold,
@@ -69,7 +71,8 @@ class _ServiceRequestHeaderState extends State<ServiceRequestHeader> {
                       ),
                       SizedBox(height: 4.h),
                       Text(
-                        widget.request.service?.name ?? "خدمة غير معروفة",
+                        widget.request.service?.name ??
+                            StringsKeys.unknownService.tr,
                         style: TextStyle(fontSize: 14.sp, color: Appcolor.gray),
                       ),
                     ],
@@ -88,22 +91,22 @@ class _ServiceRequestHeaderState extends State<ServiceRequestHeader> {
               Divider(color: Appcolor.gray.withValues(alpha: 0.2)),
               SizedBox(height: 8.h),
               _buildDetailRow(
-                "السعر المحدد",
-                "${widget.request.quotedPrice ?? widget.request.service?.price ?? '??'} \$",
+                StringsKeys.quotedPrice.tr,
+                "${widget.request.quotedPrice ?? widget.request.service?.price ?? StringsKeys.notAvailable.tr} \$",
                 icon: Icons.attach_money,
               ),
               _buildDetailRow(
-                "التاريخ",
+                StringsKeys.date.tr,
                 widget.request.createdAt != null
                     ? Jiffy.parse(
                         widget.request.createdAt!,
                       ).format(pattern: 'yyyy-MM-dd')
-                    : 'غير متوفر',
+                    : StringsKeys.notAvailable.tr,
                 icon: Icons.calendar_today,
               ),
               if (widget.request.address != null)
                 _buildDetailRow(
-                  "العنوان",
+                  StringsKeys.addressLabel.tr,
                   "${widget.request.address?.city ?? ''}, ${widget.request.address?.title ?? ''}",
                   icon: Icons.location_on,
                 ),

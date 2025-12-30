@@ -1,9 +1,11 @@
 import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/constant/sliver_spacer.dart';
+import 'package:e_comerece/core/constant/strings_keys.dart';
 import 'package:e_comerece/core/funcations/format_date.dart';
 import 'package:e_comerece/data/model/support_model/get_message_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 
 class ChatMessagesList extends StatelessWidget {
   final List<Message> messages;
@@ -18,7 +20,15 @@ class ChatMessagesList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (messages.isEmpty) {
-      return const Center(child: Text("Start a conversation"));
+      return Center(
+        child: Text(
+          StringsKeys.startConversation.tr,
+          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+            color: Appcolor.gray,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      );
     }
     return CustomScrollView(
       reverse: true,

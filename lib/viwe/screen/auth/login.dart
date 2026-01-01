@@ -111,6 +111,24 @@ class Login extends StatelessWidget {
                         ),
                       ),
                     ),
+                    GetBuilder<LoginControllerimplment>(
+                      builder: (cont) => Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 35.w),
+                        child: Custtextfeld(
+                          obscureText: false,
+                          controller: controller.code,
+                          hint: "Code",
+                          suffixIcon: Icon(
+                            Icons.code,
+                            color: Appcolor.gray,
+                            size: 25.sp,
+                          ),
+                          validator: (val) {
+                            return vlidateInPut(val: val!, min: 4, max: 100);
+                          },
+                        ),
+                      ),
+                    ),
                     SizedBox(height: 60.h),
                     InkWell(
                       onTap: () {

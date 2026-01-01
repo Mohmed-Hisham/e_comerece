@@ -1,33 +1,32 @@
+import 'package:e_comerece/core/class/failure.dart';
 import 'package:e_comerece/core/class/statusrequest.dart';
-import 'package:e_comerece/core/constant/strings_keys.dart';
-import 'package:e_comerece/core/funcations/error_dialog.dart';
-import 'package:e_comerece/core/funcations/handlingdata.dart';
 import 'package:e_comerece/core/funcations/loading_dialog.dart';
-import 'package:e_comerece/data/datasource/remote/auth/signup_data.dart';
+import 'package:e_comerece/core/servises/custom_getx_snak_bar.dart';
+import 'package:e_comerece/data/datasource/remote/Auth_Repo/auth_repo_impl.dart';
+import 'package:e_comerece/data/model/AuthModel/auth_model.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 
 import 'package:e_comerece/core/constant/routesname.dart';
 
 abstract class SginupController extends GetxController {
-  sginup();
-  goToSginin();
+  Future<void> sginup();
+  void goToSginin();
 }
 
 class SginupControllerimplemnt extends SginupController {
-  SignupData signupData = SignupData(Get.find());
-  ScrollController scrollController = ScrollController();
-  final emailFocus = FocusNode();
-  final phoneFocus = FocusNode();
-  final passwordFocus = FocusNode();
-  final usernameFocus = FocusNode();
+  // SignupData signupData = SignupData(Get.find());
+  AuthRepoImpl authRepoImpl = AuthRepoImpl(apiService: Get.find());
+  ScrollController scrollController = .new();
+  FocusNode emailFocus = .new();
+  FocusNode phoneFocus = .new();
+  FocusNode passwordFocus = .new();
+  FocusNode usernameFocus = .new();
 
-  List data = [];
-
-  late TextEditingController username;
-  late TextEditingController email;
-  late TextEditingController passowrd;
-  late TextEditingController phone;
+  TextEditingController username = .new();
+  TextEditingController email = .new();
+  TextEditingController passowrd = .new();
+  TextEditingController phone = .new();
 
   Statusrequest? statusrequest;
 
@@ -49,34 +48,32 @@ class SginupControllerimplemnt extends SginupController {
       if (!Get.isDialogOpen!) {
         loadingDialog();
       }
-      var response = await signupData.postData(
-        username: username.text,
-        email: email.text,
-        password: passowrd.text,
-        phone: phone.text,
+      final response = await authRepoImpl.sginup(
+        AuthData(
+          name: username.text,
+          email: email.text,
+          phone: phone.text,
+          password: passowrd.text,
+        ),
       );
-      statusrequest = handlingData(response);
+      final r = response.fold((l) => l, (r) => r);
       if (Get.isDialogOpen ?? false) Get.back();
-      if (Statusrequest.success == statusrequest) {
-        if (response['status'] == 'success') {
-          // data.addAll(response['data']);
-          Get.offNamed(
-            AppRoutesname.verFiyCodeSignUp,
-            arguments: {"email": email.text},
-          );
-          emailFocus.unfocus();
-          phoneFocus.unfocus();
-          passwordFocus.unfocus();
-          usernameFocus.unfocus();
-        } else {
-          errorDialog(StringsKeys.error.tr, StringsKeys.emailOrPhoneExists.tr);
-          emailFocus.unfocus();
-          phoneFocus.unfocus();
-          passwordFocus.unfocus();
-          usernameFocus.unfocus();
-          statusrequest = Statusrequest.failuer;
-        }
+      if (r is AuthModel) {
+        showCustomGetSnack(isGreen: true, text: r.message!);
+        Get.offNamed(
+          AppRoutesname.verFiyCodeSignUp,
+          arguments: {"email": email.text},
+        );
       }
+      if (r is Failure) {
+        showCustomGetSnack(isGreen: false, text: r.errorMessage);
+      }
+
+      emailFocus.unfocus();
+      phoneFocus.unfocus();
+      passwordFocus.unfocus();
+      usernameFocus.unfocus();
+      statusrequest = Statusrequest.success;
       update();
     }
   }
@@ -84,15 +81,6 @@ class SginupControllerimplemnt extends SginupController {
   @override
   goToSginin() {
     Get.offNamed(AppRoutesname.loginStepOne);
-  }
-
-  @override
-  void onInit() {
-    super.onInit();
-    email = TextEditingController();
-    phone = TextEditingController();
-    passowrd = TextEditingController();
-    username = TextEditingController();
   }
 
   @override

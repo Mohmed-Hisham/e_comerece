@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:e_comerece/controller/auth/veirfycodesignup_controller.dart';
 import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/constant/imagesassets.dart';
@@ -17,6 +19,7 @@ class Verifycodesignup extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    log("Verifycodesignup---------------------");
     Get.put(VerifycodesignupControllerImp());
     return Scaffold(
       body: GetBuilder<VerifycodesignupControllerImp>(

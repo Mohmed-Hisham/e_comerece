@@ -55,7 +55,7 @@ class ApiService {
     }
     final headers = Map<String, dynamic>.from(_defaultHeaders);
     if (extraHeaders != null) headers.addAll(extraHeaders);
-
+    log(data.toString());
     try {
       final response = await _dio.post(
         endPoints,

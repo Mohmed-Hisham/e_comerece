@@ -1,29 +1,30 @@
-import 'dart:developer';
-
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
-import 'package:e_comerece/core/funcations/handlingdata.dart';
+import 'package:e_comerece/core/constant/string_const.dart';
 import 'package:e_comerece/core/funcations/loading_dialog.dart';
 import 'package:e_comerece/core/servises/serviese.dart';
-import 'package:e_comerece/data/datasource/remote/auth/login_data.dart';
+import 'package:e_comerece/data/datasource/remote/Auth_Repo/auth_repo_impl.dart';
+import 'package:e_comerece/data/model/AuthModel/auth_model.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:e_comerece/core/constant/strings_keys.dart';
-import 'package:e_comerece/core/funcations/error_dialog.dart';
+import 'package:e_comerece/core/servises/custom_getx_snak_bar.dart';
+import 'package:e_comerece/core/class/failure.dart';
+import 'package:e_comerece/core/class/services_helper.dart';
 
 abstract class LoginController extends GetxController {
-  login();
-  goToSginup();
-  goToForgetpassword();
+  Future<void> login();
+  void goToSginup();
+  void goToForgetpassword();
 }
 
 class LoginControllerimplment extends LoginController {
   ScrollController scrollController = .new();
-  final focus = FocusNode();
+  FocusNode focus = .new();
 
-  LoginData loginData = LoginData(Get.find());
+  AuthRepoImpl authRepoImpl = AuthRepoImpl(apiService: Get.find());
   late TextEditingController passowrd;
+  late TextEditingController code;
 
   late String name;
   late String email;
@@ -54,49 +55,32 @@ class LoginControllerimplment extends LoginController {
       if (!Get.isDialogOpen!) {
         loadingDialog();
       }
-      var response = await loginData.postData(
-        email: email,
-        password: passowrd.text,
+      var response = await authRepoImpl.loginStepTwo(
+        AuthData(email: email, password: passowrd.text, code: code.text),
       );
 
-      statusrequest = handlingData(response);
+      final r = response.fold((l) => l, (r) => r);
       if (Get.isDialogOpen ?? false) Get.back();
 
-      if (Statusrequest.success == statusrequest) {
-        if (response['status'] == 'not_approve') {
-          Get.offNamed(
-            AppRoutesname.verFiyCodeSignUp,
-            arguments: {"email": response['data']['user_email']},
-          );
-        } else if (response['status'] == 'success') {
-          final String id = response['data']['user_id'].toString();
-          myServises.sharedPreferences.setString("user_id", id);
-          log(response['data']['user_id'].toString());
-          myServises.sharedPreferences.setString(
-            "user_name",
-            response['data']['user_name'],
-          );
-          myServises.sharedPreferences.setString(
-            "user_email",
-            response['data']['user_email'],
-          );
-          myServises.sharedPreferences.setString(
-            "user_phone",
-            response['data']['user_phone'],
-          );
-          FirebaseMessaging.instance.subscribeToTopic('users');
-          FirebaseMessaging.instance.subscribeToTopic('user$id');
+      if (r is AuthModel) {
+        ServicesHelper.saveLocal(token, r.authData!.token!);
+        ServicesHelper.saveLocal(userName, r.authData!.name!);
+        ServicesHelper.saveLocal(userEmail, r.authData!.email!);
+        ServicesHelper.saveLocal(userPhone, r.authData!.phone!);
 
-          if (myServises.sharedPreferences.getString("step") == "1") {
-            Get.offNamed(AppRoutesname.homepage);
-          } else {
-            Get.offNamed(AppRoutesname.onBoarding);
-          }
+        FirebaseMessaging.instance.subscribeToTopic(users);
+        FirebaseMessaging.instance.subscribeToTopic(r.authData!.token!);
+
+        if (myServises.sharedPreferences.getString("step") == "1") {
+          Get.offNamed(AppRoutesname.homepage);
         } else {
-          errorDialog(StringsKeys.error.tr, StringsKeys.passwordIncorrect.tr);
-          focus.unfocus();
-          statusrequest = Statusrequest.failuer;
+          Get.offNamed(AppRoutesname.onBoarding);
         }
+        myServises.sharedPreferences.setString("step", "2");
+      }
+      if (r is Failure) {
+        showCustomGetSnack(isGreen: false, text: r.errorMessage);
+        statusrequest = Statusrequest.failuer;
       }
       update();
     }
@@ -105,26 +89,24 @@ class LoginControllerimplment extends LoginController {
   @override
   void onInit() {
     super.onInit();
-    // FirebaseMessaging.instance.getToken().then((val) {
-    //   String? token = val;
-    //   print(val);
-    // });
     name = Get.arguments['name'];
     email = Get.arguments['email'];
 
     passowrd = .new();
+    code = .new();
   }
 
   @override
   void dispose() {
     super.dispose();
     passowrd.dispose();
+    code.dispose();
     focus.dispose();
     scrollController.dispose();
   }
 
   @override
   goToForgetpassword() {
-    Get.toNamed(AppRoutesname.forgetpassword);
+    Get.toNamed(AppRoutesname.forgetpassword, arguments: {"email": email});
   }
 }

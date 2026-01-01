@@ -1,10 +1,11 @@
+import 'package:e_comerece/core/constant/strings_keys.dart';
+import 'package:e_comerece/core/class/failure.dart';
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
-import 'package:e_comerece/core/constant/strings_keys.dart';
-import 'package:e_comerece/core/funcations/error_dialog.dart';
-import 'package:e_comerece/core/funcations/handlingdata.dart';
 import 'package:e_comerece/core/funcations/loading_dialog.dart';
-import 'package:e_comerece/data/datasource/remote/auth/forgetpassword/resetpassword_data.dart';
+import 'package:e_comerece/core/servises/custom_getx_snak_bar.dart';
+import 'package:e_comerece/data/datasource/remote/Auth_Repo/auth_repo_impl.dart';
+import 'package:e_comerece/data/model/AuthModel/auth_model.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 
@@ -14,7 +15,7 @@ abstract class ResetcodeController extends GetxController {
 }
 
 class ResetpasswordIemeent extends ResetcodeController {
-  ResetpasswordData resetpasswordData = ResetpasswordData(Get.find());
+  AuthRepoImpl authRepoImpl = AuthRepoImpl(apiService: Get.find());
   late TextEditingController passWord;
   late TextEditingController repassWord;
 
@@ -23,6 +24,7 @@ class ResetpasswordIemeent extends ResetcodeController {
   Statusrequest? statusrequest;
 
   String? email;
+  String? code;
   FocusNode passFocus = FocusNode();
   FocusNode repassFocus = FocusNode();
   ScrollController scrollController = ScrollController();
@@ -34,9 +36,9 @@ class ResetpasswordIemeent extends ResetcodeController {
       passFocus.unfocus();
       repassFocus.unfocus();
       if (passWord.text != repassWord.text) {
-        return errorDialog(
-          StringsKeys.error.tr,
-          StringsKeys.passwordNotMatch.tr,
+        return showCustomGetSnack(
+          isGreen: false,
+          text: StringsKeys.passwordNotMatch.tr,
         );
       }
       statusrequest = Statusrequest.loading;
@@ -45,23 +47,22 @@ class ResetpasswordIemeent extends ResetcodeController {
       if (!Get.isDialogOpen!) {
         loadingDialog();
       }
-      var response = await resetpasswordData.postData(
-        email: email!,
-        password: passWord.text,
+      var response = await authRepoImpl.resetPassword(
+        AuthData(email: email!, code: code!, newPassword: passWord.text),
       );
 
-      statusrequest = handlingData(response);
+      final r = response.fold((l) => l, (r) => r);
       if (Get.isDialogOpen ?? false) Get.back();
-      if (Statusrequest.success == statusrequest) {
-        if (response['status'] == 'success') {
-          Get.toNamed(AppRoutesname.resetPassWord, arguments: {"email": email});
-        } else {
-          errorDialog(StringsKeys.error.tr, StringsKeys.error.tr);
-          statusrequest = Statusrequest.failuer;
-        }
+
+      if (r is AuthModel) {
+        showCustomGetSnack(isGreen: true, text: r.message!);
+        Get.offAllNamed(AppRoutesname.successReset);
+      }
+      if (r is Failure) {
+        showCustomGetSnack(isGreen: false, text: r.errorMessage);
+        statusrequest = Statusrequest.failuer;
       }
       update();
-      Get.offAllNamed(AppRoutesname.successReset);
     }
   }
 
@@ -69,8 +70,9 @@ class ResetpasswordIemeent extends ResetcodeController {
   void onInit() {
     super.onInit();
     email = Get.arguments['email'];
-    passWord = TextEditingController();
-    repassWord = TextEditingController();
+    code = Get.arguments['code'];
+    passWord = .new();
+    repassWord = .new();
   }
 
   @override

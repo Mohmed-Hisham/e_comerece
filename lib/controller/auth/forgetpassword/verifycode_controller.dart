@@ -1,51 +1,52 @@
+import 'package:e_comerece/core/class/failure.dart';
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
-import 'package:e_comerece/core/constant/strings_keys.dart';
-import 'package:e_comerece/core/funcations/error_dialog.dart';
-import 'package:e_comerece/core/funcations/handlingdata.dart';
 import 'package:e_comerece/core/funcations/loading_dialog.dart';
-import 'package:e_comerece/data/datasource/remote/auth/forgetpassword/verifycoderesetpass_data.dart';
+import 'package:e_comerece/core/servises/custom_getx_snak_bar.dart';
+import 'package:e_comerece/data/datasource/remote/Auth_Repo/auth_repo_impl.dart';
+import 'package:e_comerece/data/model/AuthModel/auth_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 abstract class VerifycodeController extends GetxController {
   late String code;
-  ckeckCode(verifycodeSignup);
+  ckeckCode(String verifycodeSignup);
   goback() => Get.back();
 }
 
 class VerifycodeControllerImp extends VerifycodeController {
-  VerifycoderesetpassData verifycodesignupData = VerifycoderesetpassData(
-    Get.find(),
-  );
+  AuthRepoImpl authRepoImpl = AuthRepoImpl(apiService: Get.find());
   Statusrequest? statusrequest;
 
   String? email;
-  FocusNode focus = FocusNode();
+  FocusNode focus = .new();
 
   @override
-  ckeckCode(verifycodeSignup) async {
+  ckeckCode(String verifycodeSignup) async {
     statusrequest = Statusrequest.loading;
-    focus.unfocus();
     update();
     if (!Get.isDialogOpen!) {
       loadingDialog();
     }
-    var response = await verifycodesignupData.postData(
-      email: email!,
-      verifycode: verifycodeSignup,
+    final response = await authRepoImpl.verifyCode(
+      AuthData(email: email!, code: verifycodeSignup),
     );
 
-    statusrequest = handlingData(response);
+    final r = response.fold((l) => l, (r) => r);
     if (Get.isDialogOpen ?? false) Get.back();
-    if (Statusrequest.success == statusrequest) {
-      if (response['status'] == 'success') {
-        Get.toNamed(AppRoutesname.resetPassWord, arguments: {"email": email});
-      } else {
-        errorDialog(StringsKeys.error.tr, StringsKeys.incorrectCode.tr);
-        statusrequest = Statusrequest.failuer;
-      }
+
+    if (r is AuthModel) {
+      showCustomGetSnack(isGreen: true, text: r.message!);
+      Get.toNamed(
+        AppRoutesname.resetPassWord,
+        arguments: {"email": email, "code": verifycodeSignup},
+      );
     }
+    if (r is Failure) {
+      showCustomGetSnack(isGreen: false, text: r.errorMessage);
+      statusrequest = Statusrequest.failuer;
+    }
+    focus.unfocus();
     update();
   }
 

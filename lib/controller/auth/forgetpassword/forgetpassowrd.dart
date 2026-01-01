@@ -1,54 +1,52 @@
+import 'package:e_comerece/core/class/failure.dart';
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
-import 'package:e_comerece/core/constant/strings_keys.dart';
-import 'package:e_comerece/core/funcations/error_dialog.dart';
-import 'package:e_comerece/core/funcations/handlingdata.dart';
 import 'package:e_comerece/core/funcations/loading_dialog.dart';
-import 'package:e_comerece/data/datasource/remote/auth/forgetpassword/checkemail_data.dart';
+import 'package:e_comerece/core/servises/custom_getx_snak_bar.dart';
+import 'package:e_comerece/data/datasource/remote/Auth_Repo/auth_repo_impl.dart';
+import 'package:e_comerece/data/model/AuthModel/auth_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 abstract class Forgetpassowrd extends GetxController {
-  goToveyfiycode();
-  goback();
+  Future<void> goToveyfiycode();
+  void goback();
 }
 
 class Forgetpassowrdlment extends Forgetpassowrd {
-  CheckemailData checkemailData = CheckemailData(Get.find());
-  late TextEditingController email;
-  GlobalKey<FormState> formState = GlobalKey<FormState>();
+  AuthRepoImpl authRepoImpl = AuthRepoImpl(apiService: Get.find());
+  TextEditingController email = .new();
+  GlobalKey<FormState> formState = .new();
   Statusrequest? statusrequest;
-  ScrollController scrollController = ScrollController();
-  FocusNode focus = FocusNode();
+  ScrollController scrollController = .new();
+  FocusNode focus = .new();
 
   @override
   goToveyfiycode() async {
     if (formState.currentState!.validate()) {
       statusrequest = Statusrequest.loading;
-      focus.unfocus();
       update();
       if (!Get.isDialogOpen!) {
         loadingDialog();
       }
 
-      var response = await checkemailData.postData(email: email.text);
+      final response = await authRepoImpl.forgetPassword(
+        AuthData(email: email.text),
+      );
 
-      statusrequest = handlingData(response);
+      final r = response.fold((l) => l, (r) => r);
       if (Get.isDialogOpen ?? false) Get.back();
-      if (Statusrequest.success == statusrequest) {
-        if (response['status'] == 'success') {
-          Get.toNamed(
-            AppRoutesname.verFiyCode,
-            arguments: {"email": email.text},
-          );
-        } else {
-          errorDialog(
-            StringsKeys.accountNotFound.tr,
-            StringsKeys.accountNotFound.tr,
-          );
-          statusrequest = Statusrequest.failuer;
-        }
+
+      if (r is AuthModel) {
+        showCustomGetSnack(isGreen: true, text: r.message!);
+        Get.toNamed(AppRoutesname.verFiyCode, arguments: {"email": email.text});
       }
+      if (r is Failure) {
+        showCustomGetSnack(isGreen: false, text: r.errorMessage);
+        statusrequest = Statusrequest.failuer;
+      }
+
+      focus.unfocus();
       update();
     }
   }
@@ -56,7 +54,7 @@ class Forgetpassowrdlment extends Forgetpassowrd {
   @override
   void onInit() {
     super.onInit();
-    email = TextEditingController();
+    email = TextEditingController(text: Get.arguments['email']);
   }
 
   @override

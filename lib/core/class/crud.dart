@@ -14,7 +14,7 @@ class Crud {
     bool sendJson = false,
   }) async {
     try {
-      if (await checkinternet()) {
+      if (await checkInternet()) {
         http.Response response;
 
         if (sendJson) {
@@ -67,7 +67,7 @@ class Crud {
   }) async {
     client ??= http.Client();
     try {
-      if (!await checkinternet()) {
+      if (!await checkInternet()) {
         return const Left(Statusrequest.oflinefailuer);
       }
 

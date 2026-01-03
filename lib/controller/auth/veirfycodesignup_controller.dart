@@ -1,5 +1,5 @@
 import 'package:e_comerece/core/class/failure.dart';
-import 'package:e_comerece/core/class/services_helper.dart';
+
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/constant/string_const.dart';
@@ -38,10 +38,10 @@ class VerifycodesignupControllerImp extends VeirfycodesignupController {
     final r = response.fold((l) => l, (r) => r);
     if (Get.isDialogOpen ?? false) Get.back();
     if (r is AuthModel) {
-      ServicesHelper.saveLocal(token, r.authData!.token!);
-      ServicesHelper.saveLocal(userName, r.authData!.name!);
-      ServicesHelper.saveLocal(userEmail, r.authData!.email!);
-      ServicesHelper.saveLocal(userPhone, r.authData!.phone!);
+      myServises.saveSecureData(token, r.authData!.token!);
+      myServises.saveSecureData(userName, r.authData!.name!);
+      myServises.saveSecureData(userEmail, r.authData!.email!);
+      myServises.saveSecureData(userPhone, r.authData!.phone!);
 
       FirebaseMessaging.instance.subscribeToTopic(users);
       FirebaseMessaging.instance.subscribeToTopic(r.authData!.token!);
@@ -51,7 +51,7 @@ class VerifycodesignupControllerImp extends VeirfycodesignupController {
       } else {
         Get.offNamed(AppRoutesname.onBoarding);
       }
-      myServises.sharedPreferences.setString("step", "2");
+      myServises.saveStep("2");
     }
     if (r is Failure) {
       showCustomGetSnack(isGreen: false, text: r.errorMessage);

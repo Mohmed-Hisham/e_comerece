@@ -1,26 +1,22 @@
-import 'dart:developer';
 import 'package:e_comerece/app_api/link_api.dart';
+import 'package:e_comerece/core/class/failure.dart';
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
-import 'package:e_comerece/core/funcations/handle_paging_response.dart';
-import 'package:e_comerece/core/funcations/handlingdata.dart';
 import 'package:e_comerece/core/funcations/loading_dialog.dart';
 import 'package:e_comerece/core/loacallization/translate_data.dart';
+import 'package:e_comerece/core/servises/custom_getx_snak_bar.dart';
 import 'package:e_comerece/core/shared/image_manger/image_manag_controller.dart';
-import 'package:e_comerece/data/datasource/remote/alibaba/productalibaba_home_data.dart';
-import 'package:e_comerece/data/datasource/remote/alibaba/search_name_alibaba_data.dart';
-import 'package:e_comerece/data/datasource/remote/api_cash/get_cash_data.dart';
-import 'package:e_comerece/data/datasource/remote/api_cash/insert_cash_data.dart';
 import 'package:e_comerece/data/datasource/remote/upload_to_cloudinary.dart';
 import 'package:e_comerece/data/model/alibaba_model/productalibaba_home_model.dart';
+import 'package:e_comerece/data/repository/alibaba/alibaba_repo_impl.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 abstract class ProductAlibabaHomeController extends GetxController {
-  Future<void> fethcProducts();
+  Future<void> fetchProducts({required bool isLoadMore});
   Future<void> searshText({
     required String q,
-    isLoadMore = false,
+    bool isLoadMore = false,
     String startPrice,
     String endPrice,
   });
@@ -42,21 +38,15 @@ abstract class ProductAlibabaHomeController extends GetxController {
 }
 
 class ProductAlibabaHomeControllerImp extends ProductAlibabaHomeController {
-  ProductalibabaHomeData productalibabaHomeData = ProductalibabaHomeData(
-    Get.find(),
-  );
-  SearchNameAlibabaData searchNameAlibabaData = SearchNameAlibabaData(
-    Get.find(),
-  );
-  InsertCashData insertCashData = InsertCashData(Get.find());
-  GetCashData getCashData = GetCashData(Get.find());
-  Statusrequest statusrequestproduct = Statusrequest.loading;
+  AlibabaRepoImpl alibabaRepoImpl = AlibabaRepoImpl(apiService: Get.find());
+
+  Statusrequest statusrequestproduct = Statusrequest.none;
   Statusrequest statusrequestsearch = Statusrequest.none;
   Settings? settings;
 
   bool isLoading = false;
   bool isLoadingSearch = false;
-  int pageindex = 1;
+  int pageindex = 0;
   int pageIndexSearch = 0;
 
   bool hasMore = true;
@@ -78,15 +68,12 @@ class ProductAlibabaHomeControllerImp extends ProductAlibabaHomeController {
   @override
   void onInit() {
     super.onInit();
-    fethcProducts();
+    fetchProducts(isLoadMore: false);
     startInitShow();
   }
 
   @override
-  Future<void> fethcProducts({isLoadMore = false}) async {
-    log("enOrAr(isArSA: true)=>${enOrAr(isArSA: true)}");
-    cashkey(String q, int p) =>
-        'homeproduct:alibaba:$q:page=$p:${enOrAr(isArSA: true)}';
+  fetchProducts({required bool isLoadMore}) async {
     if (isLoadMore) {
       if (isLoading || !hasMore) return;
       isLoading = true;
@@ -97,86 +84,39 @@ class ProductAlibabaHomeControllerImp extends ProductAlibabaHomeController {
       hasMore = true;
     }
     update();
-    try {
-      final cacheResponse = await getCashData.getCash(
-        query: cashkey("", pageindex),
-        platform: "alibaba",
-      );
 
-      if (cacheResponse["status"] == "success") {
-        log("get from alibaba cache server=====================");
-        final data = cacheResponse['data'];
-        final status = handlingData(data);
-        if (status == Statusrequest.success) {
-          if (handle200(data)) {
-            var hotProductModel = ProductAliBabaHomeModel.fromJson(data);
+    final response = await alibabaRepoImpl.fetchProducts(
+      enOrAr(isArSA: true),
+      pageindex,
+    );
+    final r = response.fold((l) => l, (r) => r);
 
-            if (hotProductModel.result!.resultList.isEmpty) {
-              hasMore = false;
-            } else {
-              products.addAll(hotProductModel.result!.resultList);
-              pageindex++;
-            }
-            if (!isLoadMore) statusrequestproduct = Statusrequest.success;
-          }
-        } else {
-          if (!isLoadMore) {
-            statusrequestproduct =
-                status as Statusrequest? ?? Statusrequest.failuer;
-          }
-          hasMore = false;
-        }
-      } else {
-        log("get product Alibaba from api=====================");
-        final hotProductsResponse = await productalibabaHomeData.getproductHome(
-          pageindex: pageindex,
-        );
-
-        final status = handlingData(hotProductsResponse);
-        if (status == Statusrequest.success) {
-          if (handle200(hotProductsResponse)) {
-            var hotProductModel = ProductAliBabaHomeModel.fromJson(
-              hotProductsResponse,
-            );
-
-            if (hotProductModel.result!.resultList.isEmpty) {
-              hasMore = false;
-            } else {
-              products.addAll(hotProductModel.result!.resultList);
-              insertCashData.insertCash(
-                query: cashkey("", pageindex),
-                platform: "alibaba",
-                data: hotProductsResponse,
-                ttlHours: "24",
-              );
-              pageindex++;
-            }
-            if (!isLoadMore) statusrequestproduct = Statusrequest.success;
-          } else if (handle205(hotProductsResponse, pageindex)) {
-            hasMore = false;
-            statusrequestproduct = Statusrequest.noDataPageindex;
-            custSnackBarNoMore();
-          }
-        } else {
-          if (!isLoadMore) {
-            statusrequestproduct =
-                status as Statusrequest? ?? Statusrequest.failuer;
-          }
-          hasMore = false;
-        }
+    if (r is Failure) {
+      if (!isLoadMore) {
+        // statusrequestproduct = Statusrequest.failuer;
       }
-    } catch (e) {
-      log("error fetch product alibaba home controller $e");
+      showCustomGetSnack(isGreen: false, text: r.errorMessage);
+    }
+
+    if (r is ProductAliBabaHomeModel) {
+      var newProducts = r.result?.resultList;
+      if (newProducts == null || newProducts.isEmpty) {
+        hasMore = false;
+        if (!isLoadMore) statusrequestproduct = Statusrequest.noData;
+      } else {
+        products.addAll(newProducts);
+        pageindex++;
+        if (!isLoadMore) statusrequestproduct = Statusrequest.success;
+      }
     }
 
     isLoading = false;
-    log("statusrequestHotProducts=>$statusrequestproduct");
     update();
   }
 
   @override
   loadMoreproduct() {
-    fethcProducts(isLoadMore: true);
+    fetchProducts(isLoadMore: true);
   }
 
   @override
@@ -186,8 +126,6 @@ class ProductAlibabaHomeControllerImp extends ProductAlibabaHomeController {
     startPrice = "",
     endPrice = "",
   }) async {
-    cashkey(String q, int p) =>
-        'search:alibaba:$q:page=$p:${detectLangFromQuery(searchController.text)}';
     if (isLoadMore) {
       if (isLoadingSearch || !hasMoresearch) return;
       isLoadingSearch = true;
@@ -199,80 +137,35 @@ class ProductAlibabaHomeControllerImp extends ProductAlibabaHomeController {
     }
     update();
 
-    try {
-      final cacheResponse = await getCashData.getCash(
-        query: cashkey(q, pageIndexSearch),
-        platform: "alibaba",
-      );
-      if (cacheResponse["status"] == "success") {
-        log("get from alibaba cache server=====================");
-        final data = cacheResponse['data'];
-        statusrequestsearch = handlingData(data);
-        if (statusrequestsearch == Statusrequest.success) {
-          if (handle200(data)) {
-            final model = ProductAliBabaHomeModel.fromJson(data);
-            final List<ResultList> iterable = model.result!.resultList;
-            settings = model.result?.settings;
+    final response = await alibabaRepoImpl.searchProducts(
+      enOrAr(isArSA: true),
+      pageIndexSearch,
+      q,
+      startPrice,
+      endPrice,
+    );
+    final r = response.fold((l) => l, (r) => r);
 
-            if (iterable.isEmpty) {
-              hasMoresearch = false;
-              statusrequestsearch = Statusrequest.noData;
-            } else {
-              searchProducts.addAll(iterable);
-              pageIndexSearch++;
-            }
-          } else {
-            hasMoresearch = false;
-            statusrequestsearch = Statusrequest.noData;
-          }
-        }
-      } else {
-        log("get product Alibaba from api=====================");
-        final response = await searchNameAlibabaData.getproductsSearch(
-          lang: detectLangFromQuery(searchController.text),
-          q: q,
-          pageindex: pageIndexSearch,
-          endPrice: endPrice,
-          startPrice: startPrice,
-        );
-
-        statusrequestsearch = handlingData(response);
-        if (statusrequestsearch == Statusrequest.success) {
-          if (handle200(response)) {
-            final model = ProductAliBabaHomeModel.fromJson(response);
-            final List<ResultList> iterable = model.result!.resultList;
-            settings = model.result?.settings;
-
-            if (iterable.isEmpty) {
-              hasMoresearch = false;
-              statusrequestsearch = Statusrequest.noData;
-            } else {
-              searchProducts.addAll(iterable);
-              await insertCashData.insertCash(
-                query: cashkey(q, pageIndexSearch),
-                platform: "alibaba",
-                data: response,
-                ttlHours: "24",
-              );
-              pageIndexSearch++;
-            }
-          } else if (handle205(response, pageIndexSearch)) {
-            hasMoresearch = false;
-            statusrequestsearch = Statusrequest.noDataPageindex;
-            custSnackBarNoMore();
-          } else {
-            hasMoresearch = false;
-            statusrequestsearch = Statusrequest.noData;
-          }
-        }
-      }
-    } catch (e) {
-      hasMoresearch = false;
-      statusrequestsearch = Statusrequest.failuer;
-    } finally {
-      if (isLoadMore) isLoadingSearch = false;
-      update();
+    if (r is Failure) {
+      showCustomGetSnack(isGreen: false, text: r.errorMessage);
     }
+
+    if (r is ProductAliBabaHomeModel) {
+      var newProducts = r.result?.resultList;
+      settings = r.result?.settings;
+
+      if (newProducts == null || newProducts.isEmpty) {
+        hasMoresearch = false;
+        if (!isLoadMore) statusrequestsearch = Statusrequest.noData;
+      } else {
+        searchProducts.addAll(newProducts);
+        pageIndexSearch++;
+        if (!isLoadMore) statusrequestsearch = Statusrequest.success;
+      }
+    }
+
+    isLoadingSearch = false;
+    update();
   }
 
   @override
@@ -303,6 +196,7 @@ class ProductAlibabaHomeControllerImp extends ProductAlibabaHomeController {
   onChangeSearch(val) {
     if (val == "") {
       isSearch = false;
+      focusNode.unfocus();
       update();
     }
   }
@@ -311,7 +205,6 @@ class ProductAlibabaHomeControllerImp extends ProductAlibabaHomeController {
   onTapSearch({required keyWord}) {
     isSearch = true;
     searshText(q: keyWord);
-    focusNode.unfocus();
     update();
   }
 

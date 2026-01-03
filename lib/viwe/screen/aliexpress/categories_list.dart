@@ -65,20 +65,19 @@ class CategoriesList extends StatelessWidget {
                               int id = int.parse(p0["id"].toString());
                               controller.gotoshearchname(name, id);
                             },
-                            itemBuilder: (context) =>
-                                category.subCategories!.map((sub) {
-                                  return PopupMenuItem(
-                                    value: {"id": sub.id, "name": sub.name},
-                                    child: Text(
-                                      sub.name ?? 'Unknown',
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  );
-                                }).toList(),
+                            itemBuilder: (context) => category.list.map((sub) {
+                              return PopupMenuItem(
+                                value: {"id": sub.id, "name": sub.name},
+                                child: Text(
+                                  sub.name ?? 'Unknown',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              );
+                            }).toList(),
                           ),
                         ],
                       ),

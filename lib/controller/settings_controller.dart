@@ -17,9 +17,11 @@ class SettingsControllerImple extends SettingsController {
   @override
   logout() {
     final String id = myServises.sharedPreferences.getString('id') ?? "";
+
     FirebaseMessaging.instance.unsubscribeFromTopic('users');
     FirebaseMessaging.instance.unsubscribeFromTopic('user$id');
     myServises.sharedPreferences.clear();
+    myServises.clearAllSecureData();
     Get.offAllNamed(AppRoutesname.loginStepOne);
   }
 

@@ -5,7 +5,7 @@ class SheinApi {
 
   static const Map<String, String> rapidApiHeaders = {
     'X-RapidAPI-Host': 'shein-data-api.p.rapidapi.com',
-    'X-RapidAPI-Key': 'a1b03d76bfmsh7765d1859618dd8p101be8jsn6ff2d5ccaf1f',
+    'X-RapidAPI-Key': 'ca3dc09a06msh38fce1cd75ae58cp1cb290jsn8ba826e81141',
   };
   static String categories() =>
       "$_server/categories?countryCode=${enOrArShein()}";
@@ -24,7 +24,7 @@ class SheinApi {
     String endPrice,
     String countryCode,
   ) =>
-      "$_server/search/v2?query=$q&page=$pageindex&perPage=120&minPrice=$startPrice&maxPrice=$endPrice&countryCode=$countryCode";
+      "$_server/search/v2?query=$q&page=$pageindex&perPage=50&minPrice=$startPrice&maxPrice=$endPrice&countryCode=$countryCode";
 
   static String productDitels(String goodssn, String countryCode) =>
       "$_server/product/description/variants?goods_sn=$goodssn&country=$countryCode";
@@ -40,5 +40,5 @@ class SheinApi {
     String pageindex,
     String countryCode,
   ) =>
-      "$_server/product/bycategory?categoryId=$categoryId&page=$pageindex&perPage=120&countryCode=$countryCode";
+      "$_server/product/bycategory?categoryId=$categoryId&page=$pageindex&perPage=50&countryCode=$countryCode";
 }

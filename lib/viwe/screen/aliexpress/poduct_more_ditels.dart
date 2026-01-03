@@ -28,7 +28,7 @@ class PoductMoreDitels extends StatelessWidget {
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
           mainAxisSpacing: 10.w,
-          mainAxisExtent: 350.h,
+          mainAxisExtent: 375.h,
         ),
         itemCount: controller.searchProducts.length,
         itemBuilder: (context, index) {

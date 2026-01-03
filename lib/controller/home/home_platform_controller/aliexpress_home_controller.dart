@@ -1,17 +1,16 @@
-import 'dart:developer';
-
 import 'package:e_comerece/controller/home/homescreen_controller.dart';
+import 'package:e_comerece/core/class/failure.dart';
 import 'package:e_comerece/core/class/statusrequest.dart';
-import 'package:e_comerece/core/funcations/handle_paging_response.dart';
-import 'package:e_comerece/core/funcations/handlingdata.dart';
 import 'package:e_comerece/core/loacallization/translate_data.dart';
-import 'package:e_comerece/core/helper/db_database.dart';
-import 'package:e_comerece/data/datasource/remote/aliexpriess/hotproductssdata.dart';
+import 'package:e_comerece/core/servises/custom_getx_snak_bar.dart';
 import 'package:e_comerece/data/model/aliexpriess_model/hotproductmodel.dart';
+import 'package:e_comerece/data/repository/aliexpriss/alexpress_repo_impl.dart';
 import 'package:get/get.dart';
 
 class AliexpressHomeController extends GetxController {
-  HotProductsData hotProductsData = HotProductsData(Get.find());
+  AlexpressRepoImpl alexpressRepoImpl = AlexpressRepoImpl(
+    apiService: Get.find(),
+  );
   int pageindexALiexpress = 1;
   List<ResultListHotprosuct> productsAliExpress = [];
   bool hasMore = true;
@@ -25,8 +24,6 @@ class AliexpressHomeController extends GetxController {
   }
 
   fetchProductsAliExpress({isLoadMore = false}) async {
-    final String platform = 'aliExpress-lang-${enOrAr()}';
-    String cacheKey(int p) => 'hotProducts:$platform:page=$p';
     if (isLoadMore) {
       if (isLoading || !hasMore) return;
       isLoading = true;
@@ -36,73 +33,30 @@ class AliexpressHomeController extends GetxController {
       productsAliExpress.clear();
       hasMore = true;
     }
-    // update(['aliexpress']);
-    final cache = await DBHelper.getCache(key: cacheKey(pageindexALiexpress));
-    if (cache != null) {
-      log("get from aliexpress cache=====================");
+    update(['aliexpress']);
 
-      final status = handlingData(cache);
+    final response = await alexpressRepoImpl.fetchProducts(
+      enOrAr(),
+      pageindexALiexpress,
+    );
+    final r = response.fold((l) => l, (r) => r);
 
-      if (status == Statusrequest.success) {
-        if (handle200(cache)) {
-          var hotProductModel = HotProductModel.fromJson(cache);
-
-          if (hotProductModel.result!.resultListHotprosuct!.isEmpty) {
-            hasMore = false;
-          } else {
-            productsAliExpress.addAll(
-              hotProductModel.result!.resultListHotprosuct!,
-            );
-            pageindexALiexpress++;
-          }
-          if (!isLoadMore) statusrequestAliExpress = Statusrequest.success;
-        }
-      } else {
-        if (!isLoadMore) {
-          statusrequestAliExpress =
-              status as Statusrequest? ?? Statusrequest.failuer;
-        }
-        hasMore = false;
+    if (r is Failure) {
+      if (!isLoadMore) {
+        statusrequestAliExpress = Statusrequest.failuer;
       }
-    } else {
-      log("get product AliExpress from api=====================");
-      final hotProductsResponse = await hotProductsData.getData(
-        pageindexALiexpress,
-      );
+      showCustomGetSnack(isGreen: false, text: r.errorMessage);
+    }
 
-      final status = handlingData(hotProductsResponse);
-
-      if (status == Statusrequest.success) {
-        if (handle200(hotProductsResponse)) {
-          var hotProductModel = HotProductModel.fromJson(hotProductsResponse);
-
-          if (hotProductModel.result!.resultListHotprosuct!.isEmpty) {
-            hasMore = false;
-          } else {
-            productsAliExpress.addAll(
-              hotProductModel.result!.resultListHotprosuct!,
-            );
-            DBHelper.saveCache(
-              key: cacheKey(pageindexALiexpress),
-              type: 'hotproduct',
-              data: hotProductsResponse,
-              platform: platform,
-              ttlHours: 24,
-            );
-            pageindexALiexpress++;
-          }
-          if (!isLoadMore) statusrequestAliExpress = Statusrequest.success;
-        } else if (handle205(hotProductsResponse, pageindexALiexpress)) {
-          hasMore = false;
-          statusrequestAliExpress = Statusrequest.noDataPageindex;
-          custSnackBarNoMore();
-        }
-      } else {
-        if (!isLoadMore) {
-          statusrequestAliExpress =
-              status as Statusrequest? ?? Statusrequest.failuer;
-        }
+    if (r is HotProductModel) {
+      var newProducts = r.result?.resultListHotprosuct;
+      if (newProducts == null || newProducts.isEmpty) {
         hasMore = false;
+        if (!isLoadMore) statusrequestAliExpress = Statusrequest.noData;
+      } else {
+        productsAliExpress.addAll(newProducts);
+        pageindexALiexpress++;
+        if (!isLoadMore) statusrequestAliExpress = Statusrequest.success;
       }
     }
 
@@ -110,6 +64,5 @@ class AliexpressHomeController extends GetxController {
     Future.delayed(Duration(milliseconds: 100), () {
       Get.find<HomescreenControllerImple>().update(['aliexpress']);
     });
-    // update(['aliexpress']);
   }
 }

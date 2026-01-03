@@ -1,16 +1,13 @@
-import 'dart:developer';
-
+import 'package:e_comerece/core/class/failure.dart';
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
-import 'package:e_comerece/core/funcations/handle_paging_response.dart';
-import 'package:e_comerece/core/funcations/handlingdata.dart';
-import 'package:e_comerece/data/datasource/remote/aliexpriess/shearshname_data.dart';
-import 'package:e_comerece/data/datasource/remote/api_cash/get_cash_data.dart';
-import 'package:e_comerece/data/datasource/remote/api_cash/insert_cash_data.dart';
+import 'package:e_comerece/core/loacallization/translate_data.dart';
+import 'package:e_comerece/core/servises/custom_getx_snak_bar.dart';
 import 'package:e_comerece/data/model/aliexpriess_model/category_model.dart';
 import 'package:e_comerece/data/model/aliexpriess_model/shearch_model.dart';
 import 'package:e_comerece/data/model/aliexpriess_model/searchbyimage_model.dart'
     as searchbyimage;
+import 'package:e_comerece/data/repository/aliexpriss/alexpress_repo_impl.dart';
 import 'package:get/get.dart';
 
 abstract class ShearchnameController extends GetxController {
@@ -22,12 +19,13 @@ abstract class ShearchnameController extends GetxController {
     required String lang,
     required String title,
   });
+  void goTofavorite();
 }
 
 class ShearchnameControllerImple extends ShearchnameController {
-  final ShearshnameData shearshnameData = ShearshnameData(Get.find());
-  InsertCashData insertCashData = InsertCashData(Get.find());
-  GetCashData getCashData = GetCashData(Get.find());
+  AlexpressRepoImpl alexpressRepoImpl = AlexpressRepoImpl(
+    apiService: Get.find(),
+  );
   Statusrequest statusrequest = Statusrequest.loading;
   SearchFromCatModel? searchFromCatModel;
   List<ResultList> items = [];
@@ -49,89 +47,47 @@ class ShearchnameControllerImple extends ShearchnameController {
     int categoryId, {
     bool isLoadMore = false,
   }) async {
-    cashkey(String q, int p) => 'productcategory:aliexpress:$q:page=$p';
-    _startLoading(isLoadMore: isLoadMore);
-
-    try {
-      final cashe = await getCashData.getCash(
-        query: cashkey(nameCat, pageIndex),
-        platform: "aliexpress",
-      );
-      if (cashe["status"] == "success") {
-        log(
-          "get productCategory aliexpress from cache server =====================",
-        );
-        final response = cashe["data"];
-        statusrequest = handlingData(response);
-        if (statusrequest == Statusrequest.success) {
-          final responseAsMap = response as Map<String, dynamic>;
-          int code =
-              SearchFromCatModel.fromJson(responseAsMap).result!.status!.code
-                  as int;
-          if (code == 200) {
-            var newItems = SearchFromCatModel.fromJson(
-              responseAsMap,
-            ).result!.resultList!;
-
-            if (newItems.isEmpty) {
-              hasMore = false;
-            } else {
-              items.addAll(newItems);
-              pageIndex++;
-            }
-            cachedData[categoryId] = SearchFromCatModel.fromJson(responseAsMap);
-          } else {
-            hasMore = false;
-            statusrequest = Statusrequest.noData;
-          }
-        }
-      } else {
-        log("get productCategory aliexpress from API =====================");
-        final response = await shearshnameData.getData(
-          keyWord: nameCat,
-          categoryId: categoryId,
-          pageindex: pageIndex,
-        );
-
-        statusrequest = handlingData(response);
-        if (statusrequest == Statusrequest.success) {
-          final responseAsMap = response as Map<String, dynamic>;
-          int code =
-              SearchFromCatModel.fromJson(responseAsMap).result!.status!.code
-                  as int;
-          if (code == 200) {
-            var newItems = SearchFromCatModel.fromJson(
-              responseAsMap,
-            ).result!.resultList!;
-
-            if (newItems.isEmpty) {
-              hasMore = false;
-            } else {
-              items.addAll(newItems);
-              insertCashData.insertCash(
-                query: cashkey(nameCat, pageIndex),
-                platform: "aliexpress",
-                data: responseAsMap,
-                ttlHours: "24",
-              );
-              pageIndex++;
-            }
-            cachedData[categoryId] = SearchFromCatModel.fromJson(responseAsMap);
-          } else if (code == 205 && pageIndex > 1) {
-            hasMore = false;
-            statusrequest = Statusrequest.noDataPageindex;
-            custSnackBarNoMore();
-          } else {
-            hasMore = false;
-            statusrequest = Statusrequest.noData;
-          }
-        }
-      }
-    } catch (e) {
-      hasMore = false;
-      statusrequest = Statusrequest.failuer;
+    if (isLoadMore) {
+      if (isLoading || !hasMore) return;
+      isLoading = true;
+    } else {
+      statusrequest = Statusrequest.loading;
+      pageIndex = 1;
+      items.clear();
+      hasMore = true;
     }
-    _endLoading(isLoadMore: isLoadMore);
+    update();
+
+    final response = await alexpressRepoImpl.searchByName(
+      enOrAr(),
+      nameCat,
+      pageIndex,
+      categoryId,
+    );
+    final r = response.fold((l) => l, (r) => r);
+
+    if (r is Failure) {
+      if (!isLoadMore) {
+        statusrequest = Statusrequest.failuer;
+      }
+      showCustomGetSnack(isGreen: false, text: r.errorMessage);
+    }
+
+    if (r is SearchFromCatModel) {
+      var newItems = r.result?.resultList;
+      if (newItems == null || newItems.isEmpty) {
+        hasMore = false;
+        if (!isLoadMore) statusrequest = Statusrequest.noData;
+      } else {
+        items.addAll(newItems);
+        pageIndex++;
+        if (!isLoadMore) statusrequest = Statusrequest.success;
+        cachedData[categoryId] = r;
+      }
+    }
+
+    isLoading = false;
+    update();
   }
 
   @override
@@ -139,8 +95,7 @@ class ShearchnameControllerImple extends ShearchnameController {
     super.onInit();
     nameCat = Get.arguments["namecat"];
     categoryId = Get.arguments["categoryId"];
-    // print("categoryId=>$categoryId");
-    // print("nameCat=>$nameCat");
+
     if (Get.arguments["categorymodel"] is List<ResultListCat>) {
       categorymodel = Get.arguments["categorymodel"];
     } else {
@@ -180,23 +135,12 @@ class ShearchnameControllerImple extends ShearchnameController {
       arguments: {"product_id": id, "lang": lang, "title": title},
     );
   }
-  // ------------------------------------------------------------------
 
-  void _startLoading({bool isLoadMore = false}) {
-    if (isLoadMore) {
-      if (isLoading || !hasMore) return;
-      isLoading = true;
-    } else {
-      pageIndex = 1;
-      hasMore = true;
-      items.clear();
-      statusrequest = Statusrequest.loading;
-    }
-    update();
-  }
-
-  void _endLoading({bool isLoadMore = false}) {
-    if (isLoadMore) isLoading = false;
-    update();
+  @override
+  goTofavorite() {
+    Get.toNamed(
+      AppRoutesname.favoritealiexpress,
+      arguments: {'platform': "Aliexpress"},
+    );
   }
 }

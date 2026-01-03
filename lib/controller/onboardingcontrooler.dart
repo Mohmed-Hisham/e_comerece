@@ -26,7 +26,7 @@ class Onboardingcontroolerimplement extends OnBoardingControoler {
     currentpage++;
     if (currentpage > onborardinglist.length - 1) {
       Get.offAllNamed(AppRoutesname.homepage);
-      myServises.sharedPreferences.setString("step", "2");
+      myServises.saveStep("2");
     } else {
       pageController.animateToPage(
         currentpage,

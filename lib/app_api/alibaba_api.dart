@@ -12,6 +12,7 @@ class AlibabaApi {
     String lang,
     String endPrice,
     String startPrice,
+    // String? catId,
   ) {
     return "$_server/item_search?q=$q&page=$pageindex&endPrice=$endPrice&startPrice=$startPrice&&pageSize=100&region=YE&currency=USD&locale=$lang";
   }

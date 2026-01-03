@@ -10,8 +10,8 @@ class AmazonApi {
     return "$_server/product-category-list?country=$countryForLanguage";
   }
 
-  static String hotdeals({int offset = 0, required String lang}) {
-    return "$_server/deals-v2?country=SA&offset=$offset&min_product_star_rating=ALL&price_range=ALL&discount_range=ALL&language=$lang";
+  static String hotdeals({required String lang}) {
+    return "$_server/deals-v2?country=SA&min_product_star_rating=ALL&price_range=ALL&discount_range=ALL&language=$lang";
   }
 
   static String searshProduct(

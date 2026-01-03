@@ -6,14 +6,11 @@ import 'package:e_comerece/controller/cart/cart_from_detils.dart';
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/funcations/handle_paging_response.dart';
-import 'package:e_comerece/core/funcations/handlingdata.dart';
 import 'package:e_comerece/core/loacallization/translate_data.dart';
 import 'package:e_comerece/core/servises/serviese.dart';
-import 'package:e_comerece/data/datasource/remote/amazon_data/details_amazon_data.dart';
-import 'package:e_comerece/data/datasource/remote/amazon_data/search_amazon_data.dart';
-import 'package:e_comerece/data/datasource/remote/api_cash/get_cash_data.dart';
-import 'package:e_comerece/data/datasource/remote/api_cash/insert_cash_data.dart';
-import 'package:e_comerece/data/datasource/remote/cart/cartviwe_data.dart';
+import 'package:e_comerece/data/repository/amazon/amazon_repo_impl.dart';
+import 'package:e_comerece/core/class/failure.dart';
+import 'package:e_comerece/core/servises/custom_getx_snak_bar.dart';
 import 'package:e_comerece/data/model/amazon_models/details_amazon_model.dart';
 import 'package:e_comerece/data/model/cartmodel.dart';
 import 'package:flutter/material.dart';
@@ -46,15 +43,10 @@ abstract class ProductDetailsAmazonController extends GetxController {
 
 class ProductDetailsAmazonControllerImple
     extends ProductDetailsAmazonController {
-  final DetailsAmazonData detailsAmazonData = DetailsAmazonData(Get.find());
-  SearchAmazonData searchAmazonData = SearchAmazonData(Get.find());
-
+  AmazonRepoImpl amazonRepoImpl = AmazonRepoImpl(apiService: Get.find());
   AddorrmoveControllerimple addorrmoveController = Get.put(
     AddorrmoveControllerimple(),
   );
-  CartviweData cartData = CartviweData(Get.find());
-  InsertCashData insertCashData = InsertCashData(Get.find());
-  GetCashData getCashData = GetCashData(Get.find());
 
   Statusrequest statusrequest = Statusrequest.loading;
   DetailsAmazonModel? detailsAmazonModel;
@@ -124,31 +116,22 @@ class ProductDetailsAmazonControllerImple
     statusrequest = Statusrequest.loading;
     update();
 
-    var response = await detailsAmazonData.getDetails(
-      asin: asinParam ?? asin!,
-      lang: lang!,
+    final response = await amazonRepoImpl.fetchProductDetails(
+      asinParam ?? asin!,
+      lang!,
     );
-    log("response: $response");
+    final r = response.fold((l) => l, (r) => r);
 
-    statusrequest = handlingData(response);
+    if (r is Failure) {
+      statusrequest = Statusrequest.failuer;
+    }
 
-    if (Statusrequest.success == statusrequest) {
-      if (response is Map<String, dynamic> && response['status'] == 'OK') {
-        try {
-          detailsAmazonModel = DetailsAmazonModel.fromJson(response);
-
-          _buildUiSchemasFromModel();
-          initializeDefaultVariations();
-
-          statusrequest = Statusrequest.success;
-          getquiqtity(jsonEncode(selectedVariations));
-        } catch (e, st) {
-          log(st.toString());
-          statusrequest = Statusrequest.failuerException;
-        }
-      } else {
-        statusrequest = Statusrequest.failuerTryAgain;
-      }
+    if (r is DetailsAmazonModel) {
+      detailsAmazonModel = r;
+      _buildUiSchemasFromModel();
+      initializeDefaultVariations();
+      statusrequest = Statusrequest.success;
+      getquiqtity(jsonEncode(selectedVariations));
     }
 
     update(['selectedVariations']);
@@ -163,9 +146,6 @@ class ProductDetailsAmazonControllerImple
 
   @override
   searshText({bool isLoadMore = false, bool other = false}) async {
-    cashkey(String q, int p) =>
-        'productdetails:lang:${enOrArAmazon()}amazon:$q:page=$p';
-
     if (isLoadMore) {
       if (isLoading || !hasMore) return;
       isLoading = true;
@@ -177,77 +157,36 @@ class ProductDetailsAmazonControllerImple
     }
     update(['product']);
 
-    try {
-      final cashe = await getCashData.getCash(
-        query: cashkey(title!, pageIndexSearch),
-        platform: "amazon",
-      );
-      if (cashe["status"] == "success") {
-        log("get from amazon cache server=====================");
-        final response = cashe["data"];
-        statusrequestsearch = handlingData(response);
-        if (statusrequestsearch == Statusrequest.success) {
-          if (response is Map<String, dynamic> && response['status'] == 'OK') {
-            final model = search.SearchAmazonModel.fromJson(response);
-            final List<search.Product> iterable = model.data!.products;
+    final response = await amazonRepoImpl.searchProducts(
+      detectLangFromQueryAmazon(title!),
+      title!,
+      pageIndexSearch,
+      "1",
+      "2000",
+    );
 
-            if (iterable.isEmpty) {
-              hasMore = false;
-              statusrequestsearch = Statusrequest.noData;
-            } else {
-              searchProducts.addAll(iterable);
-              pageIndexSearch++;
-            }
-          } else {
-            hasMore = false;
-            statusrequestsearch = Statusrequest.noData;
-          }
-        }
-      } else {
-        log("get product Amazon from api=====================");
-        final response = await searchAmazonData.getSearch(
-          startPrice: 1,
-          endPrice: 2000,
-          lang: detectLangFromQueryAmazon(title!),
-          q: title!,
-          pageindex: pageIndexSearch,
-        );
-        statusrequestsearch = handlingData(response);
-        if (statusrequestsearch == Statusrequest.success) {
-          if (response is Map<String, dynamic> && response['status'] == 'OK') {
-            final model = search.SearchAmazonModel.fromJson(response);
-            final List<search.Product> iterable = model.data!.products;
+    statusrequestsearch = response.fold(
+      (l) {
+        showCustomGetSnack(isGreen: false, text: l.errorMessage);
+        return Statusrequest.failuer;
+      },
+      (r) {
+        final List<search.Product> iterable = r.data?.products ?? [];
 
-            if (iterable.isEmpty && pageIndexSearch > 1) {
-              hasMore = false;
-              statusrequestsearch = Statusrequest.noDataPageindex;
-              custSnackBarNoMore();
-            } else if (iterable.isEmpty) {
-              hasMore = false;
-              statusrequestsearch = Statusrequest.noData;
-            } else {
-              searchProducts.addAll(iterable);
-              insertCashData.insertCash(
-                query: cashkey(title!, pageIndexSearch),
-                platform: "amazon",
-                data: response,
-                ttlHours: "24",
-              );
-              pageIndexSearch++;
-            }
-          } else {
-            hasMore = false;
-            statusrequestsearch = Statusrequest.noData;
-          }
+        if (iterable.isEmpty && pageIndexSearch == 1) {
+          hasMore = false;
+          return Statusrequest.noData;
+        } else if (iterable.isEmpty && pageIndexSearch > 1) {
+          hasMore = false;
+          custSnackBarNoMore();
+          return Statusrequest.noDataPageindex;
+        } else {
+          searchProducts.addAll(iterable);
+          pageIndexSearch++;
+          return Statusrequest.success;
         }
-      }
-    } catch (e) {
-      hasMore = false;
-      statusrequestsearch = Statusrequest.failuer;
-    } finally {
-      if (isLoadMore) isLoading = false;
-      update(['product']);
-    }
+      },
+    );
   }
 
   @override

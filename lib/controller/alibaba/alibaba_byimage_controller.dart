@@ -1,17 +1,15 @@
-import 'dart:developer';
-
 import 'package:e_comerece/app_api/link_api.dart';
+import 'package:e_comerece/core/class/failure.dart';
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
-import 'package:e_comerece/core/funcations/handle_paging_response.dart';
-import 'package:e_comerece/core/funcations/handlingdata.dart';
 import 'package:e_comerece/core/funcations/loading_dialog.dart';
+import 'package:e_comerece/core/loacallization/translate_data.dart';
+import 'package:e_comerece/core/servises/custom_getx_snak_bar.dart';
 import 'package:e_comerece/core/shared/image_manger/image_manag_controller.dart';
-import 'package:e_comerece/data/datasource/remote/alibaba/alibaba_by_image_data.dart';
 import 'package:e_comerece/data/datasource/remote/upload_to_cloudinary.dart';
 import 'package:e_comerece/data/model/alibaba_model/productalibaba_byimage_model.dart';
+import 'package:e_comerece/data/repository/alibaba/alibaba_repo_impl.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -28,7 +26,8 @@ abstract class AlibabaByimageController extends GetxController {
 }
 
 class AlibabaByimageControllerllerImple extends AlibabaByimageController {
-  final AlibabaByImageData alibabaByImageData = AlibabaByImageData(Get.find());
+  AlibabaRepoImpl alibabaRepoImpl = AlibabaRepoImpl(apiService: Get.find());
+
   Statusrequest statusrequest = Statusrequest.loading;
   ProductAliBabaByImageModel? productAliBabaByImageModel;
   List<ResultList> items = [];
@@ -56,47 +55,37 @@ class AlibabaByimageControllerllerImple extends AlibabaByimageController {
     }
     update();
 
-    try {
-      var response = await alibabaByImageData.getDataByimage(
-        imageUrl: imageUrl,
-        pageindex: pageindex,
-      );
+    final response = await alibabaRepoImpl.fetchSearchByImage(
+      enOrAr(isArSA: true),
+      imageUrl,
+      pageindex,
+    );
+    final r = response.fold((l) => l, (r) => r);
 
-      statusrequest = handlingData(response);
-      if (statusrequest == Statusrequest.success && handle200(response)) {
-        final responseAsMap = response as Map<String, dynamic>;
-        productAliBabaByImageModel = ProductAliBabaByImageModel.fromJson(
-          responseAsMap,
-        );
-        catgories = productAliBabaByImageModel!.result!.base!.categoryList;
-
-        if (productAliBabaByImageModel!.result!.resultList.isEmpty) {
-          hasMore = false;
-        } else {
-          items.addAll(productAliBabaByImageModel!.result!.resultList);
-          pageindex++;
-        }
-
-        if (!isLoadMore) statusrequest = Statusrequest.success;
-      } else if (handle205(response, pageindex)) {
-        hasMore = false;
-        statusrequest = Statusrequest.noDataPageindex;
-        custSnackBarNoMore();
-      } else {
-        if (!isLoadMore) {
-          statusrequest = response as Statusrequest? ?? Statusrequest.failuer;
-        }
-        hasMore = false;
-      }
-    } catch (e) {
+    if (r is Failure) {
       if (!isLoadMore) {
         statusrequest = Statusrequest.failuer;
       }
-      log("Error in fetchShearchByimage: $e");
-    } finally {
-      isLoading = false;
-      update();
+      showCustomGetSnack(isGreen: false, text: r.errorMessage);
     }
+
+    if (r is ProductAliBabaByImageModel) {
+      productAliBabaByImageModel = r;
+      catgories = productAliBabaByImageModel!.result!.base!.categoryList;
+      var newProducts = r.result?.resultList;
+
+      if (newProducts == null || newProducts.isEmpty) {
+        hasMore = false;
+        if (!isLoadMore) statusrequest = Statusrequest.noData;
+      } else {
+        items.addAll(newProducts);
+        pageindex++;
+        if (!isLoadMore) statusrequest = Statusrequest.success;
+      }
+    }
+
+    isLoading = false;
+    update();
   }
 
   @override
@@ -116,7 +105,7 @@ class AlibabaByimageControllerllerImple extends AlibabaByimageController {
   gotoditels({required id, required lang, required title}) {
     Get.toNamed(
       AppRoutesname.productDetailsAlibabView,
-      arguments: {"product_id": id, "lang": lang, "title": Title},
+      arguments: {"product_id": id, "lang": lang, "title": title},
     );
   }
 

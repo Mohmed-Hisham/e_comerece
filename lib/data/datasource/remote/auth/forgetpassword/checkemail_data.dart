@@ -1,14 +1,14 @@
-import 'package:e_comerece/core/class/crud.dart';
-import 'package:e_comerece/app_api/link_api.dart';
+// import 'package:e_comerece/core/class/crud.dart';
+// import 'package:e_comerece/app_api/link_api.dart';
 
-class CheckemailData {
-  Crud crud;
+// class CheckemailData {
+//   Crud crud;
 
-  CheckemailData(this.crud);
+//   CheckemailData(this.crud);
 
-  postData({required String email}) async {
-    var respons = await crud.postData(Appapi.checkEmail, {"user_email": email});
+//   postData({required String email}) async {
+//     var respons = await crud.postData(Appapi.checkEmail, {"user_email": email});
 
-    return respons.fold((l) => l, (r) => r);
-  }
-}
+//     return respons.fold((l) => l, (r) => r);
+//   }
+// }

@@ -1,16 +1,11 @@
-import 'dart:developer';
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
-import 'package:e_comerece/core/funcations/handle_paging_response.dart';
-import 'package:e_comerece/core/funcations/handlingdata.dart';
 import 'package:e_comerece/core/loacallization/translate_data.dart';
-import 'package:e_comerece/data/datasource/remote/api_cash/get_cash_data.dart';
-import 'package:e_comerece/data/datasource/remote/api_cash/insert_cash_data.dart';
+import 'package:e_comerece/core/servises/custom_getx_snak_bar.dart';
 
-import 'package:e_comerece/data/datasource/remote/shein/categories_shein_data.dart';
-import 'package:e_comerece/data/datasource/remote/shein/search_shein_data.dart';
-import 'package:e_comerece/data/datasource/remote/shein/trendaing_shein_data.dart';
 import 'package:e_comerece/data/model/shein_models/catgory_shein_model.dart';
+import 'package:e_comerece/core/class/failure.dart';
+import 'package:e_comerece/data/repository/shein/shein_repo_impl.dart';
 import 'package:e_comerece/data/model/shein_models/trending_products_model.dart';
 import 'package:e_comerece/data/model/shein_models/searsh_shein_model.dart'
     as searsh;
@@ -48,11 +43,7 @@ abstract class HomeSheinController extends GetxController {
 }
 
 class HomeSheinControllerImpl extends HomeSheinController {
-  CategoriesSheinData categoryData = CategoriesSheinData(Get.find());
-  TrendaingSheinData trendaingSheinData = TrendaingSheinData(Get.find());
-  SearchSheinData searchSheinData = SearchSheinData(Get.find());
-  InsertCashData insertCashData = InsertCashData(Get.find());
-  GetCashData getCashData = GetCashData(Get.find());
+  SheinRepoImpl sheinRepoImpl = SheinRepoImpl(apiService: Get.find());
 
   TextEditingController searchController = TextEditingController();
   TextEditingController startPriceController = TextEditingController();
@@ -99,66 +90,21 @@ class HomeSheinControllerImpl extends HomeSheinController {
 
   @override
   fetchCategories() async {
-    String cashkey(String q) => 'search:shein:$q:${enOrArShein()}';
     statusrequestcat = Statusrequest.loading;
-    update();
-    try {
-      final cacheResponse = await getCashData.getCash(
-        query: cashkey("categories"),
-        platform: "Shein",
-      );
-      log('CACHE RESPONSE: ${cacheResponse["status"]}');
-      if (cacheResponse["status"] == "success") {
-        log('FETCH CACHED SERVER DATA SUCCESSFULLY');
-        final categoryResponse = cacheResponse["data"];
-        statusrequestcat = handlingData(categoryResponse);
-        if (statusrequestcat == Statusrequest.success) {
-          if (categoryResponse is Map<String, dynamic> &&
-              categoryResponse['success'] == true) {
-            final catModel = CatgorySheinModel.fromJson(categoryResponse);
-
-            if (catModel.data.isNotEmpty) {
-              categories.assignAll(catModel.data);
-            } else {
-              categories.clear();
-              statusrequestcat = Statusrequest.noData;
-            }
-          } else {
-            statusrequestcat = Statusrequest.failuer;
-          }
-        }
-      } else {
-        log('FETCH FROM API');
-        final categoryResponse = await categoryData.getCategories();
-
-        statusrequestcat = handlingData(categoryResponse);
-        if (statusrequestcat == Statusrequest.success) {
-          if (categoryResponse is Map<String, dynamic> &&
-              categoryResponse['success'] == true) {
-            final catModel = CatgorySheinModel.fromJson(categoryResponse);
-
-            if (catModel.data.isNotEmpty) {
-              categories.assignAll(catModel.data);
-              insertCashData.insertCash(
-                query: cashkey("categories"),
-                platform: "Shein",
-                data: categoryResponse,
-                ttlHours: "24",
-              );
-            } else {
-              // categories.clear();
-              statusrequestcat = Statusrequest.noData;
-            }
-          } else {
-            statusrequestcat = Statusrequest.failuer;
-          }
-        }
-      }
-    } catch (e) {
-      log('FETCH ERROR: $e');
+    final response = await sheinRepoImpl.fetchCategories(enOrArShein());
+    final r = response.fold((l) => l, (r) => r);
+    if (r is Failure) {
       statusrequestcat = Statusrequest.failuer;
+      showCustomGetSnack(isGreen: false, text: r.errorMessage);
     }
-
+    if (r is CatgorySheinModel) {
+      if (r.data.isNotEmpty) {
+        categories.assignAll(r.data);
+        statusrequestcat = Statusrequest.success;
+      } else {
+        statusrequestcat = Statusrequest.noData;
+      }
+    }
     update();
   }
 
@@ -200,8 +146,6 @@ class HomeSheinControllerImpl extends HomeSheinController {
 
   @override
   fetchproducts({bool isLoadMore = false}) async {
-    cashkey(String q, int p) => 'homeproduct:shein:$q:page=$p:${enOrArShein()}';
-
     if (isLoadMore) {
       if (isLoading || !hasMore) return;
       isLoading = true;
@@ -214,85 +158,27 @@ class HomeSheinControllerImpl extends HomeSheinController {
 
     update();
 
-    try {
-      final cacheResponse = await getCashData.getCash(
-        query: cashkey("", pageindexHotProduct),
-        platform: "shein",
-      );
-
-      if (cacheResponse["status"] == "success") {
-        log("get from shein home product cache=====================");
-        final response = cacheResponse["data"];
-        statusrequestproduct = handlingData(response);
-        if (statusrequestproduct == Statusrequest.success) {
-          if (response['success'] == true) {
-            final model = TrendingProductsModel.fromJson(response);
-            final List<Product> iterable = model.data!.products;
-
-            if (iterable.isEmpty) {
-              hasMore = false;
-              statusrequestproduct = Statusrequest.noData;
-            } else {
-              products.addAll(iterable);
-              pageindexHotProduct++;
-            }
-          }
-        }
-      } else {
-        log("get from shein home product api=====================");
-        final response = await trendaingSheinData.getTrendingproduct(
-          pageindexHotProduct,
-        );
-        statusrequestproduct = handlingData(response);
-        if (statusrequestproduct == Statusrequest.success) {
-          if (response['success'] == true) {
-            final model = TrendingProductsModel.fromJson(response);
-            final List<Product> iterable = model.data!.products;
-
-            if (iterable.isEmpty && pageindexHotProduct > 1) {
-              hasMore = false;
-              statusrequestproduct = Statusrequest.noDataPageindex;
-              custSnackBarNoMore();
-            } else if (iterable.isEmpty) {
-              hasMore = false;
-              statusrequestproduct = Statusrequest.noData;
-            } else {
-              products.addAll(iterable);
-              insertCashData.insertCash(
-                query: cashkey("", pageindexHotProduct),
-                platform: "shein",
-                data: response,
-                ttlHours: "24",
-              );
-              pageindexHotProduct++;
-            }
-          }
-        }
-      }
-    } catch (e, st) {
-      log('FETCH ERROR: $e\n$st');
-      hasMore = false;
+    final response = await sheinRepoImpl.fetchTrendingProducts(
+      enOrArShein(),
+      pageindexHotProduct,
+    );
+    final r = response.fold((l) => l, (r) => r);
+    if (r is Failure) {
       statusrequestproduct = Statusrequest.failuer;
-    } finally {
-      if (isLoadMore) isLoading = false;
-      update();
+      showCustomGetSnack(isGreen: false, text: r.errorMessage);
     }
+    if (r is TrendingProductsModel) {
+      if (r.data!.products.isEmpty) {
+        hasMore = false;
+        if (!isLoadMore) statusrequestproduct = Statusrequest.noData;
+      } else {
+        products.addAll(r.data!.products);
+        if (!isLoadMore) statusrequestproduct = Statusrequest.success;
+      }
+    }
+    isLoading = false;
+    update();
   }
-
-  // @override
-  // onChangeSearch(String val) {
-  //   if (val == "") {
-  //     isSearch = false;
-  //     update();
-  //   }
-  // }
-
-  // @override
-  // onTapSearch({required keyWord, required lang}) {
-  //   isSearch = true;
-  //   searshText(keyWord: keyWord, lang: lang);
-  //   update();
-  // }
 
   @override
   goTofavorite() {
@@ -315,9 +201,6 @@ class HomeSheinControllerImpl extends HomeSheinController {
 
   @override
   searshProduct({isLoadMore = false, startPrice = "", endPrice = ""}) async {
-    cashkey(String q, int p) =>
-        'search:shein:$q:page=$p:${detectLangFromQueryShein(searchController.text)}';
-
     if (isLoadMore) {
       if (isLoadingSearch || !hasMoresearch) return;
       isLoadingSearch = true;
@@ -333,74 +216,30 @@ class HomeSheinControllerImpl extends HomeSheinController {
     }
     update();
 
-    try {
-      final cacheResponse = await getCashData.getCash(
-        query: cashkey(searchController.text, pageindex),
-        platform: "shein",
-      );
-
-      if (cacheResponse["status"] == "success") {
-        log("get from shein search product cache=====================");
-        final response = cacheResponse["data"];
-        statusrequestsearch = handlingData(response);
-        if (statusrequestsearch == Statusrequest.success) {
-          if (response['success'] == true) {
-            final model = searsh.SeachSheinModel.fromJson(response);
-            final List<searsh.Product> iterable = model.data?.products ?? [];
-
-            if (iterable.isEmpty && pageindex == 1) {
-              hasMoresearch = false;
-              statusrequestsearch = Statusrequest.noData;
-            } else {
-              searchProducts.addAll(iterable);
-              pageindex++;
-            }
-          }
-        }
-      } else {
-        final response = await searchSheinData.getsearch(
-          q: searchController.text,
-          pageindex: pageindex.toString(),
-          endPrice: endPrice,
-          startPrice: startPrice,
-          countryCode: detectLangFromQueryShein(searchController.text),
-        );
-
-        statusrequestsearch = handlingData(response);
-        if (statusrequestsearch == Statusrequest.success) {
-          if (response['success'] == true) {
-            final model = searsh.SeachSheinModel.fromJson(response);
-            final List<searsh.Product> iterable = model.data?.products ?? [];
-
-            if (iterable.isEmpty && pageindex == 1) {
-              hasMoresearch = false;
-              statusrequestsearch = Statusrequest.noData;
-            } else if (iterable.isEmpty && pageindex > 1) {
-              hasMoresearch = false;
-              statusrequestsearch = Statusrequest.noDataPageindex;
-              custSnackBarNoMore();
-            } else {
-              searchProducts.addAll(iterable);
-              insertCashData.insertCash(
-                query: cashkey(searchController.text, pageindex),
-                platform: "shein",
-                data: response,
-                ttlHours: "24",
-              );
-              pageindex++;
-            }
-          }
-        }
-      }
-    } catch (e, st) {
-      log('FETCH ERROR: $e\n$st');
-      hasMoresearch = false;
+    final response = await sheinRepoImpl.searchProducts(
+      detectLangFromQueryShein(searchController.text),
+      searchController.text,
+      pageindex,
+      startPrice,
+      endPrice,
+    );
+    final r = response.fold((l) => l, (r) => r);
+    if (r is Failure) {
       statusrequestsearch = Statusrequest.failuer;
-    } finally {
-      if (isLoadMore) isLoadingSearch = false;
-      update();
-      log("statusrequestsearch $statusrequestsearch");
+      showCustomGetSnack(isGreen: false, text: r.errorMessage);
     }
+    if (r is searsh.SeachSheinModel) {
+      if (r.data?.products.isEmpty ?? true) {
+        hasMoresearch = false;
+        if (!isLoadMore) statusrequestsearch = Statusrequest.noData;
+      } else {
+        searchProducts.addAll(r.data!.products);
+        pageindex++;
+        if (!isLoadMore) statusrequestsearch = Statusrequest.success;
+      }
+    }
+    isLoadingSearch = false;
+    update();
   }
 
   @override

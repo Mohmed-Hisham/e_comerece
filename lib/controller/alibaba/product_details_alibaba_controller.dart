@@ -5,21 +5,19 @@ import 'dart:math' as math;
 import 'package:carousel_slider/carousel_controller.dart';
 import 'package:chewie/chewie.dart';
 import 'package:e_comerece/controller/cart/cart_from_detils.dart';
+import 'package:e_comerece/core/class/failure.dart';
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/funcations/handle_paging_response.dart';
-import 'package:e_comerece/core/funcations/handlingdata.dart';
+import 'package:e_comerece/core/servises/custom_getx_snak_bar.dart';
 import 'package:e_comerece/core/servises/selected_attributes_tomap_fordb.dart';
 import 'package:e_comerece/core/servises/serviese.dart';
-import 'package:e_comerece/data/datasource/remote/alibaba/product_ditels_alibaba_data.dart';
-import 'package:e_comerece/data/datasource/remote/alibaba/search_name_alibaba_data.dart';
-import 'package:e_comerece/data/datasource/remote/api_cash/get_cash_data.dart';
-import 'package:e_comerece/data/datasource/remote/api_cash/insert_cash_data.dart';
 import 'package:e_comerece/data/datasource/remote/cart/cartviwe_data.dart';
 import 'package:e_comerece/data/model/alibaba_model/product_ditels_alibaba_model.dart'
     as alibaba_model;
 import 'package:e_comerece/data/model/alibaba_model/productalibaba_home_model.dart';
 import 'package:e_comerece/data/model/cartmodel.dart';
+import 'package:e_comerece/data/repository/alibaba/alibaba_repo_impl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -53,18 +51,12 @@ abstract class ProductDetailsAlibabaController extends GetxController {
 
 class ProductDetailsAlibabaControllerImple
     extends ProductDetailsAlibabaController {
-  final ProductDitelsAlibabaData productDitelsAlibabaData =
-      ProductDitelsAlibabaData(Get.find());
-  SearchNameAlibabaData searchNameAlibabaData = SearchNameAlibabaData(
-    Get.find(),
-  );
+  AlibabaRepoImpl alibabaRepoImpl = AlibabaRepoImpl(apiService: Get.find());
 
   AddorrmoveControllerimple addorrmoveController = Get.put(
     AddorrmoveControllerimple(),
   );
   CartviweData cartData = CartviweData(Get.find());
-  InsertCashData insertCashData = InsertCashData(Get.find());
-  GetCashData getCashData = GetCashData(Get.find());
 
   Statusrequest statusrequest = Statusrequest.loading;
   alibaba_model.ProductDitelsAliBabaModel? productDitelsAliBabaModel;
@@ -126,93 +118,35 @@ class ProductDetailsAlibabaControllerImple
   fetchProductDetails({int? prodId}) async {
     final int resolvedId = prodId ?? productId!;
     log("lang=>===========================$lang");
-    cashkey(String q) => 'detailsproduct:alibaba:$q:$lang';
 
     statusrequest = Statusrequest.loading;
     update();
 
-    try {
-      final cacheResponse = await getCashData.getCash(
-        query: cashkey(resolvedId.toString()),
-        platform: "alibaba",
-      );
+    final response = await alibabaRepoImpl.fetchProductDetails(
+      lang!,
+      resolvedId.toString(),
+    );
+    final r = response.fold((l) => l, (r) => r);
 
-      if (cacheResponse["status"] == "success") {
-        log("get from alibaba cache server=====================");
-        final response = cacheResponse["data"];
-        statusrequest = handlingData(response);
-
-        if (Statusrequest.success == statusrequest) {
-          if (handle200(response)) {
-            productDitelsAliBabaModel =
-                alibaba_model.ProductDitelsAliBabaModel.fromJson(
-                  response as Map<String, dynamic>,
-                );
-            _buildUiSchemasFromModel();
-            initializeDefaultAttributes();
-
-            statusrequest = Statusrequest.success;
-            getquiqtity(
-              jsonEncode(selectedAttributesToMapForDb(selectedAttributes)),
-            );
-          } else if (handle5008(response)) {
-            statusrequest = Statusrequest.failuerTryAgain;
-          } else {
-            statusrequest = Statusrequest.failuer;
-          }
-        }
-        update(['selectedAttributes']);
-
-        update();
-        final videoUrl = videoUrlString;
-        if (videoUrl != null && videoUrl.isNotEmpty && videoUrl != "0") {
-          await initializeVideoPlayer();
-          update(['videoPlayerController']);
-        }
-      } else {
-        var response = await productDitelsAlibabaData.getData(
-          resolvedId,
-          lang!,
-        );
-        statusrequest = handlingData(response);
-
-        if (Statusrequest.success == statusrequest) {
-          if (handle200(response)) {
-            productDitelsAliBabaModel =
-                alibaba_model.ProductDitelsAliBabaModel.fromJson(
-                  response as Map<String, dynamic>,
-                );
-            _buildUiSchemasFromModel();
-            initializeDefaultAttributes();
-            insertCashData.insertCash(
-              query: cashkey(resolvedId.toString()),
-              platform: "alibaba",
-              data: response,
-              ttlHours: "24",
-            );
-
-            statusrequest = Statusrequest.success;
-            getquiqtity(
-              jsonEncode(selectedAttributesToMapForDb(selectedAttributes)),
-            );
-          } else if (handle5008(response)) {
-            statusrequest = Statusrequest.failuerTryAgain;
-          } else {
-            statusrequest = Statusrequest.failuer;
-          }
-        }
-        update(['selectedAttributes']);
-
-        update();
-        final videoUrl = videoUrlString;
-        if (videoUrl != null && videoUrl.isNotEmpty && videoUrl != "0") {
-          await initializeVideoPlayer();
-          update(['videoPlayerController']);
-        }
-      }
-    } catch (e) {
+    if (r is Failure) {
       statusrequest = Statusrequest.failuer;
-      update();
+    }
+
+    if (r is alibaba_model.ProductDitelsAliBabaModel) {
+      productDitelsAliBabaModel = r;
+      _buildUiSchemasFromModel();
+      initializeDefaultAttributes();
+
+      statusrequest = Statusrequest.success;
+      getquiqtity(jsonEncode(selectedAttributesToMapForDb(selectedAttributes)));
+    }
+    update(['selectedAttributes']);
+
+    update();
+    final videoUrl = videoUrlString;
+    if (videoUrl != null && videoUrl.isNotEmpty && videoUrl != "0") {
+      await initializeVideoPlayer();
+      update(['videoPlayerController']);
     }
   }
 
@@ -276,8 +210,6 @@ class ProductDetailsAlibabaControllerImple
 
   @override
   searshText({bool isLoadMore = false}) async {
-    cashkey(String q, int p) =>
-        'detailsproduct:alibaba:$q:page=$p:${lang == "ar_MA" ? "ar_SA" : "en_US"}';
     if (isLoadMore) {
       if (isLoading || !hasMoresearch) return;
       isLoading = true;
@@ -289,78 +221,39 @@ class ProductDetailsAlibabaControllerImple
     }
     update(["searshText"]);
 
-    try {
-      final cacheResponse = await getCashData.getCash(
-        query: cashkey(title!, pageIndexSearch),
-        platform: "alibaba",
-      );
+    final response = await alibabaRepoImpl.searchProducts(
+      lang! == "ar_MA" ? "ar_SA" : "en_US",
+      pageIndexSearch,
+      title!,
+      "1",
+      "1000",
+    );
 
-      if (cacheResponse["status"] == "success") {
-        log('get from alibaba search cache=====================');
-        final data = cacheResponse["data"];
-        statusrequestsearch = handlingData(data);
-        if (statusrequestsearch == Statusrequest.success) {
-          if (handle200(data)) {
-            final model = ProductAliBabaHomeModel.fromJson(data);
-            final List<ResultList> iterable = model.result!.resultList;
+    statusrequestsearch = response.fold(
+      (l) {
+        showCustomGetSnack(isGreen: false, text: l.errorMessage);
+        return Statusrequest.failuer;
+      },
+      (r) {
+        final List<ResultList> iterable = r.result?.resultList ?? [];
 
-            if (iterable.isEmpty) {
-              hasMoresearch = false;
-              statusrequestsearch = Statusrequest.noData;
-            } else {
-              searchProducts.addAll(iterable);
-              pageIndexSearch++;
-            }
-          } else {
-            hasMoresearch = false;
-            statusrequestsearch = Statusrequest.failuer;
-          }
+        if (iterable.isEmpty && pageIndexSearch == 1) {
+          hasMoresearch = false;
+          return Statusrequest.noData;
+        } else if (iterable.isEmpty && pageIndexSearch > 1) {
+          hasMoresearch = false;
+          custSnackBarNoMore();
+          return Statusrequest.noDataPageindex;
+        } else {
+          searchProducts.addAll(iterable);
+          pageIndexSearch++;
+          return Statusrequest.success;
         }
-      } else {
-        log('get from alibaba search cache=====================');
-        final response = await searchNameAlibabaData.getproductsSearch(
-          lang: lang! == "ar_MA" ? "ar_SA" : "en_US",
-          q: title!,
-          pageindex: pageIndexSearch,
-        );
+      },
+    );
 
-        statusrequestsearch = handlingData(response);
-        if (statusrequestsearch == Statusrequest.success) {
-          if (handle200(response)) {
-            final model = ProductAliBabaHomeModel.fromJson(response);
-            final List<ResultList> iterable = model.result!.resultList;
-
-            if (iterable.isEmpty) {
-              hasMoresearch = false;
-              statusrequestsearch = Statusrequest.noData;
-            } else {
-              searchProducts.addAll(iterable);
-              insertCashData.insertCash(
-                query: cashkey(title!, pageIndexSearch),
-                platform: "alibaba",
-                data: response,
-                ttlHours: "24",
-              );
-              pageIndexSearch++;
-            }
-          } else if (handle205(response, pageIndexSearch)) {
-            hasMoresearch = false;
-            statusrequestsearch = Statusrequest.noDataPageindex;
-            // chaing();
-            custSnackBarNoMore();
-          } else {
-            hasMoresearch = false;
-            statusrequestsearch = Statusrequest.failuer;
-          }
-        }
-      }
-    } catch (e) {
-      hasMoresearch = false;
-      statusrequestsearch = Statusrequest.failuer;
-    } finally {
-      if (isLoadMore) isLoading = false;
-      update(["searshText"]);
-    }
+    if (isLoadMore) isLoading = false;
+    update(["searshText"]);
   }
 
   @override

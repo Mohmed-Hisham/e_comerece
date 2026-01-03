@@ -153,38 +153,37 @@ class ProductFromCat extends StatelessWidget {
                                       child: Center(child: iconWidget),
                                     ),
                                     if (useModel &&
-                                        (current.subCategories != null &&
-                                            (current.subCategories as List)
-                                                .isNotEmpty))
+                                        (current.list != null &&
+                                            current.list.isNotEmpty))
                                       Custmenubutton(
                                         onSelected: (p0) {
-                                          String name = p0!["name"].toString();
+                                          final map =
+                                              p0 as Map<String, dynamic>?;
+                                          String name = map!["name"].toString();
                                           int id = int.parse(
-                                            p0["id"].toString(),
+                                            map["id"].toString(),
                                           );
                                           controller.changeCat(name, id, index);
                                         },
-                                        itemBuilder: (context) =>
-                                            (current.subCategories as List).map(
-                                              (sub) {
-                                                return PopupMenuItem(
-                                                  value: {
-                                                    "id": sub.id,
-                                                    "name": sub.name,
-                                                  },
-                                                  child: Text(
-                                                    sub.name ?? 'Unknown',
-                                                    style: TextStyle(
-                                                      fontSize: 14.sp,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ),
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
+                                        itemBuilder: (context) => current.list
+                                            .map<PopupMenuEntry>((sub) {
+                                              return PopupMenuItem(
+                                                value: {
+                                                  "id": sub.id,
+                                                  "name": sub.name,
+                                                },
+                                                child: Text(
+                                                  sub.name ?? 'Unknown',
+                                                  style: TextStyle(
+                                                    fontSize: 14.sp,
+                                                    fontWeight: FontWeight.bold,
                                                   ),
-                                                );
-                                              },
-                                            ).toList(),
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                ),
+                                              );
+                                            })
+                                            .toList(),
                                       ),
                                   ],
                                 ),

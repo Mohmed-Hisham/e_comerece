@@ -91,7 +91,8 @@ class HomeAlibaba extends StatelessWidget {
                         : RefreshIndicator(
                             color: Appcolor.primrycolor,
                             backgroundColor: Colors.transparent,
-                            onRefresh: () => controller.fethcProducts(),
+                            onRefresh: () =>
+                                controller.fetchProducts(isLoadMore: false),
                             child: PaginationListener(
                               fetchAtEnd: true,
                               onLoadMore: () => controller.loadMoreproduct(),

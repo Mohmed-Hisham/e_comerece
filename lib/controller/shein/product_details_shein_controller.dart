@@ -1,19 +1,16 @@
 import 'dart:developer';
-
 import 'package:carousel_slider/carousel_controller.dart';
 import 'package:chewie/chewie.dart';
 import 'package:e_comerece/controller/cart/cart_from_detils.dart';
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/funcations/handle_paging_response.dart';
-import 'package:e_comerece/core/funcations/handlingdata.dart';
 import 'package:e_comerece/core/loacallization/translate_data.dart';
 import 'package:e_comerece/core/servises/serviese.dart';
-import 'package:e_comerece/data/datasource/remote/api_cash/get_cash_data.dart';
-import 'package:e_comerece/data/datasource/remote/api_cash/insert_cash_data.dart';
+import 'package:e_comerece/core/class/failure.dart';
+import 'package:e_comerece/core/servises/custom_getx_snak_bar.dart';
 import 'package:e_comerece/data/datasource/remote/cart/cartviwe_data.dart';
-import 'package:e_comerece/data/datasource/remote/shein/product_by_categories_data.dart';
-import 'package:e_comerece/data/datasource/remote/shein/product_ditels_shein_data.dart';
+import 'package:e_comerece/data/repository/shein/shein_repo_impl.dart';
 import 'package:e_comerece/data/model/cartmodel.dart';
 import 'package:e_comerece/data/model/shein_models/details_shein_image_list.dart'
     as shein_image_list;
@@ -21,13 +18,11 @@ import 'package:e_comerece/data/model/shein_models/details_shein_size.dart'
     as shein_size;
 import 'package:e_comerece/data/model/shein_models/product_ditels_shein_model.dart'
     as shein_model;
-import 'package:e_comerece/data/model/shein_models/product_from_categories_shein_model.dart'
-    as product_from_categories_shein_model;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:video_player/video_player.dart';
-// import 'package:e_comerece/data/model/shein_models/searsh_shein_model.dart'
-//     as searsh;
+import 'package:e_comerece/data/model/shein_models/searsh_shein_model.dart'
+    as shein_model_search;
 
 abstract class ProductDetailsSheinController extends GetxController {
   Future<void> fetchProductDetails();
@@ -65,19 +60,12 @@ abstract class ProductDetailsSheinController extends GetxController {
 }
 
 class ProductDetailsSheinControllerImple extends ProductDetailsSheinController {
-  final ProductDitelsSheinData productDitelsSheinData = ProductDitelsSheinData(
-    Get.find(),
-  );
-  ProductByCategoriesData productByCategoriesData = ProductByCategoriesData(
-    Get.find(),
-  );
+  SheinRepoImpl sheinRepoImpl = SheinRepoImpl(apiService: Get.find());
 
   AddorrmoveControllerimple addorrmoveController = Get.put(
     AddorrmoveControllerimple(),
   );
   CartviweData cartData = CartviweData(Get.find());
-  InsertCashData insertCashData = InsertCashData(Get.find());
-  GetCashData getCashData = GetCashData(Get.find());
 
   Statusrequest statusrequest = Statusrequest.loading;
   Statusrequest statusrequestImagesList = Statusrequest.loading;
@@ -144,198 +132,62 @@ class ProductDetailsSheinControllerImple extends ProductDetailsSheinController {
   fetchProductDetails({String? prodId}) async {
     statusrequest = Statusrequest.loading;
     update();
-    cashkey(String sn) => 'productdetails:shein:$sn';
-    try {
-      final cacheResponse = await getCashData.getCash(
-        query: cashkey(goodssn ?? ''),
-        platform: "shein",
-      );
-
-      if (cacheResponse["status"] == "success") {
-        log("get from shein cache server product details=====================");
-        final response = cacheResponse["data"];
-        statusrequest = handlingData(response);
-        if (Statusrequest.success == statusrequest) {
-          if (response is Map && (response['success'] == true)) {
-            productDitelsSheinModel =
-                shein_model.ProductDitelsSheinDart.fromJson(
-                  Map<String, dynamic>.from(response),
-                );
-            initializeDefaultAttributes();
-            await fetchImageListFromApi();
-            await fetchSizeProductDetails();
-            statusrequest = Statusrequest.success;
-          } else {
-            statusrequest = Statusrequest.failuer;
-          }
-        }
-      } else {
-        var response = await productDitelsSheinData.getProductDitels(
-          goodssn ?? '',
-          lang,
-        );
-        statusrequest = handlingData(response);
-
-        if (Statusrequest.success == statusrequest) {
-          if (response is Map && (response['success'] == true)) {
-            productDitelsSheinModel =
-                shein_model.ProductDitelsSheinDart.fromJson(
-                  Map<String, dynamic>.from(response),
-                );
-            initializeDefaultAttributes();
-            await fetchImageListFromApi();
-            await fetchSizeProductDetails();
-            insertCashData.insertCash(
-              query: cashkey(goodssn ?? ''),
-              platform: "shein",
-              data: response,
-              ttlHours: "24",
-            );
-            statusrequest = Statusrequest.success;
-          } else {
-            statusrequest = Statusrequest.failuer;
-          }
-        }
-      }
-    } catch (e, st) {
-      log('fetchProductDetails Shein error: $e\n$st');
+    final response = await sheinRepoImpl.fetchProductDetails(
+      goodssn ?? '',
+      lang,
+    );
+    final r = response.fold((l) => l, (r) => r);
+    if (r is Failure) {
       statusrequest = Statusrequest.failuer;
+      showCustomGetSnack(isGreen: false, text: r.errorMessage);
     }
-
+    if (r is shein_model.ProductDitelsSheinDart) {
+      productDitelsSheinModel = r;
+      initializeDefaultAttributes();
+      await fetchImageListFromApi();
+      await fetchSizeProductDetails();
+      statusrequest = Statusrequest.success;
+    }
     update();
   }
 
   fetchImageListFromApi() async {
     statusrequestImagesList = Statusrequest.loading;
     update(['imagesList']);
-    cashkey(String sn) => 'productimages:shein:$sn';
-    try {
-      final cacheResponse = await getCashData.getCash(
-        query: cashkey(goodssn!),
-        platform: "shein",
-      );
-
-      if (cacheResponse["status"] == "success") {
-        log("get from shein cache server images=====================");
-        final response = cacheResponse["data"];
-        statusrequestImagesList = handlingData(response);
-
-        if (Statusrequest.success == statusrequestImagesList) {
-          if (response is Map<String, dynamic> &&
-              (response['success'] == true)) {
-            final imageList = shein_image_list.DetailsSheinImageList.fromJson(
-              Map<String, dynamic>.from(response),
-            );
-            imageListFromApi = imageList.data?.detailImage ?? [];
-            // goodsSnimage = imageList.data?.goodsImg;
-            imageListFromApi.insert(0, imageList.data?.goodsImg ?? '');
-            // initializeDefaultAttributes();
-            statusrequestImagesList = Statusrequest.success;
-          } else {
-            statusrequestImagesList = Statusrequest.failuer;
-          }
-        }
-      } else {
-        var response = await productDitelsSheinData.getProductDitelsImageList(
-          goodssn!,
-          lang,
-        );
-        log("respons=========: $response");
-        statusrequestImagesList = handlingData(response);
-
-        if (Statusrequest.success == statusrequestImagesList) {
-          if (response is Map<String, dynamic> &&
-              (response['success'] == true)) {
-            final imageList = shein_image_list.DetailsSheinImageList.fromJson(
-              Map<String, dynamic>.from(response),
-            );
-            imageListFromApi = imageList.data?.detailImage ?? [];
-            // goodsSnimage = imageList.data?.goodsImg;
-            imageListFromApi.insert(0, imageList.data?.goodsImg ?? '');
-            // initializeDefaultAttributes();
-            insertCashData.insertCash(
-              query: cashkey(goodssn!),
-              platform: "shein",
-              data: response,
-              ttlHours: "24",
-            );
-            statusrequestImagesList = Statusrequest.success;
-          } else {
-            statusrequestImagesList = Statusrequest.failuer;
-          }
-        }
-      }
-    } catch (e, st) {
-      log('fetchProductDetails Shein error: $e\n$st');
+    final response = await sheinRepoImpl.fetchProductDetailsImageList(
+      goodssn!,
+      lang,
+    );
+    final r = response.fold((l) => l, (r) => r);
+    if (r is Failure) {
       statusrequestImagesList = Statusrequest.failuer;
+      showCustomGetSnack(isGreen: false, text: r.errorMessage);
     }
-
+    if (r is shein_image_list.DetailsSheinImageList) {
+      imageListFromApi = r.data?.detailImage ?? [];
+      imageListFromApi.insert(0, r.data?.goodsImg ?? '');
+      statusrequestImagesList = Statusrequest.success;
+    }
     update(['imagesList']);
   }
 
   fetchSizeProductDetails() async {
     statusrequestSize = Statusrequest.loading;
     update();
-    cashkey(String id) => 'productsizes:shein:$id';
-    try {
-      final cacheResponse = await getCashData.getCash(
-        query: cashkey(goodsid!),
-        platform: "shein",
-      );
-
-      if (cacheResponse["status"] == "success") {
-        log("get from shein cache server sizes=====================");
-        final response = cacheResponse["data"];
-        statusrequestSize = handlingData(response);
-
-        if (Statusrequest.success == statusrequestSize) {
-          if (response is Map<String, dynamic> &&
-              (response['success'] == true)) {
-            final sizeList = shein_size.DetailsSheinSize.fromJson(
-              Map<String, dynamic>.from(response),
-            );
-
-            sizeAttributes = sizeList.data?.secondSaleAttributes ?? [];
-            initDefaultSelections();
-
-            statusrequestSize = Statusrequest.success;
-          } else {
-            statusrequestSize = Statusrequest.failuer;
-          }
-        }
-      } else {
-        var response = await productDitelsSheinData.getProductDitelsSize(
-          goodsid: goodsid!,
-          countryCode: lang,
-        );
-        statusrequestSize = handlingData(response);
-
-        if (Statusrequest.success == statusrequestSize) {
-          if (response is Map<String, dynamic> &&
-              (response['success'] == true)) {
-            final sizeList = shein_size.DetailsSheinSize.fromJson(
-              Map<String, dynamic>.from(response),
-            );
-
-            sizeAttributes = sizeList.data?.secondSaleAttributes ?? [];
-            initDefaultSelections();
-            insertCashData.insertCash(
-              query: cashkey(goodsid!),
-              platform: "shein",
-              data: response,
-              ttlHours: "24",
-            );
-            statusrequestSize = Statusrequest.success;
-          } else {
-            statusrequestSize = Statusrequest.failuer;
-          }
-        }
-      }
-    } catch (e, st) {
-      log('size Shein error: $e\n$st');
+    final response = await sheinRepoImpl.fetchProductDetailsSize(
+      goodsid!,
+      lang,
+    );
+    final r = response.fold((l) => l, (r) => r);
+    if (r is Failure) {
       statusrequestSize = Statusrequest.failuer;
+      showCustomGetSnack(isGreen: false, text: r.errorMessage);
     }
-
+    if (r is shein_size.DetailsSheinSize) {
+      sizeAttributes = r.data?.secondSaleAttributes ?? [];
+      initDefaultSelections();
+      statusrequestSize = Statusrequest.success;
+    }
     update();
   }
 
@@ -651,12 +503,10 @@ class ProductDetailsSheinControllerImple extends ProductDetailsSheinController {
 
   bool isLoadingSearch = false;
   int pageindex = 1;
-  List<product_from_categories_shein_model.Product> searchProducts = [];
+  List<shein_model_search.Product> searchProducts = [];
 
   @override
   searshProduct({isLoadMore = false}) async {
-    cashkey(String q, int p) => 'productcdetails:shein:$q:page=$p';
-
     if (isLoadMore) {
       if (isLoadingSearch || !hasMoresearch) return;
       isLoadingSearch = true;
@@ -668,76 +518,38 @@ class ProductDetailsSheinControllerImple extends ProductDetailsSheinController {
     }
     update(['searchProducts']);
 
-    try {
-      final cacheResponse = await getCashData.getCash(
-        query: cashkey(title!, pageindex),
-        platform: "shein",
-      );
+    final response = await sheinRepoImpl.fetchProductsByCategories(
+      categoryid ?? '',
+      title ?? '',
+      pageindex.toString(),
+      detectLangFromQueryShein(title ?? "SA"),
+    );
 
-      if (cacheResponse["status"] == "success") {
-        log("get from alibaba cache server=====================");
-        final response = cacheResponse["data"];
-        statusrequestsearch = handlingData(response);
-        if (statusrequestsearch == Statusrequest.success) {
-          if (response['success'] == true) {
-            final model = product_from_categories_shein_model
-                .ProductFromCategoriesSheinModel.fromJson(response);
-            final List<product_from_categories_shein_model.Product> iterable =
-                model.data?.products ?? [];
-
-            if (iterable.isEmpty && pageindex == 1) {
-              hasMoresearch = false;
-              statusrequestsearch = Statusrequest.noData;
-            } else {
-              searchProducts.addAll(iterable);
-              pageindex++;
-            }
-          }
+    statusrequestsearch = response.fold(
+      (l) {
+        showCustomGetSnack(isGreen: false, text: l.errorMessage);
+        return Statusrequest.failuer;
+      },
+      (r) {
+        final List<shein_model_search.Product> iterable =
+            r.data?.products ?? [];
+        if (iterable.isEmpty && pageindex == 1) {
+          hasMoresearch = false;
+          return Statusrequest.noData;
+        } else if (iterable.isEmpty && pageindex > 1) {
+          hasMoresearch = false;
+          custSnackBarNoMore();
+          return Statusrequest.noDataPageindex;
+        } else {
+          searchProducts.addAll(iterable);
+          pageindex++;
+          return Statusrequest.success;
         }
-      } else {
-        final response = await productByCategoriesData.getproductbycategories(
-          categoryId: categoryid!,
-          pageindex: pageindex.toString(),
-          countryCode: detectLangFromQueryShein(title ?? "SA"),
-        );
+      },
+    );
 
-        statusrequestsearch = handlingData(response);
-        if (statusrequestsearch == Statusrequest.success) {
-          if (response['success'] == true) {
-            final model = product_from_categories_shein_model
-                .ProductFromCategoriesSheinModel.fromJson(response);
-            final List<product_from_categories_shein_model.Product> iterable =
-                model.data?.products ?? [];
-
-            if (iterable.isEmpty && pageindex == 1) {
-              hasMoresearch = false;
-              statusrequestsearch = Statusrequest.noData;
-            } else if (iterable.isEmpty && pageindex > 1) {
-              hasMoresearch = false;
-              statusrequestsearch = Statusrequest.noDataPageindex;
-              custSnackBarNoMore();
-            } else {
-              searchProducts.addAll(iterable);
-              insertCashData.insertCash(
-                query: cashkey(title!, pageindex),
-                platform: "shein",
-                data: response,
-                ttlHours: "24",
-              );
-              pageindex++;
-            }
-          }
-        }
-      }
-    } catch (e, st) {
-      log('FETCH ERROR: $e\n$st');
-      hasMoresearch = false;
-      statusrequestsearch = Statusrequest.failuer;
-    } finally {
-      if (isLoadMore) isLoadingSearch = false;
-      update(['searchProducts']);
-      log("statusrequestsearch $statusrequestsearch");
-    }
+    if (isLoadMore) isLoadingSearch = false;
+    update(['searchProducts']);
   }
 
   @override

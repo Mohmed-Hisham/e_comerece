@@ -26,7 +26,7 @@ class ProductHomeAlibaba extends GetView<ProductAlibabaHomeControllerImp> {
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
           mainAxisSpacing: 10,
-          mainAxisExtent: 360.h,
+          mainAxisExtent: 380.h,
         ),
 
         itemCount: controller.products.length,

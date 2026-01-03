@@ -1,21 +1,16 @@
-import 'dart:developer';
-
 import 'package:carousel_slider/carousel_controller.dart';
 import 'package:chewie/chewie.dart';
 import 'package:e_comerece/controller/cart/cart_from_detils.dart';
+import 'package:e_comerece/core/class/failure.dart';
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
-import 'package:e_comerece/core/funcations/handle_paging_response.dart';
-import 'package:e_comerece/core/funcations/handlingdata.dart';
+import 'package:e_comerece/core/loacallization/translate_data.dart';
+import 'package:e_comerece/core/servises/custom_getx_snak_bar.dart';
 import 'package:e_comerece/core/servises/serviese.dart';
-import 'package:e_comerece/data/datasource/remote/aliexpriess/product_details_data.dart';
-import 'package:e_comerece/data/datasource/remote/aliexpriess/searchtext_data.dart';
-import 'package:e_comerece/data/datasource/remote/api_cash/get_cash_data.dart';
-import 'package:e_comerece/data/datasource/remote/api_cash/insert_cash_data.dart';
-import 'package:e_comerece/data/datasource/remote/cart/cartviwe_data.dart';
 import 'package:e_comerece/data/model/cartmodel.dart';
+import 'package:e_comerece/data/model/aliexpriess_model/hotproductmodel.dart';
 import 'package:e_comerece/data/model/aliexpriess_model/itemdetelis_model.dart';
-import 'package:e_comerece/data/model/aliexpriess_model/searshtextmodel.dart';
+import 'package:e_comerece/data/repository/aliexpriss/alexpress_repo_impl.dart';
 import 'package:get/get.dart';
 import 'package:video_player/video_player.dart';
 
@@ -40,15 +35,13 @@ abstract class ProductDetailsController extends GetxController {
 }
 
 class ProductDetailsControllerImple extends ProductDetailsController {
-  final ProductDetailsData productDetailsData = ProductDetailsData(Get.find());
-  SearchtextData searchtextData = SearchtextData(Get.find());
+  AlexpressRepoImpl alexpressRepoImpl = AlexpressRepoImpl(
+    apiService: Get.find(),
+  );
 
   AddorrmoveControllerimple addorrmoveController = Get.put(
     AddorrmoveControllerimple(),
   );
-  CartviweData cartData = CartviweData(Get.find());
-  InsertCashData insertCashData = InsertCashData(Get.find());
-  GetCashData getCashData = GetCashData(Get.find());
 
   Statusrequest statusrequest = Statusrequest.loading;
   Statusrequest statusrequestquantity = Statusrequest.loading;
@@ -77,7 +70,7 @@ class ProductDetailsControllerImple extends ProductDetailsController {
   bool hasMoresearch = true;
   int pageIndexSearch = 0;
   Statusrequest statusrequestsearch = Statusrequest.loading;
-  List<ResultListSearshTextModel> searchProducts = [];
+  List<ResultListHotprosuct> searchProducts = [];
   int loadSearchOne = 0;
 
   final CarouselSliderController carouselController =
@@ -107,65 +100,31 @@ class ProductDetailsControllerImple extends ProductDetailsController {
   fetchProductDetails() async {
     statusrequest = Statusrequest.loading;
     update();
-    cashkey(String q) => 'productdetails:alexpress:$q:$lang';
-    final cashe = await getCashData.getCash(
-      query: cashkey(productId!.toString()),
-      platform: "aliexpress",
+
+    final response = await alexpressRepoImpl.fetchProductDetails(
+      enOrAr(),
+      productId!,
     );
-    if (cashe["status"] == "success") {
-      log("get product from aliexpress cache server=====================");
-      statusrequest = handlingData(cashe);
+    final r = response.fold((l) => l, (r) => r);
 
-      if (Statusrequest.success == statusrequest) {
-        if (handle200(cashe["data"])) {
-          itemDetailsModel = ItemDetailsModel.fromJson(cashe["data"]);
-          _buildUiSchemasFromModel();
-          initializeDefaultAttributes();
-
-          statusrequest = Statusrequest.success;
-        } else {
-          statusrequest = Statusrequest.failuer;
-        }
-      }
-
-      update();
-      if (videoUrlString != null &&
-          videoUrlString!.isNotEmpty &&
-          videoUrlString != "0") {
-        await initializeVideoPlayer();
-      } else {}
-      update(['selectedAttributes']);
-    } else {
-      log("get product from aliexpress api server=====================");
-      var response = await productDetailsData.getData(productId!, lang!);
-      statusrequest = handlingData(response);
-
-      if (Statusrequest.success == statusrequest) {
-        if (handle200(response)) {
-          itemDetailsModel = ItemDetailsModel.fromJson(response);
-          _buildUiSchemasFromModel();
-          initializeDefaultAttributes();
-
-          statusrequest = Statusrequest.success;
-          insertCashData.insertCash(
-            query: cashkey(productId!.toString()),
-            platform: "aliexpress",
-            data: response,
-            ttlHours: "24",
-          );
-        } else {
-          statusrequest = Statusrequest.failuer;
-        }
-      }
-
-      update();
-      if (videoUrlString != null &&
-          videoUrlString!.isNotEmpty &&
-          videoUrlString != "0") {
-        await initializeVideoPlayer();
-      }
-      update(['selectedAttributes']);
+    if (r is Failure) {
+      statusrequest = Statusrequest.failuer;
     }
+
+    if (r is ItemDetailsModel) {
+      itemDetailsModel = r;
+      _buildUiSchemasFromModel();
+      initializeDefaultAttributes();
+      statusrequest = Statusrequest.success;
+    }
+
+    update();
+    if (videoUrlString != null &&
+        videoUrlString!.isNotEmpty &&
+        videoUrlString != "0") {
+      await initializeVideoPlayer();
+    }
+    update(['selectedAttributes']);
   }
 
   @override
@@ -276,8 +235,6 @@ class ProductDetailsControllerImple extends ProductDetailsController {
 
   @override
   searshText({bool isLoadMore = false, String? titleReload}) async {
-    cashkey(String q, int p) => 'productdetails:aliexpress:$q:page=$p';
-
     if (isLoadMore) {
       if (isLoading || !hasMoresearch) return;
       isLoading = true;
@@ -289,86 +246,33 @@ class ProductDetailsControllerImple extends ProductDetailsController {
     }
     update();
 
-    try {
-      final cashe = await getCashData.getCash(
-        query: cashkey(
-          itemDetailsModel!.result!.item!.catId!.toString(),
-          pageIndexSearch,
-        ),
-        platform: "aliexpress",
-      );
-      if (cashe["status"] == "success") {
-        log("get search aliexpress from cache server =====================");
-        final response = cashe["data"];
-        statusrequestsearch = handlingData(response);
-        if (statusrequestsearch == Statusrequest.success) {
-          if (handle200(response)) {
-            final model = SearshTextModel.fromJson(response);
-            final List<ResultListSearshTextModel> iterable =
-                model.resultSearshTextModel!.resultListSearshTextModel!;
+    final response = await alexpressRepoImpl.searchProducts(
+      enOrAr(),
+      pageIndexSearch,
+      title ?? "",
+    );
+    final r = response.fold((l) => l, (r) => r);
 
-            if (iterable.isEmpty) {
-              hasMoresearch = false;
-              statusrequestsearch = Statusrequest.noData;
-            } else {
-              searchProducts.addAll(iterable);
-              pageIndexSearch++;
-            }
-          } else {
-            hasMoresearch = false;
-            statusrequestsearch = Statusrequest.failuer;
-          }
-        }
-      } else {
-        log("get search aliexpress from api=====================");
-        final response = await searchtextData.getData(
-          lang: lang!,
-          keyWord: title!,
-          pageindex: pageIndexSearch,
-          categoryId: itemDetailsModel!.result!.item!.catId!.toString(),
-        );
-
-        statusrequestsearch = handlingData(response);
-        if (statusrequestsearch == Statusrequest.success) {
-          if (handle200(response)) {
-            final model = SearshTextModel.fromJson(response);
-            final List<ResultListSearshTextModel> iterable =
-                model.resultSearshTextModel!.resultListSearshTextModel!;
-
-            if (iterable.isEmpty) {
-              hasMoresearch = false;
-              statusrequestsearch = Statusrequest.noData;
-            } else {
-              searchProducts.addAll(iterable);
-              insertCashData.insertCash(
-                query: cashkey(
-                  itemDetailsModel!.result!.item!.catId!.toString(),
-                  pageIndexSearch,
-                ),
-                platform: "aliexpress",
-                data: response,
-                ttlHours: "24",
-              );
-              pageIndexSearch++;
-            }
-          } else if (handle205(response, pageIndexSearch)) {
-            hasMoresearch = false;
-            statusrequestsearch = Statusrequest.noDataPageindex;
-            // chaing();
-            custSnackBarNoMore();
-          } else {
-            hasMoresearch = false;
-            statusrequestsearch = Statusrequest.failuer;
-          }
-        }
+    if (r is Failure) {
+      if (!isLoadMore) {
+        statusrequestsearch = Statusrequest.failuer;
       }
-    } catch (e) {
-      hasMoresearch = false;
-      statusrequestsearch = Statusrequest.failuer;
-    } finally {
-      if (isLoadMore) isLoading = false;
-      update();
+      showCustomGetSnack(isGreen: false, text: r.errorMessage);
     }
+
+    if (r is HotProductModel) {
+      var newProducts = r.result?.resultListHotprosuct;
+      if (newProducts == null || newProducts.isEmpty) {
+        hasMoresearch = false;
+        if (!isLoadMore) statusrequestsearch = Statusrequest.noData;
+      } else {
+        searchProducts.addAll(newProducts);
+        pageIndexSearch++;
+        if (!isLoadMore) statusrequestsearch = Statusrequest.success;
+      }
+    }
+    isLoading = false;
+    update();
   }
 
   @override

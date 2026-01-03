@@ -1,17 +1,13 @@
-import 'dart:developer';
-
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/funcations/handle_paging_response.dart';
-import 'package:e_comerece/core/funcations/handlingdata.dart';
-import 'package:e_comerece/core/loacallization/translate_data.dart';
-import 'package:e_comerece/data/datasource/remote/amazon_data/search_amazon_data.dart';
-import 'package:e_comerece/data/datasource/remote/api_cash/get_cash_data.dart';
-import 'package:e_comerece/data/datasource/remote/api_cash/insert_cash_data.dart';
+import 'package:e_comerece/core/servises/custom_getx_snak_bar.dart';
+import 'package:e_comerece/data/repository/amazon/amazon_repo_impl.dart';
 import 'package:e_comerece/data/model/amazon_models/categories_amazon_model.dart';
 import 'package:get/get.dart';
 import 'package:e_comerece/data/model/amazon_models/search_amazon_model.dart'
     as search;
+import 'package:e_comerece/core/loacallization/translate_data.dart';
 
 abstract class ProductFromCategoriesController extends GetxController {
   changeCat(String valnaame, String valid, int index);
@@ -26,9 +22,7 @@ abstract class ProductFromCategoriesController extends GetxController {
 
 class ProductFromCategoriesControllerImpl
     extends ProductFromCategoriesController {
-  SearchAmazonData searchData = SearchAmazonData(Get.find());
-  InsertCashData insertCashData = InsertCashData(Get.find());
-  GetCashData getCashData = GetCashData(Get.find());
+  AmazonRepoImpl amazonRepoImpl = AmazonRepoImpl(apiService: Get.find());
 
   //
   Statusrequest statusrequestOtherProduct = Statusrequest.none;
@@ -65,8 +59,6 @@ class ProductFromCategoriesControllerImpl
 
   @override
   otherProducts({bool isLoadMore = false}) async {
-    cashkey(String q, int p) => 'productcategory:amazon:$q:page=$p';
-
     if (isLoadMore) {
       if (isLoading || !hasMore) return;
       isLoading = true;
@@ -78,79 +70,39 @@ class ProductFromCategoriesControllerImpl
     }
     update();
 
-    try {
-      final cashe = await getCashData.getCash(
-        query: cashkey(categoryId, pageIndexOtherProduct),
-        platform: "amazon",
-      );
-      if (cashe["status"] == "success") {
-        log("get from amazon category product cache=====================");
-        final response = cashe["data"];
+    final response = await amazonRepoImpl.searchProducts(
+      enOrArAmazon(),
+      categoryId,
+      pageIndexOtherProduct,
+      "1",
+      "1000",
+    );
 
-        statusrequestOtherProduct = handlingData(response);
-        if (statusrequestOtherProduct == Statusrequest.success) {
-          if (response is Map<String, dynamic> && response['status'] == 'OK') {
-            final model = search.SearchAmazonModel.fromJson(response);
-            final List<search.Product> iterable = model.data!.products;
+    statusrequestOtherProduct = response.fold(
+      (l) {
+        showCustomGetSnack(isGreen: false, text: l.errorMessage);
+        return Statusrequest.failuer;
+      },
+      (r) {
+        final List<search.Product> iterable = r.data?.products ?? [];
 
-            if (iterable.isEmpty) {
-              hasMore = false;
-              statusrequestOtherProduct = Statusrequest.noData;
-            } else {
-              otherProduct.addAll(iterable);
-              pageIndexOtherProduct++;
-            }
-          } else {
-            hasMore = false;
-            statusrequestOtherProduct = Statusrequest.noData;
-          }
+        if (iterable.isEmpty && pageIndexOtherProduct == 1) {
+          hasMore = false;
+          return Statusrequest.noData;
+        } else if (iterable.isEmpty && pageIndexOtherProduct > 1) {
+          hasMore = false;
+          custSnackBarNoMore();
+          return Statusrequest.noDataPageindex;
+        } else {
+          otherProduct.addAll(iterable);
+          pageIndexOtherProduct++;
+          return Statusrequest.success;
         }
-      } else {
-        log("get from amazon category product api=====================");
-        final response = await searchData.getSearch(
-          startPrice: 1,
-          endPrice: 1000,
-          lang: enOrArAmazon(),
-          q: categoryId,
-          pageindex: pageIndexOtherProduct,
-        );
+      },
+    );
 
-        statusrequestOtherProduct = handlingData(response);
-        if (statusrequestOtherProduct == Statusrequest.success) {
-          if (response is Map<String, dynamic> && response['status'] == 'OK') {
-            final model = search.SearchAmazonModel.fromJson(response);
-            final List<search.Product> iterable = model.data!.products;
-
-            if (iterable.isEmpty && pageIndexOtherProduct > 1) {
-              hasMore = false;
-              statusrequestOtherProduct = Statusrequest.noDataPageindex;
-              custSnackBarNoMore();
-            } else if (iterable.isEmpty) {
-              hasMore = false;
-              statusrequestOtherProduct = Statusrequest.noData;
-            } else {
-              otherProduct.addAll(iterable);
-              insertCashData.insertCash(
-                query: cashkey(categoryId, pageIndexOtherProduct),
-                platform: "amazon",
-                data: response,
-                ttlHours: "24",
-              );
-              pageIndexOtherProduct++;
-            }
-          } else {
-            hasMore = false;
-            statusrequestOtherProduct = Statusrequest.noData;
-          }
-        }
-      }
-    } catch (e) {
-      hasMore = false;
-      statusrequestOtherProduct = Statusrequest.failuer;
-    } finally {
-      if (isLoadMore) isLoading = false;
-      update();
-    }
+    if (isLoadMore) isLoading = false;
+    update();
   }
 
   @override

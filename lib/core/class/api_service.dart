@@ -69,7 +69,7 @@ class ApiService {
     }
   }
 
-  Future<Map<String, dynamic>> get({
+  Future<Response> get({
     required String endpoint,
     Map<String, String>? extraHeaders,
     CancelToken? cancelToken,
@@ -85,7 +85,7 @@ class ApiService {
       options: Options(headers: headers),
       cancelToken: cancelToken,
     );
-    return response.data as Map<String, dynamic>;
+    return response;
   }
 
   Future<Response> delete({

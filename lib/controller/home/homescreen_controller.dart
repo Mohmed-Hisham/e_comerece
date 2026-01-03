@@ -1,22 +1,20 @@
-import 'dart:developer';
 import 'package:e_comerece/controller/home/home_platform_controller/alibaba_home_controller.dart';
 import 'package:e_comerece/controller/home/home_platform_controller/aliexpress_home_controller.dart';
 import 'package:e_comerece/controller/home/home_platform_controller/amazon_home_con.dart';
 import 'package:e_comerece/controller/home/home_platform_controller/shein_hom_controller.dart';
 import 'package:e_comerece/core/class/statusrequest.dart';
+import 'package:e_comerece/core/class/failure.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/funcations/handle_paging_response.dart';
-import 'package:e_comerece/core/funcations/handlingdata.dart';
 import 'package:e_comerece/core/loacallization/translate_data.dart';
+import 'package:e_comerece/core/servises/custom_getx_snak_bar.dart';
 import 'package:e_comerece/core/servises/platform_ext.dart';
-import 'package:e_comerece/data/datasource/remote/alibaba/search_name_alibaba_data.dart';
-import 'package:e_comerece/data/datasource/remote/aliexpriess/searchtext_data.dart';
-import 'package:e_comerece/data/datasource/remote/amazon_data/search_amazon_data.dart';
-import 'package:e_comerece/data/datasource/remote/api_cash/get_cash_data.dart';
-import 'package:e_comerece/data/datasource/remote/api_cash/insert_cash_data.dart';
-import 'package:e_comerece/data/datasource/remote/shein/search_shein_data.dart';
+import 'package:e_comerece/data/repository/alibaba/alibaba_repo_impl.dart';
+import 'package:e_comerece/data/repository/amazon/amazon_repo_impl.dart';
+import 'package:e_comerece/data/repository/shein/shein_repo_impl.dart';
 import 'package:e_comerece/data/model/alibaba_model/productalibaba_home_model.dart';
-import 'package:e_comerece/data/model/aliexpriess_model/searshtextmodel.dart';
+import 'package:e_comerece/data/model/aliexpriess_model/hotproductmodel.dart';
+import 'package:e_comerece/data/repository/aliexpriss/alexpress_repo_impl.dart';
 import 'package:e_comerece/viwe/screen/cart/cart_view.dart';
 import 'package:e_comerece/viwe/screen/home/homepage.dart';
 import 'package:e_comerece/viwe/screen/local_serviess/local_serviess_screen.dart';
@@ -128,6 +126,13 @@ class HomescreenControllerImple extends HomescreenController {
   );
   AmazonHomeCon amazonHomeCon = Get.put(AmazonHomeCon());
   SheinHomController sheinHomController = Get.put(SheinHomController());
+
+  AlexpressRepoImpl alexpressRepoImpl = AlexpressRepoImpl(
+    apiService: Get.find(),
+  );
+  AlibabaRepoImpl alibabaRepoImpl = AlibabaRepoImpl(apiService: Get.find());
+  SheinRepoImpl sheinRepoImpl = SheinRepoImpl(apiService: Get.find());
+  AmazonRepoImpl amazonRepoImpl = AmazonRepoImpl(apiService: Get.find());
 
   TextEditingController searchController = TextEditingController();
 
@@ -326,14 +331,12 @@ class HomescreenControllerImple extends HomescreenController {
   }
 
   int pageindexALiexpress = 1;
-  List<ResultListSearshTextModel> searchProductsAliExpress = [];
+  List<ResultListHotprosuct> searchProductsAliExpress = [];
   bool hasMoreAliexpress = true;
   bool isLoadingAliExpress = false;
   Statusrequest statusrequestAliExpress = Statusrequest.loading;
-  SearchtextData searchtextDataAliexpress = SearchtextData(Get.find());
 
   searsAliexpress({bool isLoadMore = false}) async {
-    cashkey(String q, int p) => 'search:aliexpress:$q:page=$p';
     if (isLoadMore) {
       if (isLoadingAliExpress || !hasMoreAliexpress) return;
       isLoadingAliExpress = true;
@@ -345,78 +348,33 @@ class HomescreenControllerImple extends HomescreenController {
     }
     update(['aliexpress']);
 
-    try {
-      final cashe = await getCashData.getCash(
-        query: cashkey(searchController.text, pageindexALiexpress),
-        platform: "aliexpress",
-      );
-      if (cashe["status"] == "success") {
-        log("get search from aliexpress cache server=====================");
-        final response = cashe["data"];
-        statusrequestAliExpress = handlingData(response);
-        if (statusrequestAliExpress == Statusrequest.success) {
-          if (handle200(response)) {
-            final model = SearshTextModel.fromJson(response);
-            final List<ResultListSearshTextModel> iterable =
-                model.resultSearshTextModel!.resultListSearshTextModel!;
+    final response = await alexpressRepoImpl.searchProducts(
+      detectLangFromQuery(searchController.text),
+      pageindexALiexpress,
+      searchController.text,
+    );
+    final r = response.fold((l) => l, (r) => r);
 
-            if (iterable.isEmpty) {
-              hasMoreAliexpress = false;
-              statusrequestAliExpress = Statusrequest.noData;
-            } else {
-              searchProductsAliExpress.addAll(iterable);
-              pageindexALiexpress++;
-            }
-          } else {
-            hasMoreAliexpress = false;
-            statusrequestAliExpress = Statusrequest.noData;
-          }
-        }
-      } else {
-        log("get search from aliexpress api=====================");
-        final response = await searchtextDataAliexpress.getData(
-          lang: detectLangFromQuery(searchController.text),
-          keyWord: searchController.text,
-          pageindex: pageindexALiexpress,
-        );
-
-        statusrequestAliExpress = handlingData(response);
-        if (statusrequestAliExpress == Statusrequest.success) {
-          if (handle200(response)) {
-            final model = SearshTextModel.fromJson(response);
-            final List<ResultListSearshTextModel> iterable =
-                model.resultSearshTextModel!.resultListSearshTextModel!;
-
-            if (iterable.isEmpty) {
-              hasMoreAliexpress = false;
-              statusrequestAliExpress = Statusrequest.noData;
-            } else {
-              searchProductsAliExpress.addAll(iterable);
-              insertCashData.insertCash(
-                query: cashkey(searchController.text, pageindexALiexpress),
-                platform: "aliexpress",
-                data: response,
-                ttlHours: "24",
-              );
-              pageindexALiexpress++;
-            }
-          } else if (handle205(response, pageindexALiexpress)) {
-            hasMoreAliexpress = false;
-            statusrequestAliExpress = Statusrequest.noDataPageindex;
-            custSnackBarNoMore();
-          } else {
-            hasMoreAliexpress = false;
-            statusrequestAliExpress = Statusrequest.noData;
-          }
-        }
+    if (r is Failure) {
+      if (!isLoadMore) {
+        statusrequestAliExpress = Statusrequest.failuer;
       }
-    } catch (e) {
-      hasMoreAliexpress = false;
-      statusrequestAliExpress = Statusrequest.failuer;
-    } finally {
-      if (isLoadMore) isLoadingAliExpress = false;
-      update(['aliexpress']);
+      showCustomGetSnack(isGreen: false, text: r.errorMessage);
     }
+
+    if (r is HotProductModel) {
+      var newProducts = r.result?.resultListHotprosuct;
+      if (newProducts == null || newProducts.isEmpty) {
+        hasMoreAliexpress = false;
+        if (!isLoadMore) statusrequestAliExpress = Statusrequest.noData;
+      } else {
+        searchProductsAliExpress.addAll(newProducts);
+        pageindexALiexpress++;
+        if (!isLoadMore) statusrequestAliExpress = Statusrequest.success;
+      }
+    }
+    isLoadingAliExpress = false;
+    update(['aliexpress']);
   }
 
   bool hasMoresearchAlibaba = true;
@@ -424,19 +382,11 @@ class HomescreenControllerImple extends HomescreenController {
   Statusrequest statusrequestsearchAlibaba = Statusrequest.none;
   int pageIndexSearchAlibaba = 0;
   List<ResultList> searchProductsAlibaba = [];
-  SearchNameAlibabaData searchNameAlibabaData = SearchNameAlibabaData(
-    Get.find(),
-  );
-  InsertCashData insertCashData = InsertCashData(Get.find());
-  GetCashData getCashData = GetCashData(Get.find());
+  // SearchNameAlibabaData searchNameAlibabaData = SearchNameAlibabaData(
+  //   Get.find(),
+  // );
 
-  searshAlibaba({
-    // required q,
-    isLoadMore = false,
-    startPrice = "",
-    endPrice = "",
-  }) async {
-    cashkey(String q, int p) => 'search:alibaba:$q:page=$p';
+  searshAlibaba({isLoadMore = false, startPrice = "", endPrice = ""}) async {
     if (isLoadMore) {
       if (isLoadingSearchAlibaba || !hasMoresearchAlibaba) return;
       isLoadingSearchAlibaba = true;
@@ -448,80 +398,39 @@ class HomescreenControllerImple extends HomescreenController {
     }
     update(['alibaba']);
 
-    try {
-      final cacheResponse = await getCashData.getCash(
-        query: cashkey(searchController.text, pageIndexSearchAlibaba),
-        platform: "alibaba",
-      );
-      if (cacheResponse["status"] == "success") {
-        log("get from alibaba cache server=====================");
-        final data = cacheResponse['data'];
-        statusrequestsearchAlibaba = handlingData(data);
-        if (statusrequestsearchAlibaba == Statusrequest.success) {
-          if (handle200(data)) {
-            final model = ProductAliBabaHomeModel.fromJson(data);
-            final List<ResultList> iterable = model.result!.resultList;
-            // settings = model.result?.settings;
+    final response = await alibabaRepoImpl.searchProducts(
+      detectLangFromQuery(searchController.text),
+      pageIndexSearchAlibaba,
+      searchController.text,
+      startPrice,
+      endPrice,
+    );
 
-            if (iterable.isEmpty) {
-              hasMoresearchAlibaba = false;
-              statusrequestsearchAlibaba = Statusrequest.noData;
-            } else {
-              searchProductsAlibaba.addAll(iterable);
-              pageIndexSearchAlibaba++;
-            }
-          } else {
-            hasMoresearchAlibaba = false;
-            statusrequestsearchAlibaba = Statusrequest.noData;
-          }
+    statusrequestsearchAlibaba = response.fold(
+      (l) {
+        showCustomGetSnack(isGreen: false, text: l.errorMessage);
+        return Statusrequest.failuer;
+      },
+      (r) {
+        final List<ResultList> iterable = r.result?.resultList ?? [];
+
+        if (iterable.isEmpty && pageIndexSearchAlibaba == 1) {
+          hasMoresearchAlibaba = false;
+          return Statusrequest.noData;
+        } else if (iterable.isEmpty && pageIndexSearchAlibaba > 1) {
+          hasMoresearchAlibaba = false;
+          custSnackBarNoMore();
+          return Statusrequest.noDataPageindex;
+        } else {
+          searchProductsAlibaba.addAll(iterable);
+          pageIndexSearchAlibaba++;
+          return Statusrequest.success;
         }
-      } else {
-        log("get product Alibaba from api=====================");
-        final response = await searchNameAlibabaData.getproductsSearch(
-          lang: detectLangFromQuery(searchController.text),
-          q: searchController.text,
-          pageindex: pageIndexSearchAlibaba,
-          endPrice: endPrice,
-          startPrice: startPrice,
-        );
+      },
+    );
 
-        statusrequestsearchAlibaba = handlingData(response);
-        if (statusrequestsearchAlibaba == Statusrequest.success) {
-          if (handle200(response)) {
-            final model = ProductAliBabaHomeModel.fromJson(response);
-            final List<ResultList> iterable = model.result!.resultList;
-            // settings = model.result?.settings;
-
-            if (iterable.isEmpty) {
-              // hasMoresearch = false;
-              // statusrequestsearch = Statusrequest.noData;
-            } else {
-              searchProductsAlibaba.addAll(iterable);
-              insertCashData.insertCash(
-                query: cashkey(searchController.text, pageIndexSearchAlibaba),
-                platform: "alibaba",
-                data: response,
-                ttlHours: "24",
-              );
-              pageIndexSearchAlibaba++;
-            }
-          } else if (handle205(response, pageIndexSearchAlibaba)) {
-            hasMoresearchAlibaba = false;
-            statusrequestsearchAlibaba = Statusrequest.noDataPageindex;
-            custSnackBarNoMore();
-          } else {
-            hasMoresearchAlibaba = false;
-            statusrequestsearchAlibaba = Statusrequest.noData;
-          }
-        }
-      }
-    } catch (e) {
-      hasMoresearchAlibaba = false;
-      statusrequestsearchAlibaba = Statusrequest.failuer;
-    } finally {
-      if (isLoadMore) isLoadingSearchAlibaba = false;
-      update(['alibaba']);
-    }
+    if (isLoadMore) isLoadingSearchAlibaba = false;
+    update(['alibaba']);
   }
 
   bool isLoadingAmazon = false;
@@ -529,11 +438,8 @@ class HomescreenControllerImple extends HomescreenController {
   Statusrequest statusrequestsearchAmazon = Statusrequest.none;
   int pageIndexSearchAmazon = 0;
   List<search.Product> searchProducts = [];
-  SearchAmazonData searchDataAmazon = SearchAmazonData(Get.find());
 
   searshAmazon({bool isLoadMore = false, bool other = false}) async {
-    cashkey(String q, int p) => 'search:amazon:$q:page=$p';
-
     if (isLoadMore) {
       if (isLoadingAmazon || !hasMoreAmazon) return;
       isLoadingAmazon = true;
@@ -545,88 +451,42 @@ class HomescreenControllerImple extends HomescreenController {
     }
     update(['amazon']);
 
-    try {
-      // final int intStartPrice = int.tryParse(startPriceController.text) ?? 0;
-      // final int intEndPrice = int.tryParse(endPriceController.text) ?? 0;
-      final int intStartPrice = 1;
-      final int intEndPrice = 1000;
-      final cashe = await getCashData.getCash(
-        query: cashkey(
-          "${searchController.text}_${intStartPrice}_$intEndPrice",
-          pageIndexSearchAmazon,
-        ),
-        platform: "amazon",
-      );
-      if (cashe["status"] == "success") {
-        log("get from amazon search cash =====================");
-        final response = cashe["data"];
+    final int intStartPrice = 1;
+    final int intEndPrice = 1000;
 
-        statusrequestsearchAmazon = handlingData(response);
-        if (statusrequestsearchAmazon == Statusrequest.success) {
-          if (response is Map<String, dynamic> && response['status'] == 'OK') {
-            final model = search.SearchAmazonModel.fromJson(response);
-            final List<search.Product> iterable = model.data!.products;
+    final response = await amazonRepoImpl.searchProducts(
+      detectLangFromQueryAmazon(searchController.text),
+      searchController.text,
+      pageIndexSearchAmazon,
+      intStartPrice.toString(),
+      intEndPrice.toString(),
+    );
 
-            if (iterable.isEmpty) {
-              hasMoreAmazon = false;
-              statusrequestsearchAmazon = Statusrequest.noData;
-            } else {
-              searchProducts.addAll(iterable);
-              pageIndexSearchAmazon++;
-            }
-          } else {
-            hasMoreAmazon = false;
-            statusrequestsearchAmazon = Statusrequest.noData;
-          }
+    statusrequestsearchAmazon = response.fold(
+      (l) {
+        showCustomGetSnack(isGreen: false, text: l.errorMessage);
+        return Statusrequest.failuer;
+      },
+      (r) {
+        final List<search.Product> iterable = r.data?.products ?? [];
+
+        if (iterable.isEmpty && pageIndexSearchAmazon == 1) {
+          hasMoreAmazon = false;
+          return Statusrequest.noData;
+        } else if (iterable.isEmpty && pageIndexSearchAmazon > 1) {
+          hasMoreAmazon = false;
+          custSnackBarNoMore();
+          return Statusrequest.noDataPageindex;
+        } else {
+          searchProducts.addAll(iterable);
+          pageIndexSearchAmazon++;
+          return Statusrequest.success;
         }
-      } else {
-        final response = await searchDataAmazon.getSearch(
-          startPrice: intStartPrice,
-          endPrice: intEndPrice,
-          lang: detectLangFromQueryAmazon(searchController.text),
-          q: searchController.text,
-          pageindex: pageIndexSearchAmazon,
-        );
+      },
+    );
 
-        statusrequestsearchAmazon = handlingData(response);
-        if (statusrequestsearchAmazon == Statusrequest.success) {
-          if (response is Map<String, dynamic> && response['status'] == 'OK') {
-            final model = search.SearchAmazonModel.fromJson(response);
-            final List<search.Product> iterable = model.data!.products;
-
-            if (iterable.isEmpty && pageIndexSearchAmazon > 1) {
-              hasMoreAmazon = false;
-              statusrequestsearchAmazon = Statusrequest.noDataPageindex;
-              custSnackBarNoMore();
-            } else if (iterable.isEmpty) {
-              hasMoreAmazon = false;
-              statusrequestsearchAmazon = Statusrequest.noData;
-            } else {
-              searchProducts.addAll(iterable);
-              insertCashData.insertCash(
-                query: cashkey(
-                  "${searchController.text}_${intStartPrice}_$intEndPrice",
-                  pageIndexSearchAmazon,
-                ),
-                platform: "amazon",
-                data: response,
-                ttlHours: "24",
-              );
-              pageIndexSearchAmazon++;
-            }
-          } else {
-            hasMoreAmazon = false;
-            statusrequestsearchAmazon = Statusrequest.noData;
-          }
-        }
-      }
-    } catch (e) {
-      hasMoreAmazon = false;
-      statusrequestsearchAmazon = Statusrequest.failuer;
-    } finally {
-      if (isLoadMore) isLoadingAmazon = false;
-      update(['amazon']);
-    }
+    if (isLoadMore) isLoadingAmazon = false;
+    update(['amazon']);
   }
 
   bool isLoadingSearchShein = false;
@@ -635,11 +495,9 @@ class HomescreenControllerImple extends HomescreenController {
   Statusrequest statusrequestsearchShein = Statusrequest.none;
 
   List<searshshein.Product> searchProductsShein = [];
-  SearchSheinData searchSheinDataShein = SearchSheinData(Get.find());
+  // SearchSheinData searchSheinDataShein = SearchSheinData(Get.find());
 
   searshShein({isLoadMore = false, startPrice = "", endPrice = ""}) async {
-    cashkey(String q, int p) => 'search:shein:$q:page=$p';
-
     if (isLoadMore) {
       if (isLoadingSearchShein || !hasMoresearchShein) return;
       isLoadingSearchShein = true;
@@ -655,75 +513,38 @@ class HomescreenControllerImple extends HomescreenController {
     }
     update(['shein']);
 
-    try {
-      final cacheResponse = await getCashData.getCash(
-        query: cashkey(searchController.text, pageindexSearchShein),
-        platform: "shein",
-      );
+    final response = await sheinRepoImpl.searchProducts(
+      detectLangFromQueryShein(searchController.text),
+      searchController.text,
+      pageindexSearchShein,
+      startPrice,
+      endPrice,
+    );
 
-      if (cacheResponse["status"] == "success") {
-        log("get from shein search product cache=====================");
-        final response = cacheResponse["data"];
-        statusrequestsearchShein = handlingData(response);
-        if (statusrequestsearchShein == Statusrequest.success) {
-          if (response['success'] == true) {
-            final model = searshshein.SeachSheinModel.fromJson(response);
-            final List<searshshein.Product> iterable =
-                model.data?.products ?? [];
-
-            if (iterable.isEmpty && pageindexSearchShein == 1) {
-              hasMoresearchShein = false;
-              statusrequestsearchShein = Statusrequest.noData;
-            } else {
-              searchProductsShein.addAll(iterable);
-              pageindexSearchShein++;
-            }
-          }
+    statusrequestsearchShein = response.fold(
+      (l) {
+        showCustomGetSnack(isGreen: false, text: l.errorMessage);
+        return Statusrequest.failuer;
+      },
+      (r) {
+        final List<searshshein.Product> iterable = r.data?.products ?? [];
+        if (iterable.isEmpty && pageindexSearchShein == 1) {
+          hasMoresearchShein = false;
+          return Statusrequest.noData;
+        } else if (iterable.isEmpty && pageindexSearchShein > 1) {
+          hasMoresearchShein = false;
+          custSnackBarNoMore();
+          return Statusrequest.noDataPageindex;
+        } else {
+          searchProductsShein.addAll(iterable);
+          pageindexSearchShein++;
+          return Statusrequest.success;
         }
-      } else {
-        final response = await searchSheinDataShein.getsearch(
-          q: searchController.text,
-          pageindex: pageindexSearchShein.toString(),
-          endPrice: endPrice,
-          startPrice: startPrice,
-          countryCode: detectLangFromQueryShein(searchController.text),
-        );
+      },
+    );
 
-        statusrequestsearchShein = handlingData(response);
-        if (statusrequestsearchShein == Statusrequest.success) {
-          if (response['success'] == true) {
-            final model = searshshein.SeachSheinModel.fromJson(response);
-            final List<searshshein.Product> iterable =
-                model.data?.products ?? [];
-
-            if (iterable.isEmpty && pageindexSearchShein == 1) {
-              hasMoresearchShein = false;
-              statusrequestsearchShein = Statusrequest.noData;
-            } else if (iterable.isEmpty && pageindexSearchShein > 1) {
-              hasMoresearchShein = false;
-              statusrequestsearchShein = Statusrequest.noDataPageindex;
-              custSnackBarNoMore();
-            } else {
-              searchProductsShein.addAll(iterable);
-              insertCashData.insertCash(
-                query: cashkey(searchController.text, pageindexSearchShein),
-                platform: "shein",
-                data: response,
-                ttlHours: "24",
-              );
-              pageindexSearchShein++;
-            }
-          }
-        }
-      }
-    } catch (e, st) {
-      log('FETCH ERROR: $e\n$st');
-      hasMoresearchShein = false;
-      statusrequestsearchShein = Statusrequest.failuer;
-    } finally {
-      if (isLoadMore) isLoadingSearchShein = false;
-      update(['shein']);
-    }
+    if (isLoadMore) isLoadingSearchShein = false;
+    update(['shein']);
   }
 
   gotoditels({

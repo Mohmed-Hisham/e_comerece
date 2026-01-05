@@ -1,29 +1,29 @@
-import 'package:e_comerece/core/servises/serviese.dart';
+import 'package:e_comerece/core/servises/custom_getx_snak_bar.dart';
 import 'package:e_comerece/core/shared/widget_shared/likeanimationpage.dart';
-import 'package:e_comerece/data/datasource/remote/favorite/favorite_data.dart';
+import 'package:e_comerece/data/model/favorite_model.dart';
+import 'package:e_comerece/data/repository/Favorite/favorit_repo_impl.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class FavoritesController extends GetxController {
-  FavoriteData favoriteData = FavoriteData(Get.find());
+  FavoriteRepoImpl favoriteRepoImpl = FavoriteRepoImpl(apiService: Get.find());
   Map<String, bool> isFavorite = {};
-  MyServises myServises = Get.find();
 
   Future<void> fetchFavorites() async {
-    String userId = myServises.sharedPreferences.getString("user_id") ?? "0";
-    if (userId == "0") return;
+    var response = await favoriteRepoImpl.getAll();
 
-    var response = await favoriteData.viweData(userId: userId);
+    response.fold(
+      (l) => {showCustomGetSnack(isGreen: false, text: l.errorMessage)},
+      (r) {
+        isFavorite.clear();
+        for (var item in r.data) {
+          if (item.productId != null) {
+            isFavorite[item.productId!] = true;
+          }
+        }
+      },
+    );
 
-    if (response is Map &&
-        response['status'] == 'success' &&
-        response['data'] != null) {
-      List favoritesList = response['data'];
-      isFavorite.clear();
-      for (var item in favoritesList) {
-        isFavorite[item['productId']] = true;
-      }
-    }
     update();
   }
 
@@ -41,72 +41,62 @@ class FavoritesController extends GetxController {
     String? goodsSn,
     String? categoryid,
   }) async {
-    String id = myServises.sharedPreferences.getString("user_id")!;
-
     bool currentStatus = isFavorite[productId] ?? false;
 
     if (currentStatus == true) {
       setFavorite(productId, false);
-      await favoriteData.remove(userId: id, productid: productId);
+      var response = await favoriteRepoImpl.delete(productId);
+      response.fold(
+        (l) => showCustomGetSnack(isGreen: false, text: l.errorMessage),
+        (r) {
+          showCustomGetSnack(isGreen: true, text: r);
+        },
+      );
     } else {
       setFavorite(productId, true);
-      await favoriteData.addfavorite(
-        userId: id,
-        productid: productId.toString(),
-        producttitle: productTitle,
-        productimage: productImage,
-        productprice: productPrice,
-        platform: platform,
-        categoryid: categoryid ?? "",
-        goodsSn: goodsSn ?? "",
-      );
-      if (Get.isDialogOpen ?? false) return;
-
-      // show dialog
-      Get.rawSnackbar(
-        titleText: const SizedBox.shrink(),
-        backgroundColor: Colors.transparent,
-        snackStyle: SnackStyle.FLOATING,
-        snackPosition: SnackPosition.TOP,
-        maxWidth: Get.width * 0.95,
-
-        margin: EdgeInsets.only(left: 12, right: 12, bottom: 18, top: 50),
-        padding: EdgeInsets.zero,
-        borderRadius: 0,
-        duration: Duration(seconds: 1),
-
-        messageText: Center(
-          child: FavoriteAnimatedWidget(
-            size: 60,
-            onEnd: () {
-              if (Get.isDialogOpen ?? false) Get.back();
-            },
-          ),
+      var response = await favoriteRepoImpl.add(
+        Product(
+          productId: productId,
+          productTitle: productTitle,
+          productImage: productImage,
+          productPrice: productPrice,
+          favoritePlatform: platform,
+          goodsSn: goodsSn ?? "",
+          categoryId: categoryid ?? "",
         ),
       );
-      await FavoriteAnimationController.to.play();
-      // Get.snackbar(
-      //   'ok',
-      //   'Added to favorites',
-      //   snackPosition: SnackPosition.BOTTOM,
-      //   backgroundColor: Colors.green.withOpacity(0.5),
-      //   colorText: Colors.white,
-      //   margin: EdgeInsets.only(bottom: 100),
-      // );
-      // Get.dialog(
-      //   barrierDismissible: false,
-      //   Center(
-      //     child: FavoriteAnimatedWidget(
-      //       size: 110,
-      //       onEnd: () {
-      //         if (Get.isDialogOpen ?? false) Get.back();
-      //       },
-      //     ),
-      //   ),
+      response.fold(
+        (l) => showCustomGetSnack(isGreen: false, text: l.errorMessage),
+        (r) async {
+          if (Get.isDialogOpen ?? false) return;
 
-      //   barrierColor: Colors.transparent,
-      // );
-      // await FavoriteAnimationController.to.play();
+          Get.rawSnackbar(
+            titleText: const SizedBox.shrink(),
+            backgroundColor: Colors.transparent,
+            snackStyle: SnackStyle.FLOATING,
+            snackPosition: SnackPosition.TOP,
+            maxWidth: Get.width * 0.95,
+            margin: const EdgeInsets.only(
+              left: 12,
+              right: 12,
+              bottom: 18,
+              top: 50,
+            ),
+            padding: EdgeInsets.zero,
+            borderRadius: 0,
+            duration: const Duration(seconds: 1),
+            messageText: Center(
+              child: FavoriteAnimatedWidget(
+                size: 60,
+                onEnd: () {
+                  if (Get.isDialogOpen ?? false) Get.back();
+                },
+              ),
+            ),
+          );
+          await FavoriteAnimationController.to.play();
+        },
+      );
     }
   }
 

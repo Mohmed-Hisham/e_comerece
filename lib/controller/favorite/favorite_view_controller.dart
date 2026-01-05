@@ -1,21 +1,16 @@
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
-import 'package:e_comerece/core/funcations/handlingdata.dart';
 import 'package:e_comerece/core/servises/custom_getx_snak_bar.dart';
-import 'package:e_comerece/core/servises/serviese.dart';
-import 'package:e_comerece/data/datasource/remote/favorite/favorite_data.dart';
-import 'package:e_comerece/data/datasource/remote/favorite/viwefavorite_data.dart';
 import 'package:e_comerece/data/model/favorite_model.dart';
+import 'package:e_comerece/data/repository/Favorite/favorit_repo_impl.dart';
 import 'package:get/get.dart';
 
 class FavoriteViewController extends GetxController {
-  ViewFavoriteData favoriteData = ViewFavoriteData(Get.find());
-  FavoriteData removeData = FavoriteData(Get.find());
-  MyServises myServises = Get.find();
+  FavoriteRepoImpl favoriteRepoImpl = FavoriteRepoImpl(apiService: Get.find());
   Statusrequest statusrequest = Statusrequest.none;
 
-  List<FavoriteModel> favorites = [];
-  Map<String, List<FavoriteModel>> favoritesByPlatform = {};
+  List<Product> favorites = [];
+  Map<String, List<Product>> favoritesByPlatform = {};
 
   @override
   void onInit() {
@@ -26,26 +21,31 @@ class FavoriteViewController extends GetxController {
   getFavorites() async {
     statusrequest = Statusrequest.loading;
     update();
-    var response = await favoriteData.getData(
-      myServises.sharedPreferences.getString("user_id")!,
-    );
-    statusrequest = handlingData(response);
-    if (Statusrequest.success == statusrequest) {
-      if (response['status'] == 'success') {
-        List responseData = response['data'];
-        favorites = responseData.map((e) => FavoriteModel.fromJson(e)).toList();
+    var response = await favoriteRepoImpl.getAll();
+
+    statusrequest = response.fold(
+      (l) {
+        showCustomGetSnack(isGreen: false, text: l.errorMessage);
+        return Statusrequest.failuer;
+      },
+      (r) {
+        favorites = r.data;
         groupFavoritesByPlatform();
-      } else {
-        statusrequest = Statusrequest.failuer;
-      }
+        return Statusrequest.success;
+      },
+    );
+
+    if (favorites.isEmpty && statusrequest == Statusrequest.success) {
+      statusrequest = Statusrequest.noData;
     }
+
     update();
   }
 
   groupFavoritesByPlatform() {
     favoritesByPlatform = {};
     for (var favorite in favorites) {
-      String platform = favorite.platform ?? 'Uncategorized';
+      String platform = favorite.favoritePlatform ?? 'Uncategorized';
       if (favoritesByPlatform.containsKey(platform)) {
         favoritesByPlatform[platform]!.add(favorite);
       } else {
@@ -59,15 +59,11 @@ class FavoriteViewController extends GetxController {
     groupFavoritesByPlatform();
     update();
     showCustomGetSnack(isGreen: true, text: 'Removed from favorites');
-    removeData.remove(
-      userId: myServises.sharedPreferences.getString("user_id")!,
-      productid: productId,
-    );
+    favoriteRepoImpl.delete(productId);
   }
 
   goToProductDetails({
-    int? productId,
-
+    String? productId,
     String? lang,
     required String title,
     required String platform,
@@ -76,6 +72,7 @@ class FavoriteViewController extends GetxController {
     String? categoryid,
     String? asin,
     String? langamazon,
+    required String langShein,
   }) {
     switch (platform) {
       case "Aliexpress":
@@ -104,6 +101,7 @@ class FavoriteViewController extends GetxController {
             "title": title,
             "goods_id": goodsid,
             "category_id": categoryid,
+            "lang": langShein,
           },
         );
         break;

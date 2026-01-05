@@ -21,7 +21,7 @@ class EditAddress extends StatelessWidget {
       builder: (controller) {
         // textEditingControllers
         TextEditingController addressTitle = TextEditingController(
-          text: controller.addresses[index].addressTitle.toString(),
+          text: controller.addresses[index].title.toString(),
         );
         TextEditingController city = TextEditingController(
           text: controller.addresses[index].city.toString(),
@@ -30,7 +30,7 @@ class EditAddress extends StatelessWidget {
           text: controller.addresses[index].street.toString(),
         );
         TextEditingController buildingNumber = TextEditingController(
-          text: controller.addresses[index].buildingNumber.toString(),
+          text: controller.addresses[index].building.toString(),
         );
         TextEditingController floor = TextEditingController(
           text: controller.addresses[index].floor.toString(),
@@ -85,12 +85,12 @@ class EditAddress extends StatelessWidget {
                   inputtext: StringsKeys.save.tr,
                   onPressed: () {
                     if (formkey.currentState!.validate()) {
-                      Datum address = Datum(
-                        addressId: controller.addresses[index].addressId,
-                        addressTitle: addressTitle.text,
+                      AddressData address = AddressData(
+                        id: controller.addresses[index].id,
+                        title: addressTitle.text,
                         city: city.text,
                         street: street.text,
-                        buildingNumber: buildingNumber.text,
+                        building: buildingNumber.text,
                         floor: floor.text,
                         apartment: apartment.text,
                         phone: phone.text,

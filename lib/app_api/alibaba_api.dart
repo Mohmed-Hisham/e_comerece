@@ -1,31 +1,31 @@
-class AlibabaApi {
-  static const String _server = "https://alibaba-datahub.p.rapidapi.com";
+// class AlibabaApi {
+//   static const String _server = "https://alibaba-datahub.p.rapidapi.com";
 
-  static const Map<String, String> rapidApiHeaders = {
-    'X-RapidAPI-Host': 'alibaba-datahub.p.rapidapi.com',
-    'X-RapidAPI-Key': '1bd0905b8fmshd7e930954808aeep1f3f99jsn4f9f6ee455a3',
-  };
+//   static const Map<String, String> rapidApiHeaders = {
+//     'X-RapidAPI-Host': 'alibaba-datahub.p.rapidapi.com',
+//     'X-RapidAPI-Key': '1bd0905b8fmshd7e930954808aeep1f3f99jsn4f9f6ee455a3',
+//   };
 
-  static String productHome(
-    String q,
-    int pageindex,
-    String lang,
-    String endPrice,
-    String startPrice,
-    // String? catId,
-  ) {
-    return "$_server/item_search?q=$q&page=$pageindex&endPrice=$endPrice&startPrice=$startPrice&&pageSize=100&region=YE&currency=USD&locale=$lang";
-  }
+//   static String productHome(
+//     String q,
+//     int pageindex,
+//     String lang,
+//     String endPrice,
+//     String startPrice,
+//     // String? catId,
+//   ) {
+//     return "$_server/item_search?q=$q&page=$pageindex&endPrice=$endPrice&startPrice=$startPrice&&pageSize=100&region=YE&currency=USD&locale=$lang";
+//   }
 
-  static String searshByimage({
-    required String imageUrl,
-    required String lang,
-    required int pageindex,
-  }) {
-    return "$_server/item_search_image?imgUrl=$imageUrl&page=$pageindex&pageSize=100&region=YE&currency=USD&locale=$lang";
-  }
+//   static String searshByimage({
+//     required String imageUrl,
+//     required String lang,
+//     required int pageindex,
+//   }) {
+//     return "$_server/item_search_image?imgUrl=$imageUrl&page=$pageindex&pageSize=100&region=YE&currency=USD&locale=$lang";
+//   }
 
-  static String itemDetails({required int productId, required String lang}) {
-    return "$_server/item_detail?itemId=$productId&currency=USD&locale=$lang";
-  }
-}
+//   static String itemDetails({required int productId, required String lang}) {
+//     return "$_server/item_detail?itemId=$productId&currency=USD&locale=$lang";
+//   }
+// }

@@ -58,7 +58,7 @@ class FavoritesAliexpries extends StatelessWidget {
                           final item = controller.favorites[index];
                           return InkWell(
                             onTap: () => controller.goToProductDetails(
-                              int.tryParse(item.productId!.toString()) ?? 0,
+                              item.productId!,
                               enOrAr(),
                               item.productTitle!,
                               item.productId!,
@@ -69,9 +69,9 @@ class FavoritesAliexpries extends StatelessWidget {
                               image: CustomCachedImage(
                                 imageUrl: item.productImage ?? '',
                               ),
-                              disc: item.productPrice!,
+                              disc: item.productPrice?.toString(),
                               title: item.productTitle!,
-                              price: item.productPrice!,
+                              price: item.productPrice?.toString(),
                               icon: IconButton(
                                 onPressed: () =>
                                     controller.removeFavorite(item.productId!),
@@ -81,7 +81,7 @@ class FavoritesAliexpries extends StatelessWidget {
                                   color: Appcolor.primrycolor,
                                 ),
                               ),
-                              discprice: item.productPrice!,
+                              discprice: item.productPrice?.toString(),
                             ),
                           );
                         },

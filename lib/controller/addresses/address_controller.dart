@@ -3,18 +3,14 @@ import 'dart:developer';
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/constant/strings_keys.dart';
-import 'package:e_comerece/core/funcations/handlingdata.dart';
 import 'package:e_comerece/core/servises/custom_getx_snak_bar.dart';
 import 'package:e_comerece/core/servises/location_servisess.dart';
 import 'package:e_comerece/core/servises/map_places_serviese.dart';
 import 'package:e_comerece/core/servises/serviese.dart';
-import 'package:e_comerece/data/datasource/remote/addresses/add_addresses_data.dart';
-import 'package:e_comerece/data/datasource/remote/addresses/get_addresses_data.dart';
-import 'package:e_comerece/data/datasource/remote/addresses/remove_addresse_data.dart';
-import 'package:e_comerece/data/datasource/remote/addresses/update_addresses_data.dart';
 import 'package:e_comerece/data/model/address/address_model.dart';
 import 'package:e_comerece/data/model/address/map_place_detalis_model.dart';
 import 'package:e_comerece/data/model/address/map_places_model.dart';
+import 'package:e_comerece/data/repository/Adresess/address_repo_impl.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:get/get.dart';
@@ -24,19 +20,17 @@ import 'package:uuid/uuid.dart';
 
 abstract class AddressController extends GetxController {
   Future<void> fetchAddresses();
-  Future<void> addAddress(Datum address);
-  Future<void> updateAddress(Datum address);
-  Future<void> deleteAddress({required int addressId});
+  Future<void> addAddress(AddressData address);
+  Future<void> updateAddress(AddressData address);
+  Future<void> deleteAddress({required String addressId});
   void goToAddAddress();
 }
 
 class AddressControllerImpl extends AddressController {
-  TextEditingController searchController = TextEditingController();
+  TextEditingController searchController = .new();
   MyServises myServises = Get.find();
-  GetAddressesData getAddressesData = GetAddressesData(Get.find());
-  AddAddressesData addAddressesData = AddAddressesData(Get.find());
-  UpdateAddressesData updateAddressesData = UpdateAddressesData(Get.find());
-  RemoveAddresseData removeAddresseData = RemoveAddresseData(Get.find());
+
+  late AddressRepoImpl addressRepo;
   MapPlacesServiese mapPlacesServiese = MapPlacesServiese(Get.find());
 
   Statusrequest fetchAddressesstatusrequest = Statusrequest.loading;
@@ -46,11 +40,11 @@ class AddressControllerImpl extends AddressController {
   Statusrequest autoCompletestatusrequest = Statusrequest.none;
   Statusrequest placeDetailsstatusrequest = Statusrequest.none;
   Statusrequest mapstatusrequest = Statusrequest.loading;
-  List<Datum> addresses = [];
+
+  List<AddressData> addresses = [];
   List<Prediction> predictions = [];
   Result? resultDetails;
 
-  String? userId;
   bool isSearch = false;
 
   late LocationServisess locationServisess;
@@ -76,9 +70,9 @@ class AddressControllerImpl extends AddressController {
   @override
   void onInit() {
     super.onInit();
-    userId = myServises.sharedPreferences.getString("user_id");
+    addressRepo = AddressRepoImpl(apiServices: Get.find());
     locationServisess = LocationServisess();
-    initialCameraPosition = CameraPosition(target: LatLng(0, 0));
+    initialCameraPosition = const CameraPosition(target: LatLng(0, 0));
     uUid = const Uuid();
   }
 
@@ -116,7 +110,6 @@ class AddressControllerImpl extends AddressController {
           country = place.country ?? '';
           city = place.locality ?? place.subAdministrativeArea ?? '';
           administrativeArea = place.administrativeArea ?? '';
-          administrativeArea = place.administrativeArea ?? '';
           street = place.street ?? '';
         }
       } catch (e) {
@@ -134,187 +127,106 @@ class AddressControllerImpl extends AddressController {
 
   @override
   fetchAddresses() async {
-    userId = myServises.sharedPreferences.getString("user_id");
-    log("userId $userId");
-    try {
-      if (userId == null) return;
-      fetchAddressesstatusrequest = Statusrequest.loading;
-      final response = await getAddressesData.getAddress(userId: userId!);
+    fetchAddressesstatusrequest = Statusrequest.loading;
+    update();
 
-      fetchAddressesstatusrequest = handlingData(response);
-      log("fetchAddressesstatusrequest $fetchAddressesstatusrequest");
+    var response = await addressRepo.getAddresses();
 
-      if (fetchAddressesstatusrequest == Statusrequest.success) {
-        if (response['status'] == 'success' && response['data'].isNotEmpty) {
-          addresses.clear();
+    fetchAddressesstatusrequest = response.fold(
+      (l) {
+        showCustomGetSnack(isGreen: false, text: l.errorMessage);
+        return Statusrequest.failuer;
+      },
+      (r) {
+        addresses = r;
+        if (addresses.isNotEmpty) {
+          String? defaultAddressId = myServises.sharedPreferences.getString(
+            "default_address",
+          );
 
-          if (response['data'] is List) {
-            addresses = (response['data'] as List)
-                .map((e) => Datum.fromJson(e as Map<String, dynamic>))
-                .toList();
-            int myaddressId =
-                myServises.sharedPreferences.getInt("default_address") ?? 0;
-            if (myaddressId != addresses[0].addressId!) {
-              myServises.sharedPreferences.setInt(
-                "default_address",
-                addresses[0].addressId!,
-              );
-            }
-            log(
-              "myaddressId ${myServises.sharedPreferences.getInt("default_address")}",
+          // If no default address is set, or current default is not in the list, set the first one as default
+          if (defaultAddressId == null && addresses.isNotEmpty) {
+            myServises.sharedPreferences.setString(
+              "default_address",
+              addresses[0].id!,
             );
-          } else if (response['data'] is Map) {
-            addresses = [
-              Datum.fromJson(response['data'] as Map<String, dynamic>),
-            ];
           }
-
-          fetchAddressesstatusrequest = Statusrequest.success;
         }
-        //  else {
-        //   fetchAddressesstatusrequest = Statusrequest.failuer;
-        // }
-      }
+        return Statusrequest.success;
+      },
+    );
 
-      update();
-    } catch (e) {
-      fetchAddressesstatusrequest = Statusrequest.failuer;
-      update();
+    if (addresses.isEmpty &&
+        fetchAddressesstatusrequest == Statusrequest.success) {
+      fetchAddressesstatusrequest = Statusrequest.noData;
     }
-    log("fetchAddressesstatusrequest $fetchAddressesstatusrequest");
+
+    update();
   }
 
   @override
-  addAddress(Datum address) async {
-    if (userId == null) return;
+  addAddress(AddressData address) async {
+    addAddressesstatusrequest = Statusrequest.loading;
+    update();
 
-    try {
-      addAddressesstatusrequest = Statusrequest.loading;
+    var response = await addressRepo.addAddress(address);
 
-      final response = await addAddressesData.addAddress(
-        data: address.toJson(),
-      );
+    addAddressesstatusrequest = response.fold(
+      (l) {
+        showCustomGetSnack(isGreen: false, text: l.errorMessage);
+        return Statusrequest.failuer;
+      },
+      (r) {
+        showCustomGetSnack(isGreen: true, text: r.message ?? "");
+        fetchAddresses();
+        return Statusrequest.success;
+      },
+    );
+    update();
+  }
 
-      addAddressesstatusrequest = handlingData(response);
+  @override
+  updateAddress(AddressData address) async {
+    updateAddressesstatusrequest = Statusrequest.loading;
+    update();
 
-      if (addAddressesstatusrequest == Statusrequest.success) {
-        if (response['status'] == 'success' && response['data'] != null) {
-          fetchAddresses();
-          addAddressesstatusrequest = Statusrequest.success;
-          Future.delayed(const Duration(seconds: 1), () {
-            showCustomGetSnack(
-              isGreen: true,
-              text: StringsKeys.addAddressSuccess.tr,
-            );
-          });
-        }
-      } else {
-        addAddressesstatusrequest = Statusrequest.failuer;
-        Future.delayed(const Duration(seconds: 1), () {
-          showCustomGetSnack(
-            isGreen: false,
-            text: StringsKeys.addAddressFailed.tr,
-          );
-        });
-      }
-    } catch (e) {
-      // print(e);
-      addAddressesstatusrequest = Statusrequest.failuer;
-      Future.delayed(const Duration(seconds: 1), () {
+    var response = await addressRepo.updateAddress(address);
+
+    updateAddressesstatusrequest = response.fold(
+      (l) {
+        showCustomGetSnack(isGreen: false, text: l.errorMessage);
+        return Statusrequest.failuer;
+      },
+      (r) {
         showCustomGetSnack(
-          isGreen: false,
-          text: StringsKeys.addAddressFailed.tr,
+          isGreen: true,
+          text: r.message ?? StringsKeys.updateAddressSuccess.tr,
         );
-      });
-    }
+        fetchAddresses();
+        return Statusrequest.success;
+      },
+    );
+    update();
   }
 
   @override
-  updateAddress(Datum address) async {
-    if (userId == null) return;
+  deleteAddress({required String addressId}) async {
+    deleteAddressesstatusrequest = Statusrequest.loading;
+    update();
 
-    try {
-      fetchAddressesstatusrequest = Statusrequest.loading;
-      update();
+    var response = await addressRepo.deleteAddress(addressId);
 
-      final response = await updateAddressesData.updateAddress(
-        data: address.toJson(),
-      );
-
-      fetchAddressesstatusrequest = handlingData(response);
-
-      if (fetchAddressesstatusrequest == Statusrequest.success) {
-        if (response['status'] == 'success' && response['data'] != null) {
-          Future.delayed(const Duration(seconds: 1), () {
-            showCustomGetSnack(
-              isGreen: true,
-              text: StringsKeys.updateAddressSuccess.tr,
-            );
-          });
-          fetchAddresses();
-          fetchAddressesstatusrequest = Statusrequest.success;
-        }
-      } else {
-        fetchAddressesstatusrequest = Statusrequest.failuer;
-        Future.delayed(const Duration(seconds: 1), () {
-          showCustomGetSnack(
-            isGreen: false,
-            text: StringsKeys.updateAddressFailed.tr,
-          );
-        });
-      }
-
-      // update();
-    } catch (e) {
-      // print(e);
-      fetchAddressesstatusrequest = Statusrequest.failuer;
-      Future.delayed(const Duration(seconds: 1), () {
-        showCustomGetSnack(
-          isGreen: false,
-          text: StringsKeys.updateAddressFailed.tr,
-        );
-      });
-      update();
-    }
-  }
-
-  @override
-  deleteAddress({required int addressId}) async {
-    if (userId == null) return;
-    int defaultAddressId =
-        myServises.sharedPreferences.getInt("default_address") ?? 0;
-    if (addressId == defaultAddressId) {
-      myServises.sharedPreferences.setInt(
-        "default_address",
-        addresses[0].addressId!,
-      );
-      updateAddress(Datum(isDefault: 1, addressId: addresses[0].addressId!));
-    }
-
-    try {
-      updateAddressesstatusrequest = Statusrequest.loading;
-
-      final response = await removeAddresseData.removeAddresse(
-        addressId: addressId,
-      );
-
-      updateAddressesstatusrequest = handlingData(response);
-
-      if (updateAddressesstatusrequest == Statusrequest.success) {
-        if (response['status'] == 'success') {
-          fetchAddresses();
-          updateAddressesstatusrequest = Statusrequest.success;
-        }
-      } else {
-        updateAddressesstatusrequest = Statusrequest.failuer;
-      }
-
-      // update();
-    } catch (e) {
-      // print(e);
-      updateAddressesstatusrequest = Statusrequest.failuer;
-      update();
-    }
+    deleteAddressesstatusrequest = response.fold(
+      (l) {
+        showCustomGetSnack(isGreen: false, text: l.errorMessage);
+        return Statusrequest.failuer;
+      },
+      (r) {
+        fetchAddresses();
+        return Statusrequest.success;
+      },
+    );
+    update();
   }
 
   @override
@@ -324,51 +236,48 @@ class AddressControllerImpl extends AddressController {
 
   placesAutocomplete(String text) async {
     autoCompletestatusrequest = Statusrequest.loading;
-    sessionToken ??= Uuid().v4();
+    sessionToken ??= const Uuid().v4();
 
     log("sessionToken: $sessionToken");
     var response = await mapPlacesServiese.fetchPredictions(
       text,
       sessionToken!,
     );
-    final status = handlingData(response);
-    if (status == Statusrequest.success) {
-      if (response['status'] == 'OK') {
-        final places = MapPlacesModel.fromJson(response);
-        predictions.clear();
-        predictions = places.predictions;
 
-        autoCompletestatusrequest = Statusrequest.success;
-      } else {
-        autoCompletestatusrequest = Statusrequest.failuer;
-      }
+    // Using simple logic for autocomplete status as it's not converted to repo yet
+    if (response != null && response['status'] == 'OK') {
+      final places = MapPlacesModel.fromJson(response);
+      predictions.clear();
+      predictions = places.predictions;
+      autoCompletestatusrequest = Statusrequest.success;
+    } else {
+      autoCompletestatusrequest = Statusrequest.failuer;
     }
+
     update(['search']);
   }
 
   fetchPlaceDetails(String id) async {
     placeDetailsstatusrequest = Statusrequest.loading;
     var response = await mapPlacesServiese.getPlaceDetails(id);
-    final status = handlingData(response);
-    if (status == Statusrequest.success) {
-      if (response['status'] == 'OK') {
-        final details = MapPlacesDetailsModel.fromJson(response);
-        resultDetails = details.result!;
-        ubdataCameraPosition(
-          isontap: true,
-          latLngg: LatLng(
-            resultDetails!.geometry!.location!.lat!,
-            resultDetails!.geometry!.location!.lng!,
-          ),
-        );
-        searchController.clear();
-        sessionToken = null;
 
-        placeDetailsstatusrequest = Statusrequest.success;
-      } else {
-        placeDetailsstatusrequest = Statusrequest.failuer;
-      }
+    if (response != null && response['status'] == 'OK') {
+      final details = MapPlacesDetailsModel.fromJson(response);
+      resultDetails = details.result!;
+      ubdataCameraPosition(
+        isontap: true,
+        latLngg: LatLng(
+          resultDetails!.geometry!.location!.lat!,
+          resultDetails!.geometry!.location!.lng!,
+        ),
+      );
+      searchController.clear();
+      sessionToken = null;
+      placeDetailsstatusrequest = Statusrequest.success;
+    } else {
+      placeDetailsstatusrequest = Statusrequest.failuer;
     }
+    update();
   }
 
   search(String text) {

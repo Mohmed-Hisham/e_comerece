@@ -51,7 +51,7 @@ class FavoriteScreen extends StatelessWidget {
                         itemBuilder: (context, index) {
                           String platform = controller.favoritesByPlatform.keys
                               .elementAt(index);
-                          List<FavoriteModel> favorites =
+                          List<Product> favorites =
                               controller.favoritesByPlatform[platform]!;
                           return Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -75,7 +75,7 @@ class FavoriteScreen extends StatelessWidget {
                                     ),
                                 itemCount: favorites.length,
                                 itemBuilder: (context, gridIndex) {
-                                  FavoriteModel favorite = favorites[gridIndex];
+                                  Product favorite = favorites[gridIndex];
                                   return InkWell(
                                     onTap: () {
                                       controller.goToProductDetails(
@@ -84,13 +84,11 @@ class FavoriteScreen extends StatelessWidget {
                                         asin: favorite.productId!,
                                         langamazon: enOrArAmazon(),
                                         lang: enOrAr(),
-                                        productId: int.tryParse(
-                                          favorite.productId!.toString(),
-                                        )!,
-                                        goodsid: favorite.productId!.toString(),
-                                        categoryid: favorite.categoryId
-                                            .toString(),
-                                        goodssn: favorite.goodsSn.toString(),
+                                        productId: favorite.productId,
+                                        goodsid: favorite.productId!,
+                                        categoryid: favorite.categoryId,
+                                        goodssn: favorite.goodsSn,
+                                        langShein: enOrArShein(),
                                       );
                                     },
                                     child: Custgridviwe(
@@ -106,7 +104,7 @@ class FavoriteScreen extends StatelessWidget {
                                             const Icon(Icons.error),
                                       ),
                                       title: favorite.productTitle!,
-                                      price: favorite.productPrice!,
+                                      price: favorite.productPrice?.toString(),
                                       icon: IconButton(
                                         onPressed: () {
                                           controller.removeFavorite(

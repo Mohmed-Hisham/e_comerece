@@ -3,11 +3,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 void showCustomGetSnack({
+  bool close = true,
   required bool isGreen,
   required String text,
   Duration duration = const Duration(seconds: 2),
 }) {
-  if (Get.isSnackbarOpen) Get.back();
+  if (Get.isSnackbarOpen && close) Get.back();
   Get.rawSnackbar(
     titleText: const SizedBox.shrink(),
     backgroundColor: Colors.transparent,

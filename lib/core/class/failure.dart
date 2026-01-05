@@ -18,8 +18,12 @@ class ServerFailure extends Failure {
       case DioExceptionType.receiveTimeout:
         return ServerFailure('Receive Timeout!');
       case DioExceptionType.badResponse:
-        if (dioError.response?.statusCode == 401 ||
-            dioError.response?.statusCode == 400 ||
+        if (dioError.response?.statusCode == 401) {
+          return ServerFailure('Unauthorized!');
+        }
+        if (
+        // dioError.response?.statusCode == 401 ||
+        dioError.response?.statusCode == 400 ||
             // dioError.response?.statusCode == 404 ||
             dioError.response?.statusCode == 403 ||
             dioError.response?.statusCode == 405) {

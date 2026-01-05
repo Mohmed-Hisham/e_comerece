@@ -10,6 +10,12 @@ class MyServises extends GetxService {
   Future<MyServises> init() async {
     sharedPreferences = await SharedPreferences.getInstance();
     step = await secureStorage.read(key: "step");
+    // await secureStorage.delete(key: token);
+    // await secureStorage.write(
+    //   key: token,
+    //   value:
+    //       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiIwMTliN2FjZi1iMWQ0LTcyMmQtYjIzYi00MzUyNzFjZjIyNjQiLCJlbWFpbCI6Im1oNjI4NTQzNkBnbWFpbC5jb20iLCJ1bmlxdWVfbmFtZSI6InNkZnNkZnNkIiwibmJmIjoxNzY3NTU5NTcyLCJleHAiOjE3Njc1NjEzNzIsImlhdCI6MTc2NzU1OTU3MiwiaXNzIjoiTXlBdXRoU2VydmVyIiwiYXVkIjoiTXlBdXRoQ2xpZW50In0.pCSlapU-mhKLzOx7sBg_-WoU-U7IHPxTLP1e48ZuXwo",
+    // );
     return this;
   }
 

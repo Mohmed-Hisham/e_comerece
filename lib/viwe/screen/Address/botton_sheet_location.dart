@@ -76,13 +76,16 @@ class BottonSheetLocation extends StatelessWidget {
                   ),
                   Expanded(
                     child: RadioGroup<int?>(
-                      groupValue: controller.addresses
-                          .firstWhereOrNull((e) => e.isDefault == 1)
-                          ?.addressId,
+                      groupValue: int.tryParse(
+                        controller.addresses
+                                .firstWhereOrNull((e) => e.isDefault == 1)
+                                ?.id ??
+                            "",
+                      ),
                       onChanged: (valueId) {
                         if (valueId != null) {
-                          Datum addressupdate = Datum(
-                            addressId: valueId,
+                          AddressData addressupdate = AddressData(
+                            id: valueId.toString(),
                             isDefault: 1,
                           );
 
@@ -115,7 +118,7 @@ class BottonSheetLocation extends StatelessWidget {
                                         textCancel: StringsKeys.cancel.tr,
                                         onConfirm: () {
                                           controller.deleteAddress(
-                                            addressId: address.addressId!,
+                                            addressId: address.id!,
                                           );
                                         },
                                       );
@@ -141,12 +144,12 @@ class BottonSheetLocation extends StatelessWidget {
                               ),
                               dense: true,
                               leading: Radio<int?>(
-                                value: address.addressId,
+                                value: int.tryParse(address.id ?? ""),
                                 activeColor: Colors.orange,
                               ),
-                              title: Text(address.addressTitle.toString()),
+                              title: Text(address.title.toString()),
                               subtitle: Text(
-                                "${address.city} -${address.street} -${address.buildingNumber} -${address.floor} -${address.apartment}",
+                                "${address.city} -${address.street} -${address.building} -${address.floor} -${address.apartment}",
                               ),
                             ),
                           );

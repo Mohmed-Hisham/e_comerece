@@ -315,17 +315,16 @@ class Addlocattion extends StatelessWidget {
                   inputtext: "Save",
                   onPressed: () {
                     if (formkey.currentState!.validate()) {
-                      Datum address = Datum(
-                        userId: int.tryParse(controller.userId ?? "0") ?? 0,
-                        addressTitle: addressTitle.text,
+                      AddressData address = AddressData(
+                        title: addressTitle.text,
                         city: city.text,
                         street: street.text,
-                        buildingNumber: buildingNumber.text,
+                        building: buildingNumber.text,
                         floor: floor.text,
                         apartment: apartment.text,
                         phone: phone.text,
-                        latitude: latLngg.latitude,
-                        longitude: latLngg.longitude,
+                        lat: latLngg.latitude,
+                        lng: latLngg.longitude,
                         isDefault: 1,
                       );
                       controller.addAddress(address);

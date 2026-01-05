@@ -77,10 +77,12 @@ class AmazonHomeControllerImpl extends AmazonHomeController {
   @override
   fetchCategories() async {
     statusrequestcat = Statusrequest.loading;
-    final response = await amazonRepoImpl.fetchCategories(enOrArAmazon());
+    final response = await amazonRepoImpl.fetchCategories(
+      enOrAr() == "ar_MA" ? "SA" : "AE",
+    );
     final r = response.fold((l) => l, (r) => r);
     if (r is Failure) {
-      statusrequestcat = Statusrequest.failuer;
+      statusrequestcat = Statusrequest.none;
     }
     if (r is CategoriesAmazonModel) {
       categories.assignAll(r.data);
@@ -100,9 +102,7 @@ class AmazonHomeControllerImpl extends AmazonHomeController {
       hasMore = true;
     }
     update();
-    final response = await amazonRepoImpl.fetchHotDeals(
-      enOrAr() == "ar_MA" ? "SA" : "AE",
-    );
+    final response = await amazonRepoImpl.fetchHotDeals(enOrArAmazon());
     final r = response.fold((l) => l, (r) => r);
     if (r is Failure) {
       statusrequestHotProducts = Statusrequest.failuer;
@@ -166,7 +166,7 @@ class AmazonHomeControllerImpl extends AmazonHomeController {
     final int intEndPrice = int.tryParse(endPriceController.text) ?? 500;
 
     final response = await amazonRepoImpl.searchProducts(
-      enOrArAmazon(),
+      detectLangFromQueryAmazon(searchController.text),
       searchController.text,
       pageIndexSearch,
       intStartPrice.toString(),

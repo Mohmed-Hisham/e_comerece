@@ -1,20 +1,16 @@
-import 'dart:developer';
-
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
-import 'package:e_comerece/core/funcations/handlingdata.dart';
 import 'package:e_comerece/core/loacallization/translate_data.dart';
-import 'package:e_comerece/core/servises/serviese.dart';
-import 'package:e_comerece/data/datasource/remote/favorite/favorite_data.dart';
-import 'package:e_comerece/data/datasource/remote/favorite/viwefavorite_data.dart';
+import 'package:e_comerece/core/servises/custom_getx_snak_bar.dart';
 import 'package:e_comerece/data/model/favorite_model.dart';
+import 'package:e_comerece/data/repository/Favorite/favorit_repo_impl.dart';
 import 'package:get/get.dart';
 
 abstract class FavoriteViewPlatformController extends GetxController {
-  void getFavoritesPlatform({required String platform});
+  Future<void> getFavoritesPlatform({required String platform});
   void removeFavorite(String productId);
   void goToProductDetails(
-    int productId,
+    String productId,
     String lang,
     String title,
     String asin,
@@ -27,34 +23,32 @@ class FavoriteViewPlatformControllerImpl
     extends FavoriteViewPlatformController {
   late String platform;
 
-  ViewFavoriteData favoriteData = ViewFavoriteData(Get.find());
-  FavoriteData removeData = FavoriteData(Get.find());
-  MyServises myServises = Get.find();
+  FavoriteRepoImpl favoriteRepoImpl = FavoriteRepoImpl(apiService: Get.find());
   Statusrequest statusrequest = Statusrequest.none;
 
-  List<FavoriteModel> favorites = [];
+  List<Product> favorites = [];
 
   @override
   getFavoritesPlatform({required platform}) async {
-    String userId = myServises.sharedPreferences.getString("user_id") ?? "0";
-    if (userId == "0") return;
-
     statusrequest = Statusrequest.loading;
     update();
-    var response = await favoriteData.getViweFavoritePlatform(userId, platform);
+    var response = await favoriteRepoImpl.getByPlatform(platform);
 
-    statusrequest = handlingData(response);
-    if (Statusrequest.success == statusrequest) {
-      if (response['status'] == "success") {
-        List responseData = response['data'];
-        log(responseData.toString());
-        favorites = responseData.map((e) => FavoriteModel.fromJson(e)).toList();
+    statusrequest = response.fold(
+      (l) {
+        showCustomGetSnack(isGreen: false, text: l.errorMessage);
+        return Statusrequest.failuer;
+      },
+      (r) {
+        favorites = r.data;
+        return Statusrequest.success;
+      },
+    );
 
-        statusrequest = Statusrequest.success;
-      } else {
-        statusrequest = Statusrequest.failuer;
-      }
+    if (favorites.isEmpty && statusrequest == Statusrequest.success) {
+      statusrequest = Statusrequest.noData;
     }
+
     update();
   }
 
@@ -62,11 +56,7 @@ class FavoriteViewPlatformControllerImpl
   removeFavorite(productId) {
     favorites.removeWhere((favorite) => favorite.productId == productId);
     update();
-
-    removeData.remove(
-      userId: myServises.sharedPreferences.getString("user_id")!,
-      productid: productId,
-    );
+    favoriteRepoImpl.delete(productId);
   }
 
   @override
@@ -96,6 +86,7 @@ class FavoriteViewPlatformControllerImpl
           AppRoutesname.productDetailsAmazonView,
           arguments: {"asin": asin, "lang": enOrArAmazon(), "title": title},
         );
+        break;
       case "Shein":
         Get.toNamed(
           AppRoutesname.productDetailsSheinView,

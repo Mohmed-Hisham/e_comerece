@@ -33,20 +33,20 @@ class VerifycodeControllerImp extends VerifycodeController {
     );
 
     final r = response.fold((l) => l, (r) => r);
-    if (Get.isDialogOpen ?? false) Get.back();
 
     if (r is AuthModel) {
-      showCustomGetSnack(isGreen: true, text: r.message!);
+      showCustomGetSnack(isGreen: true, text: r.message!, close: false);
       Get.toNamed(
         AppRoutesname.resetPassWord,
         arguments: {"email": email, "code": verifycodeSignup},
       );
     }
     if (r is Failure) {
-      showCustomGetSnack(isGreen: false, text: r.errorMessage);
+      showCustomGetSnack(isGreen: false, text: r.errorMessage, close: false);
       statusrequest = Statusrequest.failuer;
     }
     focus.unfocus();
+    if (Get.isDialogOpen ?? false) Get.back();
     update();
   }
 

@@ -6,7 +6,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 
 class CartItemQuantity extends StatelessWidget {
-  final CartModel cartItem;
+  final CartData cartItem;
   final CartControllerImpl controller;
 
   const CartItemQuantity({
@@ -30,7 +30,7 @@ class CartItemQuantity extends StatelessWidget {
             ),
             child: IconButton(
               onPressed: () {
-                addRemoveController.addprise(cartModel: cartItem);
+                addRemoveController.addprise(cartData: cartItem);
               },
               icon: const FaIcon(FontAwesomeIcons.plus, size: 20),
             ),
@@ -51,7 +51,7 @@ class CartItemQuantity extends StatelessWidget {
             ),
             child: IconButton(
               onPressed: () {
-                addRemoveController.removprise(cartModel: cartItem);
+                addRemoveController.removprise(cartData: cartItem);
               },
               icon: const FaIcon(FontAwesomeIcons.minus, size: 20),
             ),

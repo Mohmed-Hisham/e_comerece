@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:jiffy/jiffy.dart';
 
 class OrderSummaryCard extends StatelessWidget {
-  final int? requestId;
-  final String? createdAt;
+  final String? requestId;
+  final DateTime? createdAt;
   final String? status;
 
   const OrderSummaryCard({
@@ -26,7 +26,9 @@ class OrderSummaryCard extends StatelessWidget {
         InfoRow(
           label: 'تاريخ الخدمة',
           value: createdAt != null
-              ? Jiffy.parse(createdAt!).format(pattern: 'yyyy-MM-dd HH:mm')
+              ? Jiffy.parse(
+                  createdAt!.toIso8601String(),
+                ).format(pattern: 'yyyy-MM-dd HH:mm')
               : 'غير متوفر',
         ),
         const SectionDivider(),

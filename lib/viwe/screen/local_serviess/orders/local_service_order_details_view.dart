@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:e_comerece/controller/local_service/local_service_order_details_controller.dart';
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/class/handlingdataviwe.dart';
@@ -36,7 +38,8 @@ class LocalServiceOrderDetailsView extends StatelessWidget {
                       return Handlingdataviwe(
                         statusrequest: controller.statusrequest,
                         widget:
-                            controller.statusrequest == Statusrequest.success
+                            controller.statusrequest == Statusrequest.success &&
+                                controller.requestDetails != null
                             ? _buildOrderDetails(controller)
                             : const SizedBox.shrink(),
                       );
@@ -52,7 +55,7 @@ class LocalServiceOrderDetailsView extends StatelessWidget {
   }
 
   Widget _buildOrderDetails(LocalServiceOrderDetailsController controller) {
-    final order = controller.requestDetails;
+    final order = controller.requestDetails!;
     final service = order.service;
     final address = order.address;
 
@@ -62,11 +65,9 @@ class LocalServiceOrderDetailsView extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Service Request Tracking Widget
           ServiceRequestTrackingWidget(currentStatus: order.status ?? 'new'),
           SizedBox(height: 20.h),
 
-          // Order Summary Card
           OrderSummaryCard(
             requestId: order.requestId,
             createdAt: order.createdAt,
@@ -74,25 +75,21 @@ class LocalServiceOrderDetailsView extends StatelessWidget {
           ),
           SizedBox(height: 16.h),
 
-          // Service Info Card
           if (service != null) ...[
             ServiceInfoCard(service: service, quotedPrice: order.quotedPrice),
             SizedBox(height: 16.h),
           ],
 
-          // Address Card
           if (address != null) ...[
             AddressCard(address: address),
             SizedBox(height: 16.h),
           ],
 
-          // Note Card
           if (order.note != null && order.note!.isNotEmpty) ...[
             NoteCard(note: order.note!),
             SizedBox(height: 16.h),
           ],
 
-          // Chat Button
           BuildChatButton(controller: controller),
         ],
       ),

@@ -135,7 +135,6 @@ class ServiceOrderContent extends StatelessWidget {
                   ),
                   SizedBox(height: 20.h),
 
-                  // Address Selection
                   Text(
                     "Location",
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
@@ -154,14 +153,14 @@ class ServiceOrderContent extends StatelessWidget {
                   ),
                   SizedBox(height: 20.h),
 
-                  // Confirm Button
-                  if (controller.statusRequest == Statusrequest.loading)
-                    const Center(child: CircularProgressIndicator())
-                  else
-                    Custombuttonauth(
-                      inputtext: "Confirm & Order",
-                      onPressed: () => controller.confirmOrder(),
-                    ),
+                  Custombuttonauth(
+                    inputtext: "Confirm & Order",
+                    onPressed:
+                        (controller.statusRequest == Statusrequest.loading ||
+                            controller.statusRequest == Statusrequest.success)
+                        ? null
+                        : () => controller.confirmOrder(),
+                  ),
                   SizedBox(height: 20.h),
                 ],
               ),

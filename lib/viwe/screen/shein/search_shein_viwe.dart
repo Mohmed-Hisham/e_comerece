@@ -4,7 +4,9 @@ import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/constant/strings_keys.dart';
 import 'package:e_comerece/core/funcations/calculate_discount.dart';
 import 'package:e_comerece/core/helper/custom_cached_image.dart';
+import 'package:e_comerece/core/helper/format_price.dart';
 import 'package:e_comerece/core/loacallization/translate_data.dart';
+import 'package:e_comerece/core/servises/currency_service.dart';
 import 'package:e_comerece/core/shared/widget_shared/shimmerbar.dart';
 import 'package:e_comerece/viwe/screen/shein/seetings_price_shein.dart';
 import 'package:e_comerece/viwe/widget/custgridviwe.dart';
@@ -51,6 +53,8 @@ class SearchSheinViwe extends StatelessWidget {
                 itemCount: controller.searchProducts.length,
                 itemBuilder: (context, index) {
                   final product = controller.searchProducts[index];
+                  final currencyService = Get.find<CurrencyService>();
+                  const sourceCurrency = 'USD';
 
                   return InkWell(
                     onTap: () {
@@ -71,13 +75,14 @@ class SearchSheinViwe extends StatelessWidget {
                           imageUrl: product.goodsImg ?? "",
                         ),
                         disc: calculateDiscountPercent(
-                          product.retailPrice?.amount.toString() ?? "",
-                          product.salePrice?.amount.toString() ?? "",
+                          extractPrice(product.retailPrice?.usdAmount),
+                          extractPrice(product.salePrice?.usdAmount),
                         ),
                         title: product.goodsName ?? "",
-                        price:
-                            product.salePrice?.amountWithSymbol.toString() ??
-                            "",
+                        price: currencyService.convertAndFormat(
+                          amount: extractPrice(product.salePrice?.usdAmount),
+                          from: sourceCurrency,
+                        ),
                         icon: GetBuilder<FavoritesController>(
                           builder: (controller) {
                             bool isFav =
@@ -91,9 +96,9 @@ class SearchSheinViwe extends StatelessWidget {
                                   product.goodsId.toString(),
                                   product.goodsName ?? "",
                                   product.goodsImg ?? "",
-                                  product.salePrice?.amountWithSymbol
-                                          .toString() ??
-                                      "",
+                                  extractPrice(
+                                    product.salePrice?.usdAmount,
+                                  ).toString(),
                                   goodsSn: product.goodsSn ?? "",
                                   categoryid: product.catId ?? "",
                                   "Shein",
@@ -109,8 +114,13 @@ class SearchSheinViwe extends StatelessWidget {
                           },
                         ),
 
-                        discprice:
-                            product.retailPrice?.usdAmount.toString() ?? "",
+                        discprice: currencyService.convertAndFormat(
+                          amount: extractPrice(
+                            product.retailPrice?.usdAmount ??
+                                product.salePrice?.usdAmount,
+                          ),
+                          from: sourceCurrency,
+                        ),
                         countsall: product.tag3PLabelName,
                         rate: product.commentRankAverage.toString(),
                         isAlibaba: true,

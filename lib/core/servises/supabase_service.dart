@@ -1,5 +1,7 @@
 import 'dart:developer';
 
+import 'package:e_comerece/core/class/api_service.dart';
+import 'package:e_comerece/data/Apis/apis_url.dart';
 import 'package:get/get.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -18,38 +20,38 @@ class SupabaseService extends GetxService {
   // Send a text message
   Future<void> sendMessage({
     required String chatId,
-    required String senderId,
     required String content,
     String senderType = 'user',
     String messageType = 'text',
     String? imageUrl,
   }) async {
     try {
+      final sigData = await getSupabaseSignature();
       await client.from('messages').insert({
         'chat_id': chatId,
-        'sender_id': senderId,
+        'sender_id': sigData?['userId'],
         'content': content,
         'sender_type': senderType,
         'message_type': messageType,
         'image_url': imageUrl,
       });
     } catch (e) {
-      Get.snackbar('Error', 'Failed to send message: $e');
+      log("Error sending message: $e");
     }
   }
 
   // Send an image message
   Future<void> sendImageMessage({
     required String chatId,
-    required String senderId,
     required String imageUrl,
     String? content,
     String senderType = 'user',
   }) async {
     try {
+      final sigData = await getSupabaseSignature();
       await client.from('messages').insert({
         'chat_id': chatId,
-        'sender_id': senderId,
+        'sender_id': sigData?['userId'],
         'content': content,
         'sender_type': senderType,
         'message_type': 'image',
@@ -94,7 +96,6 @@ class SupabaseService extends GetxService {
 
   // Create a new chat
   Future<Map<String, dynamic>?> createChat({
-    required String userId,
     String? adminId,
     String? type,
     String? referenceId,
@@ -102,10 +103,11 @@ class SupabaseService extends GetxService {
     String? lastSenderType,
   }) async {
     try {
+      final sigData = await getSupabaseSignature();
       final response = await client
           .from('chats')
           .insert({
-            'user_id': userId,
+            'user_id': sigData?["userId"],
             'admin_id': adminId,
             'type': type,
             'reference_id': referenceId,
@@ -136,15 +138,39 @@ class SupabaseService extends GetxService {
       return null;
     }
   }
+  // ====================================
+
+  Future<Map<String, dynamic>?> getSupabaseSignature() async {
+    ApiService apiService = Get.find();
+    try {
+      final response = await apiService.get(endpoint: ApisUrl.getSignature);
+      if (response.statusCode == 200) {
+        return response.data['data'];
+      }
+    } catch (e) {
+      log("Error getting signature: $e");
+    }
+    return null;
+  }
+  // =================================
 
   // Get all chats for a user
-  Future<List<Map<String, dynamic>>> getUserChats(String userId) async {
+  Future<List<Map<String, dynamic>>> getUserChats() async {
     try {
-      final response = await client
-          .from('chats')
-          .select()
-          .eq('user_id', userId)
-          .order('updated_at', ascending: false);
+      final sigData = await getSupabaseSignature();
+      if (sigData == null) return [];
+      final response = await client.rpc(
+        'get_my_secure_chats',
+        params: {
+          'p_user_id': sigData['userId'],
+          'p_signature': sigData['signature'],
+        },
+      );
+      // final response = await client
+      //     .from('chats')
+      //     .select()
+      //     .eq('user_id', userId)
+      //     .order('updated_at', ascending: false);
 
       final List<Map<String, dynamic>> chats = List<Map<String, dynamic>>.from(
         response,
@@ -185,6 +211,53 @@ class SupabaseService extends GetxService {
       return [];
     }
   }
+  //  Future<List<Map<String, dynamic>>> getUserChats(String userId) async {
+  //     try {
+  //       final response = await client
+  //           .from('chats')
+  //           .select()
+  //           .eq('user_id', userId)
+  //           .order('updated_at', ascending: false);
+
+  //       final List<Map<String, dynamic>> chats = List<Map<String, dynamic>>.from(
+  //         response,
+  //       );
+
+  //       for (var chat in chats) {
+  //         try {
+  //           final lastMsg = await client
+  //               .from('messages')
+  //               .select()
+  //               .eq('chat_id', chat['id'])
+  //               .order('created_at', ascending: false)
+  //               .limit(1)
+  //               .maybeSingle();
+
+  //           if (lastMsg != null) {
+  //             chat['last_message'] = lastMsg['content'];
+  //             chat['last_sender_type'] = lastMsg['sender_type'];
+  //             chat['updated_at'] = lastMsg['created_at'];
+  //           }
+  //         } catch (e) {
+  //           log("Error fetching last message for chat ${chat['id']}: $e");
+  //         }
+  //       }
+
+  //       // Re-sort locally in case the last message times changed the order (optional but good)
+  //       chats.sort((a, b) {
+  //         DateTime timeA =
+  //             DateTime.tryParse(a['updated_at'].toString()) ?? DateTime(1970);
+  //         DateTime timeB =
+  //             DateTime.tryParse(b['updated_at'].toString()) ?? DateTime(1970);
+  //         return timeB.compareTo(timeA);
+  //       });
+
+  //       return chats;
+  //     } catch (e) {
+  //       log("Error fetching user chats: $e");
+  //       return [];
+  //     }
+  //   }
 
   // Get all chats for admin
   // Future<List<Map<String, dynamic>>> getAdminChats({String? adminId}) async {
@@ -341,11 +414,7 @@ class SupabaseService extends GetxService {
       }
 
       // Create new chat if not found
-      return await createChat(
-        userId: userId,
-        type: type,
-        referenceId: referenceId,
-      );
+      return await createChat(type: type, referenceId: referenceId);
     } catch (e) {
       log(e.toString());
       // Get.snackbar('Error', 'Failed to get or create chat: $e');

@@ -38,6 +38,7 @@ class ChatInputField extends StatelessWidget {
                     child: Opacity(
                       opacity: isInputDisabled ? 0.5 : 1.0,
                       child: Custtextfeld(
+                        focusNode: controller.focusNode,
                         validator: (val) {
                           return vlidateInPut(val: val!, min: 1, max: 100000);
                         },
@@ -69,7 +70,6 @@ class ChatInputField extends StatelessWidget {
                   onPressed: isInputDisabled
                       ? null
                       : () async {
-                          log(controller.chatid.toString());
                           if (controller.formkey.currentState!.validate()) {
                             // Sending logic
                             String startReferenceId = "11";
@@ -80,9 +80,7 @@ class ChatInputField extends StatelessWidget {
                                   .requestId
                                   .toString();
                             } else if (controller.serviceModel != null) {
-                              startReferenceId = controller
-                                  .serviceModel!
-                                  .serviceId
+                              startReferenceId = controller.serviceModel!.id
                                   .toString();
                             }
 

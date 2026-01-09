@@ -1,4 +1,5 @@
 import 'package:e_comerece/Binding/initialbinding.dart';
+import 'package:e_comerece/core/helper/app_scroll_behavior.dart';
 import 'package:e_comerece/core/loacallization/changelocal.dart';
 import 'package:e_comerece/core/loacallization/trenslition.dart';
 import 'package:e_comerece/routes.dart';
@@ -18,6 +19,7 @@ class MyApp extends StatelessWidget {
       splitScreenMode: true,
       builder: (context, child) {
         return GetMaterialApp(
+          scrollBehavior: AppScrollBehavior(),
           debugShowCheckedModeBanner: false,
           locale: localeController.language,
           translations: MyTrenslition(),

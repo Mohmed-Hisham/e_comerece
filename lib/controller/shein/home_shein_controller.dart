@@ -15,12 +15,9 @@ import 'package:get/get.dart';
 abstract class HomeSheinController extends GetxController {
   Future<void> fetchHomePageData();
   Future<void> fetchproducts();
-  // Future<void> fetchOnrefresh();
   Future<void> fetchCategories();
-  // Future<void> fetchProducts({required bool isLoadMore});
   void loadMore();
   Future<void> searshProduct({
-    // required String q,
     isLoadMore = false,
     String startPrice,
     String endPrice,
@@ -36,8 +33,6 @@ abstract class HomeSheinController extends GetxController {
     required String categoryid,
     required String lang,
   });
-  // void goToSearchByimage();
-  // void gotoshearchname(String nameCat, int categoryId);
   void indexchange(int index);
   custprice(String endPrice, String startPrice);
 }

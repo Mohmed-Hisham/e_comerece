@@ -2,6 +2,7 @@ import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/constant/imagesassets.dart';
 import 'package:e_comerece/core/constant/supabase_config.dart';
 import 'package:e_comerece/core/helper/db_database.dart';
+import 'package:e_comerece/core/servises/currency_service.dart';
 import 'package:e_comerece/core/servises/notifcation_service.dart';
 import 'package:e_comerece/core/servises/serviese.dart';
 import 'package:e_comerece/firebase_options.dart';
@@ -60,6 +61,9 @@ class _AppSplashScreenState extends State<AppSplashScreen>
       url: SupabaseConfig.url,
       anonKey: SupabaseConfig.anonKey,
     );
+
+    // Initialize Currency Service
+    await initCurrencyService();
 
     Future.delayed(const Duration(seconds: 10), () {
       if (mounted) {

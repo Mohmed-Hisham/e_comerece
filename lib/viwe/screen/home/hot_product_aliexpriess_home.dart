@@ -1,10 +1,14 @@
+import 'dart:developer';
+
 import 'package:e_comerece/controller/favorite/favorites_controller.dart';
 import 'package:e_comerece/controller/home/homescreen_controller.dart';
 import 'package:e_comerece/core/class/handlingdataviwe.dart';
 import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/funcations/calculate_discount.dart';
+import 'package:e_comerece/core/helper/format_price.dart';
 import 'package:e_comerece/core/loacallization/translate_data.dart';
 import 'package:e_comerece/core/helper/custom_cached_image.dart';
+import 'package:e_comerece/core/servises/currency_service.dart';
 import 'package:e_comerece/core/servises/platform_ext.dart';
 import 'package:e_comerece/core/constant/strings_keys.dart';
 import 'package:e_comerece/core/shared/widget_shared/shimmer_list_horizontal.dart';
@@ -64,9 +68,11 @@ class HotProductAliexpriessHome extends StatelessWidget {
                       final product = controller
                           .aliexpressHomeController
                           .productsAliExpress[index];
+                      final currencyService = Get.find<CurrencyService>();
 
                       return InkWell(
                         onTap: () {
+                          log(product.item!.itemId!.toString());
                           int id = product.item!.itemId!;
                           controller.gotoditels(
                             platform: PlatformSource.aliexpress,
@@ -87,12 +93,16 @@ class HotProductAliexpriessHome extends StatelessWidget {
                                 ),
                               ),
                               disc: calculateDiscountPercent(
-                                product.item!.sku!.def!.price!,
-                                product.item!.sku!.def!.promotionPrice!,
+                                product.item?.sku?.def?.price,
+                                product.item?.sku?.def?.promotionPrice,
                               ),
                               title: product.item!.title!,
-                              price:
-                                  "\$${product.item!.sku!.def!.promotionPrice!}",
+                              price: currencyService.convertAndFormat(
+                                amount: extractPrice(
+                                  product.item?.sku?.def?.promotionPrice,
+                                ),
+                                from: 'USD',
+                              ),
                               icon: GetBuilder<FavoritesController>(
                                 builder: (controller) {
                                   bool isFav =
@@ -106,7 +116,19 @@ class HotProductAliexpriessHome extends StatelessWidget {
                                         product.item!.itemId!.toString(),
                                         product.item!.title!,
                                         product.item!.image!,
-                                        product.item!.sku!.def!.promotionPrice!,
+                                        currencyService
+                                            .convert(
+                                              amount: extractPrice(
+                                                product
+                                                    .item
+                                                    ?.sku
+                                                    ?.def
+                                                    ?.promotionPrice,
+                                              ),
+                                              from: 'USD',
+                                              to: 'USD',
+                                            )
+                                            .toString(),
                                         "Aliexpress",
                                       );
                                     },
@@ -121,8 +143,12 @@ class HotProductAliexpriessHome extends StatelessWidget {
                                   );
                                 },
                               ),
-
-                              discprice: "\$${product.item!.sku!.def!.price!}",
+                              discprice: currencyService.convertAndFormat(
+                                amount: extractPrice(
+                                  product.item?.sku?.def?.price,
+                                ),
+                                from: 'USD',
+                              ),
                               countsall:
                                   "${product.item!.sales!} ${StringsKeys.sales.tr}",
                             ),

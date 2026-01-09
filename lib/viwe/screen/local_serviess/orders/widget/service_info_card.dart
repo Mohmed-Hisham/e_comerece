@@ -51,7 +51,7 @@ class ServiceInfoCard extends StatelessWidget {
                   ),
                   SizedBox(height: 4.h),
                   Text(
-                    '${quotedPrice ?? service.price ?? '??'} \$',
+                    '${quotedPrice ?? '??'} \$',
                     style: TextStyle(
                       fontSize: 14.sp,
                       fontWeight: FontWeight.bold,

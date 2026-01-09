@@ -1,21 +1,18 @@
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/strings_keys.dart';
 import 'package:flutter/material.dart';
-import 'package:e_comerece/core/funcations/handlingdata.dart';
 import 'package:e_comerece/core/servises/custom_getx_snak_bar.dart';
 import 'package:e_comerece/core/servises/serviese.dart';
-import 'package:e_comerece/data/datasource/remote/cart/cart_add_data.dart';
-import 'package:e_comerece/data/datasource/remote/cart/cart_addorremove_data.dart';
-import 'package:e_comerece/data/datasource/remote/cart/cartviwe_data.dart';
 import 'package:e_comerece/data/model/cartmodel.dart';
+import 'package:e_comerece/data/repository/Cart/cart_repo_impl.dart';
 import 'package:get/get.dart';
 
 abstract class AddorrmoveController extends GetxController {
   Future<void> addprise({
-    required CartModel cartModel,
+    required CartData cartData,
     required int availablequantity,
   });
-  Future<void> removprise({required CartModel cartModel});
+  Future<void> removprise({required CartData cartData});
   Future<Map<String, dynamic>> cartquintty(String productid, String attributes);
   Future<void> add(
     String productid,
@@ -34,197 +31,130 @@ abstract class AddorrmoveController extends GetxController {
 }
 
 class AddorrmoveControllerimple extends AddorrmoveController {
-  CartAddorremoveData cartAddorremoveData = CartAddorremoveData(Get.find());
-  CartviweData cartData = CartviweData(Get.find());
-  CartAddData cartAddData = CartAddData(Get.find());
+  late CartRepoImpl cartRepo;
   late Statusrequest statusRequest;
-  MyServises myServices = Get.find();
 
   Map<String, bool> isCart = {};
-  // Map<String, int> cartQuantities = {};
 
   @override
-  add(
-    productid,
-    producttitle,
-    productimage,
-    productprice,
-    platform,
-    quantity,
-    attributes,
-    availableqQuantity, {
-    tier,
-    goodsSn,
-    categoryId,
-    required porductink,
-  }) async {
-    statusRequest = Statusrequest.loading;
-    var response = await cartAddData.addcart(
-      userId: int.parse(myServices.sharedPreferences.getString("user_id")!),
-      productid: productid.toString(),
-      producttitle: producttitle,
-      productimage: productimage,
-      productprice: productprice,
-      platform: platform,
-      quantity: quantity,
-      attributes: attributes,
-      availableqQuantity: availableqQuantity,
-      tier: tier,
-      categoryId: categoryId,
-      goodsSn: goodsSn,
-      productLink: porductink,
-    );
-    statusRequest = handlingData(response);
-    if (Statusrequest.success == statusRequest) {
-      if (response['status'] == "success" && response['message'] == "add") {
-        showCustomGetSnack(
-          isGreen: true,
-          text: StringsKeys.productAddedToCart.tr,
-        );
-      } else if (response['status'] == "success" &&
-          response['message'] == "edit") {
-        showCustomGetSnack(
-          isGreen: true,
-          text: StringsKeys.productUpdatedInCart.tr,
-        );
-      } else {
-        statusRequest = Statusrequest.failuer;
-      }
-      update();
-    }
+  void onInit() {
+    super.onInit();
+    cartRepo = CartRepoImpl(apiService: Get.find());
   }
 
   @override
-  addprise({required cartModel, required availablequantity}) async {
-    var response = await cartAddorremoveData.addprise(
-      myServices.sharedPreferences.getString("user_id")!,
-      cartModel.productId!.toString(),
-      cartModel.cartAttributes!,
+  Future<void> add(
+    String productid,
+    String producttitle,
+    String productimage,
+    double productprice,
+    String platform,
+    int quantity,
+    String attributes,
+    int availableqQuantity, {
+    String? tier,
+    String? goodsSn,
+    String? categoryId,
+    required String porductink,
+  }) async {
+    statusRequest = Statusrequest.loading;
+    update();
+
+    CartData cartData = CartData(
+      productId: productid.toString(),
+      productTitle: producttitle,
+      productImage: productimage,
+      productPrice: productprice,
+      cartQuantity: quantity,
+      cartAttributes: attributes,
+      cartAvailableQuantity: availableqQuantity,
+      cartPlatform: platform,
+      cartTier: tier,
+      goodsSn: goodsSn ?? "",
+      categoryId: categoryId ?? "",
+      productLink: porductink,
+    );
+
+    var response = await cartRepo.addCart(cartData);
+
+    statusRequest = response.fold(
+      (l) {
+        showCustomGetSnack(isGreen: false, text: l.errorMessage);
+        return Statusrequest.failuer;
+      },
+      (r) {
+        showCustomGetSnack(isGreen: true, text: r);
+        return Statusrequest.success;
+      },
+    );
+    update();
+  }
+
+  @override
+  addprise({required CartData cartData, required int availablequantity}) async {
+    var response = await cartRepo.increaseQuantity(
+      cartData.productId!.toString(),
+      cartData.cartAttributes,
       availablequantity,
     );
 
-    statusRequest = handlingData(response);
-    if (Statusrequest.success == statusRequest) {
-      if (response['status'] == "success" && response['message'] == "edit") {
-        int currentQuantity = cartModel.cartQuantity!;
-        cartModel.cartQuantity = (currentQuantity + 1);
+    statusRequest = response.fold(
+      (l) {
+        showCustomGetSnack(isGreen: false, text: l.errorMessage);
+        return Statusrequest.failuer;
+      },
+      (r) {
         Get.rawSnackbar(
           title: StringsKeys.alert.tr,
           messageText: Text(StringsKeys.quantityIncreased.tr),
         );
-        update(['fetchCart']);
-      } else if (response['message'] == "full") {
-        Get.rawSnackbar(
-          title: StringsKeys.alert.tr,
-          messageText: Text(StringsKeys.notAvailable.tr),
-        );
-        statusRequest = Statusrequest.failuer;
-      } else {
-        statusRequest = Statusrequest.failuer;
-      }
-    }
+        return Statusrequest.success;
+      },
+    );
+    update(['fetchCart']);
   }
 
   @override
-  removprise({required cartModel}) async {
-    var response = await cartAddorremoveData.addremov(
-      myServices.sharedPreferences.getString("user_id")!,
-      cartModel.productId!.toString(),
-      cartModel.cartAttributes!,
+  removprise({required CartData cartData}) async {
+    var response = await cartRepo.decreaseQuantity(
+      cartData.productId!.toString(),
+      cartData.cartAttributes,
+      cartData.cartAvailableQuantity ?? 0,
     );
 
-    statusRequest = handlingData(response);
-    if (Statusrequest.success == statusRequest) {
-      if (response['status'] == "success" && response['message'] == "edit") {
-        int currentQuantity = cartModel.cartQuantity!;
-        if (currentQuantity > 1) {
-          cartModel.cartQuantity = (currentQuantity - 1);
-          Get.rawSnackbar(
-            title: StringsKeys.alert.tr,
-            messageText: Text(StringsKeys.quantityDecreased.tr),
-          );
-          update(['fetchCart']);
-        }
-      } else {
-        statusRequest = Statusrequest.failuer;
-      }
-    }
+    statusRequest = response.fold(
+      (l) {
+        showCustomGetSnack(isGreen: false, text: l.errorMessage);
+        return Statusrequest.failuer;
+      },
+      (r) {
+        Get.rawSnackbar(
+          title: StringsKeys.alert.tr,
+          messageText: Text(StringsKeys.quantityDecreased.tr),
+        );
+        return Statusrequest.success;
+      },
+    );
+    update(['fetchCart']);
   }
 
   @override
   cartquintty(productid, attributes) async {
     statusRequest = Statusrequest.loading;
-    var response = await cartAddData.cartquantity(
-      userId: myServices.sharedPreferences.getString("user_id")!,
-      productid: productid.toString(),
-      attributes: attributes,
-    );
+    var response = await cartRepo.getQuantity(productid.toString(), attributes);
 
-    statusRequest = handlingData(response);
-    if (Statusrequest.success == statusRequest) {
-      final int quantity =
-          int.tryParse(response['cart_quantity'].toString()) ?? 0;
-      final bool infavorite = response['in_favorite'];
-
-      if (response['status'] == "success") {
-        return {"quantity": quantity, "in_favorite": infavorite};
-      } else {
+    return response.fold(
+      (l) {
         statusRequest = Statusrequest.failuer;
         return {"quantity": 0, "in_favorite": false};
-      }
-    }
-    update();
-    return {"quantity": 0, "in_favorite": false};
+      },
+      (r) {
+        statusRequest = Statusrequest.success;
+        return {
+          "quantity": r['cart_quantity'] ?? 0,
+          "in_favorite": r['in_favorite'] ?? false,
+        };
+      },
+    );
   }
-
-  // Future<void> fetchCart() async {
-  //   String userId = myServices.sharedPreferences.getString("user_id") ?? "0";
-  //   if (userId == "0") return;
-
-  //   var response = await cartData.getData(userId);
-
-  //   if (response is Map &&
-  //       response['status'] == 'success' &&
-  //       response['data'] != null) {
-  //     List cartlist = response['data'];
-  //     // print("cartlist=>$cartlist");
-  //     isCart.clear();
-  //     for (var item in cartlist) {
-  //       isCart[item['productId'].toString()] = true;
-  //       // print("isCart=>${isCart}");
-  //     }
-  //   }
-  //   update(['fetchCart']);
-  // }
-
-  // Future<void> fetchCart() async {
-  //   String userId = myServices.sharedPreferences.getString("user_id") ?? "0";
-  //   if (userId == "0") return;
-
-  //   var response = await cartData.getData(userId);
-
-  //   if (response is Map &&
-  //       response['status'] == 'success' &&
-  //       response['data'] != null) {
-  //     List cartlist = response['data'];
-  //     // print("cartlist=>$cartlist");
-  //     cartQuantities.clear();
-  //     for (var item in cartlist) {
-  //       isCart[item['productId'].toString()] = true;
-  //       String productId = item['productId'].toString();
-  //       int qu = int.tryParse(item['cart_quantity']?.toString() ?? '0') ?? 0;
-
-  //       if (cartQuantities.containsKey(productId)) {
-  //         cartQuantities[productId] = cartQuantities[productId]! + qu;
-  //       } else {
-  //         cartQuantities[productId] = qu;
-  //       }
-  //     }
-  //   }
-  //   update(['fetchCart']);
-  // }
-
-  // int getQuantityForProduct(String productId) {
-  //   return cartQuantities[productId] ?? 0;
-  // }
 }

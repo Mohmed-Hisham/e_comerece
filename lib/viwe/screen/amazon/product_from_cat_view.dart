@@ -4,8 +4,9 @@ import 'package:e_comerece/core/class/handlingdataviwe.dart';
 import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/constant/strings_keys.dart';
 import 'package:e_comerece/core/funcations/calculate_discount.dart';
-import 'package:e_comerece/core/funcations/extractn_umbers.dart';
+import 'package:e_comerece/core/helper/format_price.dart';
 import 'package:e_comerece/core/loacallization/translate_data.dart';
+import 'package:e_comerece/core/servises/currency_service.dart';
 import 'package:e_comerece/core/shared/widget_shared/shimmerbar.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_app_bar.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_left_2.dart';
@@ -74,6 +75,7 @@ class ProductFromCatView extends StatelessWidget {
                           itemCount: controller.otherProduct.length,
                           itemBuilder: (context, index) {
                             final item = controller.otherProduct[index];
+                            final currencyService = Get.find<CurrencyService>();
 
                             return InkWell(
                               onTap: () {
@@ -88,14 +90,13 @@ class ProductFromCatView extends StatelessWidget {
                                   imageUrl: item.productPhoto ?? "",
                                 ),
                                 disc: calculateDiscountPercent(
-                                  extractNumbers(item.productPrice.toString()),
-                                  extractNumbers(
-                                    item.productOriginalPrice ?? "",
-                                  ),
+                                  extractPrice(item.productPrice),
+                                  extractPrice(item.productOriginalPrice),
                                 ),
                                 title: item.productTitle!,
-                                price: extractNumbers(
-                                  item.productPrice.toString(),
+                                price: currencyService.convertAndFormat(
+                                  amount: extractPrice(item.productPrice),
+                                  from: 'SAR',
                                 ),
                                 icon: GetBuilder<FavoritesController>(
                                   builder: (isFavoriteController) {
@@ -110,9 +111,15 @@ class ProductFromCatView extends StatelessWidget {
                                           item.asin!,
                                           item.productTitle!,
                                           item.productPhoto!,
-                                          extractNumbers(
-                                            item.productPrice.toString(),
-                                          ),
+                                          currencyService
+                                              .convert(
+                                                amount: extractPrice(
+                                                  item.productPrice,
+                                                ),
+                                                from: 'SAR',
+                                                to: 'USD',
+                                              )
+                                              .toString(),
                                           StringsKeys.amazonTitle.tr,
                                         );
                                       },
@@ -129,17 +136,13 @@ class ProductFromCatView extends StatelessWidget {
                                 ),
                                 isAmazon: true,
                                 rate: "${item.productStarRating ?? ""}   ",
-                                discprice:
-                                    extractNumbers(
-                                          item.productOriginalPrice ?? "",
-                                        ) !=
-                                        ""
-                                    ? extractNumbers(
-                                        item.productOriginalPrice ?? "",
-                                      )
-                                    : extractNumbers(
-                                        item.productPrice.toString(),
-                                      ),
+                                discprice: currencyService.convertAndFormat(
+                                  amount: extractPrice(
+                                    item.productOriginalPrice ??
+                                        item.productPrice,
+                                  ),
+                                  from: 'SAR',
+                                ),
                               ),
                             );
                           },

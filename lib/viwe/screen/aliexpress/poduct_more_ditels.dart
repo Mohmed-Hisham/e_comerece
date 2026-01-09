@@ -5,11 +5,14 @@ import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/constant/strings_keys.dart';
 import 'package:e_comerece/core/funcations/calculate_discount.dart';
 import 'package:e_comerece/core/helper/custom_cached_image.dart';
+import 'package:e_comerece/core/helper/format_price.dart';
+import 'package:e_comerece/core/servises/currency_service.dart';
 import 'package:e_comerece/core/shared/widget_shared/shimmerbar.dart';
 import 'package:e_comerece/viwe/widget/custgridviwe.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/simple/get_state.dart';
 import 'package:get/get_utils/src/extensions/internacionalization.dart';
 
@@ -19,6 +22,8 @@ class PoductMoreDitels extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final currencyService = Get.find<CurrencyService>();
+
     return Handlingdataviwe(
       ontryagain: () => controller.searshText(),
       shimmer: ShimmerBar(height: 8, animationDuration: 1),
@@ -52,7 +57,10 @@ class PoductMoreDitels extends StatelessWidget {
                   item.sku!.def!.promotionPrice,
                 ),
                 title: item.title!,
-                price: "${item.sku!.def!.promotionPrice} \$",
+                price: currencyService.convertAndFormat(
+                  amount: extractPrice(item.sku?.def?.promotionPrice ?? "0"),
+                  from: 'USD',
+                ),
                 icon: GetBuilder<FavoritesController>(
                   builder: (isFavoriteController) {
                     bool isFav =
@@ -66,7 +74,15 @@ class PoductMoreDitels extends StatelessWidget {
                           item.itemId.toString(),
                           item.title ?? "",
                           item.image ?? "",
-                          "\$${item.sku!.def!.price}",
+                          currencyService
+                              .convert(
+                                amount: extractPrice(
+                                  item.sku!.def!.promotionPrice ?? "0",
+                                ),
+                                from: 'USD',
+                                to: 'USD',
+                              )
+                              .toString(),
                           "Aliexpress",
                         );
                       },
@@ -79,7 +95,10 @@ class PoductMoreDitels extends StatelessWidget {
                     );
                   },
                 ),
-                discprice: "${item.sku!.def!.price} \$",
+                discprice: currencyService.convertAndFormat(
+                  amount: extractPrice(item.sku?.def?.price ?? "0"),
+                  from: 'USD',
+                ),
                 countsall: "${item.sales!} ${StringsKeys.sales.tr}",
               ),
             ),

@@ -6,8 +6,10 @@ import 'package:e_comerece/core/constant/strings_keys.dart';
 import 'package:e_comerece/core/constant/wantedcategory.dart';
 import 'package:e_comerece/core/funcations/calculate_discount.dart';
 import 'package:e_comerece/core/helper/custom_cached_image.dart';
+import 'package:e_comerece/core/helper/format_price.dart';
 import 'package:e_comerece/core/helper/pagination_listener.dart';
 import 'package:e_comerece/core/loacallization/translate_data.dart';
+import 'package:e_comerece/core/servises/currency_service.dart';
 import 'package:e_comerece/core/shared/widget_shared/custmenubutton.dart';
 import 'package:e_comerece/core/shared/widget_shared/shimmerbar.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_app_bar.dart';
@@ -241,6 +243,8 @@ class ProductFromCat extends StatelessWidget {
                             itemCount: controller.items.length,
                             itemBuilder: (context, index) {
                               final product = controller.items[index];
+                              final currencyService =
+                                  Get.find<CurrencyService>();
 
                               return InkWell(
                                 onTap: () {
@@ -259,9 +263,13 @@ class ProductFromCat extends StatelessWidget {
                                     product.item?.sku?.def?.promotionPrice ?? 0,
                                   ),
                                   title: product.item?.title ?? "",
-                                  price:
+                                  price: currencyService.convertAndFormat(
+                                    amount: extractPrice(
                                       product.item?.sku?.def?.promotionPrice ??
-                                      "0",
+                                          "0",
+                                    ),
+                                    from: 'USD',
+                                  ),
                                   icon: GetBuilder<FavoritesController>(
                                     builder: (isFavoriteController) {
                                       bool isFav =
@@ -277,12 +285,20 @@ class ProductFromCat extends StatelessWidget {
                                                 "",
                                             product.item?.title ?? "",
                                             product.item?.itemUrl ?? "",
-                                            product
-                                                    .item
-                                                    ?.sku
-                                                    ?.def
-                                                    ?.promotionPrice ??
-                                                "",
+                                            currencyService
+                                                .convert(
+                                                  amount: extractPrice(
+                                                    product
+                                                            .item
+                                                            ?.sku
+                                                            ?.def
+                                                            ?.promotionPrice ??
+                                                        "0",
+                                                  ),
+                                                  from: 'USD',
+                                                  to: 'USD',
+                                                )
+                                                .toString(),
                                             "Aliexpress",
                                           );
                                         },
@@ -297,8 +313,12 @@ class ProductFromCat extends StatelessWidget {
                                       );
                                     },
                                   ),
-                                  discprice:
-                                      product.item?.sku?.def?.price ?? "",
+                                  discprice: currencyService.convertAndFormat(
+                                    amount: extractPrice(
+                                      product.item?.sku?.def?.price ?? "0",
+                                    ),
+                                    from: 'USD',
+                                  ),
                                   countsall:
                                       "${product.item?.sales} ${StringsKeys.sales.tr}",
                                 ),

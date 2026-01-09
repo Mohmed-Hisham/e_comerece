@@ -1,65 +1,70 @@
+import 'dart:developer';
+
 import 'package:e_comerece/core/class/statusrequest.dart';
-import 'package:e_comerece/core/funcations/handlingdata.dart';
-import 'package:e_comerece/data/datasource/remote/local_service/get_details_order_local_service_data.dart';
-import 'package:e_comerece/data/datasource/remote/local_service/cancel_order_data.dart';
+import 'package:e_comerece/core/servises/custom_getx_snak_bar.dart';
 import 'package:e_comerece/data/model/local_service/service_request_details_model.dart';
 import 'package:e_comerece/data/model/local_service/service_request_model.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
+import 'package:e_comerece/data/repository/local_service/local_service_repo_impl.dart';
 import 'package:get/get.dart';
 
 class LocalServiceOrderDetailsController extends GetxController {
-  GetDetailsOrderLocalServiceData getDetailsOrderLocalServiceData =
-      GetDetailsOrderLocalServiceData(Get.find());
+  final LocalServiceRepoImpl localServiceRepoImpl = LocalServiceRepoImpl(
+    apiService: Get.find(),
+  );
 
-  late ServiceRequestDetailData requestDetails;
+  ServiceRequestDetailData? requestDetails;
   Statusrequest statusrequest = Statusrequest.none;
-  CancelOrderData cancelOrderData = CancelOrderData(Get.find());
-  int? requestId;
+  String? requestId;
 
   @override
   void onInit() {
     if (Get.arguments != null && Get.arguments['service_request'] != null) {
       ServiceRequestData request = Get.arguments['service_request'];
-      requestId = request.requestId;
+      requestId = request.id;
       getData();
     }
     super.onInit();
   }
 
-  getData() async {
+  getData({String? id}) async {
+    if (id != null) {
+      requestId = id;
+    }
     if (requestId == null) return;
     statusrequest = Statusrequest.loading;
     update();
-    var response = await getDetailsOrderLocalServiceData.getDetailsRequest(
-      requestId: requestId!,
+    log("id $requestId");
+
+    final response = await localServiceRepoImpl.getServiceRequestDetails(
+      requestId!,
     );
-    statusrequest = handlingData(response);
-    if (Statusrequest.success == statusrequest) {
-      if (response['status'] == 'success') {
-        ServiceRequestDetailsModel model = ServiceRequestDetailsModel.fromJson(
-          response,
-        );
-        if (model.data != null && model.data!.isNotEmpty) {
-          requestDetails = model.data![0];
-        } else {
-          statusrequest = Statusrequest.failuer;
-        }
-      } else {
+
+    response.fold(
+      (failure) {
         statusrequest = Statusrequest.failuer;
-      }
-    }
+        showCustomGetSnack(
+          isGreen: false,
+          text: failure.errorMessage,
+          duration: const Duration(minutes: 5),
+        );
+      },
+      (model) {
+        requestDetails = model.data;
+        statusrequest = Statusrequest.success;
+      },
+    );
     update();
   }
 
   goToChat() {
+    if (requestDetails == null) return;
     Get.toNamed(
       AppRoutesname.messagesScreen,
       arguments: {
         'service_request_details': requestDetails,
-        'chat_id':
-            null, // Start new or find existing logic handled by controller
-        'platform':
-            'service_request', // Custom type to identify this flow if needed
+        'chat_id': null,
+        'platform': 'service_request',
       },
     );
   }

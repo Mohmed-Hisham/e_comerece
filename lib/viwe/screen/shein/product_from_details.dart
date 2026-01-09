@@ -4,6 +4,8 @@ import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/constant/strings_keys.dart';
 import 'package:e_comerece/core/funcations/calculate_discount.dart';
 import 'package:e_comerece/core/helper/custom_cached_image.dart';
+import 'package:e_comerece/core/helper/format_price.dart';
+import 'package:e_comerece/core/servises/currency_service.dart';
 import 'package:e_comerece/viwe/widget/custgridviwe.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -29,6 +31,8 @@ class ProductFromDetails extends StatelessWidget {
         itemCount: controller.searchProducts.length,
         itemBuilder: (context, index) {
           final product = controller.searchProducts[index];
+          final currencyService = Get.find<CurrencyService>();
+          const sourceCurrency = 'USD';
 
           return InkWell(
             onTap: () {
@@ -44,11 +48,14 @@ class ProductFromDetails extends StatelessWidget {
               child: Custgridviwe(
                 image: CustomCachedImage(imageUrl: product.goodsImg ?? ""),
                 disc: calculateDiscountPercent(
-                  product.retailPrice!.amount.toString(),
-                  product.salePrice?.amount.toString(),
+                  extractPrice(product.retailPrice?.usdAmount),
+                  extractPrice(product.salePrice?.usdAmount),
                 ),
                 title: product.goodsName!,
-                price: product.salePrice!.amountWithSymbol.toString(),
+                price: currencyService.convertAndFormat(
+                  amount: extractPrice(product.salePrice?.usdAmount),
+                  from: sourceCurrency,
+                ),
                 icon: GetBuilder<FavoritesController>(
                   builder: (controller) {
                     bool isFav =
@@ -61,7 +68,7 @@ class ProductFromDetails extends StatelessWidget {
                           product.goodsId.toString(),
                           product.goodsName!,
                           product.goodsImg!,
-                          product.salePrice!.amountWithSymbol.toString(),
+                          extractPrice(product.salePrice?.usdAmount).toString(),
                           goodsSn: product.goodsSn ?? "",
                           categoryid: product.catId ?? "",
                           "Shein",
@@ -77,7 +84,13 @@ class ProductFromDetails extends StatelessWidget {
                   },
                 ),
 
-                discprice: product.retailPrice?.usdAmount.toString() ?? "",
+                discprice: currencyService.convertAndFormat(
+                  amount: extractPrice(
+                    product.retailPrice?.usdAmount ??
+                        product.salePrice?.usdAmount,
+                  ),
+                  from: sourceCurrency,
+                ),
                 countsall: product.premiumFlagNew?.seriesBadgeName ?? "",
                 rate: product.commentRankAverage?.toString() ?? "",
                 isAlibaba: true,

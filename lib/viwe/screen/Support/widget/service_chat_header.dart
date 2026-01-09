@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ServiceChatHeader extends StatelessWidget {
-  final Service service;
+  final LocalServiceData service;
   const ServiceChatHeader({super.key, required this.service});
 
   @override
@@ -26,13 +26,14 @@ class ServiceChatHeader extends StatelessWidget {
       ),
       child: Row(
         children: [
-          CustomCachedImage(
-            imageUrl:
-                service.serviceImage ??
-                "", // Using fixed image as per details view
-            width: 60.w,
-            height: 60.h,
-            radius: 10.r,
+          Hero(
+            tag: service.id!,
+            child: CustomCachedImage(
+              imageUrl: service.serviceImage ?? "",
+              width: 60.w,
+              height: 60.h,
+              radius: 10.r,
+            ),
           ),
           SizedBox(width: 15.w),
           Expanded(
@@ -50,11 +51,13 @@ class ServiceChatHeader extends StatelessWidget {
                 ),
                 SizedBox(height: 5.h),
                 Text(
-                  "${service.servicePrice} \$",
+                  service.serviceDesc ?? "",
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: Appcolor.primrycolor,
                     fontWeight: FontWeight.bold,
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),

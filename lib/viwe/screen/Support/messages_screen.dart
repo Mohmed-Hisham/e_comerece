@@ -43,7 +43,7 @@ class MessagesScreen extends StatelessWidget {
                         return const ChatShimmer();
                       }
                       if (snapshot.hasError) {
-                        return Center(child: Text("Error: ${snapshot.error}"));
+                        return Center(child: Text("Error"));
                       }
 
                       final messages = snapshot.data ?? [];

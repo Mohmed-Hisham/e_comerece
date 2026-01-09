@@ -1,3 +1,4 @@
+import 'package:e_comerece/core/constant/string_const.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -14,9 +15,13 @@ class MyServises extends GetxService {
     // await secureStorage.write(
     //   key: token,
     //   value:
-    //       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiIwMTliN2FjZi1iMWQ0LTcyMmQtYjIzYi00MzUyNzFjZjIyNjQiLCJlbWFpbCI6Im1oNjI4NTQzNkBnbWFpbC5jb20iLCJ1bmlxdWVfbmFtZSI6InNkZnNkZnNkIiwibmJmIjoxNzY3NTU5NTcyLCJleHAiOjE3Njc1NjEzNzIsImlhdCI6MTc2NzU1OTU3MiwiaXNzIjoiTXlBdXRoU2VydmVyIiwiYXVkIjoiTXlBdXRoQ2xpZW50In0.pCSlapU-mhKLzOx7sBg_-WoU-U7IHPxTLP1e48ZuXwo",
+    //       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiIwMTliN2FjZi1iMWQ0LTcyMmQtYjIzYi00MzUyNzFjZjIyNjQiLCJlbWFpbCI6Im1oNjI4NTQzNkBnbWFpbC5jb20iLCJ1bmlxdWVfbmFtZSI6InNkZnNkZnNkIiwibmJmIjoxNzY3NjM0OTUzLCJleHAiOjE3NjgyMzQ5NTMsImlhdCI6MTc2NzYzNDk1MywiaXNzIjoiTXlBdXRoU2VydmVyIiwiYXVkIjoiTXlBdXRoQ2xpZW50In0.H6jCJuJFuq9slciD17pAVwJPVRd1dC-J64fsnxLlJuM",
     // );
     return this;
+  }
+
+  Future<void> getToken(String value) async {
+    await secureStorage.read(key: "token");
   }
 
   Future<void> saveStep(String value) async {

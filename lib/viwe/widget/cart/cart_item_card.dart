@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:e_comerece/controller/cart/cart_controller.dart';
 import 'package:e_comerece/core/loacallization/translate_data.dart';
 import 'package:e_comerece/data/model/cartmodel.dart';
@@ -10,13 +9,13 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class CartItemCard extends StatelessWidget {
-  final CartModel cartItem;
+  final CartData cartItem;
 
   const CartItemCard({super.key, required this.cartItem});
 
   @override
   Widget build(BuildContext context) {
-    final attributes = jsonDecode(cartItem.cartAttributes!);
+    final attributes = cartItem.parsedAttributes;
     final controller = Get.find<CartControllerImpl>();
 
     return Padding(
@@ -29,7 +28,7 @@ class CartItemCard extends StatelessWidget {
                 ? int.parse(cartItem.productId!)
                 : cartItem.productId!,
             lang: plat == "amazon" ? enOrArAmazon() : enOrAr(),
-            title: cartItem.cartProductTitle!,
+            title: cartItem.productTitle!,
             asin: cartItem.productId ?? "",
             goodssn: cartItem.goodsSn ?? "",
             goodsid: cartItem.productId ?? "",
@@ -41,16 +40,16 @@ class CartItemCard extends StatelessWidget {
           children: [
             // Image and Delete Button
             CartItemImage(
-              imageUrl: cartItem.cartProductImage,
-              onDelete: () => controller.removeItem(cartItem.cartId!),
+              imageUrl: cartItem.productImage,
+              onDelete: () => controller.removeItem(cartItem.id!),
             ),
 
             const SizedBox(width: 15),
 
             // Product Info (Title, Price, More)
             CartItemInfo(
-              title: cartItem.cartProductTitle!,
-              price: cartItem.cartPrice!,
+              title: cartItem.productTitle!,
+              price: cartItem.productPrice.toString(),
               onShowMore: () => CartItemDetailsSheet.show(context, attributes),
             ),
 

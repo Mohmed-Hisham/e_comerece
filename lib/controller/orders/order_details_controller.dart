@@ -17,7 +17,6 @@ abstract class OrderDetailsController extends GetxController {
 class OrderDetailsControllerImp extends OrderDetailsController {
   GetOrdersData getOrdersData = GetOrdersData(Get.find());
   CancelOrderData cancelOrderData = CancelOrderData(Get.find());
-  CartAddData cartAddData = CartAddData(Get.find());
   Statusrequest statusrequest = Statusrequest.none;
   MyServises myServises = Get.find();
   Data? orderData;
@@ -192,106 +191,106 @@ class OrderDetailsControllerImp extends OrderDetailsController {
 
   @override
   Future<void> reorderItems() async {
-    if (!canReorder()) {
-      Get.snackbar(
-        'خطأ',
-        'لا يمكن إعادة طلب هذا الطلب. يمكن إعادة الطلبات المكتملة أو الملغية فقط',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.orange.withValues(alpha: 0.9),
-        colorText: Colors.white,
-        duration: const Duration(seconds: 3),
-      );
-      return;
-    }
+    // if (!canReorder()) {
+    //   Get.snackbar(
+    //     'خطأ',
+    //     'لا يمكن إعادة طلب هذا الطلب. يمكن إعادة الطلبات المكتملة أو الملغية فقط',
+    //     snackPosition: SnackPosition.BOTTOM,
+    //     backgroundColor: Colors.orange.withValues(alpha: 0.9),
+    //     colorText: Colors.white,
+    //     duration: const Duration(seconds: 3),
+    //   );
+    //   return;
+    // }
 
-    if (orderData!.items.isEmpty) {
-      Get.snackbar(
-        'خطأ',
-        'لا توجد منتجات في هذا الطلب',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withValues(alpha: 0.9),
-        colorText: Colors.white,
-      );
-      return;
-    }
+    // if (orderData!.items.isEmpty) {
+    //   Get.snackbar(
+    //     'خطأ',
+    //     'لا توجد منتجات في هذا الطلب',
+    //     snackPosition: SnackPosition.BOTTOM,
+    //     backgroundColor: Colors.red.withValues(alpha: 0.9),
+    //     colorText: Colors.white,
+    //   );
+    //   return;
+    // }
 
-    isReordering = true;
-    update();
+    // isReordering = true;
+    // update();
 
-    int userId = int.parse(
-      myServises.sharedPreferences.getString("user_id") ?? "0",
-    );
+    // int userId = int.parse(
+    //   myServises.sharedPreferences.getString("user_id") ?? "0",
+    // );
 
-    if (userId == 0) {
-      Get.snackbar(
-        'خطأ',
-        'حدث خطأ. يرجى تسجيل الدخول مرة أخرى',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withValues(alpha: 0.9),
-        colorText: Colors.white,
-      );
-      isReordering = false;
-      update();
-      return;
-    }
+    // if (userId == 0) {
+    //   Get.snackbar(
+    //     'خطأ',
+    //     'حدث خطأ. يرجى تسجيل الدخول مرة أخرى',
+    //     snackPosition: SnackPosition.BOTTOM,
+    //     backgroundColor: Colors.red.withValues(alpha: 0.9),
+    //     colorText: Colors.white,
+    //   );
+    //   isReordering = false;
+    //   update();
+    //   return;
+    // }
 
-    int successCount = 0;
-    int failCount = 0;
+    // int successCount = 0;
+    // int failCount = 0;
 
-    for (var item in orderData!.items) {
-      try {
-        final response = await cartAddData.addcart(
-          userId: userId,
-          productid: item.productId?.toString() ?? '',
-          producttitle: item.productTitle ?? '',
-          productimage: item.productImage ?? '',
-          productprice: double.tryParse(item.productPrice ?? '0') ?? 0.0,
-          platform: item.productPlatform ?? '',
-          productLink: item.productLink ?? '',
-          quantity: item.quantity ?? 1,
-          attributes: item.attributes ?? '{}',
-          availableqQuantity: 999,
-          tier: null,
-          goodsSn: null,
-          categoryId: null,
-        );
+    // for (var item in orderData!.items) {
+    //   try {
+    //     final response = await cartAddData.addcart(
+    //       userId: userId,
+    //       productid: item.productId?.toString() ?? '',
+    //       producttitle: item.productTitle ?? '',
+    //       productimage: item.productImage ?? '',
+    //       productprice: double.tryParse(item.productPrice ?? '0') ?? 0.0,
+    //       platform: item.productPlatform ?? '',
+    //       productLink: item.productLink ?? '',
+    //       quantity: item.quantity ?? 1,
+    //       attributes: item.attributes ?? '{}',
+    //       availableqQuantity: 999,
+    //       tier: null,
+    //       goodsSn: null,
+    //       categoryId: null,
+    //     );
 
-        final processedStatus = handlingData(response);
-        if (processedStatus == Statusrequest.success) {
-          successCount++;
-        } else {
-          failCount++;
-        }
-      } catch (e) {
-        failCount++;
-      }
-    }
+    //     final processedStatus = handlingData(response);
+    //     if (processedStatus == Statusrequest.success) {
+    //       successCount++;
+    //     } else {
+    //       failCount++;
+    //     }
+    //   } catch (e) {
+    //     failCount++;
+    //   }
+    // }
 
-    isReordering = false;
-    update();
+    // isReordering = false;
+    // update();
 
-    if (successCount > 0) {
-      Get.snackbar(
-        'نجح',
-        'تمت إضافة $successCount منتج إلى السلة${failCount > 0 ? ' (فشل إضافة $failCount منتج)' : ''}',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green.withValues(alpha: 0.9),
-        colorText: Colors.white,
-        duration: const Duration(seconds: 3),
-      );
+    // if (successCount > 0) {
+    //   Get.snackbar(
+    //     'نجح',
+    //     'تمت إضافة $successCount منتج إلى السلة${failCount > 0 ? ' (فشل إضافة $failCount منتج)' : ''}',
+    //     snackPosition: SnackPosition.BOTTOM,
+    //     backgroundColor: Colors.green.withValues(alpha: 0.9),
+    //     colorText: Colors.white,
+    //     duration: const Duration(seconds: 3),
+    //   );
 
-      // Navigate to cart
-      Get.back();
-      // Get.toNamed('/cartscreen');
-    } else {
-      Get.snackbar(
-        'خطأ',
-        'فشل في إضافة المنتجات إلى السلة. يرجى المحاولة مرة أخرى',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withValues(alpha: 0.9),
-        colorText: Colors.white,
-        duration: const Duration(seconds: 4),
-      );
-    }
+    //   // Navigate to cart
+    //   Get.back();
+    //   // Get.toNamed('/cartscreen');
+    // } else {
+    //   Get.snackbar(
+    //     'خطأ',
+    //     'فشل في إضافة المنتجات إلى السلة. يرجى المحاولة مرة أخرى',
+    //     snackPosition: SnackPosition.BOTTOM,
+    //     backgroundColor: Colors.red.withValues(alpha: 0.9),
+    //     colorText: Colors.white,
+    //     duration: const Duration(seconds: 4),
+    //   );
+    // }
   }
 }

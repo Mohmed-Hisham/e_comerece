@@ -1,5 +1,5 @@
-import 'dart:convert';
-import 'dart:developer';
+import 'package:e_comerece/core/helper/format_price.dart';
+import 'package:e_comerece/core/servises/currency_service.dart';
 import 'package:carousel_slider/carousel_controller.dart';
 import 'package:chewie/chewie.dart';
 import 'package:e_comerece/controller/cart/cart_from_detils.dart';
@@ -17,6 +17,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:video_player/video_player.dart';
+import 'dart:convert';
+import 'dart:developer';
 import 'package:e_comerece/data/model/amazon_models/search_amazon_model.dart'
     as search;
 
@@ -263,7 +265,7 @@ class ProductDetailsAmazonControllerImple
       detailsAmazonModel?.data?.productOriginalPrice;
   String? get productOriginalPrice =>
       detailsAmazonModel?.data?.productOriginalPrice;
-  String? get currency => detailsAmazonModel?.data?.currency;
+  String? get currencyFromApi => detailsAmazonModel?.data?.currency;
   String? get productByline => detailsAmazonModel?.data?.productByline;
   String? get productStarRating => detailsAmazonModel?.data?.productStarRating;
   int? get productNumRatings => detailsAmazonModel?.data?.productNumRatings;
@@ -422,11 +424,25 @@ class ProductDetailsAmazonControllerImple
 
   // Additional Amazon-specific utility methods
   String getCurrentPriceFormatted() {
-    return productPrice ?? 'N/A';
+    final cur = Get.find<CurrencyService>();
+    return cur.convertAndFormat(
+      amount: extractPrice(productPrice),
+      from: 'SAR',
+    );
+  }
+
+  String getOriginalPriceFormatted() {
+    final cur = Get.find<CurrencyService>();
+    return cur.convertAndFormat(
+      amount: extractPrice(productOriginalPrice),
+      from: 'SAR',
+    );
   }
 
   String getCurrencyCode() {
-    return currency ?? '\$';
+    return Get.find<CurrencyService>().getCurrencySymbol(
+      Get.find<CurrencyService>().selectedCurrency,
+    );
   }
 
   // List<String> getAvailableColors() {
@@ -446,15 +462,15 @@ class ProductDetailsAmazonControllerImple
   }
 
   double getTotalPrice() {
-    final currentPrice = getCurrentPrice();
+    final currentPrice = extractPrice(productPrice);
 
-    return currentPrice != null ? currentPrice * quantity : 0.0;
+    return currentPrice * quantity;
   }
 
   String getTotalPriceFormatted() {
     final totalPrice = getTotalPrice();
-    final currencySymbol = getCurrencyCode();
-    return '$currencySymbol${totalPrice.toStringAsFixed(2)}';
+    final cur = Get.find<CurrencyService>();
+    return cur.convertAndFormat(amount: totalPrice, from: 'SAR');
   }
 
   bool isProductAvailable() {

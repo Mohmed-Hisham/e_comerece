@@ -62,7 +62,7 @@ class _ServiceRequestHeaderState extends State<ServiceRequestHeader> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "${StringsKeys.serviceAmendment.tr} #${widget.request.requestId ?? StringsKeys.notAvailable.tr}",
+                        StringsKeys.serviceAmendment.tr,
                         style: TextStyle(
                           fontSize: 16.sp,
                           fontWeight: FontWeight.bold,
@@ -92,14 +92,14 @@ class _ServiceRequestHeaderState extends State<ServiceRequestHeader> {
               SizedBox(height: 8.h),
               _buildDetailRow(
                 StringsKeys.quotedPrice.tr,
-                "${widget.request.quotedPrice ?? widget.request.service?.price ?? StringsKeys.notAvailable.tr} \$",
+                "${widget.request.quotedPrice ?? StringsKeys.notAvailable.tr} \$",
                 icon: Icons.attach_money,
               ),
               _buildDetailRow(
                 StringsKeys.date.tr,
                 widget.request.createdAt != null
                     ? Jiffy.parse(
-                        widget.request.createdAt!,
+                        widget.request.createdAt!.toIso8601String(),
                       ).format(pattern: 'yyyy-MM-dd')
                     : StringsKeys.notAvailable.tr,
                 icon: Icons.calendar_today,

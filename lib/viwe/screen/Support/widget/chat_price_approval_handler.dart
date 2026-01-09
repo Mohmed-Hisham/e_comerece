@@ -1,4 +1,7 @@
+import 'dart:developer';
+
 import 'package:e_comerece/controller/support_controller/support_screen_controller.dart';
+import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/data/model/support_model/get_message_model.dart';
 import 'package:e_comerece/viwe/screen/Support/widget/price_approval_card.dart';
 import 'package:e_comerece/viwe/screen/local_serviess/service_order_screen.dart';
@@ -27,21 +30,22 @@ class ChatPriceApprovalHandler extends StatelessWidget {
     }
 
     if (approvedPrice != null) {
-      return Hero(
-        tag: controller.serviceModel?.serviceId ?? "",
-        child: PriceApprovalCard(
-          price: approvedPrice,
-          onConfirm: () {
-            Get.to(
-              () => const ServiceOrderScreen(),
-              arguments: {
-                'service_model': controller.serviceModel,
-                'quoted_price': double.parse(approvedPrice!),
-                'chat_id': controller.chatid,
-              },
-            );
-          },
-        ),
+      return PriceApprovalCard(
+        price: approvedPrice,
+        onConfirm: () async {
+          controller.focusNode.unfocus();
+          final result = await Get.toNamed(
+            AppRoutesname.serviceOrderScreen,
+            arguments: {
+              'service_model': controller.serviceModel,
+              'quoted_price': double.parse(approvedPrice!),
+              'chat_id': controller.chatid,
+            },
+          );
+          if (result == true) {
+            Get.back(result: true);
+          }
+        },
       );
     }
     return const SizedBox();

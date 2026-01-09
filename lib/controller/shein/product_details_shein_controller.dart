@@ -8,10 +8,11 @@ import 'package:e_comerece/core/funcations/handle_paging_response.dart';
 import 'package:e_comerece/core/loacallization/translate_data.dart';
 import 'package:e_comerece/core/servises/serviese.dart';
 import 'package:e_comerece/core/class/failure.dart';
+import 'package:e_comerece/core/helper/format_price.dart';
+import 'package:e_comerece/core/servises/currency_service.dart';
 import 'package:e_comerece/core/servises/custom_getx_snak_bar.dart';
-import 'package:e_comerece/data/datasource/remote/cart/cartviwe_data.dart';
-import 'package:e_comerece/data/repository/shein/shein_repo_impl.dart';
 import 'package:e_comerece/data/model/cartmodel.dart';
+import 'package:e_comerece/data/repository/shein/shein_repo_impl.dart';
 import 'package:e_comerece/data/model/shein_models/details_shein_image_list.dart'
     as shein_image_list;
 import 'package:e_comerece/data/model/shein_models/details_shein_size.dart'
@@ -37,6 +38,7 @@ abstract class ProductDetailsSheinController extends GetxController {
   void decrementQuantity();
   double? getCurrentPrice();
   String getCurrentPriceFormatted();
+  String getTotalPriceFormatted();
   String getCurrentQuantityFormatted();
   int getMinQuantity();
   void indexchange(int index);
@@ -65,7 +67,6 @@ class ProductDetailsSheinControllerImple extends ProductDetailsSheinController {
   AddorrmoveControllerimple addorrmoveController = Get.put(
     AddorrmoveControllerimple(),
   );
-  CartviweData cartData = CartviweData(Get.find());
 
   Statusrequest statusrequest = Statusrequest.loading;
   Statusrequest statusrequestImagesList = Statusrequest.loading;
@@ -90,7 +91,7 @@ class ProductDetailsSheinControllerImple extends ProductDetailsSheinController {
   MyServises myServices = Get.find();
 
   Map<String, int> cartQuantities = {};
-  List<CartModel> cartItems = [];
+  List<CartData> cartItems = [];
 
   int currentIndex = 0;
 
@@ -399,25 +400,59 @@ class ProductDetailsSheinControllerImple extends ProductDetailsSheinController {
 
   @override
   double? getCurrentPrice() {
-    // Prefer salePrice.amount if present else retailPrice.amount
+    // Prefer salePrice.usdAmount if present else retailPrice.usdAmount
     final priceStr =
-        currentVariant?.salePrice?.amount ??
-        _product?.salePrice?.amount ??
-        currentVariant?.retailPrice?.amount ??
-        _product?.retailPrice?.amount;
+        currentVariant?.salePrice?.usdAmount ??
+        _product?.salePrice?.usdAmount ??
+        currentVariant?.retailPrice?.usdAmount ??
+        _product?.retailPrice?.usdAmount;
     if (priceStr == null) return null;
-    final parsed = double.tryParse(priceStr);
-    return parsed;
+
+    final currencyService = Get.find<CurrencyService>();
+    const sourceCurrency = 'USD';
+
+    return currencyService.convert(
+      amount: extractPrice(priceStr),
+      from: sourceCurrency,
+    );
   }
 
   @override
   String getCurrentPriceFormatted() {
-    final formatted =
-        currentVariant?.salePrice?.amountWithSymbol ??
-        _product?.salePrice?.amountWithSymbol ??
-        currentVariant?.retailPrice?.amountWithSymbol ??
-        _product?.retailPrice?.amountWithSymbol;
-    return formatted ?? 'N/A';
+    final priceStr =
+        currentVariant?.salePrice?.usdAmount ??
+        _product?.salePrice?.usdAmount ??
+        currentVariant?.retailPrice?.usdAmount ??
+        _product?.retailPrice?.usdAmount;
+
+    if (priceStr == null) return 'N/A';
+
+    final currencyService = Get.find<CurrencyService>();
+    const sourceCurrency = 'USD';
+
+    return currencyService.convertAndFormat(
+      amount: extractPrice(priceStr),
+      from: sourceCurrency,
+    );
+  }
+
+  @override
+  String getTotalPriceFormatted() {
+    final currentPrice = getCurrentPrice();
+    if (currentPrice == null) return '0.00';
+    final total =
+        currentPrice *
+        quantity; // Changed math.max(1, quantity) to quantity as min quantity is already handled.
+
+    final currencyService = Get.find<CurrencyService>();
+    final symbol = currencyService.getCurrencySymbol(
+      currencyService.selectedCurrency,
+    );
+
+    if (currencyService.selectedCurrency == 'USD') {
+      return '$symbol${total.toStringAsFixed(2)}';
+    }
+    return '${total.toStringAsFixed(2)} $symbol';
   }
 
   @override

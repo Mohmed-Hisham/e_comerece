@@ -12,6 +12,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:e_comerece/core/constant/strings_keys.dart';
+import 'package:e_comerece/core/helper/format_price.dart';
+import 'package:e_comerece/core/servises/currency_service.dart';
 
 class HotProductShein extends StatelessWidget {
   const HotProductShein({super.key});
@@ -58,15 +60,11 @@ class HotProductShein extends StatelessWidget {
                     itemBuilder: (context, index) {
                       final product =
                           controller.sheinHomController.products[index];
+                      final currencyService = Get.find<CurrencyService>();
+                      const sourceCurrency = 'USD';
 
                       return InkWell(
                         onTap: () {
-                          // print(product.productUrl);
-                          // print(product.productId);
-                          // print("product.goodsSn => ${product.goodsSn}");
-                          // print("product.goodsId => ${product.goodsId}");
-                          // print("product.categoryId => ${product.categoryId}");
-
                           controller.gotoditelsShein(
                             goodssn: product.goodsSn!,
                             title: product.goodsName!,
@@ -86,12 +84,16 @@ class HotProductShein extends StatelessWidget {
                                 ),
                               ),
                               disc: calculateDiscountPercent(
-                                product.salePrice?.amountWithSymbol.toString(),
-                                product.retailPrice?.usdAmount.toString(),
+                                extractPrice(product.retailPrice?.usdAmount),
+                                extractPrice(product.salePrice?.usdAmount),
                               ),
                               title: product.goodsName!,
-                              price: product.salePrice!.amountWithSymbol
-                                  .toString(),
+                              price: currencyService.convertAndFormat(
+                                amount: extractPrice(
+                                  product.salePrice?.usdAmount,
+                                ),
+                                from: sourceCurrency,
+                              ),
                               icon: GetBuilder<FavoritesController>(
                                 builder: (controller) {
                                   bool isFav =
@@ -105,8 +107,9 @@ class HotProductShein extends StatelessWidget {
                                         product.goodsId.toString(),
                                         product.goodsName!,
                                         product.mainImageUrl,
-                                        product.salePrice!.amountWithSymbol
-                                            .toString(),
+                                        extractPrice(
+                                          product.salePrice?.usdAmount,
+                                        ).toString(),
                                         goodsSn: product.goodsSn,
                                         categoryid: product.categoryId,
                                         "Shein",
@@ -124,8 +127,13 @@ class HotProductShein extends StatelessWidget {
                                 },
                               ),
 
-                              discprice: product.retailPrice!.usdAmount
-                                  .toString(),
+                              discprice: currencyService.convertAndFormat(
+                                amount: extractPrice(
+                                  product.retailPrice?.usdAmount ??
+                                      product.salePrice?.usdAmount,
+                                ),
+                                from: sourceCurrency,
+                              ),
                               countsall: product.brandName,
                               rate: product.commentRankAverageValue.toString(),
                               isAlibaba: true,

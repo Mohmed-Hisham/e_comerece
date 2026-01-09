@@ -5,6 +5,8 @@ import 'package:e_comerece/core/funcations/handlingdata.dart';
 import 'package:e_comerece/core/servises/serviese.dart';
 import 'package:e_comerece/data/datasource/remote/orders/add_orders_data.dart';
 import 'package:e_comerece/data/model/cartmodel.dart';
+import 'package:e_comerece/data/model/checkout/checkout_review_fee_model.dart';
+import 'package:e_comerece/data/repository/Checkout/checkout_repo_impl.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -22,18 +24,26 @@ class CheckOutControllerImpl extends CheckOutController {
     initialPage: 2,
   );
 
-  List<CartModel> cartItems = [];
+  List<CartData> cartItems = [];
   String? couponCode;
   double discount = 0;
   double? total;
   bool isShowMore = false;
+
+  // Review Fee
+  CheckoutRepoImpl checkoutRepo = CheckoutRepoImpl(apiService: Get.find());
+  CheckoutReviewFeeData? reviewFeeData;
+  bool isReviewFeeEnabled = false;
+  double reviewFeeAmount = 0.0;
+
   @override
   void onInit() {
     super.onInit();
-    cartItems = Get.arguments?['cartItems'];
+    cartItems = Get.arguments?['cartItems'] ?? [];
     couponCode = Get.arguments?['couponCode'];
     discount = Get.arguments?['discount'] ?? 0;
     total = Get.arguments['total'];
+    getReviewFee();
   }
 
   @override
@@ -55,10 +65,10 @@ class CheckOutControllerImpl extends CheckOutController {
           (element) => {
             "product_id": element.productId,
             "product_platform": element.cartPlatform,
-            "product_title": element.cartProductTitle,
-            "product_link": element.productink,
-            "product_image": element.cartProductImage,
-            "product_price": element.cartPrice,
+            "product_title": element.productTitle,
+            "product_link": element.productLink,
+            "product_image": element.productImage,
+            "product_price": element.productPrice,
             "quantity": element.cartQuantity,
             "attributes": element.cartAttributes,
           },
@@ -93,5 +103,50 @@ class CheckOutControllerImpl extends CheckOutController {
       isShowMore = true;
       update(['location']);
     }
+  }
+
+  getReviewFee() async {
+    final response = await checkoutRepo.getCheckOutReviewFee();
+    response.fold(
+      (failure) {
+        log('Error fetching review fee: ${failure.errorMessage}');
+      },
+      (model) {
+        if (model.data != null) {
+          reviewFeeData = model.data;
+          reviewFeeAmount = model.data!.value ?? 0.0;
+        }
+        update(['reviewFee']);
+      },
+    );
+  }
+
+  void toggleReviewFee(bool value) {
+    isReviewFeeEnabled = value;
+    if (value) {
+      total = total! + reviewFeeAmount;
+    } else {
+      total = total! - reviewFeeAmount;
+    }
+    update();
+  }
+
+  void showReviewFeeInfo(BuildContext context) {
+    if (reviewFeeData == null) return;
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(reviewFeeData!.key ?? 'Info'),
+        content: Text(
+          reviewFeeData!.description ?? 'No description available.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
   }
 }

@@ -29,6 +29,7 @@ import 'package:e_comerece/viwe/screen/language.dart';
 import 'package:e_comerece/viwe/screen/local_serviess/local_service_details_view.dart';
 import 'package:e_comerece/viwe/screen/local_serviess/orders/local_service_order_details_view.dart';
 import 'package:e_comerece/viwe/screen/local_serviess/orders/view_local_service_orders_screen.dart';
+import 'package:e_comerece/viwe/screen/local_serviess/service_order_screen.dart';
 import 'package:e_comerece/viwe/screen/maps/add_address.dart';
 import 'package:e_comerece/viwe/screen/onboarding.dart';
 import 'package:e_comerece/viwe/screen/aliexpress/product_details_view.dart';
@@ -283,14 +284,20 @@ List<GetPage<dynamic>>? routes = [
     transitionDuration: Duration(milliseconds: transitionDurations),
   ),
   GetPage(
-    name: AppRoutesname.viewLocalServiceOrders,
-    page: () => const ViewLocalServiceOrdersScreen(),
+    name: AppRoutesname.serviceOrderScreen,
+    page: () => const ServiceOrderScreen(),
     transition: transitionType,
     transitionDuration: Duration(milliseconds: transitionDurations),
   ),
   GetPage(
     name: AppRoutesname.localServiceOrderDetailsView,
     page: () => const LocalServiceOrderDetailsView(),
+    transition: transitionType,
+    transitionDuration: Duration(milliseconds: transitionDurations),
+  ),
+  GetPage(
+    name: AppRoutesname.viewLocalServiceOrders,
+    page: () => const ViewLocalServiceOrdersScreen(),
     transition: transitionType,
     transitionDuration: Duration(milliseconds: transitionDurations),
   ),

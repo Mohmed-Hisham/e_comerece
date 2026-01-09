@@ -11,6 +11,7 @@ import 'package:e_comerece/viwe/widget/Positioned/positioned_left_2.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_right_2.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_support.dart';
 import 'package:e_comerece/viwe/widget/auth/custombuttonauth.dart';
+import 'package:e_comerece/viwe/widget/checkout/review_fee_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -111,10 +112,10 @@ class CheckoutScreen extends StatelessWidget {
                                     final realIndex = index % itemCount;
 
                                     final imageList = controller.cartItems
-                                        .map((item) => item.cartProductImage)
+                                        .map((item) => item.productImage)
                                         .toList();
                                     final title = controller.cartItems
-                                        .map((item) => item.cartProductTitle)
+                                        .map((item) => item.productTitle)
                                         .toList();
                                     final platform = controller.cartItems
                                         .map((item) => item.cartPlatform)
@@ -130,9 +131,9 @@ class CheckoutScreen extends StatelessWidget {
                                       ),
                                       child: CachedNetworkImage(
                                         height: 100.h,
-                                        imageUrl: secureUrl(
-                                          imageList[imageIndex],
-                                        )!,
+                                        imageUrl:
+                                            secureUrl(imageList[imageIndex]) ??
+                                            "",
                                         fit: BoxFit.cover,
                                         placeholder: (context, url) =>
                                             const Loadingimage(),
@@ -262,6 +263,10 @@ class CheckoutScreen extends StatelessWidget {
                           );
                         },
                       ),
+
+                      // Review Fee Card
+                      const ReviewFeeCard(),
+
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [

@@ -2,14 +2,15 @@ import 'package:e_comerece/controller/amazon_controllers/amazon_home_controller.
 import 'package:e_comerece/controller/favorite/favorites_controller.dart';
 import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/funcations/calculate_discount.dart';
-import 'package:e_comerece/core/funcations/extractn_umbers.dart';
+import 'package:e_comerece/core/helper/format_price.dart';
 import 'package:e_comerece/core/loacallization/translate_data.dart';
+import 'package:e_comerece/core/servises/currency_service.dart';
 import 'package:e_comerece/viwe/widget/custgridviwe.dart';
 import 'package:e_comerece/core/helper/custom_cached_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:get/get_state_manager/src/simple/get_state.dart';
+import 'package:get/get.dart';
 
 class OthersProductAmazon extends StatelessWidget {
   final AmazonHomeControllerImpl controller;
@@ -27,6 +28,7 @@ class OthersProductAmazon extends StatelessWidget {
       itemCount: controller.otherProduct.length,
       itemBuilder: (context, index) {
         final item = controller.otherProduct[index];
+        final currencyService = Get.find<CurrencyService>();
 
         return InkWell(
           onTap: () {
@@ -39,11 +41,14 @@ class OthersProductAmazon extends StatelessWidget {
           child: Custgridviwe(
             image: CustomCachedImage(imageUrl: item.productPhoto!),
             disc: calculateDiscountPercent(
-              extractNumbers(item.productPrice.toString()),
-              extractNumbers(item.productOriginalPrice ?? ""),
+              extractPrice(item.productPrice),
+              extractPrice(item.productOriginalPrice),
             ),
             title: item.productTitle!,
-            price: extractNumbers(item.productPrice.toString()),
+            price: currencyService.convertAndFormat(
+              amount: extractPrice(item.productPrice),
+              from: 'SAR',
+            ),
             icon: GetBuilder<FavoritesController>(
               builder: (isFavoriteController) {
                 bool isFav =
@@ -55,7 +60,13 @@ class OthersProductAmazon extends StatelessWidget {
                       item.asin!,
                       item.productTitle!,
                       item.productPhoto!,
-                      extractNumbers(item.productPrice.toString()),
+                      currencyService
+                          .convert(
+                            amount: extractPrice(item.productPrice),
+                            from: 'SAR',
+                            to: 'USD',
+                          )
+                          .toString(),
                       "Amazon",
                     );
                   },
@@ -70,9 +81,12 @@ class OthersProductAmazon extends StatelessWidget {
             ),
             isAmazon: true,
             rate: item.productStarRating ?? "",
-            discprice: extractNumbers(item.productOriginalPrice ?? "") != ""
-                ? extractNumbers(item.productOriginalPrice ?? "")
-                : extractNumbers(item.productPrice.toString()),
+            discprice: currencyService.convertAndFormat(
+              amount: extractPrice(
+                item.productOriginalPrice ?? item.productPrice,
+              ),
+              from: 'SAR',
+            ),
           ),
         );
       },

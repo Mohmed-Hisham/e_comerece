@@ -30,7 +30,7 @@ class AddressControllerImpl extends AddressController {
   TextEditingController searchController = .new();
   MyServises myServises = Get.find();
 
-  late AddressRepoImpl addressRepo;
+  AddressRepoImpl addressRepo = AddressRepoImpl(apiServices: Get.find());
   MapPlacesServiese mapPlacesServiese = MapPlacesServiese(Get.find());
 
   Statusrequest fetchAddressesstatusrequest = Statusrequest.loading;
@@ -70,7 +70,7 @@ class AddressControllerImpl extends AddressController {
   @override
   void onInit() {
     super.onInit();
-    addressRepo = AddressRepoImpl(apiServices: Get.find());
+
     locationServisess = LocationServisess();
     initialCameraPosition = const CameraPosition(target: LatLng(0, 0));
     uUid = const Uuid();
@@ -139,22 +139,18 @@ class AddressControllerImpl extends AddressController {
       },
       (r) {
         addresses = r;
-        if (addresses.isNotEmpty) {
-          String? defaultAddressId = myServises.sharedPreferences.getString(
-            "default_address",
-          );
-
-          // If no default address is set, or current default is not in the list, set the first one as default
-          if (defaultAddressId == null && addresses.isNotEmpty) {
-            myServises.sharedPreferences.setString(
-              "default_address",
-              addresses[0].id!,
-            );
-          }
-        }
         return Statusrequest.success;
       },
     );
+
+    if (addresses.isNotEmpty) {
+      String? defaultAddressId = await myServises.getSecureData(
+        "default_address",
+      );
+      if (defaultAddressId == null && addresses.isNotEmpty) {
+        await myServises.saveSecureData("default_address", addresses[0].id!);
+      }
+    }
 
     if (addresses.isEmpty &&
         fetchAddressesstatusrequest == Statusrequest.success) {
@@ -194,14 +190,15 @@ class AddressControllerImpl extends AddressController {
 
     updateAddressesstatusrequest = response.fold(
       (l) {
+        log("error ${l.errorMessage}");
         showCustomGetSnack(isGreen: false, text: l.errorMessage);
         return Statusrequest.failuer;
       },
       (r) {
-        showCustomGetSnack(
-          isGreen: true,
-          text: r.message ?? StringsKeys.updateAddressSuccess.tr,
-        );
+        // showCustomGetSnack(
+        //   isGreen: true,
+        //   text: r.message ?? StringsKeys.updateAddressSuccess.tr,
+        // );
         fetchAddresses();
         return Statusrequest.success;
       },

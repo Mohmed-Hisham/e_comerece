@@ -13,6 +13,7 @@ class LocalServiceData extends GetView<LocalServiceController> {
   @override
   Widget build(BuildContext context) {
     return Handlingdataviwe(
+      isSizedBox: true,
       isSliver: true,
       statusrequest: controller.fetchstatusrequest,
       widget: SliverGrid.builder(
@@ -37,13 +38,10 @@ class LocalServiceData extends GetView<LocalServiceController> {
               padding: EdgeInsets.symmetric(horizontal: 10.w),
               child: Custgridviwe(
                 image: Hero(
-                  tag: service.serviceId!,
-                  child: CustomCachedImage(
-                    imageUrl:
-                        "https://res.cloudinary.com/dgonvbimk/image/upload/v1766790189/pg0ne5gqx5hwyk7uyxhj.jpg",
-                  ),
+                  tag: service.id!,
+                  child: CustomCachedImage(imageUrl: service.serviceImage!),
                 ),
-                disc: service.serviceDesc!,
+                description: service.serviceDesc!,
                 title: service.serviceName!,
               ),
             ),

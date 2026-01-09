@@ -4,7 +4,9 @@ import 'package:e_comerece/controller/home/homescreen_controller.dart';
 import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/constant/strings_keys.dart';
 import 'package:e_comerece/core/funcations/calculate_discount.dart';
+import 'package:e_comerece/core/helper/format_price.dart';
 import 'package:e_comerece/core/loacallization/translate_data.dart';
+import 'package:e_comerece/core/servises/currency_service.dart';
 import 'package:e_comerece/core/servises/platform_ext.dart';
 import 'package:e_comerece/core/servises/safe_image_url.dart';
 import 'package:e_comerece/core/shared/widget_shared/loadingimage.dart';
@@ -32,6 +34,7 @@ class SearchAliexpriess extends StatelessWidget {
           : controller.lengthAliexpress,
       itemBuilder: (context, index) {
         final item = controller.searchProductsAliExpress[index].item!;
+        final currencyService = Get.find<CurrencyService>();
 
         return InkWell(
           onTap: () {
@@ -52,11 +55,14 @@ class SearchAliexpriess extends StatelessWidget {
               errorWidget: (context, url, error) => const Icon(Icons.error),
             ),
             disc: calculateDiscountPercent(
-              item.sku!.def!.price,
-              item.sku!.def!.promotionPrice,
+              item.sku?.def?.price,
+              item.sku?.def?.promotionPrice,
             ),
             title: item.title!,
-            price: "${item.sku!.def!.promotionPrice} \$",
+            price: currencyService.convertAndFormat(
+              amount: extractPrice(item.sku?.def?.promotionPrice),
+              from: 'USD',
+            ),
             icon: GetBuilder<FavoritesController>(
               builder: (isFavoriteController) {
                 bool isFav =
@@ -69,7 +75,13 @@ class SearchAliexpriess extends StatelessWidget {
                       item.itemId!.toString(),
                       item.title!,
                       item.image!,
-                      "\$${item.sku!.def!.price}",
+                      currencyService
+                          .convert(
+                            amount: extractPrice(item.sku?.def?.promotionPrice),
+                            from: 'USD',
+                            to: 'USD',
+                          )
+                          .toString(),
                       "Aliexpress",
                     );
                   },
@@ -82,7 +94,10 @@ class SearchAliexpriess extends StatelessWidget {
                 );
               },
             ),
-            discprice: "${item.sku!.def!.price} \$",
+            discprice: currencyService.convertAndFormat(
+              amount: extractPrice(item.sku?.def?.price),
+              from: 'USD',
+            ),
             countsall: "${item.sales!} ${StringsKeys.sales.tr}",
           ),
         );

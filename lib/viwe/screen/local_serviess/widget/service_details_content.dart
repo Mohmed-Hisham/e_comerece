@@ -65,7 +65,8 @@ class ServiceDetailsContent extends StatelessWidget {
                       ),
                       SizedBox(width: 10.w),
                       Text(
-                        "${controller.service.servicePrice} \$",
+                        // "${controller.service.price} \$",
+                        " \$",
                         style: Theme.of(context).textTheme.headlineSmall
                             ?.copyWith(
                               color: Appcolor.primrycolor,
@@ -78,7 +79,7 @@ class ServiceDetailsContent extends StatelessWidget {
                   SizedBox(height: 15.h),
 
                   // Location
-                  if (controller.service.serviceCity != null)
+                  if (controller.service.serviceDesc != null)
                     Row(
                       children: [
                         Container(
@@ -95,7 +96,7 @@ class ServiceDetailsContent extends StatelessWidget {
                         ),
                         SizedBox(width: 10.w),
                         Text(
-                          controller.service.serviceCity!,
+                          controller.service.serviceName!,
                           style: Theme.of(context).textTheme.bodyLarge
                               ?.copyWith(
                                 color: Colors.grey[700],

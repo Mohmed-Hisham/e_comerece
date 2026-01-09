@@ -5,7 +5,9 @@ import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/constant/strings_keys.dart';
 import 'package:e_comerece/core/funcations/calculate_discount.dart';
 import 'package:e_comerece/core/helper/custom_cached_image.dart';
+import 'package:e_comerece/core/helper/format_price.dart';
 import 'package:e_comerece/core/loacallization/translate_data.dart';
+import 'package:e_comerece/core/servises/currency_service.dart';
 import 'package:e_comerece/viwe/widget/custgridviwe.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -17,6 +19,7 @@ class HotProductsGrid extends GetView<HomePageControllerImpl> {
 
   @override
   Widget build(BuildContext context) {
+    final currencyService = Get.find<CurrencyService>();
     return Handlingdataviwe(
       isSliver: true,
       statusrequest: controller.statusrequestHotProducts,
@@ -33,10 +36,10 @@ class HotProductsGrid extends GetView<HomePageControllerImpl> {
 
           return InkWell(
             onTap: () {
-              int id = product.item!.itemId!;
+              int id = product.item?.itemId ?? 0;
               controller.gotoditels(
                 id: id,
-                title: product.item!.title!,
+                title: product.item?.title ?? "",
                 lang: enOrAr(),
               );
             },
@@ -49,7 +52,12 @@ class HotProductsGrid extends GetView<HomePageControllerImpl> {
                   product.item?.sku?.def?.promotionPrice,
                 ),
                 title: product.item?.title ?? '',
-                price: "\$${product.item?.sku?.def?.promotionPrice}",
+                price: currencyService.convertAndFormat(
+                  amount: extractPrice(
+                    product.item?.sku?.def?.promotionPrice ?? "0",
+                  ),
+                  from: 'USD',
+                ),
                 icon: GetBuilder<FavoritesController>(
                   builder: (controller) {
                     bool isFav =
@@ -60,10 +68,18 @@ class HotProductsGrid extends GetView<HomePageControllerImpl> {
                     return IconButton(
                       onPressed: () {
                         controller.toggleFavorite(
-                          product.item!.itemId!.toString(),
-                          product.item!.title!,
-                          product.item!.image ?? "",
-                          product.item!.sku!.def!.promotionPrice!,
+                          product.item?.itemId?.toString() ?? "",
+                          product.item?.title ?? "",
+                          product.item?.image ?? "",
+                          currencyService
+                              .convert(
+                                amount: extractPrice(
+                                  product.item?.sku?.def?.promotionPrice ?? "0",
+                                ),
+                                from: 'USD',
+                                to: 'USD',
+                              )
+                              .toString(),
                           "Aliexpress",
                         );
                       },
@@ -77,7 +93,10 @@ class HotProductsGrid extends GetView<HomePageControllerImpl> {
                   },
                 ),
 
-                discprice: "\$${product.item?.sku?.def?.price}",
+                discprice: currencyService.convertAndFormat(
+                  amount: extractPrice(product.item?.sku?.def?.price ?? "0"),
+                  from: 'USD',
+                ),
                 countsall: "${product.item?.sales} ${StringsKeys.sales.tr}",
               ),
             ),

@@ -15,10 +15,10 @@ class SearchLocalServiceView extends GetView<LocalServiceController> {
   @override
   Widget build(BuildContext context) {
     return Handlingdataviwe(
+      isSizedBox: true,
       isSliver: false,
       statusrequest: controller.searchstatusrequest,
       widget: GridView.builder(
-        physics: const BouncingScrollPhysics(),
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
           mainAxisSpacing: 10.w,
@@ -38,9 +38,8 @@ class SearchLocalServiceView extends GetView<LocalServiceController> {
               padding: EdgeInsets.symmetric(horizontal: 10.w),
               child: Custgridviwe(
                 image: CustomCachedImage(imageUrl: service.serviceImage!),
-                disc: service.serviceName!,
+                description: service.serviceDesc!,
                 title: service.serviceName!,
-                price: service.servicePrice.toString(),
                 icon: IconButton(
                   onPressed: () {},
                   icon: const FaIcon(
@@ -48,7 +47,6 @@ class SearchLocalServiceView extends GetView<LocalServiceController> {
                     color: Appcolor.reed,
                   ),
                 ),
-                discprice: service.servicePrice.toString(),
               ),
             ),
           );

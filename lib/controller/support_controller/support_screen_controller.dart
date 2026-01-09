@@ -1,13 +1,8 @@
 import 'dart:developer';
-
 import 'package:e_comerece/core/class/statusrequest.dart';
-import 'package:e_comerece/core/constant/routesname.dart';
-import 'package:e_comerece/core/funcations/handlingdata.dart';
 import 'package:e_comerece/core/servises/serviese.dart';
-import 'package:e_comerece/data/datasource/remote/Support/get_chats_data.dart';
-import 'package:e_comerece/data/datasource/remote/local_service/get_details_local_service_data.dart';
+import 'package:e_comerece/data/repository/local_service/local_service_repo_impl.dart';
 import 'package:e_comerece/data/model/local_service/get_local_service_model.dart';
-import 'package:e_comerece/data/model/support_model/get_chats_model.dart';
 import 'package:e_comerece/data/model/local_service/service_request_details_model.dart'
     as details;
 import 'package:e_comerece/data/model/support_model/get_message_model.dart';
@@ -20,24 +15,21 @@ abstract class SupportScreenController extends GetxController {
   Future<String?> sendMessage({
     required String platform,
     required String referenceid,
-    // String? chatid,
     String? imagelink,
   });
   Future<void> getMessages({required String chatid});
-  Future<void> getChats();
 }
 
 class SupportScreenControllerImp extends SupportScreenController {
-  GetDetailsLocalService getDetailsLocalService = GetDetailsLocalService(
-    Get.find(),
+  LocalServiceRepoImpl localServiceRepoImpl = LocalServiceRepoImpl(
+    apiService: Get.find(),
   );
   Statusrequest serviceDetailsStatusRequest = Statusrequest.none;
 
-  GetChatsData getChatsData = GetChatsData(Get.find());
   Statusrequest sendMessagestatusrequest = Statusrequest.none;
   Statusrequest getMessagestatusrequest = Statusrequest.success;
-  Statusrequest getChatsstatusrequest = Statusrequest.none;
-  ScrollController scrollController = .new();
+  ScrollController scrollController = ScrollController();
+  FocusNode focusNode = .new();
 
   MyServises myServises = Get.find();
   bool showfildName = true;
@@ -48,13 +40,14 @@ class SupportScreenControllerImp extends SupportScreenController {
   late TextEditingController messsageController;
 
   List<Message> messageList = [];
-  List<Chat> chatList = [];
   String? chatid;
   String? plateform;
-  Service? serviceModel;
+  LocalServiceData? serviceModel;
   details.ServiceRequestDetailData? serviceRequestDetails;
   String? type;
   String? serviceid;
+  String? referenceid;
+
   @override
   void onClose() {
     super.onClose();
@@ -86,18 +79,24 @@ class SupportScreenControllerImp extends SupportScreenController {
     linkProduct = Get.arguments?['link_Product'];
     type = Get.arguments?['type'];
     serviceid = Get.arguments?['service_id'];
+    referenceid = Get.arguments?['reference_id'];
     if (type == 'service' && serviceid != null) {
       getServiceData();
     }
-    log("type: $type");
-    log("serviceid: $serviceid");
-    log("chatid: $chatid");
+    if (type == "service_request") {
+      log("referenceid: $referenceid");
+      getData(id: referenceid);
+    }
+    if (chatid != null) {
+      getMessages(chatid: chatid!);
+    }
 
     if (Get.arguments?['service_model'] != null) {
       serviceModel = Get.arguments['service_model'];
     }
 
     if (Get.arguments?['service_request_details'] != null) {
+      log("service_request_details: is not null");
       serviceRequestDetails = Get.arguments['service_request_details'];
     }
 
@@ -124,12 +123,13 @@ class SupportScreenControllerImp extends SupportScreenController {
   }) async {
     sendMessagestatusrequest = Statusrequest.loading;
     update();
-    String userid = myServises.sharedPreferences.getString("user_id")!;
 
     if (chatid == null) {
-      final chatType = serviceModel == null ? 'support' : 'service';
+      String chatType = serviceModel == null ? 'support' : 'service';
+      if (serviceRequestDetails != null) {
+        chatType = 'service_request';
+      }
       final chat = await Get.find<SupabaseService>().createChat(
-        userId: userid,
         type: chatType,
         referenceId: referenceid,
         lastMessage: messsageController.text,
@@ -137,21 +137,40 @@ class SupportScreenControllerImp extends SupportScreenController {
       );
       if (chat != null) {
         chatid = chat['id'];
+
+        // Send user message first (which was used as last_message in createChat)
+        await Get.find<SupabaseService>().sendMessage(
+          chatId: chatid!,
+          content: messsageController.text,
+          senderType: 'user',
+        );
+
+        // Send Bot Message
+        await Get.find<SupabaseService>().sendMessage(
+          chatId: chatid!,
+          content:
+              'مرحباً بك! 👋\nلقد تم استلام رسالتك. يرجى شرح استفسارك بالتفصيل وسيقوم أحد ممثلي خدمة العملاء بالرد عليك في أقرب وقت ممكن.',
+          senderType: 'bot',
+        );
+
+        messsageController.clear();
         getMessages(chatid: chatid!);
-      } else {
-        return null;
+        sendMessagestatusrequest = Statusrequest.success;
+        update();
+        return chatid;
       }
     }
 
     await Get.find<SupabaseService>().sendMessage(
-      chatId: chatid!,
-      senderId: userid,
+      chatId: chatid ?? "",
       content: messsageController.text,
       senderType: 'user',
     );
     sendMessagestatusrequest = Statusrequest.success;
     update();
+
     messsageController.clear();
+
     return chatid;
   }
 
@@ -160,62 +179,23 @@ class SupportScreenControllerImp extends SupportScreenController {
     messagesStream = Get.find<SupabaseService>()
         .getMessagesStream(chatid)
         .map((data) => data.map((e) => Message.fromJson(e)).toList());
-    update();
-  }
-
-  @override
-  getChats() async {
-    String userid = myServises.sharedPreferences.getString("user_id")!;
-    getChatsstatusrequest = Statusrequest.loading;
-    update();
-    try {
-      final response = await Get.find<SupabaseService>().getUserChats(userid);
-      final Map<String, dynamic> wrappedResponse = {
-        "status": "success",
-        "chats": response,
-      };
-
-      final modelresponse = GetChatsModel.fromJson(wrappedResponse);
-      chatList.clear();
-      chatList.assignAll(modelresponse.chats);
-      getChatsstatusrequest = Statusrequest.success;
-    } catch (e) {
-      getChatsstatusrequest = Statusrequest.failuer;
-      log("Error fetching chats: $e");
-    }
-    update();
-  }
-
-  goToMassagesScreen(String chatid, String type, String serviceid) async {
-    showfildName = false;
-    this.chatid = chatid;
-    this.type = type;
-    this.serviceid = serviceid;
-    Get.toNamed(AppRoutesname.messagesScreen);
-
-    getMessages(chatid: chatid);
-    if (type == 'service') {
-      getServiceData();
-    }
+    // update();
   }
 
   getServiceData() async {
-    try {
-      var response = await getDetailsLocalService.getOrders(
-        serviceid: int.parse(serviceid!),
-      );
-      serviceDetailsStatusRequest = handlingData(response);
-      if (Statusrequest.success == serviceDetailsStatusRequest) {
-        if (response['status'] == 'success') {
-          List data = response['data'];
-          if (data.isNotEmpty) {
-            serviceModel = Service.fromJson(data[0]);
-          }
-        }
+    serviceDetailsStatusRequest = Statusrequest.loading;
+    update();
+    var response = await localServiceRepoImpl.getLocalServiceById(serviceid!);
+
+    serviceDetailsStatusRequest = response.fold((l) => Statusrequest.failuer, (
+      r,
+    ) {
+      if (r.data.isNotEmpty) {
+        serviceModel = r.data[0];
+        return Statusrequest.success;
       }
-    } catch (e) {
-      log("Error fetching service: $e");
-    }
+      return Statusrequest.noData;
+    });
     update();
   }
 
@@ -234,35 +214,12 @@ class SupportScreenControllerImp extends SupportScreenController {
     }
   }
 
-  // Future<void> endChatAndConfirm(String price) async {
-  //   if (chatid != null) {
-  //     // 1. Update status to closed
-  //     await Get.find<SupabaseService>().updateChatStatus(
-  //       chatId: chatid!,
-  //       status: 'closed',
-  //     );
+  getData({String? id}) async {
+    final response = await localServiceRepoImpl.getServiceRequestDetails(id!);
 
-  //     // 2. Send "Chat Ended" message
-  //     String userid = myServises.sharedPreferences.getString("user_id")!;
-  //     await Get.find<SupabaseService>().sendMessage(
-  //       chatId: chatid!,
-  //       senderId: userid,
-  //       content: "تم إنهاء المحادثة",
-  //       senderType:
-  //           'user', // Can be system if we implement system type handling
-  //     );
-
-  //     isChatClosed = true;
-  //     update();
-  //   }
-
-  //   // 3. Navigate to Order Screen
-  //   Get.to(
-  //     () => const ServiceOrderScreen(),
-  //     arguments: {
-  //       'service_model': serviceModel,
-  //       'quoted_price': double.parse(price),
-  //     },
-  //   );
-  // }
+    response.fold((failure) {}, (model) {
+      serviceRequestDetails = model.data;
+      update();
+    });
+  }
 }

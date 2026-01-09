@@ -6,6 +6,8 @@ import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/constant/strings_keys.dart';
 import 'package:e_comerece/core/funcations/displayattributes.dart';
+import 'package:e_comerece/core/helper/format_price.dart';
+import 'package:e_comerece/core/servises/currency_service.dart';
 import 'package:e_comerece/viwe/screen/aliexpress/add_to_cart_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -40,6 +42,7 @@ class CustbuttonAddCart extends StatelessWidget {
                 children: [
                   GetBuilder<FavoritesController>(
                     builder: (favorite) {
+                      final currencyService = Get.find<CurrencyService>();
                       bool isFav =
                           favorite.isFavorite[controller.productId
                               .toString()] ??
@@ -75,7 +78,13 @@ class CustbuttonAddCart extends StatelessWidget {
                                   .result!
                                   .item!
                                   .images[0],
-                              price,
+                              currencyService
+                                  .convert(
+                                    amount: extractPrice(price),
+                                    from: 'USD',
+                                    to: 'USD',
+                                  )
+                                  .toString(),
                               "Aliexpress",
                             );
                           },

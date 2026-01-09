@@ -1,62 +1,54 @@
 class CouponResponse {
-  final String status;
-  final String? error;
+  CouponResponse({
+    required this.success,
+    required this.message,
+    required this.data,
+    required this.errors,
+  });
+
+  final bool? success;
   final String? message;
   final CouponData? data;
-
-  CouponResponse({required this.status, this.error, this.message, this.data});
+  final dynamic errors;
 
   factory CouponResponse.fromJson(Map<String, dynamic> json) {
     return CouponResponse(
-      status: json["status"],
-      error: json["error"],
+      success: json["success"],
       message: json["message"],
-      data: json["data"] != null ? CouponData.fromJson(json["data"]) : null,
+      data: json["data"] == null ? null : CouponData.fromJson(json["data"]),
+      errors: json["errors"],
     );
   }
 }
 
 class CouponData {
-  // Success fields
-  final int? couponId;
+  CouponData({
+    required this.id,
+    required this.couponName,
+    required this.couponDiscount,
+    required this.couponPlatfrom,
+    required this.couponExpired,
+    required this.usageLimit,
+    required this.remainingUses,
+  });
+
+  final String? id;
   final String? couponName;
   final double? couponDiscount;
-  final String? couponPlatform;
-  final String? couponExpired;
+  final String? couponPlatfrom;
+  final DateTime? couponExpired;
   final int? usageLimit;
   final int? remainingUses;
 
-  // Error fields
-  final int? userId;
-  final int? usedCountByUser;
-
-  CouponData({
-    this.couponId,
-    this.couponName,
-    this.couponDiscount,
-    this.couponPlatform,
-    this.couponExpired,
-    this.usageLimit,
-    this.remainingUses,
-    this.userId,
-    this.usedCountByUser,
-  });
-
   factory CouponData.fromJson(Map<String, dynamic> json) {
     return CouponData(
-      couponId: json["coupon_id"],
+      id: json["id"],
       couponName: json["coupon_name"],
-      couponDiscount: json["coupon_discount"] is int
-          ? json["coupon_discount"].toDouble()
-          : json["coupon_discount"],
-      couponPlatform: json["coupon_platfrom"],
-      couponExpired: json["coupon_expired"],
+      couponDiscount: json["coupon_discount"]?.toDouble(),
+      couponPlatfrom: json["coupon_platfrom"],
+      couponExpired: DateTime.tryParse(json["coupon_expired"] ?? ""),
       usageLimit: json["usage_limit"],
       remainingUses: json["remaining_uses"],
-
-      // error response fields
-      userId: json["user_id"],
-      usedCountByUser: json["used_count_by_user"],
     );
   }
 }

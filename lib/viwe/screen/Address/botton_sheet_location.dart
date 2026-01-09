@@ -75,86 +75,93 @@ class BottonSheetLocation extends StatelessWidget {
                     ],
                   ),
                   Expanded(
-                    child: RadioGroup<int?>(
-                      groupValue: int.tryParse(
-                        controller.addresses
+                    child: ListView.builder(
+                      physics: physics,
+                      itemCount: controller.addresses.length,
+                      itemBuilder: (context, index) {
+                        final address = controller.addresses[index];
+                        final String? currentAddressId = address.id;
+                        // ignore: unnecessary_nullable_for_final_variable_declarations
+                        final String? defaultAddressId =
+                            controller.addresses
                                 .firstWhereOrNull((e) => e.isDefault == 1)
                                 ?.id ??
-                            "",
-                      ),
-                      onChanged: (valueId) {
-                        if (valueId != null) {
-                          AddressData addressupdate = AddressData(
-                            id: valueId.toString(),
-                            isDefault: 1,
-                          );
+                            "";
 
-                          controller.updateAddress(addressupdate);
-                        }
+                        return Container(
+                          margin: const EdgeInsets.only(bottom: 5),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20.r),
+                            border: Border.all(color: Appcolor.primrycolor),
+                          ),
+                          child: ListTile(
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                  onPressed: () {
+                                    Get.defaultDialog(
+                                      title: StringsKeys.deleteAddress.tr,
+                                      middleText: StringsKeys
+                                          .deleteAddressConfirmation
+                                          .tr,
+                                      textConfirm: StringsKeys.delete.tr,
+                                      textCancel: StringsKeys.cancel.tr,
+                                      onConfirm: () {
+                                        controller.deleteAddress(
+                                          addressId: address.id!,
+                                        );
+                                      },
+                                    );
+                                  },
+                                  icon: FaIcon(
+                                    FontAwesomeIcons.deleteLeft,
+                                    color: Appcolor.primrycolor,
+                                  ),
+                                ),
+                                IconButton(
+                                  onPressed: () {
+                                    blurDilog(
+                                      EditAddress(index: index),
+                                      context,
+                                    );
+                                  },
+                                  icon: FaIcon(
+                                    FontAwesomeIcons.penToSquare,
+                                    color: Appcolor.primrycolor,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            dense: true,
+                            leading: Radio<String?>(
+                              value: currentAddressId,
+                              groupValue: defaultAddressId,
+                              onChanged: (valueId) {
+                                if (valueId != null) {
+                                  AddressData addressupdate = AddressData(
+                                    id: valueId,
+                                    isDefault: 1,
+                                  );
+
+                                  controller.updateAddress(addressupdate);
+                                }
+                              },
+                              activeColor: Colors.orange,
+                            ),
+                            title: Text(
+                              address.title.toString(),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            subtitle: Text(
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              "${address.city} -${address.street} -${address.building} -${address.floor} -${address.apartment}",
+                            ),
+                          ),
+                        );
                       },
-                      child: ListView.builder(
-                        physics: physics,
-                        itemCount: controller.addresses.length,
-                        itemBuilder: (context, index) {
-                          final address = controller.addresses[index];
-                          return Container(
-                            margin: const EdgeInsets.only(bottom: 5),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20.r),
-                              border: Border.all(color: Appcolor.primrycolor),
-                            ),
-                            child: ListTile(
-                              trailing: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  IconButton(
-                                    onPressed: () {
-                                      Get.defaultDialog(
-                                        title: StringsKeys.deleteAddress.tr,
-                                        middleText: StringsKeys
-                                            .deleteAddressConfirmation
-                                            .tr,
-                                        textConfirm: StringsKeys.delete.tr,
-                                        textCancel: StringsKeys.cancel.tr,
-                                        onConfirm: () {
-                                          controller.deleteAddress(
-                                            addressId: address.id!,
-                                          );
-                                        },
-                                      );
-                                    },
-                                    icon: FaIcon(
-                                      FontAwesomeIcons.deleteLeft,
-                                      color: Appcolor.primrycolor,
-                                    ),
-                                  ),
-                                  IconButton(
-                                    onPressed: () {
-                                      blurDilog(
-                                        EditAddress(index: index),
-                                        context,
-                                      );
-                                    },
-                                    icon: FaIcon(
-                                      FontAwesomeIcons.penToSquare,
-                                      color: Appcolor.primrycolor,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              dense: true,
-                              leading: Radio<int?>(
-                                value: int.tryParse(address.id ?? ""),
-                                activeColor: Colors.orange,
-                              ),
-                              title: Text(address.title.toString()),
-                              subtitle: Text(
-                                "${address.city} -${address.street} -${address.building} -${address.floor} -${address.apartment}",
-                              ),
-                            ),
-                          );
-                        },
-                      ),
                     ),
                   ),
                   if (showButtonBack)

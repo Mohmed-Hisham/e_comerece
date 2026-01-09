@@ -1,71 +1,76 @@
 class ServiceRequestModel {
-  String? status;
-  List<ServiceRequestData>? data;
+  ServiceRequestModel({
+    required this.success,
+    required this.message,
+    required this.data,
+    required this.errors,
+  });
 
-  ServiceRequestModel({this.status, this.data});
+  final bool? success;
+  final String? message;
+  final List<ServiceRequestData> data;
+  final dynamic errors;
 
-  ServiceRequestModel.fromJson(Map<String, dynamic> json) {
-    status = json['status'];
-    if (json['data'] != null) {
-      data = <ServiceRequestData>[];
-      json['data'].forEach((v) {
-        data!.add(ServiceRequestData.fromJson(v));
-      });
-    }
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['status'] = status;
-    if (this.data != null) {
-      data['data'] = this.data!.map((v) => v.toJson()).toList();
-    }
-    return data;
+  factory ServiceRequestModel.fromJson(Map<String, dynamic> json) {
+    return ServiceRequestModel(
+      success: json["success"],
+      message: json["message"],
+      data: json["data"] == null
+          ? []
+          : List<ServiceRequestData>.from(
+              json["data"]!.map((x) => ServiceRequestData.fromJson(x)),
+            ),
+      errors: json["errors"],
+    );
   }
 }
 
 class ServiceRequestData {
-  int? requestId;
-  int? userId;
-  int? serviceId;
-  String? status;
-  String? quotedPrice;
-  String? note;
-  int? addressId;
-  String? createdAt;
-
   ServiceRequestData({
-    this.requestId,
-    this.userId,
+    this.id,
     this.serviceId,
-    this.status,
-    this.quotedPrice,
     this.note,
     this.addressId,
+    this.quotedPrice,
+    this.status,
     this.createdAt,
+    this.serviceName,
+    this.serviceImage,
   });
 
-  ServiceRequestData.fromJson(Map<String, dynamic> json) {
-    requestId = json['request_id'];
-    userId = json['user_id'];
-    serviceId = json['service_id'];
-    status = json['status'];
-    quotedPrice = json['quoted_price'];
-    note = json['note'];
-    addressId = json['address_id'];
-    createdAt = json['created_at'];
+  final String? id;
+  final String? serviceId;
+  final String? note;
+  final String? addressId;
+  final double? quotedPrice;
+  final String? status;
+  final DateTime? createdAt;
+  final String? serviceName;
+  final String? serviceImage;
+
+  factory ServiceRequestData.fromJson(Map<String, dynamic> json) {
+    return ServiceRequestData(
+      id: json["id"],
+      serviceId: json["service_id"],
+      note: json["note"],
+      addressId: json["address_id"],
+      quotedPrice: json["quoted_price"],
+      status: json["status"],
+      createdAt: DateTime.tryParse(json["created_at"] ?? ""),
+      serviceName: json["service_name"],
+      serviceImage: json["service_image"],
+    );
   }
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['request_id'] = requestId;
-    data['user_id'] = userId;
-    data['service_id'] = serviceId;
-    data['status'] = status;
-    data['quoted_price'] = quotedPrice;
-    data['note'] = note;
-    data['address_id'] = addressId;
-    data['created_at'] = createdAt;
-    return data;
-  }
+  Map<String, dynamic> toJson() => {
+    if (id != null) "id": id,
+    if (serviceId != null) "service_id": serviceId,
+    if (note != null) "note": note,
+    if (addressId != null) "address_id": addressId,
+    if (quotedPrice != null) "quoted_price": quotedPrice,
+    if (status != null) "status": status,
+    if (createdAt != null) "created_at": createdAt?.toIso8601String(),
+    if (serviceName != null) "service_name": serviceName,
+    if (serviceImage != null) "service_image": serviceImage,
+  };
 }

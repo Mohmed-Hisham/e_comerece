@@ -36,8 +36,6 @@ class AddressCard extends StatelessWidget {
         ),
         const SectionDivider(),
         InfoRow(label: 'الشقة', value: address.apartment ?? 'غير متوفر'),
-        const SectionDivider(),
-        InfoRow(label: 'رقم الهاتف', value: address.phone ?? 'غير متوفر'),
       ],
     );
   }

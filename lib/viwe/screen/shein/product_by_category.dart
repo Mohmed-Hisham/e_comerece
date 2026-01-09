@@ -2,6 +2,7 @@ import 'package:e_comerece/controller/favorite/favorites_controller.dart';
 import 'package:e_comerece/controller/shein/product_by_category_controller.dart';
 import 'package:e_comerece/core/class/handlingdataviwe.dart';
 import 'package:e_comerece/core/constant/color.dart';
+import 'package:e_comerece/core/funcations/calculate_discount.dart';
 import 'package:e_comerece/core/shared/widget_shared/shimmerbar.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_app_bar.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_left_2.dart';
@@ -9,6 +10,8 @@ import 'package:e_comerece/viwe/widget/Positioned/positioned_right_2.dart';
 import 'package:e_comerece/viwe/widget/custgridviwe.dart';
 import 'package:e_comerece/viwe/widget/shein/categories_from_shein_product_screen.dart';
 import 'package:e_comerece/core/helper/custom_cached_image.dart';
+import 'package:e_comerece/core/helper/format_price.dart';
+import 'package:e_comerece/core/servises/currency_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -73,6 +76,8 @@ class ProductByCategory extends StatelessWidget {
                           itemCount: controller.searchProducts.length,
                           itemBuilder: (context, index) {
                             final item = controller.searchProducts[index];
+                            final currencyService = Get.find<CurrencyService>();
+                            const sourceCurrency = 'USD';
 
                             return InkWell(
                               onTap: () {
@@ -87,9 +92,17 @@ class ProductByCategory extends StatelessWidget {
                                 image: CustomCachedImage(
                                   imageUrl: item.goodsImg ?? "",
                                 ),
-                                disc: item.retailDiscountPercent ?? "",
+                                disc: calculateDiscountPercent(
+                                  extractPrice(item.retailPrice?.usdAmount),
+                                  extractPrice(item.salePrice?.usdAmount),
+                                ),
                                 title: item.goodsName!,
-                                price: item.salePrice?.amount ?? "",
+                                price: currencyService.convertAndFormat(
+                                  amount: extractPrice(
+                                    item.salePrice?.usdAmount,
+                                  ),
+                                  from: sourceCurrency,
+                                ),
                                 icon: GetBuilder<FavoritesController>(
                                   builder: (isFavoriteController) {
                                     bool isFav =
@@ -103,7 +116,9 @@ class ProductByCategory extends StatelessWidget {
                                           item.goodsSn!,
                                           item.goodsName!,
                                           item.goodsImg!,
-                                          item.salePrice?.amount ?? "",
+                                          extractPrice(
+                                            item.salePrice?.usdAmount,
+                                          ).toString(),
                                           "Shein",
                                           goodsSn: item.goodsSn ?? "",
                                           categoryid: controller.categoryid,
@@ -120,7 +135,13 @@ class ProductByCategory extends StatelessWidget {
                                 ),
                                 isAmazon: false,
                                 rate: "${item.commentRankAverage ?? ""}   ",
-                                discprice: item.retailPrice?.amount ?? "",
+                                discprice: currencyService.convertAndFormat(
+                                  amount: extractPrice(
+                                    item.retailPrice?.usdAmount ??
+                                        item.salePrice?.usdAmount,
+                                  ),
+                                  from: sourceCurrency,
+                                ),
                               ),
                             );
                           },

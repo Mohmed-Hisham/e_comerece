@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:e_comerece/core/class/api_service.dart';
@@ -15,7 +17,7 @@ class AddressRepoImpl implements AddressRepo {
     try {
       var response = await apiServices.get(endpoint: ApisUrl.getAddresses);
       if (response.statusCode == 200) {
-        List responseData = response.data ?? [];
+        List responseData = response.data['data'] ?? [];
         return Right(responseData.map((e) => AddressData.fromJson(e)).toList());
       } else {
         return Left(

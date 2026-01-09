@@ -3,8 +3,10 @@ import 'package:e_comerece/controller/favorite/favorites_controller.dart';
 import 'package:e_comerece/controller/home/homescreen_controller.dart';
 import 'package:e_comerece/core/class/handlingdataviwe.dart';
 import 'package:e_comerece/core/constant/color.dart';
+import 'package:e_comerece/core/helper/format_price.dart';
 import 'package:e_comerece/core/loacallization/translate_data.dart';
 import 'package:e_comerece/core/helper/custom_cached_image.dart';
+import 'package:e_comerece/core/servises/currency_service.dart';
 import 'package:e_comerece/core/servises/platform_ext.dart';
 import 'package:e_comerece/core/shared/widget_shared/shimmer_list_horizontal.dart';
 import 'package:e_comerece/viwe/widget/custgridviwe.dart';
@@ -53,6 +55,7 @@ class HotProductAmazon extends StatelessWidget {
                     itemCount: controller.amazonHomeCon.hotDeals.length,
                     itemBuilder: (context, index) {
                       final product = controller.amazonHomeCon.hotDeals[index];
+                      final currencyService = Get.find<CurrencyService>();
 
                       return InkWell(
                         onTap: () {
@@ -80,7 +83,10 @@ class HotProductAmazon extends StatelessWidget {
 
                               // ),
                               title: product.dealTitle.toString(),
-                              price: product.dealPrice?.amount.toString() ?? "",
+                              price: currencyService.convertAndFormat(
+                                amount: extractPrice(product.dealPrice?.amount),
+                                from: 'SAR',
+                              ),
                               icon: GetBuilder<FavoritesController>(
                                 builder: (controller) {
                                   bool isFav =
@@ -94,8 +100,15 @@ class HotProductAmazon extends StatelessWidget {
                                         product.productAsin.toString(),
                                         product.dealTitle.toString(),
                                         product.dealPhoto.toString(),
-                                        product.dealPrice?.amount.toString() ??
-                                            "",
+                                        currencyService
+                                            .convert(
+                                              amount: extractPrice(
+                                                product.dealPrice?.amount,
+                                              ),
+                                              from: 'SAR',
+                                              to: 'USD',
+                                            )
+                                            .toString(),
                                         "Amazon",
                                       );
                                     },
@@ -117,7 +130,10 @@ class HotProductAmazon extends StatelessWidget {
                                 },
                               ),
 
-                              discprice: product.listPrice?.amount ?? "",
+                              discprice: currencyService.convertAndFormat(
+                                amount: extractPrice(product.listPrice?.amount),
+                                from: 'SAR',
+                              ),
                               countsall: "${product.dealType}",
                             ),
                           ),

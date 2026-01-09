@@ -1,68 +1,51 @@
 class GetLocalServiceModel {
   GetLocalServiceModel({
-    required this.status,
-    required this.count,
-    required this.totalPages,
-    required this.currentPage,
-    required this.nextPage,
+    required this.success,
+    required this.message,
     required this.data,
+    required this.errors,
   });
 
-  final String? status;
-  final int? count;
-  final int? totalPages;
-  final String? currentPage;
-  final dynamic nextPage;
-  final List<Service> data;
+  final bool? success;
+  final String? message;
+  final List<LocalServiceData> data;
+  final dynamic errors;
 
   factory GetLocalServiceModel.fromJson(Map<String, dynamic> json) {
     return GetLocalServiceModel(
-      status: json["status"],
-      count: json["count"],
-      totalPages: json["total_pages"],
-      currentPage: json["current_page"],
-      nextPage: json["next_page"],
+      success: json["success"],
+      message: json["message"],
       data: json["data"] == null
           ? []
-          : List<Service>.from(json["data"]!.map((x) => Service.fromJson(x))),
+          : (json["data"] is List)
+          ? List<LocalServiceData>.from(
+              json["data"]!.map((x) => LocalServiceData.fromJson(x)),
+            )
+          : [LocalServiceData.fromJson(json["data"])],
+      errors: json["errors"],
     );
   }
 }
 
-class Service {
-  Service({
-    required this.serviceId,
+class LocalServiceData {
+  LocalServiceData({
+    required this.id,
     required this.serviceName,
     required this.serviceDesc,
     required this.serviceImage,
-    required this.servicePrice,
-    required this.serviceCity,
-    required this.servicePhone,
-    required this.serviceVisible,
-    required this.serviceCreateAt,
   });
 
-  final int? serviceId;
+  final String? id;
   final String? serviceName;
   final String? serviceDesc;
   final String? serviceImage;
-  final String? servicePrice;
-  final String? serviceCity;
-  final String? servicePhone;
-  final int? serviceVisible;
-  final DateTime? serviceCreateAt;
 
-  factory Service.fromJson(Map<String, dynamic> json) {
-    return Service(
-      serviceId: json["service_id"],
+  factory LocalServiceData.fromJson(Map<String, dynamic> json) {
+    return LocalServiceData(
+      id: json["id"],
       serviceName: json["service_name"],
       serviceDesc: json["service_desc"],
       serviceImage: json["service_image"],
-      servicePrice: json["service_price"],
-      serviceCity: json["service_city"],
-      servicePhone: json["service_phone"],
-      serviceVisible: json["service_visible"],
-      serviceCreateAt: DateTime.tryParse(json["service_create_at"] ?? ""),
     );
   }
 }

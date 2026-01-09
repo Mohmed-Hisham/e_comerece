@@ -1,5 +1,4 @@
 import 'dart:developer';
-import 'dart:math' as math;
 import 'package:e_comerece/controller/cart/cart_from_detils.dart';
 import 'package:e_comerece/controller/shein/product_details_shein_controller.dart';
 import 'package:e_comerece/core/class/handlingdataviwe.dart';
@@ -254,7 +253,6 @@ class _PriceSectionShein extends StatelessWidget {
   Widget build(BuildContext context) {
     final currentPrice = controller.getCurrentPrice();
     if (currentPrice == null) return const SizedBox.shrink();
-    final total = currentPrice * math.max(1, controller.quantity);
     final formatted = controller.getCurrentPriceFormatted();
     return Container(
       padding: const EdgeInsets.all(16),
@@ -296,7 +294,7 @@ class _PriceSectionShein extends StatelessWidget {
                 ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
               ),
               Text(
-                total.toStringAsFixed(2),
+                controller.getTotalPriceFormatted(),
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: Appcolor.primrycolor,

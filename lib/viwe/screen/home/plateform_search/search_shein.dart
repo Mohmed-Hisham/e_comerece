@@ -10,8 +10,9 @@ import 'package:e_comerece/viwe/widget/custgridviwe.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:e_comerece/core/helper/format_price.dart';
+import 'package:e_comerece/core/servises/currency_service.dart';
 import 'package:get/get.dart';
-import 'package:get/get_state_manager/src/simple/get_state.dart';
 
 class SearchShein extends StatelessWidget {
   final HomescreenControllerImple controller;
@@ -31,6 +32,8 @@ class SearchShein extends StatelessWidget {
           : controller.lengthShein,
       itemBuilder: (context, index) {
         final product = controller.searchProductsShein[index];
+        final currencyService = Get.find<CurrencyService>();
+        const sourceCurrency = 'USD';
 
         return InkWell(
           onTap: () {
@@ -53,11 +56,14 @@ class SearchShein extends StatelessWidget {
               ),
             ),
             disc: calculateDiscountPercent(
-              product.retailPrice!.amount.toString(),
-              product.salePrice?.amount.toString(),
+              extractPrice(product.retailPrice?.usdAmount),
+              extractPrice(product.salePrice?.usdAmount),
             ),
             title: product.goodsName!,
-            price: product.salePrice!.amountWithSymbol.toString(),
+            price: currencyService.convertAndFormat(
+              amount: extractPrice(product.salePrice?.usdAmount),
+              from: sourceCurrency,
+            ),
             icon: GetBuilder<FavoritesController>(
               builder: (controller) {
                 bool isFav =
@@ -69,7 +75,7 @@ class SearchShein extends StatelessWidget {
                       product.goodsId.toString(),
                       product.goodsName!,
                       product.goodsImg!,
-                      product.salePrice!.amountWithSymbol.toString(),
+                      extractPrice(product.salePrice?.usdAmount).toString(),
                       "Shein",
                     );
                   },
@@ -83,7 +89,12 @@ class SearchShein extends StatelessWidget {
               },
             ),
 
-            discprice: product.retailPrice!.usdAmount.toString(),
+            discprice: currencyService.convertAndFormat(
+              amount: extractPrice(
+                product.retailPrice?.usdAmount ?? product.salePrice?.usdAmount,
+              ),
+              from: sourceCurrency,
+            ),
             countsall: product.tag3PLabelName,
             rate: product.commentRankAverage.toString(),
             isAlibaba: true,

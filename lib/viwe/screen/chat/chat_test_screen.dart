@@ -81,7 +81,6 @@ class _ChatTestScreenState extends State<ChatTestScreen> {
                     if (_messageController.text.isNotEmpty) {
                       supabaseService.sendMessage(
                         chatId: chatId,
-                        senderId: senderId,
                         content: _messageController.text,
                       );
                       _messageController.clear();

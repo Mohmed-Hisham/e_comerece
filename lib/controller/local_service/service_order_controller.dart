@@ -2,21 +2,24 @@ import 'dart:developer';
 
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
-import 'package:e_comerece/core/funcations/handlingdata.dart';
+import 'package:e_comerece/core/funcations/loading_dialog.dart';
+import 'package:e_comerece/core/funcations/success_dialog.dart';
+import 'package:e_comerece/core/servises/custom_getx_snak_bar.dart';
 import 'package:e_comerece/core/servises/serviese.dart';
 import 'package:e_comerece/core/servises/supabase_service.dart';
-import 'package:e_comerece/data/datasource/remote/local_service/add_service_request_data.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:e_comerece/data/model/local_service/get_local_service_model.dart';
+import 'package:e_comerece/data/model/local_service/service_request_model.dart';
+import 'package:e_comerece/data/repository/local_service/local_service_repo_impl.dart';
 
 class ServiceOrderController extends GetxController {
-  late Service service;
+  late LocalServiceData service;
   late double quotedPrice;
   TextEditingController noteController = .new();
 
-  AddServiceRequestData addServiceRequestData = AddServiceRequestData(
-    Get.find(),
+  LocalServiceRepoImpl localServiceRepoImpl = LocalServiceRepoImpl(
+    apiService: Get.find(),
   );
   MyServises myServises = Get.find();
 
@@ -43,44 +46,49 @@ class ServiceOrderController extends GetxController {
   void confirmOrder() async {
     statusRequest = Statusrequest.loading;
     update();
+    if (!Get.isDialogOpen!) {
+      loadingDialog();
+    }
+    update();
 
-    String userid = myServises.sharedPreferences.getString("user_id")!;
-    int addressid = myServises.sharedPreferences.getInt("default_address") ?? 0;
+    String addressid = await myServises.getSecureData("default_address") ?? "";
 
-    if (addressid == 0) {
-      Get.snackbar("Alert", "Please select an address");
+    if (addressid == "") {
+      showCustomGetSnack(isGreen: false, text: "Please select an address");
       statusRequest = Statusrequest.none;
       update();
       return;
     }
 
-    var response = await addServiceRequestData.addServiceRequest(
-      int.parse(userid),
-      service.serviceId!,
-      noteController.text,
-      addressid,
-      quotedPrice,
-      "3",
+    var response = await localServiceRepoImpl.addServiceRequest(
+      ServiceRequestData(
+        serviceId: service.id,
+        note: noteController.text,
+        addressId: addressid,
+        quotedPrice: quotedPrice,
+        status: "paid",
+      ),
     );
 
-    statusRequest = handlingData(response);
-    if (Statusrequest.success == statusRequest) {
-      if (response['status'] == 'success') {
-        Get.snackbar("Success", "Order placed successfully");
+    await response.fold(
+      (l) async {
+        if (Get.isDialogOpen ?? false) Get.back();
+        showCustomGetSnack(isGreen: false, text: l.errorMessage);
+        statusRequest = Statusrequest.failuer;
+      },
+      (message) async {
+        statusRequest = Statusrequest.success;
+        if (Get.isDialogOpen ?? false) Get.back();
 
         if (chatId != null) {
           try {
-            // Update chat status to closed
             await Get.find<SupabaseService>().updateChatStatus(
               chatId: chatId!,
               status: 'closed',
             );
 
-            // Send "Chat Ended" message
-            String userid = myServises.sharedPreferences.getString("user_id")!;
             await Get.find<SupabaseService>().sendMessage(
               chatId: chatId!,
-              senderId: userid,
               content: "chat ended",
               senderType: 'admin',
             );
@@ -89,11 +97,19 @@ class ServiceOrderController extends GetxController {
           }
         }
 
-        Get.offAllNamed(AppRoutesname.homepage);
-      } else {
-        Get.snackbar("Error", "Failed to place order");
-      }
-    }
+        successDialog(
+          title: "Success",
+          body: "Order placed successfully",
+          onBack: () {
+            Get.back(); // close dialog
+            Get.back(result: true); // go back to previous screen
+          },
+          onHome: () {
+            Get.offAllNamed(AppRoutesname.homepage);
+          },
+        );
+      },
+    );
     update();
   }
 }

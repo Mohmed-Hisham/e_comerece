@@ -17,9 +17,11 @@ class AddressModel {
       message: json["message"],
       addresses: json["data"] == null
           ? []
-          : List<AddressData>.from(
+          : (json["data"] is List)
+          ? List<AddressData>.from(
               json["data"]!.map((x) => AddressData.fromJson(x)),
-            ),
+            )
+          : [AddressData.fromJson(json["data"])],
       errors: json["errors"],
     );
   }

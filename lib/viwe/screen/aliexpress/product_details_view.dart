@@ -64,7 +64,6 @@ class ProductDetailsView extends StatelessWidget {
                       }
                     },
                     child: CustomScrollView(
-                      physics: const BouncingScrollPhysics(),
                       slivers: [
                         SliverToBoxAdapter(
                           child: _buildProductDetails(context, controller),

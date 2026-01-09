@@ -1,5 +1,6 @@
 import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
+import 'package:e_comerece/core/helper/custom_cached_image.dart';
 import 'package:e_comerece/data/model/local_service/service_request_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -98,7 +99,7 @@ class LocalServiceOrderCard extends StatelessWidget {
                       ),
                       SizedBox(width: 12.w),
                       Text(
-                        '#${order.requestId ?? 'N/A'}',
+                        '#${"" ?? 'N/A'}',
                         style: TextStyle(
                           fontSize: 16.sp,
                           fontWeight: FontWeight.bold,
@@ -151,14 +152,16 @@ class LocalServiceOrderCard extends StatelessWidget {
                     child: SizedBox(
                       width: 80.w,
                       height: 80.h,
-                      child: Container(
-                        color: Appcolor.gray.withValues(alpha: 0.1),
-                        child: Icon(
-                          Icons.design_services_outlined,
-                          color: Appcolor.gray,
-                          size: 30.sp,
-                        ),
-                      ),
+                      child: order.serviceImage != null
+                          ? CustomCachedImage(imageUrl: order.serviceImage!)
+                          : Container(
+                              color: Appcolor.gray.withValues(alpha: 0.1),
+                              child: Icon(
+                                Icons.design_services_outlined,
+                                color: Appcolor.gray,
+                                size: 30.sp,
+                              ),
+                            ),
                     ),
                   ),
                   SizedBox(width: 16.w),
@@ -167,7 +170,7 @@ class LocalServiceOrderCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Service Request #${order.serviceId ?? '?'}',
+                          'Service Request #${order.serviceName ?? '?'}',
                           style: TextStyle(
                             fontSize: 16.sp,
                             fontWeight: FontWeight.bold,

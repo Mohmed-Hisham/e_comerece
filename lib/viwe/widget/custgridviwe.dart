@@ -8,6 +8,7 @@ class Custgridviwe extends StatelessWidget {
   final String? discprice;
   final String title;
   final String? price;
+  final String? priceFormat;
   final Function()? onChangeIcon;
   final Widget? icon;
   final String? countsall;
@@ -15,12 +16,14 @@ class Custgridviwe extends StatelessWidget {
   final bool isAmazon;
   final Widget? images;
   final String? rate;
+  final String? description;
   const Custgridviwe({
     super.key,
     required this.image,
     this.disc,
     required this.title,
     this.price,
+    this.priceFormat,
     this.onChangeIcon,
     this.icon,
     this.discprice,
@@ -29,6 +32,7 @@ class Custgridviwe extends StatelessWidget {
     this.isAmazon = false,
     this.images,
     this.rate,
+    this.description,
   });
 
   @override
@@ -134,7 +138,6 @@ class Custgridviwe extends StatelessWidget {
                   Expanded(
                     child: Text(
                       price!,
-                      // "20\$"
                       style: TextStyle(
                         color: Appcolor.primrycolor,
                         fontWeight: FontWeight.bold,
@@ -169,6 +172,43 @@ class Custgridviwe extends StatelessWidget {
                         )
                       : const SizedBox.shrink(),
                 ],
+              ),
+            ),
+          if (priceFormat != null)
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 5.sp),
+              child: Row(
+                spacing: 10,
+                children: [
+                  Expanded(
+                    child: Text(
+                      priceFormat!,
+                      style: TextStyle(
+                        color: Appcolor.primrycolor,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'signika',
+                        fontSize: 17,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.start,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          if (description != null)
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 5.sp),
+              child: Text(
+                description!,
+                style: TextStyle(
+                  color: Appcolor.black,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
 
@@ -218,25 +258,6 @@ class Custgridviwe extends StatelessWidget {
                     ],
                   ),
                 ),
-
-          // Expanded(
-          //   child: ListView.builder(
-          //     itemCount: 5,
-          //     // shrinkWrap: true,
-          //     scrollDirection: Axis.horizontal,
-
-          //     itemBuilder: (context, index) {
-          //       return Container(
-          //         height: 10,
-          //         width: 10,
-          //         decoration: BoxDecoration(
-          //           shape: BoxShape.circle,
-          //           color: Appcolor.primrycolor,
-          //         ),
-          //       );
-          //     },
-          //   ),
-          // ),
         ],
       ),
     );

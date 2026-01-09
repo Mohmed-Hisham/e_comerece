@@ -7,7 +7,9 @@ import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/constant/strings_keys.dart';
 
 import 'package:e_comerece/core/helper/custom_cached_image.dart';
+import 'package:e_comerece/core/helper/format_price.dart';
 import 'package:e_comerece/core/loacallization/translate_data.dart';
+import 'package:e_comerece/core/servises/currency_service.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_app_bar.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_left_2.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_right_2.dart';
@@ -150,22 +152,35 @@ class SearchByImageView extends StatelessWidget {
       itemCount: controller.items.length,
       itemBuilder: (context, index) {
         final item = controller.items[index].item!;
+        final currencyService = Get.find<CurrencyService>();
 
         return InkWell(
           onTap: () {
-            int id = int.tryParse(item.itemId!.toString()) ?? 0;
-            controller.gotoditels(id: id, lang: enOrAr(), title: item.title!);
+            int id = int.tryParse(item.itemId?.toString() ?? "0") ?? 0;
+            controller.gotoditels(
+              id: id,
+              lang: enOrAr(),
+              title: item.title ?? "",
+            );
           },
 
+          //
           child: Custgridviwe(
             image: CustomCachedImage(imageUrl: item.image ?? ""),
-            disc: "${item.sku?.def?.promotionPrice ?? ""} \$",
+            disc: currencyService.convertAndFormat(
+              amount: extractPrice(item.sku?.def?.promotionPrice ?? "0"),
+              from: 'USD',
+            ),
             title: item.title ?? "",
-            price: "${item.sku?.def?.promotionPrice ?? ""} \$",
+            price: currencyService.convertAndFormat(
+              amount: extractPrice(item.sku?.def?.promotionPrice ?? "0"),
+              from: 'USD',
+            ),
             icon: GetBuilder<FavoritesController>(
               builder: (isFavoriteController) {
                 bool isFav =
-                    isFavoriteController.isFavorite[item.itemId] ?? false;
+                    isFavoriteController.isFavorite[item.itemId.toString()] ??
+                    false;
 
                 return IconButton(
                   onPressed: () {
@@ -173,7 +188,13 @@ class SearchByImageView extends StatelessWidget {
                       item.itemId!.toString(),
                       item.title ?? "",
                       item.image ?? "",
-                      "\$${item.sku?.def?.price ?? ""}",
+                      currencyService
+                          .convert(
+                            amount: extractPrice(item.sku?.def?.price ?? "0"),
+                            from: 'USD',
+                            to: 'USD',
+                          )
+                          .toString(),
                       "Aliexpress",
                     );
                   },
@@ -186,7 +207,10 @@ class SearchByImageView extends StatelessWidget {
                 );
               },
             ),
-            discprice: "${item.sku?.def?.promotionPrice ?? ""} \$",
+            discprice: currencyService.convertAndFormat(
+              amount: extractPrice(item.sku?.def?.promotionPrice),
+              from: 'USD',
+            ),
             countsall: "${item.sales ?? ""} ${StringsKeys.sales.tr}",
           ),
         );

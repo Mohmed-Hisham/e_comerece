@@ -5,11 +5,11 @@ import 'package:e_comerece/controller/favorite/toggle_favorite_controller.dart';
 import 'package:e_comerece/core/class/handlingdataviwe.dart';
 import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
-import 'package:e_comerece/core/funcations/extractn_umbers.dart';
 import 'package:e_comerece/core/helper/format_price.dart';
 import 'package:e_comerece/core/shared/widget_shared/loadingimage.dart';
 import 'package:e_comerece/core/shared/widget_shared/open_full_image.dart';
 import 'package:e_comerece/core/shared/widget_shared/shimmerbar.dart';
+import 'package:e_comerece/core/servises/currency_service.dart';
 import 'package:e_comerece/viwe/screen/amazon/product_for_page_detils_amazon.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_app_bar.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_right_1.dart';
@@ -380,10 +380,9 @@ class ProductDetailsAmazonView extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 8),
-                if (controller.productOriginalPrice != null &&
-                    controller.productOriginalPrice != controller.productPrice)
+                if (controller.productOriginalPrice != null)
                   Text(
-                    controller.productOriginalPrice!,
+                    controller.getOriginalPriceFormatted(),
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                       decoration: TextDecoration.lineThrough,
                       color: Colors.grey,
@@ -538,11 +537,18 @@ class ProductDetailsAmazonView extends StatelessWidget {
                   return IconButton(
                     onPressed: () {
                       controller.changisfavorite();
+                      final currencyService = Get.find<CurrencyService>();
                       favoritesController.toggleFavorite(
                         controller.getCurrentAsin() ?? '',
                         controller.productTitle ?? '',
                         controller.productPhoto ?? '',
-                        extractNumbers(controller.productPrice.toString()),
+                        currencyService
+                            .convert(
+                              amount: extractPrice(controller.productPrice),
+                              from: 'SAR',
+                              to: 'USD',
+                            )
+                            .toString(),
                         "Amazon",
                       );
                     },

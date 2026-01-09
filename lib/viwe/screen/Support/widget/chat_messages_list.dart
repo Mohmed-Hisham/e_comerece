@@ -61,6 +61,32 @@ class ChatMessagesList extends StatelessWidget {
                     ? CrossAxisAlignment.end
                     : CrossAxisAlignment.start,
                 children: [
+                  if (message.senderType == 'bot')
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      child: Row(
+                        children: [
+                          CircleAvatar(
+                            radius: 15,
+                            backgroundColor: Appcolor.primrycolor,
+                            child: Icon(
+                              Icons.smart_toy_outlined,
+                              color: Colors.white,
+                              size: 18,
+                            ),
+                          ),
+                          SizedBox(width: 8),
+                          Text(
+                            "Bot",
+                            style: Theme.of(context).textTheme.bodySmall!
+                                .copyWith(
+                                  color: Appcolor.gray,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                          ),
+                        ],
+                      ),
+                    ),
                   Container(
                     margin: const EdgeInsets.symmetric(horizontal: 10),
                     padding: const EdgeInsets.all(10),

@@ -1,5 +1,7 @@
+import 'dart:developer';
+
 import 'package:e_comerece/core/constant/strings_keys.dart';
-import 'package:e_comerece/controller/support_controller/support_screen_controller.dart';
+import 'package:e_comerece/controller/support_controller/chats_controller.dart';
 import 'package:e_comerece/core/class/handlingdataviwe.dart';
 import 'package:e_comerece/viwe/screen/Support/widget/chat_item_widget.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_app_bar.dart';
@@ -16,7 +18,7 @@ class ChatsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: GetBuilder(
-        init: SupportScreenControllerImp()..getChats(),
+        init: ChatsController(),
         builder: (controller) => Stack(
           children: [
             PositionedRight1(),
@@ -47,12 +49,16 @@ class ChatsScreen extends StatelessWidget {
                         final chat = controller.chatList[index];
                         return ChatItemWidget(
                           chat: chat,
-                          onTap: () {
-                            controller.goToMassagesScreen(
+                          onTap: () async {
+                            final result = await controller.goToMassagesScreen(
                               chat.chatId!,
                               chat.type!,
                               chat.referenceId!,
+                              chat.referenceId!,
                             );
+                            if (result == true) {
+                              controller.getChats();
+                            }
                           },
                         );
                       },

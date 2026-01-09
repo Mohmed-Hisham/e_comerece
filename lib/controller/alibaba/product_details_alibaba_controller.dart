@@ -12,7 +12,6 @@ import 'package:e_comerece/core/funcations/handle_paging_response.dart';
 import 'package:e_comerece/core/servises/custom_getx_snak_bar.dart';
 import 'package:e_comerece/core/servises/selected_attributes_tomap_fordb.dart';
 import 'package:e_comerece/core/servises/serviese.dart';
-import 'package:e_comerece/data/datasource/remote/cart/cartviwe_data.dart';
 import 'package:e_comerece/data/model/alibaba_model/product_ditels_alibaba_model.dart'
     as alibaba_model;
 import 'package:e_comerece/data/model/alibaba_model/productalibaba_home_model.dart';
@@ -56,7 +55,6 @@ class ProductDetailsAlibabaControllerImple
   AddorrmoveControllerimple addorrmoveController = Get.put(
     AddorrmoveControllerimple(),
   );
-  CartviweData cartData = CartviweData(Get.find());
 
   Statusrequest statusrequest = Statusrequest.loading;
   alibaba_model.ProductDitelsAliBabaModel? productDitelsAliBabaModel;
@@ -73,7 +71,7 @@ class ProductDetailsAlibabaControllerImple
   MyServises myServices = Get.find();
   Map<String, int> cartQuantities = {};
 
-  List<CartModel> cartItems = [];
+  List<CartData> cartItems = [];
   List<alibaba_model.PriceList> priceList = [];
   List<alibaba_model.Prop> uiSkuProperties = [];
 

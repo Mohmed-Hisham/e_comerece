@@ -32,6 +32,7 @@ class CheckoutBar extends StatelessWidget {
                   child: ConstrainedBox(
                     constraints: BoxConstraints(maxHeight: 55.h),
                     child: TextFormField(
+                      focusNode: controller.couponFocusNode,
                       controller: controller.couponController,
                       decoration: InputDecoration(
                         isDense: true,

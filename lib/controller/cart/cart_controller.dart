@@ -1,17 +1,13 @@
-import 'dart:developer';
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/constant/strings_keys.dart';
-import 'package:e_comerece/core/funcations/handlingdata.dart';
+import 'package:e_comerece/core/funcations/loading_dialog.dart';
 import 'package:e_comerece/core/servises/custom_getx_snak_bar.dart';
 import 'package:e_comerece/core/servises/platform_ext.dart';
 import 'package:e_comerece/core/servises/serviese.dart';
-import 'package:e_comerece/data/datasource/remote/coupon/get_coupon_data.dart';
-import 'package:e_comerece/data/datasource/remote/cart/cart_addorremove_data.dart';
-import 'package:e_comerece/data/datasource/remote/cart/cart_remove_data.dart';
-import 'package:e_comerece/data/datasource/remote/cart/cartviwe_data.dart';
 import 'package:e_comerece/data/model/cartmodel.dart';
-import 'package:e_comerece/data/model/coupon_model/get_coupon_model.dart';
+import 'package:e_comerece/data/repository/Cart/cart_repo_impl.dart';
+import 'package:e_comerece/data/repository/Coupon/coupon_repo_impl.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -30,25 +26,31 @@ abstract class CartController extends GetxController {
 }
 
 class CartControllerImpl extends CartController {
-  CartviweData cartData = CartviweData(Get.find());
-  CartRemoveData removeData = CartRemoveData(Get.find());
-  CartAddorremoveData cartAddorremoveData = CartAddorremoveData(Get.find());
-  GetCouponData getCouponData = GetCouponData(Get.find());
-  final TextEditingController couponController = TextEditingController();
+  CartRepoImpl cartRepo = CartRepoImpl(apiService: Get.find());
+  CouponRepoImpl couponRepo = CouponRepoImpl(apiService: Get.find());
+  final TextEditingController couponController = .new();
+  final FocusNode couponFocusNode = .new();
 
   MyServises myServises = Get.find();
   Statusrequest statusrequest = Statusrequest.none;
   Statusrequest couPonstatusrequest = Statusrequest.none;
 
-  List<CartModel> cartItems = [];
+  List<CartData> cartItems = [];
   String? couponCode;
   double? discount;
 
   double totalbuild = 0.0;
-  Map<String, List<CartModel>> cartByPlatform = {};
+  Map<String, List<CartData>> cartByPlatform = {};
+
+  // @override
+  // void onInit() {
+  //   super.onInit();
+  //   // cartRepo = CartRepoImpl(apiService: Get.find());
+  //   // couponRepo = CouponRepoImpl(apiService: Get.find());
+  // }
 
   @override
-  onClose() {
+  void onClose() {
     couponController.dispose();
     super.onClose();
   }
@@ -68,14 +70,9 @@ class CartControllerImpl extends CartController {
   double total() {
     double sum = 0.0;
     for (var e in cartItems) {
-      String cleanPrice = e.cartPrice.toString().replaceAll(
-        RegExp(r'[^0-9.]'),
-        '',
-      );
-      double price = double.tryParse(cleanPrice) ?? 0.0;
-      double count = double.tryParse(e.cartQuantity!.toString()) ?? 0.0;
-      double s = price * count;
-      sum += s;
+      double price = e.productPrice ?? 0.0;
+      double count = (e.cartQuantity ?? 0).toDouble();
+      sum += (price * count);
     }
     if (discount != null) {
       sum -= discount!;
@@ -88,126 +85,156 @@ class CartControllerImpl extends CartController {
     statusrequest = Statusrequest.loading;
     update();
     update(['1']);
-    int id = int.parse(myServises.sharedPreferences.getString("user_id")!);
-    var response = await cartData.getData(id);
-    statusrequest = handlingData(response);
-    if (Statusrequest.success == statusrequest) {
-      if (response['status'] == 'success') {
-        List responseData = response['data'];
-        cartItems = responseData.map((e) => CartModel.fromJson(e)).toList();
+
+    var response = await cartRepo.getCart();
+
+    statusrequest = response.fold(
+      (l) {
+        showCustomGetSnack(isGreen: false, text: l.errorMessage);
+        return Statusrequest.failuer;
+      },
+      (r) {
+        cartItems = r.cartData;
         groupcartByPlatform();
         totalbuild = total();
-      } else {
-        statusrequest = Statusrequest.failuer;
-      }
-    }
+        return Statusrequest.success;
+      },
+    );
+
     update();
     update(['1']);
   }
 
-  removeItem(int cartId) async {
-    Get.dialog(
-      barrierDismissible: false,
-      Center(child: CircularProgressIndicator()),
+  removeItem(String cartId) async {
+    if (!Get.isDialogOpen!) {
+      loadingDialog();
+    }
+    var response = await cartRepo.deleteCart(cartId);
+    if (Get.isDialogOpen ?? false) Get.back();
+
+    response.fold(
+      (l) => showCustomGetSnack(isGreen: false, text: l.errorMessage),
+      (r) {
+        showCustomGetSnack(isGreen: true, text: r);
+        getCartItems();
+      },
     );
 
-    await removeData.removeCart(
-      int.parse(myServises.sharedPreferences.getString("user_id")!),
-      cartId,
-    );
-    getCartItems();
-    if (Get.isDialogOpen ?? false) Get.back();
     update();
   }
 
-  addprise({required CartModel cartModel}) async {
-    int availableQuantity = cartModel.cartAvailableQuantity!;
-    int currentTotalInCart = cartModel.cartQuantity!;
+  addprise({required CartData cartData}) async {
+    int availableQuantity = cartData.cartAvailableQuantity ?? 0;
+    int currentTotalInCart = cartData.cartQuantity ?? 0;
     if (currentTotalInCart >= availableQuantity) {
-      Get.rawSnackbar(
-        title: StringsKeys.alert.tr,
-        messageText: Text(StringsKeys.maxQuantityReached.tr),
-        backgroundColor: Colors.orange,
+      showCustomGetSnack(
+        isGreen: false,
+        text: StringsKeys.maxQuantityReached.tr,
       );
+
       return;
     }
 
-    var response = await cartAddorremoveData.addprise(
-      myServises.sharedPreferences.getString("user_id")!,
-      cartModel.productId!.toString(),
-      cartModel.cartAttributes!,
-      cartModel.cartAvailableQuantity!,
+    var response = await cartRepo.increaseQuantity(
+      cartData.productId!.toString(),
+      cartData.cartAttributes,
+      availableQuantity,
     );
 
-    statusrequest = handlingData(response);
-    if (Statusrequest.success == statusrequest) {
-      if (response['status'] == "success" && response['message'] == "edit") {
-        int currentQuantity = cartModel.cartQuantity!;
-        cartModel.cartQuantity = (currentQuantity + 1);
-        totalbuild = total();
-
-        update(['1']);
-      } else {
-        statusrequest = Statusrequest.failuer;
-      }
-    }
+    response.fold(
+      (l) => showCustomGetSnack(isGreen: false, text: l.errorMessage),
+      (r) {
+        int index = cartItems.indexWhere(
+          (element) => element.id == cartData.id,
+        );
+        if (index != -1) {
+          cartItems[index] = cartItems[index].copyWith(
+            cartQuantity: (cartItems[index].cartQuantity ?? 0) + 1,
+          );
+          groupcartByPlatform();
+          totalbuild = total();
+          update();
+          update(['1']);
+        } else {
+          getCartItems();
+        }
+      },
+    );
   }
 
-  removprise({required CartModel cartModel}) async {
-    int currentQuantity = cartModel.cartQuantity!;
+  removprise({required CartData cartData}) async {
+    int currentQuantity = cartData.cartQuantity ?? 0;
     if (currentQuantity > 1) {
-      await cartAddorremoveData.addremov(
-        myServises.sharedPreferences.getString("user_id")!,
-        cartModel.productId!.toString(),
-        cartModel.cartAttributes!,
+      var response = await cartRepo.decreaseQuantity(
+        cartData.productId!.toString(),
+        cartData.cartAttributes,
+        cartData.cartAvailableQuantity ?? 0,
       );
 
-      cartModel.cartQuantity = (currentQuantity - 1);
-      totalbuild = total();
-      update(['1']);
+      response.fold(
+        (l) => showCustomGetSnack(isGreen: false, text: l.errorMessage),
+        (r) {
+          int index = cartItems.indexWhere(
+            (element) => element.id == cartData.id,
+          );
+          if (index != -1) {
+            cartItems[index] = cartItems[index].copyWith(
+              cartQuantity: (cartItems[index].cartQuantity ?? 1) - 1,
+            );
+            groupcartByPlatform();
+            totalbuild = total();
+            update();
+            update(['1']);
+          } else {
+            getCartItems();
+          }
+        },
+      );
     }
   }
 
   checkCoupon() async {
     if (couponController.text.trim().isEmpty) {
-      showCustomGetSnack(
-        isGreen: false,
-        text: StringsKeys.couponEmpty.tr,
-        duration: const Duration(minutes: 5),
-      );
+      showCustomGetSnack(isGreen: false, text: StringsKeys.couponEmpty.tr);
       return;
     }
-    int id = int.parse(myServises.sharedPreferences.getString("user_id")!);
-    bool found = false;
     couPonstatusrequest = Statusrequest.loading;
     update(['coupon']);
-    var response = await getCouponData.getCoupon(
-      couponController.text.trim(),
-      id,
+
+    var response = await couponRepo.getCoupon(
+      code: couponController.text.trim(),
     );
 
-    couPonstatusrequest = handlingData(response);
-    log("coupon: $couPonstatusrequest");
-    if (Statusrequest.success == couPonstatusrequest) {
-      final responsModel = CouponResponse.fromJson(response);
-      if (responsModel.status == 'success') {
-        final model = CouponResponse.fromJson(response);
-        if (model.data?.couponPlatform!.toLowerCase() == "all") {
-          couponCode = model.data?.couponName;
-          discount = model.data?.couponDiscount;
+    couPonstatusrequest = response.fold(
+      (l) {
+        showCustomGetSnack(
+          duration: const Duration(minutes: 5),
+          isGreen: false,
+          text: l.errorMessage,
+        );
+
+        return Statusrequest.none;
+      },
+      (responsModel) {
+        bool found = false;
+        if (responsModel.data?.couponPlatfrom!.toLowerCase() == "all") {
+          couponCode = responsModel.data?.couponName;
+          discount = responsModel.data?.couponDiscount;
           totalbuild = total();
           showCustomGetSnack(
             isGreen: true,
             text: StringsKeys.couponAppliedSuccess.tr,
           );
           couponController.clear();
+          couponFocusNode.unfocus();
+
           found = true;
         } else {
           for (var plat in cartByPlatform.keys) {
             if (plat.toLowerCase() ==
-                model.data?.couponPlatform!.toLowerCase()) {
-              couponCode = model.data?.couponName;
-              discount = model.data?.couponDiscount;
+                responsModel.data?.couponPlatfrom!.toLowerCase()) {
+              couponCode = responsModel.data?.couponName;
+              discount = responsModel.data?.couponDiscount;
               totalbuild = total();
               showCustomGetSnack(
                 isGreen: true,
@@ -221,25 +248,18 @@ class CartControllerImpl extends CartController {
 
           if (!found) {
             showCustomGetSnack(
-              duration: const Duration(minutes: 10),
+              duration: const Duration(minutes: 5),
               isGreen: false,
               text: StringsKeys.couponSpecificPlatformError.trParams({
-                'platform': model.data?.couponPlatform! ?? "",
+                'platform': responsModel.data?.couponPlatfrom! ?? "",
               }),
             );
           }
         }
-      }
-    } else if (couPonstatusrequest == Statusrequest.failuer) {
-      showCustomGetSnack(
-        isGreen: false,
-        text: StringsKeys.couponUsedOrExpired.tr,
-      );
-    } else if (couPonstatusrequest == Statusrequest.noData) {
-      showCustomGetSnack(isGreen: false, text: StringsKeys.couponInvalid.tr);
-    } else {
-      couPonstatusrequest = Statusrequest.failuerTryAgain;
-    }
+        return found ? Statusrequest.success : Statusrequest.failuer;
+      },
+    );
+
     update(['coupon', '1']);
   }
 

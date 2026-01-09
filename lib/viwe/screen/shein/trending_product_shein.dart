@@ -5,7 +5,9 @@ import 'package:e_comerece/core/class/handlingdataviwe.dart';
 import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/funcations/calculate_discount.dart';
 import 'package:e_comerece/core/helper/custom_cached_image.dart';
+import 'package:e_comerece/core/helper/format_price.dart';
 import 'package:e_comerece/core/loacallization/translate_data.dart';
+import 'package:e_comerece/core/servises/currency_service.dart';
 import 'package:e_comerece/viwe/widget/shein/extension_geter_trending_product.dart';
 import 'package:e_comerece/viwe/widget/custgridviwe.dart';
 import 'package:flutter/material.dart';
@@ -31,6 +33,8 @@ class TrendingProductShein extends GetView<HomeSheinControllerImpl> {
         itemCount: controller.products.length,
         itemBuilder: (context, index) {
           final product = controller.products[index];
+          final currencyService = Get.find<CurrencyService>();
+          const sourceCurrency = 'USD';
 
           return InkWell(
             onTap: () {
@@ -52,11 +56,14 @@ class TrendingProductShein extends GetView<HomeSheinControllerImpl> {
                   ),
                 ),
                 disc: calculateDiscountPercent(
-                  product.salePrice?.amountWithSymbol.toString(),
-                  product.retailPrice?.usdAmount.toString(),
+                  extractPrice(product.retailPrice?.usdAmount),
+                  extractPrice(product.salePrice?.usdAmount),
                 ),
                 title: product.goodsName ?? '',
-                price: product.salePrice?.amountWithSymbol.toString() ?? '',
+                price: currencyService.convertAndFormat(
+                  amount: extractPrice(product.salePrice?.usdAmount),
+                  from: sourceCurrency,
+                ),
                 icon: GetBuilder<FavoritesController>(
                   builder: (controller) {
                     bool isFav =
@@ -69,7 +76,7 @@ class TrendingProductShein extends GetView<HomeSheinControllerImpl> {
                           product.goodsId.toString(),
                           product.goodsName ?? '',
                           product.mainImageUrl,
-                          product.salePrice?.amountWithSymbol.toString() ?? '',
+                          extractPrice(product.salePrice?.usdAmount).toString(),
                           "Shein",
                           goodsSn: product.goodsSn ?? "",
                           categoryid: product.categoryId,
@@ -85,7 +92,13 @@ class TrendingProductShein extends GetView<HomeSheinControllerImpl> {
                   },
                 ),
 
-                discprice: product.retailPrice?.usdAmount.toString() ?? '',
+                discprice: currencyService.convertAndFormat(
+                  amount: extractPrice(
+                    product.retailPrice?.usdAmount ??
+                        product.salePrice?.usdAmount,
+                  ),
+                  from: sourceCurrency,
+                ),
                 countsall: product.brandName,
                 rate: product.commentRankAverageValue.toString(),
                 isAlibaba: true,

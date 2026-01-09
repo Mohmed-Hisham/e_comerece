@@ -59,7 +59,6 @@ class LocalServiessScreen extends StatelessWidget {
                         ? SearchLocalServiceView()
                         : CustomScrollView(
                             controller: controller.scrollController,
-                            physics: const BouncingScrollPhysics(),
                             slivers: [
                               LocalServiceData(),
 

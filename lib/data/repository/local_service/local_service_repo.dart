@@ -1,18 +1,28 @@
-import 'package:e_comerece/data/datasource/remote/local_service/view_orders_data.dart';
 import 'package:dartz/dartz.dart';
-import 'package:e_comerece/core/class/statusrequest.dart';
+import 'package:e_comerece/core/class/failure.dart';
+import 'package:e_comerece/data/model/local_service/get_local_service_model.dart';
+import 'package:e_comerece/data/model/local_service/service_request_details_model.dart';
+import 'package:e_comerece/data/model/local_service/service_request_model.dart';
 
-class LocalServiceRepo {
-  ViewOrdersData viewOrdersData;
+abstract class LocalServiceRepo {
+  Future<Either<Failure, GetLocalServiceModel>> getLocalService({
+    required int page,
+    required int pagesize,
+  });
 
-  LocalServiceRepo(this.viewOrdersData);
+  Future<Either<Failure, GetLocalServiceModel>> searchLocalService(
+    String search,
+  );
 
-  Future<Either<Statusrequest, Map>> getOrders(String userid) async {
-    var response = await viewOrdersData.viewOrders(userid: userid);
-    if (response is Statusrequest) {
-      return Left(response);
-    } else {
-      return Right(response);
-    }
-  }
+  Future<Either<Failure, GetLocalServiceModel>> getLocalServiceById(String id);
+  Future<Either<Failure, String>> addServiceRequest(
+    ServiceRequestData serviceRequestData,
+  );
+  Future<Either<Failure, ServiceRequestModel>> getRequestsByUser({
+    required int page,
+    required int pageSize,
+  });
+  Future<Either<Failure, ServiceRequestDetailsModel>> getServiceRequestDetails(
+    String id,
+  );
 }

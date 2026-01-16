@@ -6,7 +6,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class GeneralOrderSummaryCard extends StatelessWidget {
-  final int? orderId;
+  final String? orderNumber;
   final DateTime? createdAt;
   final String? status;
   final String? paymentMethod;
@@ -14,7 +14,7 @@ class GeneralOrderSummaryCard extends StatelessWidget {
 
   const GeneralOrderSummaryCard({
     super.key,
-    this.orderId,
+    this.orderNumber,
     this.createdAt,
     this.status,
     this.paymentMethod,
@@ -29,7 +29,7 @@ class GeneralOrderSummaryCard extends StatelessWidget {
       children: [
         OrderInfoRow(
           label: StringsKeys.orderIdLabel.tr,
-          value: '#${orderId ?? StringsKeys.notAvailable.tr}',
+          value: '#${orderNumber ?? StringsKeys.notAvailable.tr}',
         ),
         const OrderSectionDivider(),
         OrderInfoRow(
@@ -63,18 +63,25 @@ class GeneralOrderSummaryCard extends StatelessWidget {
 
   String _getStatusLabel(String? status) {
     switch (status?.toLowerCase()) {
-      case 'pending_approval':
-        return StringsKeys.orderStatusPendingApproval.tr;
+      case 'pendingreview':
+      case 'pending_approval': // Keep backward compatibility just in case
+        return 'انتظار مراجعة الأدمن';
+      case 'adminnotes':
+        return 'ملاحظات من الأدمن';
       case 'approved':
-        return StringsKeys.orderStatusApproved.tr;
-      case 'rejected':
-        return StringsKeys.orderStatusRejected.tr;
-      case 'ordered':
-        return StringsKeys.orderStatusOrdered.tr;
+        return 'موافقة الأدمن';
+      case 'awaitingpayment':
+        return 'انتظار الدفع';
+      case 'paid':
+        return 'تم الدفع';
+      case 'processing':
+        return 'في الطلب';
+      case 'intransit':
+        return 'في الطريق';
       case 'completed':
-        return StringsKeys.orderStatusCompleted.tr;
+        return 'مكتمل';
       case 'cancelled':
-        return StringsKeys.orderStatusCancelled.tr;
+        return 'ملغي';
       default:
         return status ?? StringsKeys.unknownStatus.tr;
     }
@@ -82,16 +89,23 @@ class GeneralOrderSummaryCard extends StatelessWidget {
 
   Color _getStatusColor(String? status) {
     switch (status?.toLowerCase()) {
+      case 'pendingreview':
       case 'pending_approval':
-        return Appcolor.threecolor;
+        return Appcolor.threecolor; // Orange-ish
+      case 'adminnotes':
+        return Colors.orangeAccent;
       case 'approved':
+        return const Color(0xff4CAF50); // Green
+      case 'awaitingpayment':
+        return Appcolor.primrycolor; // Blue
+      case 'paid':
         return const Color(0xff4CAF50);
-      case 'rejected':
-        return Appcolor.reed;
-      case 'ordered':
+      case 'processing':
+        return const Color(0xff2196F3);
+      case 'intransit':
         return const Color(0xff2196F3);
       case 'completed':
-        return const Color(0xff2E7D32);
+        return const Color(0xff2E7D32); // Dark Green
       case 'cancelled':
         return Appcolor.gray;
       default:

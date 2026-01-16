@@ -27,7 +27,7 @@ class HotProductAlibabaHome extends StatelessWidget {
           statusrequest: controller.alibabaHomeController.statusrequestAlibaba,
           widget: Container(
             margin: EdgeInsets.symmetric(vertical: 20.h),
-            height: 400.h,
+            height: 450.h,
             child: CustomScrollView(
               controller: controller.scrollContrAlibaba,
               physics: const BouncingScrollPhysics(),

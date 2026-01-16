@@ -8,7 +8,7 @@ class CancelOrderData {
 
   Future<dynamic> cancelOrder({
     required int userId,
-    required int orderId,
+    required String orderId,
   }) async {
     var response = await crud.postData(Appapi.cancelOrder, {
       "user_id": userId,

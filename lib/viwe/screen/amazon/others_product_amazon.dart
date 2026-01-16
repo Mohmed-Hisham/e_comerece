@@ -23,7 +23,7 @@ class OthersProductAmazon extends StatelessWidget {
         crossAxisCount: 2,
         crossAxisSpacing: 12.w,
         mainAxisSpacing: 10.w,
-        mainAxisExtent: 370.h,
+        mainAxisExtent: 420.h,
       ),
       itemCount: controller.otherProduct.length,
       itemBuilder: (context, index) {

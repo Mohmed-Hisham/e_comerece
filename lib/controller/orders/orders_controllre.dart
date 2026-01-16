@@ -1,18 +1,19 @@
 import 'package:e_comerece/core/class/statusrequest.dart';
-import 'package:e_comerece/core/constant/strings_keys.dart';
-import 'package:e_comerece/core/funcations/handlingdata.dart';
 import 'package:e_comerece/core/servises/serviese.dart';
-import 'package:e_comerece/data/datasource/remote/orders/get_orders_data.dart';
 import 'package:e_comerece/data/model/ordres/get_order_with_status_model.dart';
+import 'package:e_comerece/data/repository/orders/orders_repo_impl.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 enum OrderStatus {
-  pendingApproval, // قيد المراجعة
-  approved, // تم الموافقة
-  rejected, // مرفوض
-  ordered, // تم الطلب من المنصة
-  completed, // تم التسليم
+  pendingReview, // انتظار مراجعة الأدمن
+  adminNotes, // ملاحظات من الأدمن - اليوزر يراجع
+  approved, // موافقة الأدمن
+  awaitingPayment, // انتظار الدفع
+  paid, // تم الدفع
+  processing, // في الطلب
+  inTransit, // في الطريق
+  completed, // مكتمل
   cancelled, // ملغي
 }
 
@@ -21,45 +22,57 @@ abstract class OrdersControllre extends GetxController {
 }
 
 class OrdersControllreImp extends OrdersControllre {
-  GetOrdersData getOrdersData = GetOrdersData(Get.find());
-  Statusrequest statusrequestss = Statusrequest.loading;
+  OrdersRepoImpl ordersRepo = OrdersRepoImpl(apiService: Get.find());
   Statusrequest statusrequest = Statusrequest.none;
   MyServises myServises = Get.find();
   List<Orders> data = [];
   ScrollController scrollController = ScrollController();
 
-  OrderStatus orderStatus = OrderStatus.pendingApproval;
+  OrderStatus orderStatus = OrderStatus.pendingReview;
+
   String orderStatusToString(OrderStatus status) {
     switch (status) {
-      case OrderStatus.pendingApproval:
-        return "pending_approval";
+      case OrderStatus.pendingReview:
+        return "PendingReview";
+      case OrderStatus.adminNotes:
+        return "AdminNotes";
       case OrderStatus.approved:
-        return "approved";
-      case OrderStatus.rejected:
-        return "rejected";
-      case OrderStatus.ordered:
-        return "ordered";
+        return "Approved";
+      case OrderStatus.awaitingPayment:
+        return "AwaitingPayment";
+      case OrderStatus.paid:
+        return "Paid";
+      case OrderStatus.processing:
+        return "Processing";
+      case OrderStatus.inTransit:
+        return "InTransit";
       case OrderStatus.completed:
-        return "completed";
+        return "Completed";
       case OrderStatus.cancelled:
-        return "cancelled";
+        return "Cancelled";
     }
   }
 
   String getStatusTitle(OrderStatus status) {
     switch (status) {
-      case OrderStatus.pendingApproval:
-        return StringsKeys.orderStatusPendingApproval.tr;
+      case OrderStatus.pendingReview:
+        return "Pending Review";
+      case OrderStatus.adminNotes:
+        return "Admin Notes";
       case OrderStatus.approved:
-        return StringsKeys.orderStatusApproved.tr;
-      case OrderStatus.rejected:
-        return StringsKeys.orderStatusRejected.tr;
-      case OrderStatus.ordered:
-        return StringsKeys.orderStatusOrdered.tr;
+        return "Approved";
+      case OrderStatus.awaitingPayment:
+        return "Awaiting Payment";
+      case OrderStatus.paid:
+        return "Paid";
+      case OrderStatus.processing:
+        return "Processing";
+      case OrderStatus.inTransit:
+        return "In Transit";
       case OrderStatus.completed:
-        return StringsKeys.orderStatusCompleted.tr;
+        return "Completed";
       case OrderStatus.cancelled:
-        return StringsKeys.orderStatusCancelled.tr;
+        return "Cancelled";
     }
   }
 
@@ -72,30 +85,22 @@ class OrdersControllreImp extends OrdersControllre {
   @override
   getOrders() async {
     statusrequest = Statusrequest.loading;
-    int id = int.parse(
-      myServises.sharedPreferences.getString("user_id") ?? "0",
+    update();
+
+    final response = await ordersRepo.getUserOrders(
+      status: orderStatusToString(orderStatus),
+      page: 1,
+      pageSize: 10,
     );
 
-    if (id == 0) {
-      statusrequest = Statusrequest.failuer;
-      update();
-      return;
-    }
-    update();
-    final response = await getOrdersData.getOrders(
-      userId: id,
-      status: orderStatusToString(orderStatus),
-    );
-    statusrequest = handlingData(response);
-    if (Statusrequest.success == statusrequest) {
-      final result = GetOrderWithStatusModel.fromJson(response);
-      data = result.data;
+    statusrequest = response.fold((l) => Statusrequest.failuer, (r) {
+      data = r.data;
       if (data.isEmpty) {
-        statusrequest = Statusrequest.noData;
+        return Statusrequest.noData;
       }
-    } else {
-      statusrequest = Statusrequest.failuer;
-    }
+      return Statusrequest.success;
+    });
+
     update();
   }
 }

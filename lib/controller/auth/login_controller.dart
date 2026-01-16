@@ -1,15 +1,18 @@
+import 'dart:developer';
+
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/constant/string_const.dart';
 import 'package:e_comerece/core/funcations/loading_dialog.dart';
 import 'package:e_comerece/core/servises/serviese.dart';
-import 'package:e_comerece/data/datasource/remote/Auth_Repo/auth_repo_impl.dart';
+import 'package:e_comerece/data/repository/Auth_Repo/auth_repo_impl.dart';
 import 'package:e_comerece/data/model/AuthModel/auth_model.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:e_comerece/core/servises/custom_getx_snak_bar.dart';
 import 'package:e_comerece/core/class/failure.dart';
+import 'package:e_comerece/core/funcations/sanitize_topic.dart';
 
 abstract class LoginController extends GetxController {
   Future<void> login();
@@ -67,8 +70,10 @@ class LoginControllerimplment extends LoginController {
         myServises.saveSecureData(userEmail, r.authData!.email!);
         myServises.saveSecureData(userPhone, r.authData!.phone!);
 
-        FirebaseMessaging.instance.subscribeToTopic(users);
-        FirebaseMessaging.instance.subscribeToTopic(r.authData!.token!);
+        FirebaseMessaging.instance.subscribeToTopic("users");
+        FirebaseMessaging.instance.subscribeToTopic(
+          sanitizeTopic("user${r.authData!.email!}"),
+        );
 
         if (myServises.sharedPreferences.getString("step") == "1") {
           Get.offNamed(AppRoutesname.homepage);
@@ -76,6 +81,22 @@ class LoginControllerimplment extends LoginController {
           Get.offNamed(AppRoutesname.onBoarding);
         }
         myServises.saveStep("2");
+
+        // Token Update Logic
+        try {
+          String? fcmToken = await FirebaseMessaging.instance.getToken();
+          if (fcmToken != null) {
+            String? savedToken = await myServises.getSecureData("fcm_token");
+            if (savedToken != fcmToken) {
+              var response = await authRepoImpl.updateFcmToken(fcmToken);
+              if (response is bool) {
+                await myServises.saveSecureData("fcm_token", fcmToken);
+              }
+            }
+          }
+        } catch (e) {
+          debugPrint("Error updating token: $e");
+        }
       }
       if (r is Failure) {
         showCustomGetSnack(isGreen: false, text: r.errorMessage);

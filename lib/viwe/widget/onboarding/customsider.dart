@@ -1,7 +1,7 @@
 import 'package:e_comerece/controller/onboardingcontrooler.dart';
 import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/constant/strings_keys.dart';
-import 'package:e_comerece/data/datasource/static/static.dart';
+import 'package:e_comerece/core/static/static.dart';
 import 'package:e_comerece/viwe/widget/onboarding/custombutton.dart';
 import 'package:e_comerece/viwe/widget/onboarding/onboardingtext.dart';
 import 'package:flutter/material.dart';

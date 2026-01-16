@@ -7,6 +7,8 @@ import 'package:e_comerece/data/repository/alibaba/alibaba_repo_impl.dart';
 import 'package:get/get.dart';
 import 'package:e_comerece/data/model/alibaba_model/productalibaba_home_model.dart'
     as alibabamodel;
+import 'package:e_comerece/data/repository/slider_repo.dart';
+import 'package:e_comerece/data/model/slider_model.dart';
 
 class AlibabaHomeController extends GetxController {
   AlibabaRepoImpl alibabaRepoImpl = AlibabaRepoImpl(apiService: Get.find());
@@ -15,11 +17,32 @@ class AlibabaHomeController extends GetxController {
   bool hasMore = true;
   bool isLoading = false;
   Statusrequest statusrequestAlibaba = Statusrequest.none;
+  Statusrequest statusRequestSlider = Statusrequest.none;
+  SliderRepoImpl sliderRepoImpl = SliderRepoImpl(apiService: Get.find());
+  List<SliderModel> sliders = [];
+
+  fetchSliders() async {
+    statusRequestSlider = Statusrequest.loading;
+    update(['slider']);
+    var response = await sliderRepoImpl.getSliders(platform: 'alibaba');
+    response.fold(
+      (l) {
+        statusRequestSlider = Statusrequest.failuer;
+      },
+      (r) {
+        sliders.clear();
+        sliders.addAll(r);
+        statusRequestSlider = Statusrequest.success;
+      },
+    );
+    update(['slider']);
+  }
 
   @override
   void onInit() {
     super.onInit();
     fethcProductsAlibaba();
+    fetchSliders();
   }
 
   Future<void> fethcProductsAlibaba({isLoadMore = false}) async {

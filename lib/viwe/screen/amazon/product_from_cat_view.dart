@@ -70,7 +70,7 @@ class ProductFromCatView extends StatelessWidget {
                                 crossAxisCount: 2,
                                 crossAxisSpacing: 10.w,
                                 mainAxisSpacing: 10.h,
-                                mainAxisExtent: 370.h,
+                                mainAxisExtent: 420.h,
                               ),
                           itemCount: controller.otherProduct.length,
                           itemBuilder: (context, index) {

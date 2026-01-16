@@ -50,7 +50,7 @@ class SearchName extends StatelessWidget {
                   crossAxisCount: 2,
                   crossAxisSpacing: 10.w,
                   mainAxisSpacing: 10.h,
-                  mainAxisExtent: 370.h,
+                  mainAxisExtent: 420.h,
                 ),
                 itemCount: controller.searchProducts.length,
                 itemBuilder: (context, index) {

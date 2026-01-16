@@ -1,24 +1,28 @@
 import 'dart:developer';
 
 import 'package:e_comerece/core/class/statusrequest.dart';
-import 'package:e_comerece/core/funcations/handlingdata.dart';
+import 'package:e_comerece/core/constant/routesname.dart';
+import 'package:e_comerece/core/servises/custom_getx_snak_bar.dart';
 import 'package:e_comerece/core/servises/serviese.dart';
-import 'package:e_comerece/data/datasource/remote/orders/add_orders_data.dart';
 import 'package:e_comerece/data/model/cartmodel.dart';
 import 'package:e_comerece/data/model/checkout/checkout_review_fee_model.dart';
+import 'package:e_comerece/data/model/ordres/create_order_request.dart';
 import 'package:e_comerece/data/repository/Checkout/checkout_repo_impl.dart';
+import 'package:e_comerece/data/repository/orders/orders_repo_impl.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 abstract class CheckOutController extends GetxController {
-  Future<void> checkOut();
+  Future<void> placeOrder();
+  void updateTip(double amount);
 }
 
 class CheckOutControllerImpl extends CheckOutController {
-  AddOrdersData addOrdersData = AddOrdersData(Get.find());
+  OrdersRepoImpl ordersRepo = OrdersRepoImpl(apiService: Get.find());
   MyServises myServises = Get.find();
 
   Statusrequest statusrequest = Statusrequest.none;
+  // pageController no longer needed for vertical list, but keeping if referenced
   final PageController pageController = PageController(
     viewportFraction: 0.5,
     initialPage: 2,
@@ -26,9 +30,38 @@ class CheckOutControllerImpl extends CheckOutController {
 
   List<CartData> cartItems = [];
   String? couponCode;
+  String? couponId;
   double discount = 0;
   double? total;
-  bool isShowMore = false;
+  // Address
+  bool isShowMore = false; // Legacy, can keep or remove
+
+  double selectedTip = 0.0;
+  // Custom Tip
+  bool isCustomTipInputVisible = false;
+  TextEditingController customTipController = TextEditingController();
+  // Order Note
+  TextEditingController noteController = TextEditingController();
+
+  void toggleCustomTipInput() {
+    isCustomTipInputVisible = !isCustomTipInputVisible;
+    if (!isCustomTipInputVisible) {
+      customTipController.clear();
+    }
+    update(['tips']);
+  }
+
+  void applyCustomTip() {
+    if (customTipController.text.isNotEmpty) {
+      final double? amount = double.tryParse(customTipController.text);
+      if (amount != null && amount > 0) {
+        updateTip(amount);
+        isCustomTipInputVisible = false;
+      } else {
+        Get.snackbar("Invalid Amount", "Please enter a valid number");
+      }
+    }
+  }
 
   // Review Fee
   CheckoutRepoImpl checkoutRepo = CheckoutRepoImpl(apiService: Get.find());
@@ -41,58 +74,95 @@ class CheckOutControllerImpl extends CheckOutController {
     super.onInit();
     cartItems = Get.arguments?['cartItems'] ?? [];
     couponCode = Get.arguments?['couponCode'];
+    couponId = Get.arguments?['couponId'];
     discount = Get.arguments?['discount'] ?? 0;
     total = Get.arguments['total'];
     getReviewFee();
   }
 
+  double getSubtotal() {
+    double sum = 0.0;
+    for (var e in cartItems) {
+      double price = e.productPrice ?? 0.0;
+      double count = (e.cartQuantity ?? 0).toDouble();
+      sum += (price * count);
+    }
+    return sum;
+  }
+
+  double getFinalTotal() {
+    double subTotal = getSubtotal();
+    double totalVal = subTotal - discount; // Apply discount
+    if (isReviewFeeEnabled) totalVal += reviewFeeAmount;
+    totalVal += selectedTip;
+    // Add Delivery Fee if available (currently hardcoded 0 or not in controller properly)
+    // Assuming 'total' arg passed in includes basic calc, but let's recalculate mostly.
+    return totalVal > 0 ? totalVal : 0;
+  }
+
+  // @override
+  // void updatePaymentMethod(String method) {
+  //   selectedPaymentMethod = method;
+  //   update(['payment']);
+  // }
+
   @override
-  Future<void> checkOut() async {
+  void updateTip(double amount) {
+    if (selectedTip == amount) {
+      selectedTip = 0.0; // toggle off
+    } else {
+      selectedTip = amount;
+    }
+    update(['tips', 'breakdown']);
+  }
+
+  // @override
+  // void updateAlternativeAction(String action) {
+  //   selectedAlternativeAction = action;
+  //   update(['alternative']);
+  // }
+
+  @override
+  Future<void> placeOrder() async {
     statusrequest = Statusrequest.loading;
-    int id = int.parse(
-      myServises.sharedPreferences.getString("user_id") ?? "0",
-    );
-    int addressid = myServises.sharedPreferences.getInt("default_address") ?? 0;
-    if (id == 0 || addressid == 0) {
-      statusrequest = Statusrequest.failuer;
+    update();
+
+    String addressId = await myServises.getSecureData("default_address") ?? "";
+
+    if (addressId.isEmpty) {
+      showCustomGetSnack(
+        isGreen: false,
+        text: "Please select a delivery address",
+      );
+      statusrequest = Statusrequest.none;
       update();
       return;
     }
 
-    // step 1 check Payment method
-    List<Map<String, dynamic>> itemsList = cartItems
-        .map(
-          (element) => {
-            "product_id": element.productId,
-            "product_platform": element.cartPlatform,
-            "product_title": element.productTitle,
-            "product_link": element.productLink,
-            "product_image": element.productImage,
-            "product_price": element.productPrice,
-            "quantity": element.cartQuantity,
-            "attributes": element.cartAttributes,
-          },
-        )
-        .toList();
+    String userNote = noteController.text.isNotEmpty
+        ? "Note: ${noteController.text} | "
+        : "";
+    String finalNote = userNote; // Removed tip from note as it's now a field
 
-    final response = await addOrdersData.addOrder(
-      userId: id,
-      addressId: addressid,
-      discountAmount: discount,
-      platformCode: "",
-      items: itemsList,
-      couponCode: couponCode ?? "",
-      shippingAmount: 0,
-      paymentMethod: "visa",
-      applyCouponNow: discount > 0,
+    final request = CreateOrderRequest(
+      addressId: addressId,
+      productReviewFee: isReviewFeeEnabled ? reviewFeeAmount : 0,
+      couponId: couponId,
+      noteUser: finalNote.isEmpty ? null : finalNote,
+      paymentMethod: 'Watting',
+      deliveryFee: 0,
+      deliveryTips: selectedTip,
     );
-    log('response: $response');
-    statusrequest = handlingData(response);
-    if (statusrequest == Statusrequest.success) {
-      if (response['status'] == 'success') {
-        log('${response['data']}');
-      }
-    }
+
+    final response = await ordersRepo.createOrder(request);
+
+    response.fold((failure) {}, (data) {
+      statusrequest = Statusrequest.success;
+      showCustomGetSnack(isGreen: true, text: "Order placed successfully");
+      Get.toNamed(AppRoutesname.homepage);
+    });
+
+    update();
   }
 
   showMore() {
@@ -116,19 +186,15 @@ class CheckOutControllerImpl extends CheckOutController {
           reviewFeeData = model.data;
           reviewFeeAmount = model.data!.value ?? 0.0;
         }
-        update(['reviewFee']);
+        update(['reviewFee', 'breakdown']);
       },
     );
   }
 
   void toggleReviewFee(bool value) {
     isReviewFeeEnabled = value;
-    if (value) {
-      total = total! + reviewFeeAmount;
-    } else {
-      total = total! - reviewFeeAmount;
-    }
-    update();
+    // total calculation is now dynamic in getFinalTotal(), but we might need to update total var if used elsewhere
+    update(['reviewFee', 'breakdown']);
   }
 
   void showReviewFeeInfo(BuildContext context) {

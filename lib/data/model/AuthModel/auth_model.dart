@@ -52,7 +52,7 @@ class AuthData {
       name: json["name"],
       email: json["email"],
       phone: json["phone"],
-      token: json["token"],
+      token: json["accessToken"],
       code: json["code"],
       newPassword: json["newPassword"],
     );
@@ -62,7 +62,7 @@ class AuthData {
     if (name != null) "name": name,
     if (email != null) "email": email,
     if (phone != null) "phone": phone,
-    if (token != null) "token": token,
+    if (token != null) "accessToken": token,
     if (password != null) "password": password,
     if (code != null) "code": code,
     if (newPassword != null) "newPassword": newPassword,

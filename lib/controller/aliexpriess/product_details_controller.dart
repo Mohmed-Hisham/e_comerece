@@ -1,6 +1,7 @@
 import 'package:carousel_slider/carousel_controller.dart';
 import 'package:chewie/chewie.dart';
 import 'package:e_comerece/controller/cart/cart_from_detils.dart';
+import 'package:e_comerece/core/helper/format_price.dart';
 import 'package:e_comerece/core/class/failure.dart';
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
@@ -293,6 +294,17 @@ class ProductDetailsControllerImple extends ProductDetailsController {
 
   chaing() {
     searshText();
+  }
+
+  double getRawUsdPrice() {
+    final price =
+        currentSku?.skuVal?.skuActivityAmount?.formatedAmount ??
+        currentSku?.skuVal?.skuAmount?.formatedAmount ??
+        itemDetailsModel?.result?.item?.sku?.def?.promotionPrice ??
+        itemDetailsModel?.result?.item?.sku?.def?.price;
+
+    if (price == null) return 0.0;
+    return extractPrice(price);
   }
 }
 

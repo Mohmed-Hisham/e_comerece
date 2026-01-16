@@ -5,6 +5,7 @@ import 'package:e_comerece/viwe/widget/cart/widget/cart_item_details_sheet.dart'
 import 'package:e_comerece/viwe/widget/cart/widget/cart_item_image.dart';
 import 'package:e_comerece/viwe/widget/cart/widget/cart_item_info.dart';
 import 'package:e_comerece/viwe/widget/cart/widget/cart_item_quantity.dart';
+import 'package:e_comerece/core/servises/currency_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -17,6 +18,7 @@ class CartItemCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final attributes = cartItem.parsedAttributes;
     final controller = Get.find<CartControllerImpl>();
+    final currencyService = Get.find<CurrencyService>();
 
     return Padding(
       padding: const EdgeInsets.all(10.0),
@@ -49,7 +51,10 @@ class CartItemCard extends StatelessWidget {
             // Product Info (Title, Price, More)
             CartItemInfo(
               title: cartItem.productTitle!,
-              price: cartItem.productPrice.toString(),
+              price: currencyService.convertAndFormat(
+                amount: cartItem.productPrice ?? 0,
+                from: 'USD',
+              ),
               onShowMore: () => CartItemDetailsSheet.show(context, attributes),
             ),
 

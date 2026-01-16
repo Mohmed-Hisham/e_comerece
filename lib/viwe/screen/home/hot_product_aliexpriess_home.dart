@@ -53,7 +53,7 @@ class HotProductAliexpriessHome extends StatelessWidget {
                 controller.aliexpressHomeController.statusrequestAliExpress,
             widget: Container(
               margin: EdgeInsets.symmetric(vertical: 20.h),
-              height: 350.h,
+              height: 400.h,
               child: CustomScrollView(
                 controller: controller.scrollContr,
                 physics: const BouncingScrollPhysics(),

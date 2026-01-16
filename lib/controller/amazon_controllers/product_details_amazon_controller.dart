@@ -439,6 +439,16 @@ class ProductDetailsAmazonControllerImple
     );
   }
 
+  double getRawUsdPrice() {
+    final cur = Get.find<CurrencyService>();
+    return cur.convert(
+          amount: extractPrice(productPrice),
+          from: 'SAR',
+          to: 'USD',
+        ) ??
+        0.0;
+  }
+
   String getCurrencyCode() {
     return Get.find<CurrencyService>().getCurrencySymbol(
       Get.find<CurrencyService>().selectedCurrency,

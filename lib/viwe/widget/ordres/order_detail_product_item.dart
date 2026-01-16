@@ -2,13 +2,13 @@ import 'dart:convert';
 import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/constant/strings_keys.dart';
 import 'package:e_comerece/core/helper/custom_cached_image.dart';
-import 'package:e_comerece/data/model/ordres/get_order_with_id_model.dart';
+import 'package:e_comerece/data/model/ordres/order_details_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 class OrderDetailProductItem extends StatelessWidget {
-  final Item item;
+  final OrderDetailsItem item;
 
   const OrderDetailProductItem({super.key, required this.item});
 
@@ -26,7 +26,7 @@ class OrderDetailProductItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final attributes = _parseAttributes();
-    final price = double.tryParse(item.productPrice ?? '0') ?? 0;
+    final price = item.productPrice ?? 0.0;
     final total = price * (item.quantity ?? 1);
 
     return Container(
@@ -75,8 +75,7 @@ class OrderDetailProductItem extends StatelessWidget {
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Text(
-                    item.productPlatform?.toUpperCase() ??
-                        StringsKeys.platform.tr,
+                    item.platform?.toUpperCase() ?? StringsKeys.platform.tr,
                     style: TextStyle(
                       fontSize: 10.sp,
                       fontWeight: FontWeight.bold,
@@ -160,7 +159,7 @@ class OrderDetailProductItem extends StatelessWidget {
   }
 
   Color _getPlatformColor() {
-    switch (item.productPlatform?.toLowerCase()) {
+    switch (item.platform?.toLowerCase()) {
       case 'aliexpress':
         return const Color(0xFFE62E04);
       case 'amazon':

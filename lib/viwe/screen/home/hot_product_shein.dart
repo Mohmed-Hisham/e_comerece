@@ -50,7 +50,7 @@ class HotProductShein extends StatelessWidget {
             statusrequest: controller.sheinHomController.statusrequestproduct,
             widget: Container(
               margin: EdgeInsets.symmetric(vertical: 20.h),
-              height: 400.h,
+              height: 450.h,
               child: CustomScrollView(
                 physics: const BouncingScrollPhysics(),
                 scrollDirection: Axis.horizontal,

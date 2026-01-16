@@ -5,7 +5,6 @@ import 'package:e_comerece/controller/favorite/toggle_favorite_controller.dart';
 import 'package:e_comerece/core/class/handlingdataviwe.dart';
 import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
-import 'package:e_comerece/core/helper/format_price.dart';
 import 'package:e_comerece/core/shared/widget_shared/loadingimage.dart';
 import 'package:e_comerece/core/shared/widget_shared/open_full_image.dart';
 import 'package:e_comerece/core/shared/widget_shared/shimmerbar.dart';
@@ -488,22 +487,11 @@ class ProductDetailsAmazonView extends StatelessWidget {
               Expanded(
                 child: ElevatedButton(
                   onPressed: () {
-                    // print('Current ASIN: ${controller.getCurrentAsin()}');
-                    // print('Product Title: ${controller.productTitle}');
-                    // print('Product Photo: ${controller.productPhoto}');
-                    // print(
-                    //   'Current Price: ${controller.getCurrentPriceFormatted()}',
-                    // );
-                    // print('Quantity: ${controller.quantity}');
-                    // print(
-                    //   'Variations: ${jsonEncode(controller.selectedVariations)}',
-                    // );
-                    // Add to cart logic here
                     cartController.add(
                       controller.getCurrentAsin() ?? '',
                       controller.productTitle ?? '',
                       controller.productPhoto ?? '',
-                      extractPrice(controller.getCurrentPriceFormatted()),
+                      controller.getRawUsdPrice(),
                       'Amazon',
                       controller.quantity,
                       jsonEncode(controller.selectedVariations),
@@ -537,18 +525,11 @@ class ProductDetailsAmazonView extends StatelessWidget {
                   return IconButton(
                     onPressed: () {
                       controller.changisfavorite();
-                      final currencyService = Get.find<CurrencyService>();
                       favoritesController.toggleFavorite(
                         controller.getCurrentAsin() ?? '',
                         controller.productTitle ?? '',
                         controller.productPhoto ?? '',
-                        currencyService
-                            .convert(
-                              amount: extractPrice(controller.productPrice),
-                              from: 'SAR',
-                              to: 'USD',
-                            )
-                            .toString(),
+                        controller.getRawUsdPrice().toString(),
                         "Amazon",
                       );
                     },

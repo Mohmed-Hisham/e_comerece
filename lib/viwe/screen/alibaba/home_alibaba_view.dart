@@ -3,13 +3,14 @@ import 'package:e_comerece/controller/favorite/favorites_controller.dart';
 import 'package:e_comerece/core/class/handlingdataviwe.dart';
 import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/constant/strings_keys.dart';
-import 'package:e_comerece/core/constant/imagesassets.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/constant/sliver_spacer.dart';
 import 'package:e_comerece/core/helper/pagination_listener.dart';
 import 'package:e_comerece/core/shared/image_manger/image_manag_controller.dart';
 import 'package:e_comerece/core/shared/widget_shared/animations.dart';
 import 'package:e_comerece/core/shared/widget_shared/shimmerbar.dart';
+import 'package:e_comerece/core/shared/widget_shared/slider_shimmer.dart';
+import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/viwe/screen/alibaba/product_home_alibaba.dart';
 import 'package:e_comerece/viwe/screen/alibaba/search_name_alibaba.dart';
 import 'package:e_comerece/viwe/screen/shein/cust_label_container.dart';
@@ -17,7 +18,8 @@ import 'package:e_comerece/viwe/widget/Positioned/positioned_app_bar.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_left_2.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_right_2.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_support.dart';
-import 'package:e_comerece/viwe/widget/alibaba/custcarousel_alibaba.dart';
+
+import 'package:e_comerece/core/shared/widget_shared/custcarouselslider.dart';
 import 'package:e_comerece/viwe/widget/custshearchappbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -106,13 +108,45 @@ class HomeAlibaba extends StatelessWidget {
                                       return SliverToBoxAdapter(
                                         child: FadeScaleTransition(
                                           visible: controller.initShow,
-                                          child: CustcarouselAlibaba(
-                                            items: [
-                                              AppImagesassets.tset,
-                                              AppImagesassets.tset,
-                                              AppImagesassets.tset,
-                                            ],
-                                          ),
+                                          child:
+                                              GetBuilder<
+                                                ProductAlibabaHomeControllerImp
+                                              >(
+                                                id: 'slider',
+                                                builder: (controller) {
+                                                  if (controller
+                                                          .statusRequestSlider ==
+                                                      Statusrequest.loading) {
+                                                    return const SliderShimmer();
+                                                  }
+                                                  return GetBuilder<
+                                                    ProductAlibabaHomeControllerImp
+                                                  >(
+                                                    id: 'slider',
+                                                    builder: (controller) {
+                                                      return Custcarouselslider(
+                                                        currentIndex: controller
+                                                            .currentIndex,
+                                                        onPageChanged:
+                                                            (val, _) {
+                                                              controller
+                                                                  .indexchange(
+                                                                    val,
+                                                                  );
+                                                            },
+                                                        items: controller
+                                                            .sliders
+                                                            .map(
+                                                              (e) =>
+                                                                  e.imageUrl ??
+                                                                  "",
+                                                            )
+                                                            .toList(),
+                                                      );
+                                                    },
+                                                  );
+                                                },
+                                              ),
                                         ),
                                       );
                                     },

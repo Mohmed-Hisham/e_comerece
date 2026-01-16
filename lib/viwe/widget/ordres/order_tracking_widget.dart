@@ -12,37 +12,52 @@ class OrderTrackingWidget extends StatelessWidget {
   List<TrackingStep> _getTrackingSteps() {
     return [
       TrackingStep(
-        status: 'pending_approval',
-        title: StringsKeys.orderStatusPendingApproval.tr,
-        icon: Icons.pending_actions,
+        status: 'pendingreview',
+        title: 'مراجعة',
+        icon: Icons.assignment_ind_outlined,
       ),
       TrackingStep(
         status: 'approved',
-        title: StringsKeys.orderStatusApproved.tr,
+        title: 'موافقة',
         icon: Icons.check_circle_outline,
       ),
       TrackingStep(
         status: 'processing',
-        title: StringsKeys.orderStatusProcessing.tr,
-        icon: Icons.autorenew,
+        title: 'تجهيز',
+        icon: Icons.inventory_2_outlined,
       ),
       TrackingStep(
-        status: 'ordered',
-        title: StringsKeys.orderStatusOrdered.tr,
-        icon: Icons.shopping_bag_outlined,
+        status: 'intransit',
+        title: 'توصيل',
+        icon: Icons.local_shipping_outlined,
       ),
-      TrackingStep(
-        status: 'completed',
-        title: StringsKeys.orderStatusCompleted.tr,
-        icon: Icons.done_all,
-      ),
+      TrackingStep(status: 'completed', title: 'استلام', icon: Icons.task_alt),
     ];
   }
 
   int _getCurrentStepIndex() {
-    final steps = _getTrackingSteps();
-    final index = steps.indexWhere((step) => step.status == currentStatus);
-    return index == -1 ? 0 : index;
+    final status = currentStatus.toLowerCase();
+    switch (status) {
+      case 'pendingreview':
+      case 'adminnotes':
+      case 'pending_approval': // legacy
+        return 0;
+      case 'approved':
+      case 'awaitingpayment':
+      case 'paid':
+        return 1;
+      case 'processing':
+        return 2;
+      case 'intransit':
+        return 3;
+      case 'completed':
+        return 4;
+      default:
+        // Check if it matches any step status directly
+        final steps = _getTrackingSteps();
+        final index = steps.indexWhere((step) => step.status == status);
+        return index == -1 ? 0 : index;
+    }
   }
 
   Color _getStepColor(int stepIndex, int currentIndex) {

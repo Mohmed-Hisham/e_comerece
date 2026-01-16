@@ -13,76 +13,27 @@ class OrderActionButtons extends StatelessWidget {
     return GetBuilder<OrderDetailsControllerImp>(
       builder: (controller) {
         final canCancel = controller.canCancelOrder();
-        final canReorder = controller.canReorder();
 
-        if (!canCancel && !canReorder) {
+        if (!canCancel) {
           return const SizedBox.shrink();
         }
 
         return Column(
           children: [
-            if (canCancel && canReorder)
-              Row(
-                children: [
-                  Expanded(
-                    child: _buildButton(
-                      onPressed: controller.isReordering
-                          ? null
-                          : () => controller.reorderItems(),
-                      loading: controller.isReordering,
-                      icon: Icons.refresh,
-                      label: controller.isReordering
-                          ? StringsKeys.reordering.tr
-                          : StringsKeys.reorder.tr,
-                      color: Appcolor.primrycolor,
-                    ),
-                  ),
-                  SizedBox(width: 12.w),
-                  Expanded(
-                    child: _buildButton(
-                      onPressed: controller.isCancelling
-                          ? null
-                          : () => controller.cancelOrder(),
-                      loading: controller.isCancelling,
-                      icon: Icons.cancel_outlined,
-                      label: controller.isCancelling
-                          ? StringsKeys.cancelling.tr
-                          : StringsKeys.cancelOrder.tr,
-                      color: Appcolor.reed,
-                    ),
-                  ),
-                ],
-              )
-            else if (canCancel)
-              SizedBox(
-                width: double.infinity,
-                child: _buildButton(
-                  onPressed: controller.isCancelling
-                      ? null
-                      : () => controller.cancelOrder(),
-                  loading: controller.isCancelling,
-                  icon: Icons.cancel_outlined,
-                  label: controller.isCancelling
-                      ? StringsKeys.cancelling.tr
-                      : StringsKeys.cancelOrder.tr,
-                  color: Appcolor.reed,
-                ),
-              )
-            else if (canReorder)
-              SizedBox(
-                width: double.infinity,
-                child: _buildButton(
-                  onPressed: controller.isReordering
-                      ? null
-                      : () => controller.reorderItems(),
-                  loading: controller.isReordering,
-                  icon: Icons.refresh,
-                  label: controller.isReordering
-                      ? StringsKeys.reordering.tr
-                      : StringsKeys.reorder.tr,
-                  color: Appcolor.primrycolor,
-                ),
+            SizedBox(
+              width: double.infinity,
+              child: _buildButton(
+                onPressed: controller.isCancelling
+                    ? null
+                    : () => controller.cancelOrder(),
+                loading: controller.isCancelling,
+                icon: Icons.cancel_outlined,
+                label: controller.isCancelling
+                    ? StringsKeys.cancelling.tr
+                    : StringsKeys.cancelOrder.tr,
+                color: Appcolor.reed,
               ),
+            ),
           ],
         );
       },

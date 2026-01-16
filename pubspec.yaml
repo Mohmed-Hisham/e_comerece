@@ -85,6 +85,8 @@ dependencies:
   http_parser: ^4.1.2
   dio: ^5.9.0
   flutter_secure_storage: ^10.0.0
+  path_provider: ^2.1.5
+  signalr_netcore: ^1.4.4
 
 dev_dependencies:
   flutter_lints: ^5.0.0

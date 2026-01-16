@@ -1,13 +1,13 @@
 import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/constant/strings_keys.dart';
-import 'package:e_comerece/data/model/ordres/get_order_with_id_model.dart';
+import 'package:e_comerece/data/model/ordres/order_details_model.dart';
 import 'package:e_comerece/viwe/screen/orders/widget/order_section_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 class OrderCouponCard extends StatelessWidget {
-  final Coupon coupon;
+  final OrderCoupon coupon;
 
   const OrderCouponCard({super.key, required this.coupon});
 

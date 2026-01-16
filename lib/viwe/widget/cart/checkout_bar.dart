@@ -2,7 +2,9 @@ import 'package:e_comerece/controller/cart/cart_controller.dart';
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/constant/strings_keys.dart';
+import 'package:e_comerece/core/helper/circular_widget.dart';
 import 'package:e_comerece/core/shared/widget_shared/cust_button_botton.dart';
+import 'package:e_comerece/core/servises/currency_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -13,6 +15,7 @@ class CheckoutBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Get.put(CartControllerImpl());
+    final currencyService = Get.find<CurrencyService>();
     return GetBuilder<CartControllerImpl>(
       id: "1",
       builder: (controller) => Container(
@@ -76,9 +79,7 @@ class CheckoutBar extends StatelessWidget {
                   builder: (couponController) {
                     if (couponController.couPonstatusrequest ==
                         Statusrequest.loading) {
-                      return CircularProgressIndicator(
-                        color: Appcolor.primrycolor,
-                      );
+                      return loadingWidget();
                     } else {
                       return CustButtonBotton(
                         onTap: () {
@@ -113,8 +114,10 @@ class CheckoutBar extends StatelessWidget {
                         ),
                         children: [
                           TextSpan(
-                            text:
-                                '\$${controller.totalbuild.toStringAsFixed(2)}',
+                            text: currencyService.convertAndFormat(
+                              amount: controller.totalbuild,
+                              from: 'USD',
+                            ),
                             style: const TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
@@ -127,7 +130,10 @@ class CheckoutBar extends StatelessWidget {
                     ),
                     if (controller.discount != null)
                       Text(
-                        ' ${controller.total() + controller.discount!}',
+                        currencyService.convertAndFormat(
+                          amount: controller.total() + controller.discount!,
+                          from: 'USD',
+                        ),
                         style: const TextStyle(
                           fontSize: 16,
                           color: Colors.grey,

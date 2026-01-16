@@ -2,76 +2,154 @@ import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/funcations/handlingdata.dart';
 import 'package:e_comerece/core/servises/serviese.dart';
 import 'package:e_comerece/data/datasource/remote/orders/cancel_order.dart';
-import 'package:e_comerece/data/datasource/remote/orders/get_orders_data.dart';
-import 'package:e_comerece/data/datasource/remote/cart/cart_add_data.dart';
-import 'package:e_comerece/data/model/ordres/get_order_with_id_model.dart';
+import 'package:e_comerece/data/model/ordres/order_details_model.dart';
+import 'package:e_comerece/data/repository/orders/orders_repo_impl.dart';
+import 'package:e_comerece/core/servises/supabase_service.dart';
+import 'package:e_comerece/data/model/support_model/get_message_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 abstract class OrderDetailsController extends GetxController {
-  Future<void> getOrderDetails(int orderId);
+  Future<void> getOrderDetails(String orderId);
   Future<void> cancelOrder();
-  Future<void> reorderItems();
 }
 
 class OrderDetailsControllerImp extends OrderDetailsController {
-  GetOrdersData getOrdersData = GetOrdersData(Get.find());
+  OrdersRepoImpl ordersRepo = OrdersRepoImpl(apiService: Get.find());
   CancelOrderData cancelOrderData = CancelOrderData(Get.find());
   Statusrequest statusrequest = Statusrequest.none;
   MyServises myServises = Get.find();
-  Data? orderData;
+  OrderDetailsData? orderData;
   bool isCancelling = false;
-  bool isReordering = false;
+
+  // Chat related
+  late TextEditingController messsageController;
+  ScrollController chatScrollController = ScrollController();
+  Stream<List<Message>>? messagesStream;
+  bool isChatClosed = false;
+  Statusrequest sendMessagestatusrequest = Statusrequest.none;
+  GlobalKey<FormState> formkey = GlobalKey<FormState>();
+  FocusNode focusNode = FocusNode();
+  String? plateform;
+  String? chatid;
+  dynamic serviceRequestDetails;
+  dynamic serviceModel;
 
   @override
   void onInit() {
     super.onInit();
-    final orderId = Get.arguments['order_id'] as int?;
-    if (orderId != null) {
-      getOrderDetails(orderId);
+    // Assuming passed argument is order_id as String now, or we convert it.
+    // The previous code had `int? orderId`. GUIDs are Strings.
+    // I will try to support both or expect String.
+    var orderIdArg = Get.arguments['order_id'];
+    if (orderIdArg != null) {
+      getOrderDetails(orderIdArg.toString());
+    }
+    messsageController = TextEditingController();
+  }
+
+  void scrollToBottom() {
+    if (chatScrollController.hasClients) {
+      chatScrollController.animateTo(
+        0.0,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
     }
   }
 
   @override
-  getOrderDetails(int orderId) async {
+  void onClose() {
+    messsageController.dispose();
+    chatScrollController.dispose();
+    focusNode.dispose();
+    super.onClose();
+  }
+
+  @override
+  Future<void> getOrderDetails(String orderId) async {
     statusrequest = Statusrequest.loading;
     update();
 
-    int userId = int.parse(
-      myServises.sharedPreferences.getString("user_id") ?? "0",
-    );
+    final response = await ordersRepo.getOrderDetails(orderId);
 
-    if (userId == 0) {
-      statusrequest = Statusrequest.failuer;
-      update();
-      return;
-    }
-
-    final response = await getOrdersData.getOrders(
-      userId: userId,
-      orderId: orderId,
-    );
-
-    statusrequest = handlingData(response);
-
-    if (Statusrequest.success == statusrequest) {
-      final result = GetOrderWithIdModel.fromJson(response);
-      orderData = result.data;
-
-      if (orderData == null) {
-        statusrequest = Statusrequest.noData;
+    statusrequest = response.fold((failure) => Statusrequest.failuer, (
+      dataModel,
+    ) {
+      if (dataModel.success == true && dataModel.data != null) {
+        orderData = dataModel.data;
+        if (orderData!.chatId != null) {
+          chatid = orderData!.chatId;
+          initChat(chatid!);
+        }
+        return Statusrequest.success;
+      } else {
+        return Statusrequest.failuer;
       }
-    } else {
-      statusrequest = Statusrequest.failuer;
+    });
+
+    if (statusrequest == Statusrequest.failuer) {
+      // Handle specific failure message if needed
     }
 
     update();
+  }
+
+  void initChat(String chatId) {
+    messagesStream = Get.find<SupabaseService>()
+        .getMessagesStream(chatId)
+        .map((data) => data.map((e) => Message.fromJson(e)).toList());
+    checkChatStatus(chatId);
+    update();
+  }
+
+  Future<void> checkChatStatus(String chatId) async {
+    try {
+      final chatData = await Get.find<SupabaseService>().getChatById(chatId);
+      if (chatData != null && chatData['status'] == 'closed') {
+        isChatClosed = true;
+        update();
+      }
+    } catch (e) {
+      debugPrint("Error checking chat status: $e");
+    }
+  }
+
+  Future<void> sendMessage({
+    String? platform,
+    String? referenceid,
+    String? imagelink,
+  }) async {
+    if (messsageController.text.trim().isEmpty || chatid == null) {
+      return;
+    }
+
+    sendMessagestatusrequest = Statusrequest.loading;
+    update();
+
+    final content = messsageController.text.trim();
+    messsageController.clear();
+
+    await Get.find<SupabaseService>().sendMessage(
+      chatId: chatid!,
+      content: content,
+      senderType: 'user',
+    );
+
+    sendMessagestatusrequest = Statusrequest.success;
+    update();
+
+    scrollToBottom();
   }
 
   bool canCancelOrder() {
     if (orderData == null) return false;
     final status = orderData!.status?.toLowerCase();
-    return status == 'pending_approval' || status == 'approved';
+    return status == 'pendingreview' ||
+        status == 'adminnotes' ||
+        status == 'approved' ||
+        status == 'awaitingpayment' ||
+        status == 'pending_approval'; // legacy
   }
 
   @override
@@ -130,7 +208,7 @@ class OrderDetailsControllerImp extends OrderDetailsController {
 
     final response = await cancelOrderData.cancelOrder(
       userId: userId,
-      orderId: orderData!.orderId!,
+      orderId: orderData!.id!,
     );
 
     isCancelling = false;
@@ -138,20 +216,28 @@ class OrderDetailsControllerImp extends OrderDetailsController {
     final processedStatus = handlingData(response);
 
     if (processedStatus == Statusrequest.success) {
-      orderData = Data(
-        orderId: orderData!.orderId,
-        userId: orderData!.userId,
-        status: 'cancelled',
-        subtotal: orderData!.subtotal,
-        discountAmount: orderData!.discountAmount,
-        shippingAmount: orderData!.shippingAmount,
-        totalAmount: orderData!.totalAmount,
-        paymentMethod: orderData!.paymentMethod,
-        paymentStatus: orderData!.paymentStatus,
-        createdAt: orderData!.createdAt,
-        updatedAt: DateTime.now(),
+      // Create a new instance with updated status
+      orderData = OrderDetailsData(
+        id: orderData!.id,
+        orderNumber: orderData!.orderNumber,
+        addressId: orderData!.addressId,
         address: orderData!.address,
+        paymentMethod: orderData!.paymentMethod,
+        chatId: orderData!.chatId,
+        subtotal: orderData!.subtotal,
+        couponId: orderData!.couponId,
         coupon: orderData!.coupon,
+        couponDiscount: orderData!.couponDiscount,
+        couponName: orderData!.couponName,
+        productReviewFee: orderData!.productReviewFee,
+        deliveryTips: orderData!.deliveryTips,
+        total: orderData!.total,
+        status: 'Cancelled', // Update status
+        statusName: 'Cancelled',
+        noteUser: orderData!.noteUser,
+        noteAdmin: orderData!.noteAdmin,
+        createdAt: orderData!.createdAt,
+        updatedAt: DateTime.now().toIso8601String(),
         items: orderData!.items,
       );
 
@@ -181,116 +267,5 @@ class OrderDetailsControllerImp extends OrderDetailsController {
     }
 
     update();
-  }
-
-  bool canReorder() {
-    if (orderData == null) return false;
-    final status = orderData!.status?.toLowerCase();
-    return status == 'completed' || status == 'cancelled';
-  }
-
-  @override
-  Future<void> reorderItems() async {
-    // if (!canReorder()) {
-    //   Get.snackbar(
-    //     'خطأ',
-    //     'لا يمكن إعادة طلب هذا الطلب. يمكن إعادة الطلبات المكتملة أو الملغية فقط',
-    //     snackPosition: SnackPosition.BOTTOM,
-    //     backgroundColor: Colors.orange.withValues(alpha: 0.9),
-    //     colorText: Colors.white,
-    //     duration: const Duration(seconds: 3),
-    //   );
-    //   return;
-    // }
-
-    // if (orderData!.items.isEmpty) {
-    //   Get.snackbar(
-    //     'خطأ',
-    //     'لا توجد منتجات في هذا الطلب',
-    //     snackPosition: SnackPosition.BOTTOM,
-    //     backgroundColor: Colors.red.withValues(alpha: 0.9),
-    //     colorText: Colors.white,
-    //   );
-    //   return;
-    // }
-
-    // isReordering = true;
-    // update();
-
-    // int userId = int.parse(
-    //   myServises.sharedPreferences.getString("user_id") ?? "0",
-    // );
-
-    // if (userId == 0) {
-    //   Get.snackbar(
-    //     'خطأ',
-    //     'حدث خطأ. يرجى تسجيل الدخول مرة أخرى',
-    //     snackPosition: SnackPosition.BOTTOM,
-    //     backgroundColor: Colors.red.withValues(alpha: 0.9),
-    //     colorText: Colors.white,
-    //   );
-    //   isReordering = false;
-    //   update();
-    //   return;
-    // }
-
-    // int successCount = 0;
-    // int failCount = 0;
-
-    // for (var item in orderData!.items) {
-    //   try {
-    //     final response = await cartAddData.addcart(
-    //       userId: userId,
-    //       productid: item.productId?.toString() ?? '',
-    //       producttitle: item.productTitle ?? '',
-    //       productimage: item.productImage ?? '',
-    //       productprice: double.tryParse(item.productPrice ?? '0') ?? 0.0,
-    //       platform: item.productPlatform ?? '',
-    //       productLink: item.productLink ?? '',
-    //       quantity: item.quantity ?? 1,
-    //       attributes: item.attributes ?? '{}',
-    //       availableqQuantity: 999,
-    //       tier: null,
-    //       goodsSn: null,
-    //       categoryId: null,
-    //     );
-
-    //     final processedStatus = handlingData(response);
-    //     if (processedStatus == Statusrequest.success) {
-    //       successCount++;
-    //     } else {
-    //       failCount++;
-    //     }
-    //   } catch (e) {
-    //     failCount++;
-    //   }
-    // }
-
-    // isReordering = false;
-    // update();
-
-    // if (successCount > 0) {
-    //   Get.snackbar(
-    //     'نجح',
-    //     'تمت إضافة $successCount منتج إلى السلة${failCount > 0 ? ' (فشل إضافة $failCount منتج)' : ''}',
-    //     snackPosition: SnackPosition.BOTTOM,
-    //     backgroundColor: Colors.green.withValues(alpha: 0.9),
-    //     colorText: Colors.white,
-    //     duration: const Duration(seconds: 3),
-    //   );
-
-    //   // Navigate to cart
-    //   Get.back();
-    //   // Get.toNamed('/cartscreen');
-    // } else {
-    //   Get.snackbar(
-    //     'خطأ',
-    //     'فشل في إضافة المنتجات إلى السلة. يرجى المحاولة مرة أخرى',
-    //     snackPosition: SnackPosition.BOTTOM,
-    //     backgroundColor: Colors.red.withValues(alpha: 0.9),
-    //     colorText: Colors.white,
-    //     duration: const Duration(seconds: 4),
-    //   );
-    // }
   }
 }

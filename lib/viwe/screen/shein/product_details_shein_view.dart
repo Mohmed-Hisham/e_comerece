@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'package:e_comerece/controller/cart/cart_from_detils.dart';
 import 'package:e_comerece/controller/shein/product_details_shein_controller.dart';
+import 'package:e_comerece/controller/favorite/toggle_favorite_controller.dart';
 import 'package:e_comerece/core/class/handlingdataviwe.dart';
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/color.dart';
@@ -8,7 +9,6 @@ import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/constant/sliver_spacer.dart';
 import 'package:e_comerece/core/constant/strings_keys.dart';
 import 'package:e_comerece/core/helper/custom_cached_image.dart';
-import 'package:e_comerece/core/helper/format_price.dart';
 import 'package:e_comerece/core/shared/widget_shared/shimmerbar.dart';
 import 'package:e_comerece/viwe/screen/shein/cust_label_container.dart';
 import 'package:e_comerece/viwe/screen/shein/product_from_details.dart';
@@ -238,6 +238,30 @@ class _TitleRowSheinState extends State<_TitleRowShein> {
                 padding: EdgeInsets.only(left: 8.0),
                 child: Icon(Icons.shopping_cart, color: Appcolor.primrycolor),
               ),
+            const SizedBox(width: 8),
+            GetBuilder<TogglefavoriteController>(
+              builder: (favController) {
+                favController.currentStatus = widget.controller.isFavorite;
+                return IconButton(
+                  onPressed: () {
+                    widget.controller.changisfavorite();
+                    favController.toggleFavorite(
+                      widget.controller.goodssn.toString(),
+                      widget.controller.subject.toString(),
+                      widget.controller.imageListFromApi.first.toString(),
+                      widget.controller.getRawUsdPrice().toString(),
+                      "Shein",
+                    );
+                  },
+                  icon: Icon(
+                    widget.controller.isFavorite
+                        ? Icons.favorite
+                        : Icons.favorite_border,
+                    color: widget.controller.isFavorite ? Colors.red : null,
+                  ),
+                );
+              },
+            ),
           ],
         );
       },
@@ -469,7 +493,7 @@ class _AddToCartButtonShein extends StatelessWidget {
                       controller.goodssn.toString(),
                       controller.subject.toString(),
                       controller.imageListFromApi.first.toString(),
-                      extractPrice(controller.getCurrentPriceFormatted()),
+                      controller.getRawUsdPrice(),
                       'Shein',
                       controller.quantity,
                       '{"size":"${controller.label}", "model":"${controller.imageListFromApi.first.toString()}"}',

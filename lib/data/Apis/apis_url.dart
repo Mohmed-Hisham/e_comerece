@@ -9,6 +9,7 @@ class ApisUrl {
   static const String forgetPassword = '$_baseUrl/Auth/forgot-password';
   static const String verifyCode = '$_baseUrl/Auth/verify-code';
   static const String resetPassword = '$_baseUrl/Auth/reset-password';
+  static const String updateUser = '$_baseUrl/Auth/update-user';
 
   //                               Favorit
   static const String addFavorite = '$_baseUrl/Favorite/Add';
@@ -51,10 +52,27 @@ class ApisUrl {
   static String getRequestsByUser({required int page, required int pageSize}) =>
       '$_baseUrl/LocalService/GetRequestsByUser?page=$page&pageSize=$pageSize';
 
+  //                        Order
+
+  static String getOrdersByUser(String status, int page, int pageSize) =>
+      '$_baseUrl/Order/GetUserOrders?status=$status&pageNumber=$page&pageSize=$pageSize';
+  static const String createOrder = '$_baseUrl/Order/Create';
+  static String orderDetails(String id) =>
+      '$_baseUrl/Order/GetOrderDetails/$id';
+
   //                         GetCheckOutReviewFee
   static const String getCheckOutReviewFee =
       '$_baseUrl/Checking/GetCheckOutReviewFee';
 
+  //                         Slider
+  static String getSlider({String? platform}) =>
+      platform != null && platform.isNotEmpty
+      ? '$_baseUrl/ImageSlider?platform=$platform'
+      : '$_baseUrl/ImageSlider';
+
   //                           Currency
   static const String getCurrency = '$_baseUrl/Currency/GetRates';
+
+  //                           AboutUs
+  static const String getAboutUs = '$_baseUrl/AboutUs';
 }

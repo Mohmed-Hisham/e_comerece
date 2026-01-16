@@ -71,7 +71,7 @@ class ProductByCategory extends StatelessWidget {
                                 crossAxisCount: 2,
                                 crossAxisSpacing: 10.w,
                                 mainAxisSpacing: 10.h,
-                                mainAxisExtent: 400.h,
+                                mainAxisExtent: 450.h,
                               ),
                           itemCount: controller.searchProducts.length,
                           itemBuilder: (context, index) {

@@ -1,12 +1,13 @@
 import 'package:e_comerece/controller/favorite/favorites_controller.dart';
 import 'package:e_comerece/controller/home/homescreen_controller.dart';
+import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/color.dart';
-import 'package:e_comerece/core/constant/imagesassets.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/constant/sliver_spacer.dart';
 import 'package:e_comerece/core/constant/strings_keys.dart';
 import 'package:e_comerece/core/shared/widget_shared/animations.dart';
 import 'package:e_comerece/core/shared/widget_shared/custcarouselslider.dart';
+import 'package:e_comerece/core/shared/widget_shared/slider_shimmer.dart';
 import 'package:e_comerece/viwe/screen/home/hot_product_alibaba_home.dart';
 import 'package:e_comerece/viwe/screen/home/hot_product_aliexpriess_home.dart';
 import 'package:e_comerece/viwe/screen/home/hot_product_amazon.dart';
@@ -79,21 +80,25 @@ class Homepage extends StatelessWidget {
                       child: controller.isSearch
                           ? SearchHomeView()
                           : CustomScrollView(
-                              physics: const BouncingScrollPhysics(),
                               slivers: <Widget>[
                                 SliverToBoxAdapter(
-                                  child: Custcarouselslider(
-                                    items: [
-                                      AppImagesassets.tset,
-                                      AppImagesassets.tset,
-                                      AppImagesassets.tset,
-                                      AppImagesassets.tset,
-                                      AppImagesassets.tset,
-                                      AppImagesassets.tset,
-                                      AppImagesassets.tset,
-                                      AppImagesassets.tset,
-                                      AppImagesassets.tset,
-                                    ],
+                                  child: GetBuilder<HomescreenControllerImple>(
+                                    id: 'slider',
+                                    builder: (controller) {
+                                      if (controller.statusRequestSlider ==
+                                          Statusrequest.loading) {
+                                        return const SliderShimmer();
+                                      }
+                                      return Custcarouselslider(
+                                        currentIndex: controller.currentIndex,
+                                        onPageChanged: (index, reason) {
+                                          controller.indexchange(index);
+                                        },
+                                        items: controller.sliders
+                                            .map((e) => e.imageUrl ?? "")
+                                            .toList(),
+                                      );
+                                    },
                                   ),
                                 ),
                                 SliverToBoxAdapter(

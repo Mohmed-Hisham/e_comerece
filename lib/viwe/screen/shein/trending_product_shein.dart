@@ -27,7 +27,7 @@ class TrendingProductShein extends GetView<HomeSheinControllerImpl> {
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
           mainAxisSpacing: 10.w,
-          mainAxisExtent: 400.h,
+          mainAxisExtent: 450.h,
         ),
 
         itemCount: controller.products.length,

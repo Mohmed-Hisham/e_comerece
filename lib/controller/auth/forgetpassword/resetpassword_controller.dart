@@ -4,7 +4,7 @@ import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/funcations/loading_dialog.dart';
 import 'package:e_comerece/core/servises/custom_getx_snak_bar.dart';
-import 'package:e_comerece/data/datasource/remote/Auth_Repo/auth_repo_impl.dart';
+import 'package:e_comerece/data/repository/Auth_Repo/auth_repo_impl.dart';
 import 'package:e_comerece/data/model/AuthModel/auth_model.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';

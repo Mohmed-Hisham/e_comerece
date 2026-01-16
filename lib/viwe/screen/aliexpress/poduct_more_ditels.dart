@@ -13,8 +13,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
-import 'package:get/get_state_manager/src/simple/get_state.dart';
-import 'package:get/get_utils/src/extensions/internacionalization.dart';
 
 class PoductMoreDitels extends StatelessWidget {
   final ProductDetailsControllerImple controller;
@@ -33,7 +31,7 @@ class PoductMoreDitels extends StatelessWidget {
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
           mainAxisSpacing: 10.w,
-          mainAxisExtent: 375.h,
+          mainAxisExtent: 420.h,
         ),
         itemCount: controller.searchProducts.length,
         itemBuilder: (context, index) {

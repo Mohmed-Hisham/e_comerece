@@ -12,6 +12,8 @@ import 'package:e_comerece/viwe/widget/custgridviwe.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:e_comerece/core/helper/format_price.dart';
+import 'package:e_comerece/core/servises/currency_service.dart';
 import 'package:get/get.dart';
 
 class SearchNameAlibaba extends StatelessWidget {
@@ -41,11 +43,13 @@ class SearchNameAlibaba extends StatelessWidget {
                   crossAxisCount: 2,
                   crossAxisSpacing: 10,
                   mainAxisSpacing: 10,
-                  mainAxisExtent: 330.h,
+                  mainAxisExtent: 420.h,
                 ),
                 itemCount: controller.searchProducts.length,
                 itemBuilder: (context, index) {
                   final item = controller.searchProducts[index];
+                  final currencyService = Get.find<CurrencyService>();
+                  const sourceCurrency = 'USD';
 
                   return InkWell(
                     onTap: () {
@@ -60,9 +64,15 @@ class SearchNameAlibaba extends StatelessWidget {
                     },
                     child: Custgridviwe(
                       image: CustomCachedImage(imageUrl: item.mainImageUrl),
-                      disc: item.skuPriceFormatted,
+                      disc: currencyService.convertAndFormatRange(
+                        priceText: item.skuPriceFormatted,
+                        from: sourceCurrency,
+                      ),
                       title: item.titel,
-                      price: item.skuPriceFormatted,
+                      price: currencyService.convertAndFormatRange(
+                        priceText: item.skuPriceFormatted,
+                        from: sourceCurrency,
+                      ),
                       icon: GetBuilder<FavoritesController>(
                         builder: (isFavoriteController) {
                           bool isFav =
@@ -76,7 +86,7 @@ class SearchNameAlibaba extends StatelessWidget {
                                 item.itemid.toString(),
                                 item.titel,
                                 item.mainImageUrl,
-                                item.skuPriceFormatted,
+                                extractPrice(item.skuPriceFormatted).toString(),
                                 "Alibaba",
                               );
                             },
@@ -89,7 +99,10 @@ class SearchNameAlibaba extends StatelessWidget {
                           );
                         },
                       ),
-                      discprice: item.skuPriceFormatted,
+                      discprice: currencyService.convertAndFormatRange(
+                        priceText: item.skuPriceFormatted,
+                        from: sourceCurrency,
+                      ),
                       countsall: item.minOrderFormatted,
                       isAlibaba: true,
                       images: SizedBox(

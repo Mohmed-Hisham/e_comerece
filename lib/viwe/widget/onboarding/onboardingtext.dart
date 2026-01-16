@@ -1,6 +1,6 @@
 import 'package:e_comerece/controller/onboardingcontrooler.dart';
 import 'package:e_comerece/core/constant/color.dart';
-import 'package:e_comerece/data/datasource/static/static.dart';
+import 'package:e_comerece/core/static/static.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

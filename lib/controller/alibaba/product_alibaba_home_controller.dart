@@ -9,6 +9,8 @@ import 'package:e_comerece/core/shared/image_manger/image_manag_controller.dart'
 import 'package:e_comerece/data/datasource/remote/upload_to_cloudinary.dart';
 import 'package:e_comerece/data/model/alibaba_model/productalibaba_home_model.dart';
 import 'package:e_comerece/data/repository/alibaba/alibaba_repo_impl.dart';
+import 'package:e_comerece/data/repository/slider_repo.dart';
+import 'package:e_comerece/data/model/slider_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -39,6 +41,7 @@ abstract class ProductAlibabaHomeController extends GetxController {
 
 class ProductAlibabaHomeControllerImp extends ProductAlibabaHomeController {
   AlibabaRepoImpl alibabaRepoImpl = AlibabaRepoImpl(apiService: Get.find());
+  SliderRepoImpl sliderRepoImpl = SliderRepoImpl(apiService: Get.find());
 
   Statusrequest statusrequestproduct = Statusrequest.none;
   Statusrequest statusrequestsearch = Statusrequest.none;
@@ -57,6 +60,25 @@ class ProductAlibabaHomeControllerImp extends ProductAlibabaHomeController {
 
   List<ResultList> products = [];
   List<ResultList> searchProducts = [];
+  List<SliderModel> sliders = [];
+  Statusrequest statusRequestSlider = Statusrequest.none;
+
+  fetchSliders() async {
+    statusRequestSlider = Statusrequest.loading;
+    update(['slider']);
+    var response = await sliderRepoImpl.getSliders(platform: 'alibaba');
+    response.fold(
+      (l) {
+        statusRequestSlider = Statusrequest.failuer;
+      },
+      (r) {
+        sliders.clear();
+        sliders.addAll(r);
+        statusRequestSlider = Statusrequest.success;
+      },
+    );
+    update(['slider']);
+  }
 
   int currentIndex = 0;
   bool initShow = false;
@@ -70,6 +92,7 @@ class ProductAlibabaHomeControllerImp extends ProductAlibabaHomeController {
     super.onInit();
     fetchProducts(isLoadMore: false);
     startInitShow();
+    fetchSliders();
   }
 
   @override
@@ -181,7 +204,7 @@ class ProductAlibabaHomeControllerImp extends ProductAlibabaHomeController {
   @override
   indexchange(index) {
     currentIndex = index;
-    update(["index"]);
+    update(["slider"]);
   }
 
   @override

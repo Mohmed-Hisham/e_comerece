@@ -1,10 +1,11 @@
 import 'package:e_comerece/controller/favorite/favorites_controller.dart';
 import 'package:e_comerece/controller/shein/home_shein_controller.dart';
 import 'package:e_comerece/core/class/handlingdataviwe.dart';
-import 'package:e_comerece/core/constant/imagesassets.dart';
+import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/helper/pagination_listener.dart';
 import 'package:e_comerece/core/shared/widget_shared/shimmerbar.dart';
+import 'package:e_comerece/core/shared/widget_shared/slider_shimmer.dart';
 import 'package:e_comerece/viwe/screen/shein/cust_label_container.dart';
 import 'package:e_comerece/viwe/screen/shein/categories_shein.dart';
 import 'package:e_comerece/viwe/screen/shein/search_shein_viwe.dart';
@@ -14,7 +15,8 @@ import 'package:e_comerece/viwe/widget/Positioned/positioned_left_2.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_right_2.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_support.dart';
 import 'package:e_comerece/viwe/widget/custshearchappbar.dart';
-import 'package:e_comerece/viwe/widget/shein/cust_carouse_shein.dart';
+
+import 'package:e_comerece/core/shared/widget_shared/custcarouselslider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -77,14 +79,32 @@ class HomeSheinView extends StatelessWidget {
                             child: CustomScrollView(
                               physics: const BouncingScrollPhysics(),
                               slivers: [
-                                const SliverToBoxAdapter(
-                                  child: CustCarouseShein(
-                                    items: [
-                                      AppImagesassets.tset,
-                                      AppImagesassets.tset,
-                                      AppImagesassets.tset,
-                                      AppImagesassets.tset,
-                                    ],
+                                SliverToBoxAdapter(
+                                  child: GetBuilder<HomeSheinControllerImpl>(
+                                    id: 'slider',
+                                    builder: (controller) {
+                                      if (controller.statusRequestSlider ==
+                                          Statusrequest.loading) {
+                                        return const SliderShimmer();
+                                      }
+                                      return GetBuilder<
+                                        HomeSheinControllerImpl
+                                      >(
+                                        id: 'slider',
+                                        builder: (controller) {
+                                          return Custcarouselslider(
+                                            currentIndex:
+                                                controller.currentIndex,
+                                            onPageChanged: (val, _) {
+                                              controller.indexchange(val);
+                                            },
+                                            items: controller.sliders
+                                                .map((e) => e.imageUrl ?? "")
+                                                .toList(),
+                                          );
+                                        },
+                                      );
+                                    },
                                   ),
                                 ),
 

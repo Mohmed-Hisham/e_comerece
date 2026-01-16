@@ -10,6 +10,8 @@ import 'package:e_comerece/data/model/shein_models/trending_products_model.dart'
 import 'package:e_comerece/data/model/shein_models/searsh_shein_model.dart'
     as searsh;
 import 'package:flutter/material.dart';
+import 'package:e_comerece/data/repository/slider_repo.dart';
+import 'package:e_comerece/data/model/slider_model.dart';
 import 'package:get/get.dart';
 
 abstract class HomeSheinController extends GetxController {
@@ -39,6 +41,7 @@ abstract class HomeSheinController extends GetxController {
 
 class HomeSheinControllerImpl extends HomeSheinController {
   SheinRepoImpl sheinRepoImpl = SheinRepoImpl(apiService: Get.find());
+  SliderRepoImpl sliderRepoImpl = SliderRepoImpl(apiService: Get.find());
 
   TextEditingController searchController = TextEditingController();
   TextEditingController startPriceController = TextEditingController();
@@ -52,6 +55,25 @@ class HomeSheinControllerImpl extends HomeSheinController {
   List<Datum> categories = [];
   List<Product> products = [];
   List<searsh.Product> searchProducts = [];
+  List<SliderModel> sliders = [];
+  Statusrequest statusRequestSlider = Statusrequest.none;
+
+  fetchSliders() async {
+    statusRequestSlider = Statusrequest.loading;
+    update(['slider']);
+    var response = await sliderRepoImpl.getSliders(platform: 'shein');
+    response.fold(
+      (l) {
+        statusRequestSlider = Statusrequest.failuer;
+      },
+      (r) {
+        sliders.clear();
+        sliders.addAll(r);
+        statusRequestSlider = Statusrequest.success;
+      },
+    );
+    update(['slider']);
+  }
 
   bool isLoadingSearch = false;
   bool isLoading = false;
@@ -81,6 +103,7 @@ class HomeSheinControllerImpl extends HomeSheinController {
   void onInit() {
     super.onInit();
     fetchHomePageData();
+    fetchSliders();
   }
 
   @override
@@ -186,7 +209,7 @@ class HomeSheinControllerImpl extends HomeSheinController {
   @override
   indexchange(int index) {
     currentIndex = index;
-    update(["index"]);
+    update(["slider"]);
   }
 
   @override

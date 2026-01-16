@@ -5,8 +5,9 @@ import 'package:e_comerece/core/constant/strings_keys.dart';
 import 'package:e_comerece/core/helper/bluer_dilog.dart';
 import 'package:e_comerece/viwe/screen/Address/botton_sheet_location.dart';
 import 'package:e_comerece/viwe/screen/auth/logout_screen.dart';
-import 'package:e_comerece/viwe/screen/chat/chat_test_screen.dart';
-import 'package:e_comerece/viwe/screen/language.dart';
+import 'package:e_comerece/viwe/screen/settings/about_us_view.dart';
+import 'package:e_comerece/viwe/screen/settings/contact_us_view.dart';
+import 'package:e_comerece/viwe/screen/settings/language.dart';
 import 'package:e_comerece/viwe/widget/settings/currency_selection_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -57,6 +58,19 @@ class Setting extends StatelessWidget {
                 child: Card(
                   child: Column(
                     children: [
+                      ListTile(
+                        onTap: () async {
+                          controller.goToUpdateProfile();
+                        },
+                        title: Text(
+                          StringsKeys.updateProfile.tr,
+                          style: styleAll,
+                        ),
+                        trailing: const Icon(
+                          Icons.person_outline,
+                          color: Appcolor.primrycolor,
+                        ),
+                      ),
                       GetBuilder<SettingsControllerImple>(
                         id: 'notification',
                         builder: (controller) {
@@ -110,7 +124,7 @@ class Setting extends StatelessWidget {
 
                       ListTile(
                         onTap: () {
-                          Get.to(() => ChatTestScreen());
+                          Get.to(() => const AboutUsView());
                         },
                         title: Text(StringsKeys.aboutUs.tr, style: styleAll),
                         trailing: Icon(
@@ -120,7 +134,9 @@ class Setting extends StatelessWidget {
                       ),
 
                       ListTile(
-                        onTap: () {},
+                        onTap: () {
+                          Get.to(() => const ContactUsView());
+                        },
                         title: Text(StringsKeys.contactUs.tr, style: styleAll),
                         trailing: Icon(
                           Icons.contact_phone_outlined,
@@ -142,7 +158,10 @@ class Setting extends StatelessWidget {
                         onTap: () {
                           showCurrencySelectionDialog(context);
                         },
-                        title: Text('عملة العرض', style: styleAll),
+                        title: Text(
+                          StringsKeys.displayCurrency.tr,
+                          style: styleAll,
+                        ),
                         trailing: Icon(
                           Icons.currency_exchange,
                           color: Appcolor.primrycolor,

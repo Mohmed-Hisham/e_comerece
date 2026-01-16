@@ -27,7 +27,7 @@ class HotProductsGrid extends GetView<HomePageControllerImpl> {
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
           mainAxisSpacing: 10.w,
-          mainAxisExtent: 370.h,
+          mainAxisExtent: 420.h,
         ),
 
         itemCount: controller.hotProducts.length,

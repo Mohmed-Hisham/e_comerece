@@ -4,7 +4,6 @@ import 'package:e_comerece/controller/cart/cart_from_detils.dart';
 import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/constant/strings_keys.dart';
 import 'package:e_comerece/core/funcations/displayattributes.dart';
-import 'package:e_comerece/core/helper/format_price.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -38,18 +37,13 @@ class Buildaddtocartbutton extends StatelessWidget {
           final imageUrl = controller.imageList.isNotEmpty
               ? controller.imageList[0].toString()
               : '';
-          final price =
-              controller.currentSku?.skuVal?.skuActivityAmount?.formatedAmount
-                  ?.toString() ??
-              '0';
-
           final stock = controller.currentSku?.skuVal?.availQuantity ?? 0;
 
           cartController.add(
             productId,
             subject,
             controller.imgageAttribute ?? imageUrl,
-            extractPrice(price),
+            controller.getRawUsdPrice(),
             "aliexpress",
             controller.quantity,
             attributesJson,

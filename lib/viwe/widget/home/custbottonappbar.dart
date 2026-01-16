@@ -12,23 +12,19 @@ class Custbottonappbar extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetBuilder<HomescreenControllerImple>(
       builder: (controller) => Container(
-        height: 80.h,
-        color: Appcolor.white2,
-        // decoration: const BoxDecoration(
-        //   gradient: LinearGradient(
-        //     begin: Alignment.topCenter,
-        //     end: Alignment.bottomCenter,
-        //     colors: [Appcolor.white2, Color.fromARGB(255, 243, 126, 43)],
-        //   ),
-        // ),
+        decoration: BoxDecoration(
+          color: Appcolor.white2,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
+        ),
+        height: 70.h,
+
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             ...List.generate(controller.pages.length, (i) {
               return Custombottonbar(
-                // text: controller.nameBottonBar[i]['title'],
-                iconData: controller.nameBottonBar[i]['icon'],
-                textcolor: Colors.black,
+                text: controller.nameBottonBar[i]['title'],
+                iconPath: controller.nameBottonBar[i]['icon'],
                 onPressed: () {
                   controller.changepage(i);
                 },

@@ -216,28 +216,31 @@ class Custgridviwe extends StatelessWidget {
               ? const SizedBox.shrink()
               : Padding(
                   padding: EdgeInsets.symmetric(horizontal: 5.sp),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    spacing: 6,
+                  child: Column(
                     children: [
-                      Text(
-                        discprice ?? "",
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        spacing: 6,
+                        children: [
+                          Text(
+                            discprice ?? "",
 
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.grey,
-                          decoration: TextDecoration.lineThrough,
-                          decorationColor: Colors.grey,
-                          decorationThickness: 2.0,
-                          decorationStyle: TextDecorationStyle.solid,
-                        ),
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.grey,
+                              decoration: TextDecoration.lineThrough,
+                              decorationColor: Colors.grey,
+                              decorationThickness: 2.0,
+                              decorationStyle: TextDecorationStyle.solid,
+                            ),
+                          ),
+                        ],
                       ),
                       if (disc != null)
                         Row(
                           children: [
                             Text(
                               disc ?? "",
-                              // "20\$"
                               style: TextStyle(
                                 color: Appcolor.primrycolor,
                                 fontWeight: FontWeight.bold,

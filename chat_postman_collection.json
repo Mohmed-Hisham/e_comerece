@@ -1,0 +1,182 @@
+{
+	"info": {
+		"_postman_id": "7d9b3f2e-1c5a-4b9d-a8e1-f6d2c4b8e9a2",
+		"name": "Sltuk Chat API",
+		"description": "Collection for testing Sltuk Chat System (REST API & SignalR Hub)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "REST API (ChatController)",
+			"item": [
+				{
+					"name": "Create Chat",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"adminId\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\n  \"type\": \"support\",\n  \"referenceId\": \"order_123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/Chat/create",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"Chat",
+								"create"
+							]
+						},
+						"description": "Creates a new chat session. UserId is automatically extracted from JWT."
+					},
+					"response": []
+				},
+				{
+					"name": "Get My Chats",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/Chat/my-chats",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"Chat",
+								"my-chats"
+							]
+						},
+						"description": "Returns a list of all chats for the authenticated user."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Chat Messages",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/Chat/{{chatId}}/messages?skip=0&take=50",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"Chat",
+								"{{chatId}}",
+								"messages"
+							],
+							"query": [
+								{
+									"key": "skip",
+									"value": "0"
+								},
+								{
+									"key": "take",
+									"value": "50"
+								}
+							]
+						},
+						"description": "Paginated retrieval of messages for a specific chat."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "SignalR Hub (ChatHub)",
+			"item": [
+				{
+					"name": "Hub Connection Info",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/chatHub",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"chatHub"
+							]
+						},
+						"description": "The endpoint for SignalR connection. In Postman, use 'New -> WebSocket Request' or a dedicated SignalR client."
+					},
+					"response": []
+				}
+			],
+			"description": "### How to test SignalR in Postman:\n\n1.  **Open a WebSocket Request** (New -> WebSocket).\n2.  **URL**: `ws://{{base_url}}/chatHub` (or `wss://` if HTTPS).\n3.  **Methods**:\n    *   `JoinChat(string chatId)`: Call this to start receiving messages for a specific chat.\n    *   `SendMessage(SendMessageDto message)`: Use this to send a message.\n\n### SendMessage Body Example:\n```json\n{\n  \"chatId\": \"guid-here\",\n  \"content\": \"Hello World\",\n  \"senderId\": \"user-guid\",\n  \"senderType\": \"user\",\n  \"messageType\": \"text\"\n}\n```"
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "https://localhost:3000",
+			"type": "string"
+		},
+		{
+			"key": "jwt_token",
+			"value": "your_token_here",
+			"type": "string"
+		},
+		{
+			"key": "chatId",
+			"value": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+			"type": "string"
+		}
+	]
+}

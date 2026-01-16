@@ -12,6 +12,8 @@ import 'package:e_comerece/core/servises/platform_ext.dart';
 import 'package:e_comerece/data/repository/alibaba/alibaba_repo_impl.dart';
 import 'package:e_comerece/data/repository/amazon/amazon_repo_impl.dart';
 import 'package:e_comerece/data/repository/shein/shein_repo_impl.dart';
+import 'package:e_comerece/data/model/slider_model.dart';
+import 'package:e_comerece/data/repository/slider_repo.dart';
 import 'package:e_comerece/data/model/alibaba_model/productalibaba_home_model.dart';
 import 'package:e_comerece/data/model/aliexpriess_model/hotproductmodel.dart';
 import 'package:e_comerece/data/repository/aliexpriss/alexpress_repo_impl.dart';
@@ -19,9 +21,8 @@ import 'package:e_comerece/viwe/screen/cart/cart_view.dart';
 import 'package:e_comerece/viwe/screen/home/homepage.dart';
 import 'package:e_comerece/viwe/screen/local_serviess/local_serviess_screen.dart';
 import 'package:e_comerece/viwe/screen/orders/orders_screen.dart';
-import 'package:e_comerece/viwe/screen/settings.dart';
+import 'package:e_comerece/viwe/screen/settings/settings.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:e_comerece/data/model/amazon_models/search_amazon_model.dart'
     as search;
@@ -49,23 +50,28 @@ class HomescreenControllerImple extends HomescreenController {
   final ScrollController scrollContr = ScrollController();
 
   moveproduct() {
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      if (scrollContr.hasClients) {
-        try {
-          await Future.delayed(const Duration(seconds: 2));
-          await scrollContr.animateTo(
-            300,
-            duration: const Duration(milliseconds: 800),
-            curve: Curves.easeOut,
-          );
-          await Future.delayed(const Duration(milliseconds: 300));
-          await scrollContr.animateTo(
-            0,
-            duration: const Duration(milliseconds: 800),
-            curve: Curves.easeOut,
-          );
-        } catch (_) {}
-      }
+    // Wait for 2 frames to ensure the UI is fully rebuilt
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        if (scrollContr.hasClients) {
+          try {
+            await Future.delayed(const Duration(seconds: 2));
+            if (!scrollContr.hasClients) return;
+            await scrollContr.animateTo(
+              300,
+              duration: const Duration(milliseconds: 800),
+              curve: Curves.easeOut,
+            );
+            await Future.delayed(const Duration(milliseconds: 300));
+            if (!scrollContr.hasClients) return;
+            await scrollContr.animateTo(
+              0,
+              duration: const Duration(milliseconds: 800),
+              curve: Curves.easeOut,
+            );
+          } catch (_) {}
+        }
+      });
     });
   }
 
@@ -75,7 +81,7 @@ class HomescreenControllerImple extends HomescreenController {
   @override
   void onReady() {
     super.onReady();
-    moveproduct();
+
     startInitShow();
     scrollContrAlibaba.addListener(() {
       if (!alibabaHomeController.isLoading && alibabaHomeController.hasMore) {
@@ -86,6 +92,7 @@ class HomescreenControllerImple extends HomescreenController {
         }
       }
     });
+    fetchSliders();
   }
 
   // @override
@@ -133,6 +140,7 @@ class HomescreenControllerImple extends HomescreenController {
   AlibabaRepoImpl alibabaRepoImpl = AlibabaRepoImpl(apiService: Get.find());
   SheinRepoImpl sheinRepoImpl = SheinRepoImpl(apiService: Get.find());
   AmazonRepoImpl amazonRepoImpl = AmazonRepoImpl(apiService: Get.find());
+  SliderRepoImpl sliderRepoImpl = SliderRepoImpl(apiService: Get.find());
 
   TextEditingController searchController = TextEditingController();
 
@@ -148,14 +156,34 @@ class HomescreenControllerImple extends HomescreenController {
   int pageindexHome = 0;
   int previousIndex = 0;
   List nameBottonBar = [
-    {'title': 'Home', 'icon': FontAwesomeIcons.house},
-    {'title': 'Cart', 'icon': FontAwesomeIcons.cartShopping},
-    {'title': 'Orders', 'icon': FontAwesomeIcons.bagShopping},
-    {'title': 'Local Services', 'icon': FontAwesomeIcons.store},
-    {'title': 'Settings', 'icon': FontAwesomeIcons.gear},
+    {'title': 'Home', 'icon': 'assets/svg/home_icon.svg'},
+    {'title': 'Cart', 'icon': 'assets/svg/cart_icon.svg'},
+    {'title': 'Orders', 'icon': 'assets/svg/orders_icon.svg'},
+    {'title': 'Services', 'icon': 'assets/svg/local_service.svg'},
+    {'title': 'Profile', 'icon': 'assets/svg/persson_icon.svg'},
   ];
   int currentIndex = 0;
   Statusrequest statusRequestHome = Statusrequest.none;
+  Statusrequest statusRequestSlider = Statusrequest.none;
+
+  List<SliderModel> sliders = [];
+
+  fetchSliders() async {
+    statusRequestSlider = Statusrequest.loading;
+    update(['slider']);
+    var response = await sliderRepoImpl.getSliders();
+    response.fold(
+      (l) {
+        statusRequestSlider = Statusrequest.failuer;
+      },
+      (r) {
+        sliders.clear();
+        sliders.addAll(r);
+        statusRequestSlider = Statusrequest.success;
+      },
+    );
+    update(['slider']);
+  }
 
   int lengthAliexpress = 10;
   int lengthAlibaba = 10;
@@ -183,7 +211,7 @@ class HomescreenControllerImple extends HomescreenController {
   @override
   indexchange(int index) {
     currentIndex = index;
-    update(["index"]);
+    update(["slider"]);
   }
 
   @override
@@ -369,6 +397,7 @@ class HomescreenControllerImple extends HomescreenController {
         if (!isLoadMore) statusrequestAliExpress = Statusrequest.noData;
       } else {
         searchProductsAliExpress.addAll(newProducts);
+        moveproduct();
         pageindexALiexpress++;
         if (!isLoadMore) statusrequestAliExpress = Statusrequest.success;
       }
@@ -386,7 +415,11 @@ class HomescreenControllerImple extends HomescreenController {
   //   Get.find(),
   // );
 
-  searshAlibaba({isLoadMore = false, startPrice = "", endPrice = ""}) async {
+  searshAlibaba({
+    isLoadMore = false,
+    startPrice = "1",
+    endPrice = "1000000",
+  }) async {
     if (isLoadMore) {
       if (isLoadingSearchAlibaba || !hasMoresearchAlibaba) return;
       isLoadingSearchAlibaba = true;
@@ -497,7 +530,11 @@ class HomescreenControllerImple extends HomescreenController {
   List<searshshein.Product> searchProductsShein = [];
   // SearchSheinData searchSheinDataShein = SearchSheinData(Get.find());
 
-  searshShein({isLoadMore = false, startPrice = "", endPrice = ""}) async {
+  searshShein({
+    isLoadMore = false,
+    startPrice = "1",
+    endPrice = "1000000",
+  }) async {
     if (isLoadMore) {
       if (isLoadingSearchShein || !hasMoresearchShein) return;
       isLoadingSearchShein = true;

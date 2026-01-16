@@ -100,6 +100,10 @@ class ProductDetailsSheinControllerImple extends ProductDetailsSheinController {
   int pageIndexSearch = 0;
   Statusrequest statusrequestsearch = Statusrequest.loading;
 
+  changisfavorite() {
+    isFavorite = !isFavorite;
+  }
+
   final CarouselSliderController carouselController =
       CarouselSliderController();
 
@@ -434,6 +438,15 @@ class ProductDetailsSheinControllerImple extends ProductDetailsSheinController {
       amount: extractPrice(priceStr),
       from: sourceCurrency,
     );
+  }
+
+  double getRawUsdPrice() {
+    final priceStr =
+        currentVariant?.salePrice?.usdAmount ??
+        _product?.salePrice?.usdAmount ??
+        currentVariant?.retailPrice?.usdAmount ??
+        _product?.retailPrice?.usdAmount;
+    return extractPrice(priceStr ?? '0');
   }
 
   @override

@@ -11,6 +11,7 @@ import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/funcations/handle_paging_response.dart';
 import 'package:e_comerece/core/servises/custom_getx_snak_bar.dart';
 import 'package:e_comerece/core/servises/selected_attributes_tomap_fordb.dart';
+import 'package:e_comerece/core/servises/currency_service.dart';
 import 'package:e_comerece/core/servises/serviese.dart';
 import 'package:e_comerece/data/model/alibaba_model/product_ditels_alibaba_model.dart'
     as alibaba_model;
@@ -462,7 +463,13 @@ class ProductDetailsAlibabaControllerImple
 
   String getCurrentPriceFormatted() {
     final priceItem = getCurrentPriceList();
-    return priceItem?.priceFormatted ?? 'N/A';
+    if (priceItem == null) return 'N/A';
+
+    final currencyService = Get.find<CurrencyService>();
+    return currencyService.convertAndFormat(
+      amount: priceItem.price ?? 0.0,
+      from: 'USD',
+    );
   }
 
   String getCurrentQuantityFormatted() {
@@ -522,8 +529,8 @@ class ProductDetailsAlibabaControllerImple
 
   String getTotalPriceFormatted() {
     final totalPrice = getTotalPrice();
-    final currency = getCurrencyCode();
-    return '$currency${totalPrice.toStringAsFixed(2)}';
+    final currencyService = Get.find<CurrencyService>();
+    return currencyService.convertAndFormat(amount: totalPrice, from: 'USD');
   }
 
   bool isProductAvailable() {

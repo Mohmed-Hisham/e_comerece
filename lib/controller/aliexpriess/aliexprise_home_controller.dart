@@ -13,6 +13,8 @@ import 'package:e_comerece/data/model/aliexpriess_model/category_model.dart';
 import 'package:e_comerece/data/model/aliexpriess_model/hotproductmodel.dart';
 import 'package:e_comerece/data/repository/aliexpriss/alexpress_repo_impl.dart';
 import 'package:flutter/material.dart';
+import 'package:e_comerece/data/repository/slider_repo.dart';
+import 'package:e_comerece/data/model/slider_model.dart';
 import 'package:get/get.dart';
 
 abstract class AliexpriseHomeController extends GetxController {
@@ -37,6 +39,7 @@ abstract class AliexpriseHomeController extends GetxController {
 }
 
 class HomePageControllerImpl extends AliexpriseHomeController {
+  SliderRepoImpl sliderRepoImpl = SliderRepoImpl(apiService: Get.find());
   AlexpressRepoImpl alexpressRepoImpl = AlexpressRepoImpl(
     apiService: Get.find(),
   );
@@ -50,6 +53,25 @@ class HomePageControllerImpl extends AliexpriseHomeController {
   List<ResultListCat> categories = [];
   List<ResultListHotprosuct> hotProducts = [];
   List<ResultListHotprosuct> searchProducts = [];
+  List<SliderModel> sliders = [];
+  Statusrequest statusRequestSlider = Statusrequest.none;
+
+  fetchSliders() async {
+    statusRequestSlider = Statusrequest.loading;
+    update(['slider']);
+    var response = await sliderRepoImpl.getSliders(platform: 'aliexpress');
+    response.fold(
+      (l) {
+        statusRequestSlider = Statusrequest.failuer;
+      },
+      (r) {
+        sliders.clear();
+        sliders.addAll(r);
+        statusRequestSlider = Statusrequest.success;
+      },
+    );
+    update(['slider']);
+  }
 
   int pageIndex = 0;
   int pageIndexSearch = 0;
@@ -68,6 +90,7 @@ class HomePageControllerImpl extends AliexpriseHomeController {
   void onInit() {
     super.onInit();
     fetchHomePageData();
+    fetchSliders();
   }
 
   @override
@@ -268,7 +291,7 @@ class HomePageControllerImpl extends AliexpriseHomeController {
   @override
   indexchange(int index) {
     currentIndex = index;
-    update(["index"]);
+    update(["slider"]);
   }
 
   @override

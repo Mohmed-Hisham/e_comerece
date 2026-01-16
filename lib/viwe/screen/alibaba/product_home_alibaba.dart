@@ -10,6 +10,8 @@ import 'package:e_comerece/viwe/widget/custgridviwe.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:e_comerece/core/helper/format_price.dart';
+import 'package:e_comerece/core/servises/currency_service.dart';
 import 'package:get/get.dart';
 
 class ProductHomeAlibaba extends GetView<ProductAlibabaHomeControllerImp> {
@@ -26,12 +28,14 @@ class ProductHomeAlibaba extends GetView<ProductAlibabaHomeControllerImp> {
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
           mainAxisSpacing: 10,
-          mainAxisExtent: 380.h,
+          mainAxisExtent: 420.h,
         ),
 
         itemCount: controller.products.length,
         itemBuilder: (context, index) {
           final product = controller.products[index];
+          final currencyService = Get.find<CurrencyService>();
+          const sourceCurrency = 'USD';
 
           return InkWell(
             onTap: () {
@@ -45,9 +49,15 @@ class ProductHomeAlibaba extends GetView<ProductAlibabaHomeControllerImp> {
               padding: const EdgeInsets.symmetric(horizontal: 10),
               child: Custgridviwe(
                 image: CustomCachedImage(imageUrl: product.mainImageUrl),
-                disc: product.skuPriceFormatted,
+                disc: currencyService.convertAndFormatRange(
+                  priceText: product.skuPriceFormatted,
+                  from: sourceCurrency,
+                ),
                 title: product.titel,
-                price: product.skuPriceFormatted,
+                price: currencyService.convertAndFormatRange(
+                  priceText: product.skuPriceFormatted,
+                  from: sourceCurrency,
+                ),
                 icon: GetBuilder<FavoritesController>(
                   builder: (controller) {
                     bool isFav =
@@ -60,8 +70,8 @@ class ProductHomeAlibaba extends GetView<ProductAlibabaHomeControllerImp> {
                           product.itemid.toString(),
                           product.titel,
                           product.mainImageUrl,
-                          product.skuPriceFormatted,
-                          StringsKeys.alibaba,
+                          extractPrice(product.skuPriceFormatted).toString(),
+                          "Alibaba",
                         );
                       },
                       icon: FaIcon(
@@ -74,7 +84,10 @@ class ProductHomeAlibaba extends GetView<ProductAlibabaHomeControllerImp> {
                   },
                 ),
 
-                discprice: product.skuPriceFormatted,
+                discprice: currencyService.convertAndFormatRange(
+                  priceText: product.skuPriceFormatted,
+                  from: sourceCurrency,
+                ),
                 countsall: product.minOrderFormatted,
                 isAlibaba: true,
                 images: SizedBox(

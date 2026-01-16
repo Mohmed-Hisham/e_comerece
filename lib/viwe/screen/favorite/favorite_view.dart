@@ -12,6 +12,7 @@ import 'package:e_comerece/viwe/widget/Positioned/positioned_app_bar.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_left_2.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_right_2.dart';
 import 'package:e_comerece/viwe/widget/custgridviwe.dart';
+import 'package:e_comerece/core/servises/currency_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -23,6 +24,7 @@ class FavoriteScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Get.put(FavoriteViewController());
+    final currencyService = Get.find<CurrencyService>();
     return Scaffold(
       body: Stack(
         children: [
@@ -104,7 +106,14 @@ class FavoriteScreen extends StatelessWidget {
                                             const Icon(Icons.error),
                                       ),
                                       title: favorite.productTitle!,
-                                      price: favorite.productPrice?.toString(),
+                                      price: currencyService
+                                          .convertAndFormatRange(
+                                            priceText:
+                                                favorite.productPrice
+                                                    ?.toString() ??
+                                                '0',
+                                            from: 'USD',
+                                          ),
                                       icon: IconButton(
                                         onPressed: () {
                                           controller.removeFavorite(

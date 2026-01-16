@@ -8,6 +8,7 @@ import 'package:e_comerece/viwe/widget/Positioned/positioned_left_2.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_right_2.dart';
 import 'package:e_comerece/viwe/widget/custgridviwe.dart';
 import 'package:e_comerece/core/helper/custom_cached_image.dart';
+import 'package:e_comerece/core/servises/currency_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -18,6 +19,7 @@ class FavoritesAliexpries extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Get.put(FavoriteViewPlatformControllerImpl());
+    final currencyService = Get.find<CurrencyService>();
     return Scaffold(
       body: GetBuilder<FavoriteViewPlatformControllerImpl>(
         builder: (controller) => RefreshIndicator(
@@ -69,9 +71,15 @@ class FavoritesAliexpries extends StatelessWidget {
                               image: CustomCachedImage(
                                 imageUrl: item.productImage ?? '',
                               ),
-                              disc: item.productPrice?.toString(),
+                              disc: currencyService.convertAndFormatRange(
+                                priceText: item.productPrice?.toString() ?? '0',
+                                from: 'USD',
+                              ),
                               title: item.productTitle!,
-                              price: item.productPrice?.toString(),
+                              price: currencyService.convertAndFormatRange(
+                                priceText: item.productPrice?.toString() ?? '0',
+                                from: 'USD',
+                              ),
                               icon: IconButton(
                                 onPressed: () =>
                                     controller.removeFavorite(item.productId!),
@@ -81,7 +89,10 @@ class FavoritesAliexpries extends StatelessWidget {
                                   color: Appcolor.primrycolor,
                                 ),
                               ),
-                              discprice: item.productPrice?.toString(),
+                              discprice: currencyService.convertAndFormatRange(
+                                priceText: item.productPrice?.toString() ?? '0',
+                                from: 'USD',
+                              ),
                             ),
                           );
                         },

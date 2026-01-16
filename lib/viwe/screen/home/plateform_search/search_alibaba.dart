@@ -23,7 +23,7 @@ class SearchAlibaba extends StatelessWidget {
         crossAxisCount: 2,
         crossAxisSpacing: 10.w,
         mainAxisSpacing: 10.w,
-        mainAxisExtent: 335.h,
+        mainAxisExtent: 420.h,
       ),
       itemCount: controller.searchProductsAlibaba.isEmpty
           ? controller.searchProductsAlibaba.length

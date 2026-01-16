@@ -1,15 +1,15 @@
 import 'package:e_comerece/controller/amazon_controllers/amazon_home_controller.dart';
 import 'package:e_comerece/controller/favorite/favorites_controller.dart';
-import 'package:e_comerece/core/class/handlingdataviwe.dart';
 import 'package:e_comerece/core/class/statusrequest.dart';
+import 'package:e_comerece/core/class/handlingdataviwe.dart';
 import 'package:e_comerece/core/constant/color.dart';
-import 'package:e_comerece/core/constant/imagesassets.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/constant/strings_keys.dart';
 import 'package:e_comerece/core/constant/sliver_divder.dart';
 import 'package:e_comerece/core/constant/sliver_spacer.dart';
 import 'package:e_comerece/core/helper/pagination_listener.dart';
 import 'package:e_comerece/core/shared/widget_shared/shimmerbar.dart';
+import 'package:e_comerece/core/shared/widget_shared/slider_shimmer.dart';
 import 'package:e_comerece/viwe/screen/amazon/categories_amazon_viwe.dart';
 import 'package:e_comerece/viwe/screen/amazon/hot_products_amazon_view.dart';
 import 'package:e_comerece/viwe/screen/amazon/others_product_amazon.dart';
@@ -19,7 +19,8 @@ import 'package:e_comerece/viwe/widget/Positioned/positioned_app_bar.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_left_2.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_right_2.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_support.dart';
-import 'package:e_comerece/viwe/widget/amazon/cust_carousel_amazon.dart';
+
+import 'package:e_comerece/core/shared/widget_shared/custcarouselslider.dart';
 import 'package:e_comerece/viwe/widget/custshearchappbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -96,14 +97,32 @@ class AmazonHomeView extends StatelessWidget {
                               child: CustomScrollView(
                                 physics: const BouncingScrollPhysics(),
                                 slivers: [
-                                  const SliverToBoxAdapter(
-                                    child: CustCarouselAmazon(
-                                      items: [
-                                        AppImagesassets.tset,
-                                        AppImagesassets.tset,
-                                        AppImagesassets.tset,
-                                        AppImagesassets.tset,
-                                      ],
+                                  SliverToBoxAdapter(
+                                    child: GetBuilder<AmazonHomeControllerImpl>(
+                                      id: 'slider',
+                                      builder: (controller) {
+                                        if (controller.statusRequestSlider ==
+                                            Statusrequest.loading) {
+                                          return const SliderShimmer();
+                                        }
+                                        return GetBuilder<
+                                          AmazonHomeControllerImpl
+                                        >(
+                                          id: 'slider',
+                                          builder: (controller) {
+                                            return Custcarouselslider(
+                                              currentIndex:
+                                                  controller.currentIndex,
+                                              onPageChanged: (val, _) {
+                                                controller.indexchange(val);
+                                              },
+                                              items: controller.sliders
+                                                  .map((e) => e.imageUrl ?? "")
+                                                  .toList(),
+                                            );
+                                          },
+                                        );
+                                      },
                                     ),
                                   ),
                                   SliverToBoxAdapter(

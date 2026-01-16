@@ -28,7 +28,7 @@ class SearchAmazon extends StatelessWidget {
         crossAxisCount: 2,
         crossAxisSpacing: 10.w,
         mainAxisSpacing: 10.w,
-        mainAxisExtent: 340.h,
+        mainAxisExtent: 420.h,
       ),
       itemCount: controller.searchProducts.isEmpty
           ? controller.searchProducts.length

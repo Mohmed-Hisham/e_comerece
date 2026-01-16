@@ -4,6 +4,8 @@ import 'package:e_comerece/core/loacallization/translate_data.dart';
 import 'package:e_comerece/core/servises/custom_getx_snak_bar.dart';
 import 'package:e_comerece/data/model/amazon_models/hotdeals_amazon_model.dart';
 import 'package:e_comerece/data/repository/amazon/amazon_repo_impl.dart';
+import 'package:e_comerece/data/repository/slider_repo.dart';
+import 'package:e_comerece/data/model/slider_model.dart';
 import 'package:get/get.dart';
 
 class AmazonHomeCon extends GetxController {
@@ -11,6 +13,26 @@ class AmazonHomeCon extends GetxController {
   int offset = 0;
   bool isLoading = false;
   bool hasMore = true;
+  SliderRepoImpl sliderRepoImpl = SliderRepoImpl(apiService: Get.find());
+  List<SliderModel> sliders = [];
+  Statusrequest statusRequestSlider = Statusrequest.none;
+
+  fetchSliders() async {
+    statusRequestSlider = Statusrequest.loading;
+    update(['slider']);
+    var response = await sliderRepoImpl.getSliders(platform: 'amazon');
+    response.fold(
+      (l) {
+        statusRequestSlider = Statusrequest.failuer;
+      },
+      (r) {
+        sliders.clear();
+        sliders.addAll(r);
+        statusRequestSlider = Statusrequest.success;
+      },
+    );
+    update(['slider']);
+  }
 
   Statusrequest statusrequestHotProducts = Statusrequest.none;
   List<Deal> hotDeals = [];
@@ -19,6 +41,7 @@ class AmazonHomeCon extends GetxController {
   void onInit() {
     super.onInit();
     fetchProducts();
+    fetchSliders();
   }
 
   fetchProducts({isLoadMore = false}) async {

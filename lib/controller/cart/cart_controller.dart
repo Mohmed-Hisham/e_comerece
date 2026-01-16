@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/constant/strings_keys.dart';
@@ -37,17 +38,11 @@ class CartControllerImpl extends CartController {
 
   List<CartData> cartItems = [];
   String? couponCode;
+  String? couponId;
   double? discount;
 
   double totalbuild = 0.0;
   Map<String, List<CartData>> cartByPlatform = {};
-
-  // @override
-  // void onInit() {
-  //   super.onInit();
-  //   // cartRepo = CartRepoImpl(apiService: Get.find());
-  //   // couponRepo = CouponRepoImpl(apiService: Get.find());
-  // }
 
   @override
   void onClose() {
@@ -123,9 +118,71 @@ class CartControllerImpl extends CartController {
     update();
   }
 
+  List<Map<String, dynamic>> _parseTiers(String? tierJson) {
+    if (tierJson == null || tierJson.isEmpty) return [];
+    try {
+      final decoded = jsonDecode(tierJson);
+      if (decoded is List) {
+        return List<Map<String, dynamic>>.from(decoded);
+      }
+    } catch (e) {
+      debugPrint("Error parsing tiers: $e");
+    }
+    return [];
+  }
+
+  double _getDynamicPrice(String? tierJson, int quantity) {
+    final tiers = _parseTiers(tierJson);
+    if (tiers.isEmpty) return 0.0;
+
+    double? selectedPrice;
+
+    for (var tier in tiers) {
+      int minQty = int.tryParse(tier['minquantity'].toString()) ?? 0;
+      int maxQty = int.tryParse(tier['maxquantity'].toString()) ?? -1;
+      double price = double.tryParse(tier['price'].toString()) ?? 0.0;
+
+      if (quantity >= minQty && (maxQty == -1 || quantity <= maxQty)) {
+        selectedPrice = price;
+        break;
+      }
+    }
+    // If no specific tier matched (shouldn't happen if logic is correct and tiers cover all ranges), return first tier or 0.
+    // Fallback to the price of the first tier if quantity < min of first tier (though user shouldn't be able to add less).
+    // Or if likely quantity > max of all tiers, use last tier.
+    if (selectedPrice == null) {
+      if (quantity <
+          (int.tryParse(tiers.first['minquantity'].toString()) ?? 0)) {
+        return double.tryParse(tiers.first['price'].toString()) ?? 0.0;
+      }
+      return double.tryParse(tiers.last['price'].toString()) ?? 0.0;
+    }
+
+    return selectedPrice;
+  }
+
   addprise({required CartData cartData}) async {
     int availableQuantity = cartData.cartAvailableQuantity ?? 0;
     int currentTotalInCart = cartData.cartQuantity ?? 0;
+
+    // Alibaba Custom Logic for Quantity Limit
+    if (cartData.cartPlatform?.toLowerCase() == 'alibaba' &&
+        cartData.cartTier != null) {
+      final tiers = _parseTiers(cartData.cartTier);
+      if (tiers.isNotEmpty) {
+        int maxTierQty = 0;
+        for (var tier in tiers) {
+          int tMax = int.tryParse(tier['maxquantity'].toString()) ?? 0;
+          if (tMax == -1) {
+            maxTierQty = 999999; // effectively infinite
+            break;
+          }
+          if (tMax > maxTierQty) maxTierQty = tMax;
+        }
+        availableQuantity = maxTierQty;
+      }
+    }
+
     if (currentTotalInCart >= availableQuantity) {
       showCustomGetSnack(
         isGreen: false,
@@ -135,6 +192,11 @@ class CartControllerImpl extends CartController {
       return;
     }
 
+    // We send the potentially updated availableQuantity to the repo.
+    // NOTE: If the backend logic strictly checks against what's in the DB for "available_quantity" column,
+    // this might fail if the DB column isn't updated. However, the requirement implies we should handle it here.
+    // If the backend RE-CHECKS availability, and DB says 99, it might fail there.
+    // Assuming backend trusts this param or checks logic correctly.
     var response = await cartRepo.increaseQuantity(
       cartData.productId!.toString(),
       cartData.cartAttributes,
@@ -148,8 +210,23 @@ class CartControllerImpl extends CartController {
           (element) => element.id == cartData.id,
         );
         if (index != -1) {
+          int newQuantity = (cartItems[index].cartQuantity ?? 0) + 1;
+          double? newPrice = cartItems[index].productPrice;
+
+          if (cartData.cartPlatform?.toLowerCase() == 'alibaba' &&
+              cartData.cartTier != null) {
+            final dynamicPrice = _getDynamicPrice(
+              cartData.cartTier,
+              newQuantity,
+            );
+            if (dynamicPrice > 0) {
+              newPrice = dynamicPrice;
+            }
+          }
+
           cartItems[index] = cartItems[index].copyWith(
-            cartQuantity: (cartItems[index].cartQuantity ?? 0) + 1,
+            cartQuantity: newQuantity,
+            productPrice: newPrice,
           );
           groupcartByPlatform();
           totalbuild = total();
@@ -178,8 +255,23 @@ class CartControllerImpl extends CartController {
             (element) => element.id == cartData.id,
           );
           if (index != -1) {
+            int newQuantity = (cartItems[index].cartQuantity ?? 1) - 1;
+            double? newPrice = cartItems[index].productPrice;
+
+            if (cartData.cartPlatform?.toLowerCase() == 'alibaba' &&
+                cartData.cartTier != null) {
+              final dynamicPrice = _getDynamicPrice(
+                cartData.cartTier,
+                newQuantity,
+              );
+              if (dynamicPrice > 0) {
+                newPrice = dynamicPrice;
+              }
+            }
+
             cartItems[index] = cartItems[index].copyWith(
-              cartQuantity: (cartItems[index].cartQuantity ?? 1) - 1,
+              cartQuantity: newQuantity,
+              productPrice: newPrice,
             );
             groupcartByPlatform();
             totalbuild = total();
@@ -218,6 +310,7 @@ class CartControllerImpl extends CartController {
       (responsModel) {
         bool found = false;
         if (responsModel.data?.couponPlatfrom!.toLowerCase() == "all") {
+          couponId = responsModel.data?.id;
           couponCode = responsModel.data?.couponName;
           discount = responsModel.data?.couponDiscount;
           totalbuild = total();
@@ -233,6 +326,7 @@ class CartControllerImpl extends CartController {
           for (var plat in cartByPlatform.keys) {
             if (plat.toLowerCase() ==
                 responsModel.data?.couponPlatfrom!.toLowerCase()) {
+              couponId = responsModel.data?.id;
               couponCode = responsModel.data?.couponName;
               discount = responsModel.data?.couponDiscount;
               totalbuild = total();
@@ -325,6 +419,7 @@ class CartControllerImpl extends CartController {
         "couponCode": couponCode,
         "discount": discount,
         "total": totalbuild,
+        "couponId": couponId,
       },
     );
   }

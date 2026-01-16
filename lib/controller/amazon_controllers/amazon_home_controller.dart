@@ -10,6 +10,8 @@ import 'package:e_comerece/data/repository/amazon/amazon_repo_impl.dart';
 import 'package:e_comerece/data/model/amazon_models/search_amazon_model.dart'
     as search;
 import 'package:flutter/material.dart';
+import 'package:e_comerece/data/repository/slider_repo.dart';
+import 'package:e_comerece/data/model/slider_model.dart';
 import 'package:get/get.dart';
 
 abstract class AmazonHomeController extends GetxController {
@@ -42,6 +44,8 @@ class AmazonHomeControllerImpl extends AmazonHomeController {
   Statusrequest statusrequestsearch = Statusrequest.none;
   Statusrequest statusrequestHotProducts = Statusrequest.none;
   Statusrequest statusrequestOtherProduct = Statusrequest.none;
+  Statusrequest statusRequestSlider = Statusrequest.none;
+  SliderRepoImpl sliderRepoImpl = SliderRepoImpl(apiService: Get.find());
 
   TextEditingController searchController = .new();
   TextEditingController startPriceController = .new(text: '1');
@@ -54,6 +58,24 @@ class AmazonHomeControllerImpl extends AmazonHomeController {
   List<Deal> hotDeals = [];
   List<search.Product> searchProducts = [];
   List<search.Product> otherProduct = [];
+  List<SliderModel> sliders = [];
+
+  fetchSliders() async {
+    statusRequestSlider = Statusrequest.loading;
+    update(['slider']);
+    var response = await sliderRepoImpl.getSliders(platform: 'amazon');
+    response.fold(
+      (l) {
+        statusRequestSlider = Statusrequest.failuer;
+      },
+      (r) {
+        sliders.clear();
+        sliders.addAll(r);
+        statusRequestSlider = Statusrequest.success;
+      },
+    );
+    update(['slider']);
+  }
 
   int pageIndexSearch = 0;
   int pageIndexOtherProduct = 0;
@@ -72,6 +94,7 @@ class AmazonHomeControllerImpl extends AmazonHomeController {
   void onInit() {
     super.onInit();
     fetchHomePageData();
+    fetchSliders();
   }
 
   @override
@@ -245,7 +268,7 @@ class AmazonHomeControllerImpl extends AmazonHomeController {
   @override
   indexchange(int index) {
     currentIndex = index;
-    update(["index"]);
+    update(["slider"]);
   }
 
   @override

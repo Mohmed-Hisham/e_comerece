@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:e_comerece/core/helper/custom_cached_image.dart';
 import 'package:e_comerece/controller/amazon_controllers/amazon_home_controller.dart';
 import 'package:e_comerece/controller/favorite/favorites_controller.dart';
@@ -8,7 +6,6 @@ import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/helper/format_price.dart';
 import 'package:e_comerece/core/loacallization/translate_data.dart';
 import 'package:e_comerece/core/servises/currency_service.dart';
-
 import 'package:e_comerece/viwe/widget/custgridviwe.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -27,7 +24,7 @@ class HotProductsAmazonView extends GetView<AmazonHomeControllerImpl> {
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
           mainAxisSpacing: 10.w,
-          mainAxisExtent: 370.h,
+          mainAxisExtent: 420.h,
         ),
 
         itemCount: controller.hotDeals.length,

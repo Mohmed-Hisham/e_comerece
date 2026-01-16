@@ -1,6 +1,6 @@
 import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/servises/serviese.dart';
-import 'package:e_comerece/data/datasource/static/static.dart';
+import 'package:e_comerece/core/static/static.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 

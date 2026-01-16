@@ -5,22 +5,45 @@ import 'package:e_comerece/core/loacallization/translate_data.dart';
 import 'package:e_comerece/core/servises/custom_getx_snak_bar.dart';
 import 'package:e_comerece/data/model/aliexpriess_model/hotproductmodel.dart';
 import 'package:e_comerece/data/repository/aliexpriss/alexpress_repo_impl.dart';
+import 'package:e_comerece/data/repository/slider_repo.dart';
+import 'package:e_comerece/data/model/slider_model.dart';
 import 'package:get/get.dart';
 
 class AliexpressHomeController extends GetxController {
   AlexpressRepoImpl alexpressRepoImpl = AlexpressRepoImpl(
     apiService: Get.find(),
   );
+  SliderRepoImpl sliderRepoImpl = SliderRepoImpl(apiService: Get.find());
   int pageindexALiexpress = 1;
   List<ResultListHotprosuct> productsAliExpress = [];
   bool hasMore = true;
   bool isLoading = false;
   Statusrequest statusrequestAliExpress = Statusrequest.none;
+  Statusrequest statusRequestSlider = Statusrequest.none;
+  List<SliderModel> sliders = [];
+
+  fetchSliders() async {
+    statusRequestSlider = Statusrequest.loading;
+    update(['slider']);
+    var response = await sliderRepoImpl.getSliders(platform: 'aliexpress');
+    response.fold(
+      (l) {
+        statusRequestSlider = Statusrequest.failuer;
+      },
+      (r) {
+        sliders.clear();
+        sliders.addAll(r);
+        statusRequestSlider = Statusrequest.success;
+      },
+    );
+    update(['slider']);
+  }
 
   @override
   void onInit() async {
     super.onInit();
     await fetchProductsAliExpress();
+    fetchSliders();
   }
 
   fetchProductsAliExpress({isLoadMore = false}) async {

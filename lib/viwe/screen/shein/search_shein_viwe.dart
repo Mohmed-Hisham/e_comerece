@@ -48,7 +48,7 @@ class SearchSheinViwe extends StatelessWidget {
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
                   mainAxisSpacing: 10.h,
-                  mainAxisExtent: 400.h,
+                  mainAxisExtent: 450.h,
                 ),
                 itemCount: controller.searchProducts.length,
                 itemBuilder: (context, index) {

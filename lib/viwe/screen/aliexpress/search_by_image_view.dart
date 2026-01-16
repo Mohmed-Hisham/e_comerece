@@ -147,7 +147,7 @@ class SearchByImageView extends StatelessWidget {
         crossAxisCount: 2,
         crossAxisSpacing: 10,
         mainAxisSpacing: 10.w,
-        mainAxisExtent: 320.h,
+        mainAxisExtent: 420.h,
       ),
       itemCount: controller.items.length,
       itemBuilder: (context, index) {

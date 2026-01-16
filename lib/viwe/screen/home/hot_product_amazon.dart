@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'package:e_comerece/controller/favorite/favorites_controller.dart';
 import 'package:e_comerece/controller/home/homescreen_controller.dart';
 import 'package:e_comerece/core/class/handlingdataviwe.dart';
@@ -23,7 +22,6 @@ class HotProductAmazon extends StatelessWidget {
     return GetBuilder<HomescreenControllerImple>(
       id: 'amazon',
       builder: (controller) {
-        log("Rebuild Amazon Hot Products");
         return NotificationListener<ScrollNotification>(
           onNotification: (scrollInfo) {
             if (scrollInfo is ScrollUpdateNotification) {
@@ -46,9 +44,8 @@ class HotProductAmazon extends StatelessWidget {
             statusrequest: controller.amazonHomeCon.statusrequestHotProducts,
             widget: Container(
               margin: EdgeInsets.symmetric(vertical: 20.h),
-              height: 350.h,
+              height: 400.h,
               child: CustomScrollView(
-                physics: const BouncingScrollPhysics(),
                 scrollDirection: Axis.horizontal,
                 slivers: [
                   SliverList.builder(
@@ -120,12 +117,6 @@ class HotProductAmazon extends StatelessWidget {
                                           ? Appcolor.reed
                                           : Appcolor.reed,
                                     ),
-
-                                    //  Icon(
-                                    //   isFav ? Icons.favorite : Icons.favorite_border,
-                                    //   color: isFav ? Colors.red : Colors.black,
-                                    //   size: 25,
-                                    // ),
                                   );
                                 },
                               ),
@@ -134,7 +125,7 @@ class HotProductAmazon extends StatelessWidget {
                                 amount: extractPrice(product.listPrice?.amount),
                                 from: 'SAR',
                               ),
-                              countsall: "${product.dealType}",
+                              countsall: product.dealType ?? '',
                             ),
                           ),
                         ),

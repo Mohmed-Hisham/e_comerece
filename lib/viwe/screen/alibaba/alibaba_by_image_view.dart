@@ -15,6 +15,8 @@ import 'package:e_comerece/viwe/widget/custgridviwe.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:e_comerece/core/helper/format_price.dart';
+import 'package:e_comerece/core/servises/currency_service.dart';
 import 'package:get/get.dart';
 
 class AlibabaByimageView extends StatelessWidget {
@@ -161,11 +163,13 @@ class AlibabaByimageView extends StatelessWidget {
         crossAxisCount: 2,
         crossAxisSpacing: 10,
         mainAxisSpacing: 10,
-        mainAxisExtent: 370.h,
+        mainAxisExtent: 420.h,
       ),
       itemCount: controller.items.length,
       itemBuilder: (context, index) {
         final item = controller.items[index].item!;
+        final currencyService = Get.find<CurrencyService>();
+        const sourceCurrency = 'USD';
         return InkWell(
           onTap: () {
             int id = int.tryParse(item.itemId!.toString()) ?? 0;
@@ -174,9 +178,15 @@ class AlibabaByimageView extends StatelessWidget {
 
           child: Custgridviwe(
             image: CustomCachedImage(imageUrl: item.image ?? ""),
-            disc: "${item.sku!.def!.priceModule!.priceFormatted}",
+            disc: currencyService.convertAndFormatRange(
+              priceText: item.sku!.def!.priceModule!.priceFormatted ?? "",
+              from: sourceCurrency,
+            ),
             title: item.title!,
-            price: "${item.sku!.def!.priceModule!.priceFormatted}",
+            price: currencyService.convertAndFormatRange(
+              priceText: item.sku!.def!.priceModule!.priceFormatted ?? "",
+              from: sourceCurrency,
+            ),
             icon: GetBuilder<FavoritesController>(
               builder: (isFavoriteController) {
                 bool isFav =
@@ -188,8 +198,10 @@ class AlibabaByimageView extends StatelessWidget {
                       item.itemId!.toString(),
                       item.title!,
                       item.image!,
-                      "${item.sku!.def!.priceModule!.priceFormatted}",
-                      "Aliexpress",
+                      extractPrice(
+                        item.sku!.def!.priceModule!.priceFormatted,
+                      ).toString(),
+                      "Alibaba",
                     );
                   },
                   icon: FaIcon(
@@ -201,7 +213,10 @@ class AlibabaByimageView extends StatelessWidget {
                 );
               },
             ),
-            discprice: "${item.sku!.def!.priceModule!.priceFormatted}",
+            discprice: currencyService.convertAndFormatRange(
+              priceText: item.sku!.def!.priceModule!.priceFormatted ?? "",
+              from: sourceCurrency,
+            ),
             countsall:
                 "${item.sku!.def!.quantityModule!.minOrder!.quantityFormatted}",
             isAlibaba: true,

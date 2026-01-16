@@ -2,6 +2,7 @@ import 'package:e_comerece/controller/alibaba/product_details_alibaba_controller
 import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/constant/strings_keys.dart';
 import 'package:e_comerece/data/model/alibaba_model/product_ditels_alibaba_model.dart';
+import 'package:e_comerece/core/servises/currency_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -15,6 +16,7 @@ class PriceSectionAlibaba extends StatelessWidget {
       tag: tag,
       id: 'quantity',
       builder: (controller) {
+        final currencyService = Get.find<CurrencyService>();
         final currentPrice = controller.getCurrentPrice();
         final totalPrice = controller.getTotalPriceFormatted();
         final List<PriceList> priceList = controller.priceList;
@@ -61,7 +63,12 @@ class PriceSectionAlibaba extends StatelessWidget {
                                 ),
                           ),
                           Text(
-                            price.priceFormatted.toString(),
+                            currencyService.convertAndFormat(
+                              amount:
+                                  double.tryParse(price.price.toString()) ??
+                                  0.0,
+                              from: 'USD',
+                            ),
                             style: Theme.of(context).textTheme.headlineMedium
                                 ?.copyWith(
                                   fontWeight: FontWeight.bold,
@@ -109,7 +116,10 @@ class PriceSectionAlibaba extends StatelessWidget {
               ),
               Text(
                 StringsKeys.priceWithAmount.trParams({
-                  'price': currentPrice.toString(),
+                  'price': currencyService.convertAndFormat(
+                    amount: currentPrice,
+                    from: 'USD',
+                  ),
                 }),
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: Appcolor.primrycolor,

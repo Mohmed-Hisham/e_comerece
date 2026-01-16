@@ -25,7 +25,7 @@ import 'package:e_comerece/viwe/screen/aliexpress/home_aliexpriess.dart';
 import 'package:e_comerece/viwe/screen/cart/cart_view.dart';
 import 'package:e_comerece/viwe/screen/favorite/favorite_view.dart';
 import 'package:e_comerece/viwe/screen/home/homenavbar.dart';
-import 'package:e_comerece/viwe/screen/language.dart';
+import 'package:e_comerece/viwe/screen/settings/language.dart';
 import 'package:e_comerece/viwe/screen/local_serviess/local_service_details_view.dart';
 import 'package:e_comerece/viwe/screen/local_serviess/orders/local_service_order_details_view.dart';
 import 'package:e_comerece/viwe/screen/local_serviess/orders/view_local_service_orders_screen.dart';

@@ -4,7 +4,7 @@ import 'package:e_comerece/controller/cart/cart_from_detils.dart';
 import 'package:e_comerece/controller/favorite/favorites_controller.dart';
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/color.dart';
-import 'package:e_comerece/core/constant/strings_keys.dart';
+import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:e_comerece/core/funcations/displayattributes.dart';
 import 'package:e_comerece/viwe/screen/aliexpress/add_to_cart_bottom_sheet.dart';
 import 'package:flutter/material.dart';

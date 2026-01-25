@@ -10,7 +10,7 @@ import 'package:e_comerece/core/loacallization/translate_data.dart';
 import 'package:e_comerece/core/helper/custom_cached_image.dart';
 import 'package:e_comerece/core/servises/currency_service.dart';
 import 'package:e_comerece/core/servises/platform_ext.dart';
-import 'package:e_comerece/core/constant/strings_keys.dart';
+import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:e_comerece/core/shared/widget_shared/shimmer_list_horizontal.dart';
 import 'package:e_comerece/viwe/widget/custgridviwe.dart';
 import 'package:flutter/material.dart';

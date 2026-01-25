@@ -38,6 +38,7 @@ import 'package:e_comerece/viwe/screen/shein/product_by_category.dart';
 import 'package:e_comerece/viwe/screen/shein/product_details_shein_view.dart';
 import 'package:e_comerece/viwe/screen/orders/order_details_screen.dart';
 import 'package:e_comerece/viwe/screen/splashscreen/splashscreen.dart';
+import 'package:e_comerece/viwe/screen/settings/legal_view.dart';
 import 'package:get/get_navigation/src/routes/get_route.dart';
 import 'package:get/get_navigation/src/routes/transitions_type.dart';
 
@@ -298,6 +299,12 @@ List<GetPage<dynamic>>? routes = [
   GetPage(
     name: AppRoutesname.viewLocalServiceOrders,
     page: () => const ViewLocalServiceOrdersScreen(),
+    transition: transitionType,
+    transitionDuration: Duration(milliseconds: transitionDurations),
+  ),
+  GetPage(
+    name: AppRoutesname.legal,
+    page: () => const LegalView(title: ""),
     transition: transitionType,
     transitionDuration: Duration(milliseconds: transitionDurations),
   ),

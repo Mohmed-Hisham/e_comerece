@@ -2,7 +2,7 @@ import 'dart:developer';
 
 import 'package:e_comerece/controller/amazon_controllers/product_from_categories_controller.dart';
 import 'package:e_comerece/core/constant/color.dart';
-import 'package:e_comerece/core/constant/strings_keys.dart';
+import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:e_comerece/core/constant/wantedcategory.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';

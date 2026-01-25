@@ -1,7 +1,7 @@
 import 'package:e_comerece/controller/auth/sginup_controller.dart';
 import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/constant/imagesassets.dart';
-import 'package:e_comerece/core/constant/strings_keys.dart';
+import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:e_comerece/core/funcations/exitdiloge.dart';
 import 'package:e_comerece/core/funcations/validate.dart';
 import 'package:e_comerece/core/helper/scroll_when_keyboard_opens.dart';

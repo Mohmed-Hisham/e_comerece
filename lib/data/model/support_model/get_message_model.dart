@@ -6,12 +6,14 @@ class GetMessagesModel {
 
   factory GetMessagesModel.fromJson(Map<String, dynamic> json) {
     return GetMessagesModel(
-      status: json["status"],
-      messages: json["messages"] == null
-          ? []
-          : List<Message>.from(
-              json["messages"]!.map((x) => Message.fromJson(x)),
-            ),
+      status: json["success"]?.toString() ?? json["status"]?.toString(),
+      messages: json["data"] == null
+          ? (json["messages"] == null
+                ? []
+                : List<Message>.from(
+                    json["messages"]!.map((x) => Message.fromJson(x)),
+                  ))
+          : List<Message>.from(json["data"]!.map((x) => Message.fromJson(x))),
     );
   }
 }
@@ -45,17 +47,19 @@ class Message {
 
   factory Message.fromJson(Map<String, dynamic> json) {
     return Message(
-      id: (json["id"] ?? json["message_id"])?.toString(),
-      chatId: (json["chat_id"])?.toString(),
-      senderType: json["sender_type"],
-      senderName: json["sender_name"],
-      message: json["message"] ?? json["content"],
-      isRead: json["is_read"],
-      isReplied: json["is_replied"],
-      replyTo: json["reply_to"],
-      createdAt: DateTime.tryParse(json["created_at"] ?? ""),
-      imageUrl: json["image_url"],
-      senderId: (json["sender_id"])?.toString(),
+      id: (json["id"] ?? json["messageId"] ?? json["message_id"])?.toString(),
+      chatId: (json["chatId"] ?? json["chat_id"])?.toString(),
+      senderType: json["senderType"] ?? json["sender_type"],
+      senderName: json["senderName"] ?? json["sender_name"] ?? "User",
+      message: json["content"] ?? json["message"] ?? "",
+      isRead: json["isRead"] ?? json["is_read"] ?? 0,
+      isReplied: json["isReplied"] ?? json["is_replied"] ?? 0,
+      replyTo: json["replyTo"] ?? json["reply_to"],
+      createdAt: DateTime.tryParse(
+        json["createdAt"] ?? json["created_at"] ?? "",
+      ),
+      imageUrl: json["imageUrl"] ?? json["image_url"],
+      senderId: (json["senderId"] ?? json["sender_id"])?.toString(),
     );
   }
 }

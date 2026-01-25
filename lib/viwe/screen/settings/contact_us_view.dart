@@ -1,5 +1,5 @@
 import 'package:e_comerece/core/constant/color.dart';
-import 'package:e_comerece/core/constant/strings_keys.dart';
+import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:e_comerece/core/servises/custom_getx_snak_bar.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_app_bar.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_right_1.dart';

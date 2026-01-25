@@ -1,6 +1,4 @@
-import 'dart:developer';
-
-import 'package:e_comerece/core/constant/strings_keys.dart';
+import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:e_comerece/controller/support_controller/chats_controller.dart';
 import 'package:e_comerece/core/class/handlingdataviwe.dart';
 import 'package:e_comerece/viwe/screen/Support/widget/chat_item_widget.dart';

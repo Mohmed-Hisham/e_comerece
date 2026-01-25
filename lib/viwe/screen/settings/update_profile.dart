@@ -1,5 +1,5 @@
 import 'package:e_comerece/controller/settings_controller.dart';
-import 'package:e_comerece/core/constant/strings_keys.dart';
+import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:e_comerece/core/funcations/validate.dart';
 import 'package:e_comerece/viwe/widget/Positioned/Positioned_left_1.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_app_bar.dart';

@@ -1,4 +1,4 @@
-import 'package:e_comerece/core/constant/strings_keys.dart';
+import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:get/get.dart';
 
 enum ValidateType { username, email }

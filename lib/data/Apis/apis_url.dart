@@ -75,4 +75,17 @@ class ApisUrl {
 
   //                           AboutUs
   static const String getAboutUs = '$_baseUrl/AboutUs';
+
+  //                           Chat
+  static const String chatHub =
+      'https://sltukapis-production.up.railway.app/chatHub';
+  static const String createChat = '$_baseUrl/Chat/create';
+  static const String myChats = '$_baseUrl/Chat/my-chats';
+  static String getChatMessages(String chatId) =>
+      '$_baseUrl/Chat/$chatId/messages';
+  static String closeChat(String chatId) => '$_baseUrl/Chat/$chatId/close';
+
+  //                           Legal
+  static const String getLegal = '$_baseUrl/Legal/GetAll';
+  static String getLegalByKey(String key) => '$_baseUrl/Legal/$key';
 }

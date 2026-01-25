@@ -4,8 +4,7 @@ import 'package:e_comerece/core/servises/serviese.dart';
 import 'package:e_comerece/data/datasource/remote/orders/cancel_order.dart';
 import 'package:e_comerece/data/model/ordres/order_details_model.dart';
 import 'package:e_comerece/data/repository/orders/orders_repo_impl.dart';
-import 'package:e_comerece/core/servises/supabase_service.dart';
-import 'package:e_comerece/data/model/support_model/get_message_model.dart';
+import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -22,47 +21,26 @@ class OrderDetailsControllerImp extends OrderDetailsController {
   OrderDetailsData? orderData;
   bool isCancelling = false;
 
-  // Chat related
-  late TextEditingController messsageController;
-  ScrollController chatScrollController = ScrollController();
-  Stream<List<Message>>? messagesStream;
-  bool isChatClosed = false;
   Statusrequest sendMessagestatusrequest = Statusrequest.none;
-  GlobalKey<FormState> formkey = GlobalKey<FormState>();
-  FocusNode focusNode = FocusNode();
-  String? plateform;
   String? chatid;
-  dynamic serviceRequestDetails;
-  dynamic serviceModel;
 
   @override
   void onInit() {
     super.onInit();
-    // Assuming passed argument is order_id as String now, or we convert it.
-    // The previous code had `int? orderId`. GUIDs are Strings.
-    // I will try to support both or expect String.
-    var orderIdArg = Get.arguments['order_id'];
+    var orderIdArg = Get.arguments?['order_id'];
     if (orderIdArg != null) {
       getOrderDetails(orderIdArg.toString());
     }
-    messsageController = TextEditingController();
   }
 
   void scrollToBottom() {
-    if (chatScrollController.hasClients) {
-      chatScrollController.animateTo(
-        0.0,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeOut,
-      );
-    }
+    // This method is no longer used after removing chat functionality
+    // but kept if there's a future use case or for minimal change.
+    // If not needed, it can be removed.
   }
 
   @override
   void onClose() {
-    messsageController.dispose();
-    chatScrollController.dispose();
-    focusNode.dispose();
     super.onClose();
   }
 
@@ -78,10 +56,7 @@ class OrderDetailsControllerImp extends OrderDetailsController {
     ) {
       if (dataModel.success == true && dataModel.data != null) {
         orderData = dataModel.data;
-        if (orderData!.chatId != null) {
-          chatid = orderData!.chatId;
-          initChat(chatid!);
-        }
+        chatid = orderData?.chatId;
         return Statusrequest.success;
       } else {
         return Statusrequest.failuer;
@@ -95,51 +70,16 @@ class OrderDetailsControllerImp extends OrderDetailsController {
     update();
   }
 
-  void initChat(String chatId) {
-    messagesStream = Get.find<SupabaseService>()
-        .getMessagesStream(chatId)
-        .map((data) => data.map((e) => Message.fromJson(e)).toList());
-    checkChatStatus(chatId);
-    update();
-  }
-
-  Future<void> checkChatStatus(String chatId) async {
-    try {
-      final chatData = await Get.find<SupabaseService>().getChatById(chatId);
-      if (chatData != null && chatData['status'] == 'closed') {
-        isChatClosed = true;
-        update();
-      }
-    } catch (e) {
-      debugPrint("Error checking chat status: $e");
+  void goToChat() {
+    if (chatid != null) {
+      Get.toNamed(
+        AppRoutesname.messagesScreen,
+        arguments: {
+          'chat_id': chatid,
+          'platform': 'order', // Optional: backend might use it
+        },
+      );
     }
-  }
-
-  Future<void> sendMessage({
-    String? platform,
-    String? referenceid,
-    String? imagelink,
-  }) async {
-    if (messsageController.text.trim().isEmpty || chatid == null) {
-      return;
-    }
-
-    sendMessagestatusrequest = Statusrequest.loading;
-    update();
-
-    final content = messsageController.text.trim();
-    messsageController.clear();
-
-    await Get.find<SupabaseService>().sendMessage(
-      chatId: chatid!,
-      content: content,
-      senderType: 'user',
-    );
-
-    sendMessagestatusrequest = Statusrequest.success;
-    update();
-
-    scrollToBottom();
   }
 
   bool canCancelOrder() {

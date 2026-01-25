@@ -1,5 +1,5 @@
 import 'package:e_comerece/controller/local_service/local_service_details_controller.dart';
-import 'package:e_comerece/core/constant/strings_keys.dart';
+import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:e_comerece/viwe/screen/local_serviess/widget/service_details_content.dart';
 import 'package:e_comerece/viwe/screen/local_serviess/widget/service_details_image.dart';
 import 'package:e_comerece/viwe/widget/auth/custombuttonauth.dart';

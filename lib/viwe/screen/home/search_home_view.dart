@@ -3,7 +3,7 @@ import 'package:e_comerece/controller/home/homescreen_controller.dart';
 import 'package:e_comerece/core/class/handlingdataviwe.dart';
 import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/constant/sliver_spacer.dart';
-import 'package:e_comerece/core/constant/strings_keys.dart';
+import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:e_comerece/core/servises/platform_ext.dart';
 import 'package:e_comerece/core/shared/widget_shared/cust_button_botton.dart';
 import 'package:e_comerece/core/shared/widget_shared/shimmerbar.dart';

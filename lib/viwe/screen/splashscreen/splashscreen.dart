@@ -1,14 +1,31 @@
 import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/constant/imagesassets.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
-import 'package:e_comerece/core/constant/strings_keys.dart';
+import 'package:e_comerece/core/loacallization/strings_keys.dart';
+import 'package:e_comerece/core/servises/notifcation_service.dart';
 import 'package:e_comerece/viwe/widget/onboarding/custombutton.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
-class Splashscreen extends StatelessWidget {
+class Splashscreen extends StatefulWidget {
   const Splashscreen({super.key});
+
+  @override
+  State<Splashscreen> createState() => _SplashscreenState();
+}
+
+class _SplashscreenState extends State<Splashscreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Request notification permission after this screen opens
+    _requestNotificationPermission();
+  }
+
+  Future<void> _requestNotificationPermission() async {
+    await NotifcationService.requestNotificationPermission();
+  }
 
   @override
   Widget build(BuildContext context) {

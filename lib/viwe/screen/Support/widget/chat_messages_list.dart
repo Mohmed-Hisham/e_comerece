@@ -1,6 +1,6 @@
 import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/constant/sliver_spacer.dart';
-import 'package:e_comerece/core/constant/strings_keys.dart';
+import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:e_comerece/core/funcations/format_date.dart';
 import 'package:e_comerece/data/model/support_model/get_message_model.dart';
 import 'package:flutter/material.dart';

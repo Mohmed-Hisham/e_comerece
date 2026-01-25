@@ -1,4 +1,4 @@
-import 'package:e_comerece/core/constant/strings_keys.dart';
+import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:get/get.dart';
 
 class MyTrenslition extends Translations {
@@ -312,6 +312,9 @@ class MyTrenslition extends Translations {
       StringsKeys.reviewFeeLabel: "رسوم المراجعة",
       StringsKeys.tipsLabel: "المكافأة",
       StringsKeys.reviewService: "خدمة المراجعة",
+      StringsKeys.privacyPolicy: "سياسة الخصوصية",
+      StringsKeys.termsAndConditions: "الشروط والأحكام",
+      StringsKeys.legal: "المعلومات القانونية",
     },
     "en": {
       // Splashscreen
@@ -621,6 +624,9 @@ class MyTrenslition extends Translations {
       StringsKeys.reviewFeeLabel: "Review Fee",
       StringsKeys.tipsLabel: "Tips",
       StringsKeys.reviewService: "Review Service",
+      StringsKeys.privacyPolicy: "Privacy Policy",
+      StringsKeys.termsAndConditions: "Terms & Conditions",
+      StringsKeys.legal: "Legal Information",
     },
   };
 }

@@ -1,7 +1,8 @@
 import 'dart:developer';
+import 'package:e_comerece/core/class/api_service.dart';
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
-import 'package:e_comerece/core/servises/supabase_service.dart';
+import 'package:e_comerece/data/Apis/apis_url.dart';
 import 'package:e_comerece/data/model/support_model/get_chats_model.dart';
 import 'package:get/get.dart';
 
@@ -19,16 +20,18 @@ class ChatsController extends GetxController {
     getChatsstatusrequest = Statusrequest.loading;
     update();
     try {
-      final response = await Get.find<SupabaseService>().getUserChats();
-      final Map<String, dynamic> wrappedResponse = {
-        "status": "success",
-        "chats": response,
-      };
+      final response = await Get.find<ApiService>().get(
+        endpoint: ApisUrl.myChats,
+      );
 
-      final modelresponse = GetChatsModel.fromJson(wrappedResponse);
-      chatList.clear();
-      chatList.assignAll(modelresponse.chats);
-      getChatsstatusrequest = Statusrequest.success;
+      if (response.statusCode == 200) {
+        final modelresponse = GetChatsModel.fromJson(response.data);
+        chatList.clear();
+        chatList.assignAll(modelresponse.chats);
+        getChatsstatusrequest = Statusrequest.success;
+      } else {
+        getChatsstatusrequest = Statusrequest.failuer;
+      }
     } catch (e) {
       getChatsstatusrequest = Statusrequest.failuer;
       log("Error fetching chats: $e");

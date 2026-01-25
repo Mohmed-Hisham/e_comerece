@@ -1,6 +1,6 @@
 import 'package:e_comerece/controller/CheckOut/checkout_controller.dart';
 import 'package:e_comerece/core/constant/color.dart';
-import 'package:e_comerece/core/constant/strings_keys.dart';
+import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';

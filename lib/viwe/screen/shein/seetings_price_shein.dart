@@ -1,6 +1,6 @@
 import 'package:e_comerece/controller/shein/home_shein_controller.dart';
 import 'package:e_comerece/core/constant/color.dart';
-import 'package:e_comerece/core/constant/strings_keys.dart';
+import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:e_comerece/core/shared/widget_shared/cust_button_botton.dart';
 import 'package:e_comerece/viwe/widget/auth/custtextfeld.dart';
 import 'package:flutter/material.dart';

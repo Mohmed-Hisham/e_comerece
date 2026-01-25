@@ -6,7 +6,8 @@ import 'package:e_comerece/core/funcations/loading_dialog.dart';
 import 'package:e_comerece/core/funcations/success_dialog.dart';
 import 'package:e_comerece/core/servises/custom_getx_snak_bar.dart';
 import 'package:e_comerece/core/servises/serviese.dart';
-import 'package:e_comerece/core/servises/supabase_service.dart';
+import 'package:e_comerece/core/class/api_service.dart';
+import 'package:e_comerece/data/Apis/apis_url.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:e_comerece/data/model/local_service/get_local_service_model.dart';
@@ -82,16 +83,11 @@ class ServiceOrderController extends GetxController {
 
         if (chatId != null) {
           try {
-            await Get.find<SupabaseService>().updateChatStatus(
-              chatId: chatId!,
-              status: 'closed',
+            await Get.find<ApiService>().put(
+              endPoints: ApisUrl.closeChat(chatId!),
+              data: {},
             );
-
-            await Get.find<SupabaseService>().sendMessage(
-              chatId: chatId!,
-              content: "chat ended",
-              senderType: 'admin',
-            );
+            log("Chat closed successfully");
           } catch (e) {
             log("Error closing chat: $e");
           }

@@ -1,7 +1,7 @@
 import 'package:e_comerece/controller/aliexpriess/product_details_controller.dart';
 import 'package:e_comerece/controller/cart/cart_from_detils.dart';
 import 'package:e_comerece/core/class/handlingdataviwe.dart';
-import 'package:e_comerece/core/constant/strings_keys.dart';
+import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:e_comerece/viwe/widget/aliexpress/buildheader.dart';
 import 'package:e_comerece/viwe/widget/aliexpress/buildaddtocartbutton.dart';
 import 'package:e_comerece/viwe/widget/buildselectedattributes.dart';

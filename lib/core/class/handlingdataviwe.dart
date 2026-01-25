@@ -4,7 +4,7 @@ import 'package:e_comerece/core/shared/widget_shared/cust_button_botton.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
-import 'package:e_comerece/core/constant/strings_keys.dart';
+import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:flutter/material.dart';
 
 class Handlingdataviwe extends StatelessWidget {

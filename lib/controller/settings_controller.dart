@@ -1,5 +1,5 @@
 import 'package:e_comerece/core/constant/routesname.dart';
-import 'package:e_comerece/core/constant/strings_keys.dart';
+import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:e_comerece/core/servises/serviese.dart';
 import 'package:e_comerece/core/servises/custom_getx_snak_bar.dart';
 import 'package:e_comerece/data/model/AuthModel/auth_model.dart';

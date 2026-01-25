@@ -2,7 +2,7 @@ import 'dart:developer';
 
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
-import 'package:e_comerece/core/constant/strings_keys.dart';
+import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:e_comerece/core/servises/custom_getx_snak_bar.dart';
 import 'package:e_comerece/core/servises/location_servisess.dart';
 import 'package:e_comerece/core/servises/map_places_serviese.dart';
@@ -256,7 +256,7 @@ class AddressControllerImpl extends AddressController {
 
   fetchPlaceDetails(String id) async {
     placeDetailsstatusrequest = Statusrequest.loading;
-    var response = await mapPlacesServiese.getPlaceDetails(id);
+    var response = await mapPlacesServiese.getPlaceDetails(id, sessionToken!);
 
     if (response != null && response['status'] == 'OK') {
       final details = MapPlacesDetailsModel.fromJson(response);

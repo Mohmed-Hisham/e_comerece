@@ -10,7 +10,10 @@ loadingDialog() {
         if (didPop) return;
       },
       child: Center(
-        child: CircularProgressIndicator(color: Appcolor.primrycolor),
+        child: CircularProgressIndicator(
+          color: Appcolor.primrycolor,
+          strokeCap: StrokeCap.round,
+        ),
       ),
     ),
   );

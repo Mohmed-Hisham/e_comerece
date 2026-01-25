@@ -4,7 +4,7 @@ import 'package:e_comerece/controller/local_service/local_service_order_details_
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/class/handlingdataviwe.dart';
 import 'package:e_comerece/core/constant/color.dart';
-import 'package:e_comerece/core/constant/strings_keys.dart';
+import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:e_comerece/viwe/screen/local_serviess/orders/widget/address_card.dart';
 import 'package:e_comerece/viwe/screen/local_serviess/orders/widget/note_card.dart';
 import 'package:e_comerece/viwe/screen/local_serviess/orders/widget/order_details_header.dart';

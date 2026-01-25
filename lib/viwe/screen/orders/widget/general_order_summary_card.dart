@@ -1,5 +1,5 @@
 import 'package:e_comerece/core/constant/color.dart';
-import 'package:e_comerece/core/constant/strings_keys.dart';
+import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:e_comerece/viwe/screen/orders/widget/order_section_card.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';

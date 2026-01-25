@@ -3,7 +3,7 @@ import 'package:e_comerece/controller/alibaba/product_details_alibaba_controller
 import 'package:e_comerece/controller/cart/cart_from_detils.dart';
 import 'package:e_comerece/controller/favorite/toggle_favorite_controller.dart';
 import 'package:e_comerece/core/constant/color.dart';
-import 'package:e_comerece/core/constant/strings_keys.dart';
+import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:e_comerece/core/servises/selected_attributes_tomap_fordb.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';

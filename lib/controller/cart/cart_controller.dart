@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
-import 'package:e_comerece/core/constant/strings_keys.dart';
+import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:e_comerece/core/funcations/loading_dialog.dart';
 import 'package:e_comerece/core/servises/custom_getx_snak_bar.dart';
 import 'package:e_comerece/core/servises/platform_ext.dart';
@@ -39,7 +39,8 @@ class CartControllerImpl extends CartController {
   List<CartData> cartItems = [];
   String? couponCode;
   String? couponId;
-  double? discount;
+  double? discountPercentage; // Percentage value (e.g., 10 = 10%)
+  double? discountAmount; // Calculated discount amount
 
   double totalbuild = 0.0;
   Map<String, List<CartData>> cartByPlatform = {};
@@ -62,15 +63,28 @@ class CartControllerImpl extends CartController {
     }
   }
 
-  double total() {
+  double getSubtotal() {
     double sum = 0.0;
     for (var e in cartItems) {
       double price = e.productPrice ?? 0.0;
       double count = (e.cartQuantity ?? 0).toDouble();
       sum += (price * count);
     }
-    if (discount != null) {
-      sum -= discount!;
+    return sum;
+  }
+
+  void calculateDiscountAmount() {
+    if (discountPercentage != null && discountPercentage! > 0) {
+      discountAmount = (getSubtotal() * discountPercentage!) / 100;
+    } else {
+      discountAmount = null;
+    }
+  }
+
+  double total() {
+    double sum = getSubtotal();
+    if (discountAmount != null) {
+      sum -= discountAmount!;
     }
     return sum;
   }
@@ -229,6 +243,7 @@ class CartControllerImpl extends CartController {
             productPrice: newPrice,
           );
           groupcartByPlatform();
+          calculateDiscountAmount();
           totalbuild = total();
           update();
           update(['1']);
@@ -274,6 +289,7 @@ class CartControllerImpl extends CartController {
               productPrice: newPrice,
             );
             groupcartByPlatform();
+            calculateDiscountAmount();
             totalbuild = total();
             update();
             update(['1']);
@@ -312,7 +328,8 @@ class CartControllerImpl extends CartController {
         if (responsModel.data?.couponPlatfrom!.toLowerCase() == "all") {
           couponId = responsModel.data?.id;
           couponCode = responsModel.data?.couponName;
-          discount = responsModel.data?.couponDiscount;
+          discountPercentage = responsModel.data?.couponDiscount;
+          calculateDiscountAmount();
           totalbuild = total();
           showCustomGetSnack(
             isGreen: true,
@@ -328,7 +345,8 @@ class CartControllerImpl extends CartController {
                 responsModel.data?.couponPlatfrom!.toLowerCase()) {
               couponId = responsModel.data?.id;
               couponCode = responsModel.data?.couponName;
-              discount = responsModel.data?.couponDiscount;
+              discountPercentage = responsModel.data?.couponDiscount;
+              calculateDiscountAmount();
               totalbuild = total();
               showCustomGetSnack(
                 isGreen: true,
@@ -417,7 +435,8 @@ class CartControllerImpl extends CartController {
       arguments: {
         "cartItems": cartItems,
         "couponCode": couponCode,
-        "discount": discount,
+        "discountPercentage": discountPercentage,
+        "discountAmount": discountAmount,
         "total": totalbuild,
         "couponId": couponId,
       },

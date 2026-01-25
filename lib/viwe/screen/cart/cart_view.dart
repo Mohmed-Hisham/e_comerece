@@ -1,6 +1,6 @@
 import 'package:e_comerece/controller/cart/cart_controller.dart';
 import 'package:e_comerece/core/class/handlingdataviwe.dart';
-import 'package:e_comerece/core/constant/strings_keys.dart';
+import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/data/model/cartmodel.dart';
 import 'package:e_comerece/viwe/screen/shein/cust_label_container.dart';

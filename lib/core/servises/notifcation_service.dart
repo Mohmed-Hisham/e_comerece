@@ -58,10 +58,17 @@ class NotifcationService {
   static final FirebaseMessaging _firebaseMessaging =
       FirebaseMessaging.instance;
 
+  /// Request notification permission (call this after splash screen)
+  static Future<void> requestNotificationPermission() async {
+    await FirebaseMessaging.instance.requestPermission(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+  }
+
   /// Initialize all notification services
   static Future<void> initializeNotifications() async {
-    // await TopicManager.requestPermission();
-
     // Handle foreground messages
     FirebaseMessaging.onMessage.listen(_handleForegroundMessage);
 
@@ -103,7 +110,7 @@ class NotifcationService {
 
   /// Initialize local notifications plugin
   static Future<void> _initializeLocalNotifications() async {
-    const androidSettings = AndroidInitializationSettings('ic_luncher');
+    const androidSettings = AndroidInitializationSettings('launcher_icon');
     const iosSettings = DarwinInitializationSettings();
     const settings = InitializationSettings(
       android: androidSettings,

@@ -6,10 +6,12 @@ class GetChatsModel {
 
   factory GetChatsModel.fromJson(Map<String, dynamic> json) {
     return GetChatsModel(
-      status: json["status"],
-      chats: json["chats"] == null
-          ? []
-          : List<Chat>.from(json["chats"]!.map((x) => Chat.fromJson(x))),
+      status: json["success"]?.toString() ?? json["status"]?.toString(),
+      chats: json["data"] == null
+          ? (json["chats"] == null
+                ? []
+                : List<Chat>.from(json["chats"]!.map((x) => Chat.fromJson(x))))
+          : List<Chat>.from(json["data"]!.map((x) => Chat.fromJson(x))),
     );
   }
 }
@@ -24,6 +26,7 @@ class Chat {
     required this.lastMessageTime,
     required this.lastSender,
     required this.unreadCount,
+    required this.status,
   });
 
   final String? chatId;
@@ -34,19 +37,26 @@ class Chat {
   final DateTime? lastMessageTime;
   final String? lastSender;
   final int? unreadCount;
+  final String? status;
 
   factory Chat.fromJson(Map<String, dynamic> json) {
     return Chat(
-      chatId: (json["id"] ?? json["chat_id"])?.toString(),
+      chatId: (json["id"] ?? json["chatId"] ?? json["chat_id"])?.toString(),
       platform: json["type"] ?? json["platform"],
-      referenceId: json["reference_id"] ?? json["reference_id"],
-      lastMessage: json["last_message"],
-      type: json["type"] ?? json["type"],
+      referenceId: (json["referenceId"] ?? json["reference_id"])?.toString(),
+      lastMessage: json["lastMessage"] ?? json["last_message"],
+      type: json["type"]?.toString(),
       lastMessageTime: DateTime.tryParse(
-        json["updated_at"] ?? json["last_message_time"] ?? "",
+        json["updatedAt"] ??
+            json["updated_at"] ??
+            json["lastMessageTime"] ??
+            "",
       ),
-      lastSender: json["last_sender_type"] ?? json["last_sender"],
-      unreadCount: json["unread_user"] ?? json["unread_count"],
+      lastSender:
+          json["lastSenderType"] ?? json["lastSender"] ?? json["last_sender"],
+      unreadCount:
+          json["unreadUser"] ?? json["unread_user"] ?? json["unreadCount"],
+      status: json["status"],
     );
   }
 }

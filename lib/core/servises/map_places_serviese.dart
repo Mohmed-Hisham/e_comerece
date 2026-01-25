@@ -17,9 +17,9 @@ class MapPlacesServiese {
     return response.fold((l) => l, (r) => r);
   }
 
-  getPlaceDetails(String placeId) async {
+  getPlaceDetails(String placeId, String sessionToken) async {
     var response = await crud.getData(
-      "https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&key=$_apiKey",
+      "https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&key=$_apiKey&sessionToken=$sessionToken",
     );
 
     return response.fold((l) => l, (r) => r);

@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/constant/string_const.dart';
@@ -85,13 +83,20 @@ class LoginControllerimplment extends LoginController {
         // Token Update Logic
         try {
           String? fcmToken = await FirebaseMessaging.instance.getToken();
+
           if (fcmToken != null) {
             String? savedToken = await myServises.getSecureData("fcm_token");
             if (savedToken != fcmToken) {
-              var response = await authRepoImpl.updateFcmToken(fcmToken);
-              if (response is bool) {
-                await myServises.saveSecureData("fcm_token", fcmToken);
-              }
+              final response = await authRepoImpl.updateFcmToken(fcmToken);
+              response.fold(
+                (failure) => debugPrint(
+                  "Failed to update FCM token: ${failure.errorMessage}",
+                ),
+                (success) async {
+                  await myServises.saveSecureData("fcm_token", fcmToken);
+                  debugPrint("FCM token updated successfully");
+                },
+              );
             }
           }
         } catch (e) {

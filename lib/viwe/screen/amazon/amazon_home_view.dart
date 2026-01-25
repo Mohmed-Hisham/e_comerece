@@ -4,7 +4,7 @@ import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/class/handlingdataviwe.dart';
 import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
-import 'package:e_comerece/core/constant/strings_keys.dart';
+import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:e_comerece/core/constant/sliver_divder.dart';
 import 'package:e_comerece/core/constant/sliver_spacer.dart';
 import 'package:e_comerece/core/helper/pagination_listener.dart';

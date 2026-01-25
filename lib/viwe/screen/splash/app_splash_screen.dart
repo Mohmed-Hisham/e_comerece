@@ -1,7 +1,5 @@
 import 'package:e_comerece/core/constant/imagesassets.dart';
-import 'package:e_comerece/core/constant/supabase_config.dart';
 import 'package:e_comerece/core/helper/circular_widget.dart';
-import 'package:e_comerece/core/helper/db_database.dart';
 import 'package:e_comerece/core/servises/currency_service.dart';
 import 'package:e_comerece/core/servises/notifcation_service.dart';
 import 'package:e_comerece/core/servises/serviese.dart';
@@ -11,7 +9,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AppSplashScreen extends StatefulWidget {
   const AppSplashScreen({super.key});
@@ -55,13 +52,13 @@ class _AppSplashScreenState extends State<AppSplashScreen>
 
     await NotifcationService.initializeNotifications();
     await initlizserviese();
-    await DBHelper.init();
-    await DBHelper.cleanupExpired();
+    // await DBHelper.init();
+    // await DBHelper.cleanupExpired();
 
-    await Supabase.initialize(
-      url: SupabaseConfig.url,
-      anonKey: SupabaseConfig.anonKey,
-    );
+    // await Supabase.initialize(
+    //   url: SupabaseConfig.url,
+    //   anonKey: SupabaseConfig.anonKey,
+    // );
 
     // Initialize Currency Service
     await initCurrencyService();

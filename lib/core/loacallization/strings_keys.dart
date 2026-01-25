@@ -281,4 +281,7 @@ class StringsKeys {
   static const String reviewFeeLabel = "reviewFeeLabel";
   static const String tipsLabel = "tipsLabel";
   static const String reviewService = "reviewService";
+  static const String privacyPolicy = "privacyPolicy";
+  static const String termsAndConditions = "termsAndConditions";
+  static const String legal = "legal";
 }

@@ -1,7 +1,7 @@
 import 'package:e_comerece/controller/cart/cart_controller.dart';
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/color.dart';
-import 'package:e_comerece/core/constant/strings_keys.dart';
+import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:e_comerece/core/helper/circular_widget.dart';
 import 'package:e_comerece/core/shared/widget_shared/cust_button_botton.dart';
 import 'package:e_comerece/core/servises/currency_service.dart';
@@ -128,10 +128,10 @@ class CheckoutBar extends StatelessWidget {
                         ],
                       ),
                     ),
-                    if (controller.discount != null)
+                    if (controller.discountAmount != null)
                       Text(
                         currencyService.convertAndFormat(
-                          amount: controller.total() + controller.discount!,
+                          amount: controller.getSubtotal(),
                           from: 'USD',
                         ),
                         style: const TextStyle(

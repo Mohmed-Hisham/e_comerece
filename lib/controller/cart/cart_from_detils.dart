@@ -1,8 +1,7 @@
 import 'package:e_comerece/core/class/statusrequest.dart';
-import 'package:e_comerece/core/constant/strings_keys.dart';
+import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:flutter/material.dart';
 import 'package:e_comerece/core/servises/custom_getx_snak_bar.dart';
-import 'package:e_comerece/core/servises/serviese.dart';
 import 'package:e_comerece/data/model/cartmodel.dart';
 import 'package:e_comerece/data/repository/Cart/cart_repo_impl.dart';
 import 'package:get/get.dart';

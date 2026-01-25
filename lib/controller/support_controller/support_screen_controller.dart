@@ -1,6 +1,8 @@
 import 'dart:developer';
+import 'dart:io';
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/servises/serviese.dart';
+import 'package:e_comerece/core/servises/firebase_storage_helper.dart';
 import 'package:e_comerece/data/repository/local_service/local_service_repo_impl.dart';
 import 'package:e_comerece/data/model/local_service/get_local_service_model.dart';
 import 'package:e_comerece/data/model/local_service/service_request_details_model.dart'
@@ -8,8 +10,12 @@ import 'package:e_comerece/data/model/local_service/service_request_details_mode
 import 'package:e_comerece/data/model/support_model/get_message_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 
-import 'package:e_comerece/core/servises/supabase_service.dart';
+import 'package:e_comerece/core/servises/signalr_service.dart';
+import 'package:e_comerece/data/Apis/apis_url.dart';
+import 'package:e_comerece/core/class/api_service.dart';
+import 'dart:async';
 
 abstract class SupportScreenController extends GetxController {
   Future<String?> sendMessage({
@@ -28,8 +34,13 @@ class SupportScreenControllerImp extends SupportScreenController {
 
   Statusrequest sendMessagestatusrequest = Statusrequest.none;
   Statusrequest getMessagestatusrequest = Statusrequest.success;
-  ScrollController scrollController = ScrollController();
+  ScrollController scrollController = .new();
   FocusNode focusNode = .new();
+
+  // Image picker
+  File? selectedImage;
+  bool isUploadingImage = false;
+  final ImagePicker _imagePicker = ImagePicker();
 
   MyServises myServises = Get.find();
   bool showfildName = true;
@@ -53,6 +64,90 @@ class SupportScreenControllerImp extends SupportScreenController {
     super.onClose();
     messsageController.dispose();
     scrollController.dispose();
+  }
+
+  /// Pick image from gallery
+  Future<void> pickImage() async {
+    try {
+      final XFile? image = await _imagePicker.pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 70,
+      );
+      if (image != null) {
+        selectedImage = File(image.path);
+        update();
+      }
+    } catch (e) {
+      log('Error picking image: $e');
+    }
+  }
+
+  /// Pick image from camera
+  Future<void> pickImageFromCamera() async {
+    try {
+      final XFile? image = await _imagePicker.pickImage(
+        source: ImageSource.camera,
+        imageQuality: 70,
+      );
+      if (image != null) {
+        selectedImage = File(image.path);
+        update();
+      }
+    } catch (e) {
+      log('Error picking image from camera: $e');
+    }
+  }
+
+  /// Remove selected image
+  void removeSelectedImage() {
+    selectedImage = null;
+    update();
+  }
+
+  /// Upload image and send message
+  Future<String?> uploadAndSendImage({
+    required String platform,
+    required String referenceid,
+  }) async {
+    if (selectedImage == null) return null;
+
+    isUploadingImage = true;
+    sendMessagestatusrequest = Statusrequest.loading;
+    update();
+
+    try {
+      // Upload image to Firebase Storage
+      final imageUrl = await FirebaseStorageHelper.uploadImage(
+        imageFile: selectedImage!,
+        folder: 'chat_images',
+      );
+
+      if (imageUrl == null) {
+        log('Error: Image upload failed');
+        isUploadingImage = false;
+        sendMessagestatusrequest = Statusrequest.failuer;
+        update();
+        return null;
+      }
+
+      // Clear selected image after upload
+      selectedImage = null;
+      isUploadingImage = false;
+      update();
+
+      // Send message with image URL
+      return await sendMessage(
+        platform: platform,
+        referenceid: referenceid,
+        imagelink: imageUrl,
+      );
+    } catch (e) {
+      log('Error uploading image: $e');
+      isUploadingImage = false;
+      sendMessagestatusrequest = Statusrequest.failuer;
+      update();
+      return null;
+    }
   }
 
   // @override
@@ -110,7 +205,35 @@ class SupportScreenControllerImp extends SupportScreenController {
           ? TextEditingController()
           : TextEditingController(text: "$linkProduct\n\n\n");
     }
+    setupSignalR();
     checkChatStatus();
+  }
+
+  late StreamSubscription signalRSubscription;
+
+  void setupSignalR() async {
+    // Create SignalRService if not exists, then start connection
+    if (!Get.isRegistered<SignalRService>()) {
+      Get.put(SignalRService());
+    }
+    final signalR = Get.find<SignalRService>();
+    await signalR.startHubConnection(); // Start connection when chat is opened
+
+    if (chatid != null) {
+      await signalR.joinChat(chatid!);
+    }
+
+    signalRSubscription = signalR.messages.listen((event) {
+      if (event['type'] == 'ReceiveMessage') {
+        Message newMessage = Message.fromJson(event['data']);
+        // Check if message already exists to avoid duplicates (SignalR might send our own message back)
+        if (!messageList.any((m) => m.id == newMessage.id)) {
+          messageList.insert(0, newMessage);
+          update();
+          scrollToBottom();
+        }
+      }
+    });
   }
 
   Stream<List<Message>>? messagesStream;
@@ -121,65 +244,83 @@ class SupportScreenControllerImp extends SupportScreenController {
     required String referenceid,
     String? imagelink,
   }) async {
+    if (messsageController.text.trim().isEmpty) return null;
+
     sendMessagestatusrequest = Statusrequest.loading;
     update();
 
+    final messageDto = {
+      "chatId": chatid,
+      "content": messsageController.text,
+      "senderId": myServises.sharedPreferences.getString("id"),
+      "senderType": "user",
+      "messageType": (imagelink != null && imagelink.isNotEmpty)
+          ? "image"
+          : "text",
+      "imageUrl": imagelink,
+    };
+
     if (chatid == null) {
-      String chatType = serviceModel == null ? 'support' : 'service';
-      if (serviceRequestDetails != null) {
-        chatType = 'service_request';
-      }
-      final chat = await Get.find<SupabaseService>().createChat(
-        type: chatType,
-        referenceId: referenceid,
-        lastMessage: messsageController.text,
-        lastSenderType: 'user',
-      );
-      if (chat != null) {
-        chatid = chat['id'];
+      try {
+        String chatType = serviceModel == null ? 'support' : 'service';
+        if (serviceRequestDetails != null) {
+          chatType = 'service_request';
+        }
 
-        // Send user message first (which was used as last_message in createChat)
-        await Get.find<SupabaseService>().sendMessage(
-          chatId: chatid!,
-          content: messsageController.text,
-          senderType: 'user',
+        final response = await Get.find<ApiService>().post(
+          endPoints: ApisUrl.createChat,
+          data: {"adminId": null, "type": chatType, "referenceId": referenceid},
         );
 
-        // Send Bot Message
-        await Get.find<SupabaseService>().sendMessage(
-          chatId: chatid!,
-          content:
-              'مرحباً بك! 👋\nلقد تم استلام رسالتك. يرجى شرح استفسارك بالتفصيل وسيقوم أحد ممثلي خدمة العملاء بالرد عليك في أقرب وقت ممكن.',
-          senderType: 'bot',
-        );
-
-        messsageController.clear();
-        getMessages(chatid: chatid!);
-        sendMessagestatusrequest = Statusrequest.success;
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          log("Chat created response: ${response.data}");
+          // The id is inside the 'data' field because of ServiceResponse format
+          chatid = response.data['data']['id']?.toString();
+          log("Extracted new chatid: $chatid");
+          if (chatid != null) {
+            messageDto["chatId"] = chatid;
+            setupSignalR(); // Join the new room
+          }
+        }
+      } catch (e) {
+        log("Error creating chat: $e");
+        sendMessagestatusrequest = Statusrequest.failuer;
         update();
-        return chatid;
+        return null;
       }
     }
 
-    await Get.find<SupabaseService>().sendMessage(
-      chatId: chatid ?? "",
-      content: messsageController.text,
-      senderType: 'user',
-    );
-    sendMessagestatusrequest = Statusrequest.success;
-    update();
+    await Get.find<SignalRService>().sendChatMessage(messageDto);
 
     messsageController.clear();
+    sendMessagestatusrequest = Statusrequest.success;
+    update();
 
     return chatid;
   }
 
   @override
-  getMessages({required String chatid}) async {
-    messagesStream = Get.find<SupabaseService>()
-        .getMessagesStream(chatid)
-        .map((data) => data.map((e) => Message.fromJson(e)).toList());
-    // update();
+  Future<void> getMessages({required String chatid}) async {
+    getMessagestatusrequest = Statusrequest.loading;
+    update();
+
+    try {
+      final response = await Get.find<ApiService>().get(
+        endpoint: ApisUrl.getChatMessages(chatid),
+      );
+
+      if (response.statusCode == 200) {
+        final messagesModel = GetMessagesModel.fromJson(response.data);
+        messageList = messagesModel.messages;
+        getMessagestatusrequest = Statusrequest.success;
+      } else {
+        getMessagestatusrequest = Statusrequest.failuer;
+      }
+    } catch (e) {
+      log("Error fetching messages: $e");
+      getMessagestatusrequest = Statusrequest.failuer;
+    }
+    update();
   }
 
   getServiceData() async {
@@ -203,15 +344,8 @@ class SupportScreenControllerImp extends SupportScreenController {
 
   void checkChatStatus() async {
     if (chatid == null) return;
-    try {
-      final chatData = await Get.find<SupabaseService>().getChatById(chatid!);
-      if (chatData != null && chatData['status'] == 'closed') {
-        isChatClosed = true;
-        update();
-      }
-    } catch (e) {
-      log("Error checking chat status: $e");
-    }
+    // For now, we assume active or handle via the API if needed.
+    // The previous implementation used Supabase directly.
   }
 
   getData({String? id}) async {

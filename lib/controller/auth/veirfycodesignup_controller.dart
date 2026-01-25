@@ -45,9 +45,9 @@ class VerifycodesignupControllerImp extends VeirfycodesignupController {
       myServises.saveSecureData(userEmail, r.authData!.email!);
       myServises.saveSecureData(userPhone, r.authData!.phone!);
 
-      FirebaseMessaging.instance.subscribeToTopic(users);
+      FirebaseMessaging.instance.subscribeToTopic("users");
       FirebaseMessaging.instance.subscribeToTopic(
-        sanitizeTopic(r.authData!.email!),
+        sanitizeTopic("user${r.authData!.email!}"),
       );
 
       if (myServises.sharedPreferences.getString("step") == "1") {
@@ -63,10 +63,16 @@ class VerifycodesignupControllerImp extends VeirfycodesignupController {
         if (fcmToken != null) {
           String? savedToken = await myServises.getSecureData("fcm_token");
           if (savedToken != fcmToken) {
-            var response = await authRepoImpl.updateFcmToken(fcmToken);
-            if (response is bool) {
-              await myServises.saveSecureData("fcm_token", fcmToken);
-            }
+            final response = await authRepoImpl.updateFcmToken(fcmToken);
+            response.fold(
+              (failure) => debugPrint(
+                "Failed to update FCM token: ${failure.errorMessage}",
+              ),
+              (success) async {
+                await myServises.saveSecureData("fcm_token", fcmToken);
+                debugPrint("FCM token updated successfully");
+              },
+            );
           }
         }
       } catch (e) {

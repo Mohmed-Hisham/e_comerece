@@ -1,4 +1,4 @@
-import 'package:e_comerece/core/constant/strings_keys.dart';
+import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:e_comerece/viwe/widget/auth/customtextbody.dart';
 import 'package:e_comerece/viwe/widget/auth/customtexttitleauth.dart';
 import 'package:flutter/material.dart';

@@ -1,7 +1,8 @@
 import 'package:e_comerece/controller/settings_controller.dart';
 import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/constant/imagesassets.dart';
-import 'package:e_comerece/core/constant/strings_keys.dart';
+import 'package:e_comerece/core/constant/routesname.dart';
+import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:e_comerece/core/helper/bluer_dilog.dart';
 import 'package:e_comerece/viwe/screen/Address/botton_sheet_location.dart';
 import 'package:e_comerece/viwe/screen/auth/logout_screen.dart';
@@ -164,6 +165,19 @@ class Setting extends StatelessWidget {
                         ),
                         trailing: Icon(
                           Icons.currency_exchange,
+                          color: Appcolor.primrycolor,
+                        ),
+                      ),
+                      ListTile(
+                        onTap: () {
+                          Get.toNamed(
+                            AppRoutesname.legal,
+                            arguments: {"title": StringsKeys.legal.tr},
+                          );
+                        },
+                        title: Text(StringsKeys.legal.tr, style: styleAll),
+                        trailing: Icon(
+                          Icons.gavel_outlined,
                           color: Appcolor.primrycolor,
                         ),
                       ),

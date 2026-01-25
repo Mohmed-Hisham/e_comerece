@@ -1,6 +1,6 @@
 import 'package:e_comerece/controller/alibaba/product_details_alibaba_controller.dart';
 import 'package:e_comerece/core/constant/color.dart';
-import 'package:e_comerece/core/constant/strings_keys.dart';
+import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:e_comerece/data/model/alibaba_model/product_ditels_alibaba_model.dart';
 import 'package:e_comerece/core/servises/currency_service.dart';
 import 'package:flutter/material.dart';

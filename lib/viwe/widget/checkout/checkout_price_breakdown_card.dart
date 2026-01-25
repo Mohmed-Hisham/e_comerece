@@ -1,4 +1,4 @@
-import 'package:e_comerece/core/constant/strings_keys.dart';
+import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -19,7 +19,7 @@ class CheckoutPriceBreakdownCard extends StatelessWidget {
         final fees = controller.isReviewFeeEnabled
             ? controller.reviewFeeAmount
             : 0.0;
-        final discount = controller.discount;
+        // final discount = controller.discountAmount;
         // Delivery Fee mockup (should be in controller)
 
         return Container(
@@ -37,11 +37,11 @@ class CheckoutPriceBreakdownCard extends StatelessWidget {
                   "\$${fees.toStringAsFixed(2)}",
                 ),
 
-              if (discount > 0)
+              if (controller.discountAmount > 0)
                 _buildRow(
-                  StringsKeys.promocodeDiscount.tr,
+                  "${StringsKeys.promocodeDiscount.tr} (${controller.discountPercentage}%)",
                   currencyService.convertAndFormat(
-                    amount: discount,
+                    amount: controller.discountAmount,
                     from: 'USD',
                   ),
                 ),

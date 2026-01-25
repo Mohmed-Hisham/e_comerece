@@ -1,7 +1,7 @@
 import 'package:e_comerece/controller/addresses/address_controller.dart';
 import 'package:e_comerece/core/class/handlingdataviwe.dart';
 import 'package:e_comerece/core/constant/color.dart';
-import 'package:e_comerece/core/constant/strings_keys.dart';
+import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:e_comerece/data/model/address/address_model.dart';
 import 'package:e_comerece/viwe/widget/maps/shaimmer_botton_widget.dart';
 import 'package:flutter/material.dart';

@@ -63,4 +63,5 @@ class AppRoutesname {
   static const String localServiceOrderDetailsView =
       "/local-service-order-details-view";
   static const String serviceOrderScreen = "/service-order-screen";
+  static const String legal = "/legal";
 }

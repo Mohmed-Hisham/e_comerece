@@ -31,7 +31,8 @@ class CheckOutControllerImpl extends CheckOutController {
   List<CartData> cartItems = [];
   String? couponCode;
   String? couponId;
-  double discount = 0;
+  double discountPercentage = 0; // e.g., 10 = 10%
+  double discountAmount = 0; // Calculated discount amount
   double? total;
   // Address
   bool isShowMore = false; // Legacy, can keep or remove
@@ -75,7 +76,8 @@ class CheckOutControllerImpl extends CheckOutController {
     cartItems = Get.arguments?['cartItems'] ?? [];
     couponCode = Get.arguments?['couponCode'];
     couponId = Get.arguments?['couponId'];
-    discount = Get.arguments?['discount'] ?? 0;
+    discountPercentage = Get.arguments?['discountPercentage'] ?? 0;
+    discountAmount = Get.arguments?['discountAmount'] ?? 0;
     total = Get.arguments['total'];
     getReviewFee();
   }
@@ -92,7 +94,8 @@ class CheckOutControllerImpl extends CheckOutController {
 
   double getFinalTotal() {
     double subTotal = getSubtotal();
-    double totalVal = subTotal - discount; // Apply discount
+    double totalVal =
+        subTotal - discountAmount; // Apply calculated discount amount
     if (isReviewFeeEnabled) totalVal += reviewFeeAmount;
     totalVal += selectedTip;
     // Add Delivery Fee if available (currently hardcoded 0 or not in controller properly)

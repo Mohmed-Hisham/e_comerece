@@ -20,7 +20,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'dart:convert';
-import 'package:e_comerece/core/constant/strings_keys.dart';
+import 'package:e_comerece/core/loacallization/strings_keys.dart';
 
 class ProductDetailsAmazonView extends StatelessWidget {
   const ProductDetailsAmazonView({super.key});

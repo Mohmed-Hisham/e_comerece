@@ -1,4 +1,4 @@
-import 'package:e_comerece/core/constant/strings_keys.dart';
+import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:e_comerece/controller/local_service/local_service_controller.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/shared/widget_shared/shimmerbar.dart';

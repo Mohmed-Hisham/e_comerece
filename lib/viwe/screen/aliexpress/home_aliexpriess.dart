@@ -6,7 +6,7 @@ import 'package:e_comerece/core/constant/imagesassets.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/constant/sliver_divder.dart';
 import 'package:e_comerece/core/constant/sliver_spacer.dart';
-import 'package:e_comerece/core/constant/strings_keys.dart';
+import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:e_comerece/core/helper/pagination_listener.dart';
 import 'package:e_comerece/core/shared/image_manger/image_manag_controller.dart';
 import 'package:e_comerece/core/shared/widget_shared/shimmerbar.dart';

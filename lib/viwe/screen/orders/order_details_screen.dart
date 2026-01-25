@@ -1,7 +1,7 @@
 import 'package:e_comerece/controller/orders/order_details_controller.dart';
 import 'package:e_comerece/core/class/handlingdataviwe.dart';
 import 'package:e_comerece/core/constant/color.dart';
-import 'package:e_comerece/core/constant/strings_keys.dart';
+import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:e_comerece/viwe/screen/orders/widget/delivery_address_card.dart';
 import 'package:e_comerece/viwe/screen/orders/widget/general_order_summary_card.dart';
 import 'package:e_comerece/viwe/screen/orders/widget/order_action_buttons.dart';
@@ -12,10 +12,6 @@ import 'package:e_comerece/viwe/widget/Positioned/positioned_right_1.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_right_2.dart';
 import 'package:e_comerece/viwe/widget/ordres/order_detail_product_item.dart';
 import 'package:e_comerece/viwe/widget/ordres/order_tracking_widget.dart';
-import 'package:e_comerece/viwe/screen/Support/widget/chat_input_field.dart';
-import 'package:e_comerece/viwe/screen/Support/widget/chat_messages_list.dart';
-import 'package:e_comerece/data/model/support_model/get_message_model.dart';
-import 'package:e_comerece/core/shared/widget_shared/chat_shimmer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -51,8 +47,6 @@ class OrderDetailsScreen extends StatelessWidget {
                                   Expanded(
                                     child: _buildOrderDetails(controller),
                                   ),
-                                  if (controller.orderData!.chatId != null)
-                                    _buildChatSection(controller),
                                 ],
                               )
                             : const SizedBox.shrink(),
@@ -77,6 +71,11 @@ class OrderDetailsScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Chat with Support if chatId exists
+          if (order.chatId != null) ...[
+            _buildChatButton(controller),
+            SizedBox(height: 16.h),
+          ],
           // Order Tracking Widget
           OrderTrackingWidget(
             currentStatus: order.status ?? 'pending_approval',
@@ -99,6 +98,7 @@ class OrderDetailsScreen extends StatelessWidget {
             DeliveryAddressCard(address: order.address!),
             SizedBox(height: 16.h),
           ],
+          // ... (rest of the widgets)
 
           // Coupon Card (if exists)
           if (order.coupon != null) ...[
@@ -148,109 +148,60 @@ class OrderDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildChatSection(OrderDetailsControllerImp controller) {
-    return Container(
-      height: 350.h,
-      decoration: BoxDecoration(
-        color: Appcolor.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
-            blurRadius: 10,
-            offset: const Offset(0, -2),
+  Widget _buildChatButton(OrderDetailsControllerImp controller) {
+    return InkWell(
+      onTap: () => controller.goToChat(),
+      child: Container(
+        padding: EdgeInsets.all(16.w),
+        decoration: BoxDecoration(
+          color: Appcolor.primrycolor.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(12.r),
+          border: Border.all(
+            color: Appcolor.primrycolor.withValues(alpha: 0.3),
           ),
-        ],
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(20.r),
-          topRight: Radius.circular(20.r),
         ),
-      ),
-      child: Column(
-        children: [
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: 8.h),
-            child: Container(
-              width: 40.w,
-              height: 4.h,
+        child: Row(
+          children: [
+            Container(
+              padding: EdgeInsets.all(8.w),
               decoration: BoxDecoration(
-                color: Appcolor.gray.withValues(alpha: 0.3),
-                borderRadius: BorderRadius.circular(2),
+                color: Appcolor.primrycolor,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.chat_bubble_outline,
+                color: Appcolor.white,
+                size: 20.sp,
               ),
             ),
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.w),
-            child: Row(
-              children: [
-                Icon(
-                  Icons.chat_outlined,
-                  color: Appcolor.primrycolor,
-                  size: 20.sp,
-                ),
-                SizedBox(width: 8.w),
-                Text(
-                  StringsKeys.supportChatTitle.tr,
-                  style: TextStyle(
-                    fontSize: 16.sp,
-                    fontWeight: FontWeight.bold,
-                    color: Appcolor.black,
-                  ),
-                ),
-                const Spacer(),
-                if (controller.isChatClosed)
-                  Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 8.w,
-                      vertical: 4.h,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Appcolor.gray.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Text(
-                      "Chat Closed",
-                      style: TextStyle(
-                        fontSize: 10.sp,
-                        color: Appcolor.gray,
-                        fontWeight: FontWeight.bold,
-                      ),
+            SizedBox(width: 16.w),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    StringsKeys.supportChatTitle.tr,
+                    style: TextStyle(
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.bold,
+                      color: Appcolor.black,
                     ),
                   ),
-              ],
+                  SizedBox(height: 4.h),
+                  Text(
+                    "هناك رسائل من الدعم",
+                    style: TextStyle(fontSize: 12.sp, color: Appcolor.gray),
+                  ),
+                ],
+              ),
             ),
-          ),
-          const Divider(),
-          Expanded(
-            child: StreamBuilder<List<Message>>(
-              stream: controller.messagesStream,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const ChatShimmer();
-                }
-                if (snapshot.hasError) {
-                  return Center(child: Text("Error loading chat"));
-                }
-
-                final messages = snapshot.data ?? [];
-
-                return Column(
-                  children: [
-                    Expanded(
-                      child: ChatMessagesList(
-                        messages: messages,
-                        scrollController: controller.chatScrollController,
-                      ),
-                    ),
-                    ChatInputField(
-                      controller: controller as dynamic,
-                      isInputDisabled: controller.isChatClosed,
-                    ),
-                  ],
-                );
-              },
+            Icon(
+              Icons.arrow_forward_ios,
+              color: Appcolor.primrycolor,
+              size: 16.sp,
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

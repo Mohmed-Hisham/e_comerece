@@ -87,6 +87,7 @@ dependencies:
   flutter_secure_storage: ^10.0.0
   path_provider: ^2.1.5
   signalr_netcore: ^1.4.4
+  firebase_storage: ^13.0.6
 
 dev_dependencies:
   flutter_lints: ^5.0.0

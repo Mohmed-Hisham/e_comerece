@@ -6,7 +6,7 @@
   <application
     android:label="Saltk"
     android:name="${applicationName}"
-    android:icon="@mipmap/launcher_icon"
+    android:icon="@mipmap/ic_launcher"
   >
     <meta-data
       android:name="com.google.android.geo.API_KEY"
@@ -32,7 +32,7 @@
       </intent-filter>
       <meta-data
         android:name="com.google.firebase.messaging.default_notification_icon"
-        android:resource="@mipmap/launcher_icon"
+        android:resource="@mipmap/ic_launcher"
       />
       <meta-data
         android:name="com.google.firebase.messaging.default_notification_channel_id"

@@ -63,13 +63,12 @@ class _AppSplashScreenState extends State<AppSplashScreen>
     // Initialize Currency Service
     await initCurrencyService();
 
-    Future.delayed(const Duration(seconds: 10), () {
-      if (mounted) {
-        setState(() {
-          _isInitialized = true;
-        });
-      }
-    });
+    // Navigate immediately after initialization is complete
+    if (mounted) {
+      setState(() {
+        _isInitialized = true;
+      });
+    }
   }
 
   @override

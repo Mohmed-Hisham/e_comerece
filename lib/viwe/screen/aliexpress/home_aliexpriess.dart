@@ -2,7 +2,6 @@ import 'package:e_comerece/controller/aliexpriess/aliexprise_home_controller.dar
 import 'package:e_comerece/controller/favorite/favorites_controller.dart';
 import 'package:e_comerece/core/class/handlingdataviwe.dart';
 import 'package:e_comerece/core/constant/color.dart';
-import 'package:e_comerece/core/constant/imagesassets.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/constant/sliver_divder.dart';
 import 'package:e_comerece/core/constant/sliver_spacer.dart';

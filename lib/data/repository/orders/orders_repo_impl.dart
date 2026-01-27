@@ -83,4 +83,28 @@ class OrdersRepoImpl implements OrdersRepo {
       return Left(ServerFailure(e.toString()));
     }
   }
+
+  @override
+  Future<Either<Failure, Map<String, dynamic>>> cancelOrder(
+    String orderId,
+  ) async {
+    try {
+      var response = await apiService.post(
+        endPoints: ApisUrl.cancelOrder(orderId),
+        data: {},
+      );
+      if (response.statusCode == 200) {
+        return Right(response.data);
+      } else {
+        return Left(
+          ServerFailure(response.data['message'] ?? "Error occurred"),
+        );
+      }
+    } catch (e) {
+      if (e is DioException) {
+        return Left(ServerFailure.fromDioError(e));
+      }
+      return Left(ServerFailure(e.toString()));
+    }
+  }
 }

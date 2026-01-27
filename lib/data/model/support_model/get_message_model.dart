@@ -31,6 +31,7 @@ class Message {
     required this.createdAt,
     this.imageUrl,
     this.senderId,
+    this.messageType,
   });
 
   final String? id;
@@ -44,6 +45,7 @@ class Message {
   final DateTime? createdAt;
   final String? imageUrl;
   final String? senderId;
+  final String? messageType;
 
   factory Message.fromJson(Map<String, dynamic> json) {
     return Message(
@@ -60,6 +62,7 @@ class Message {
       ),
       imageUrl: json["imageUrl"] ?? json["image_url"],
       senderId: (json["senderId"] ?? json["sender_id"])?.toString(),
+      messageType: json["messageType"] ?? json["message_type"] ?? "text",
     );
   }
 }

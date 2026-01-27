@@ -12,43 +12,43 @@ class OrderTrackingWidget extends StatelessWidget {
   List<TrackingStep> _getTrackingSteps() {
     return [
       TrackingStep(
-        status: 'pendingreview',
-        title: 'مراجعة',
+        status: 'pending',
+        title: StringsKeys.orderStatusPending.tr,
         icon: Icons.assignment_ind_outlined,
       ),
       TrackingStep(
-        status: 'approved',
-        title: 'موافقة',
-        icon: Icons.check_circle_outline,
+        status: 'actionrequired',
+        title: StringsKeys.orderStatusActionRequired.tr,
+        icon: Icons.edit_note_outlined,
       ),
       TrackingStep(
         status: 'processing',
-        title: 'تجهيز',
+        title: StringsKeys.orderStatusProcessing.tr,
         icon: Icons.inventory_2_outlined,
       ),
       TrackingStep(
-        status: 'intransit',
-        title: 'توصيل',
+        status: 'shipped',
+        title: StringsKeys.orderStatusShipped.tr,
         icon: Icons.local_shipping_outlined,
       ),
-      TrackingStep(status: 'completed', title: 'استلام', icon: Icons.task_alt),
+      TrackingStep(
+        status: 'completed',
+        title: StringsKeys.orderStatusCompleted.tr,
+        icon: Icons.task_alt,
+      ),
     ];
   }
 
   int _getCurrentStepIndex() {
     final status = currentStatus.toLowerCase();
     switch (status) {
-      case 'pendingreview':
-      case 'adminnotes':
-      case 'pending_approval': // legacy
+      case 'pending':
         return 0;
-      case 'approved':
-      case 'awaitingpayment':
-      case 'paid':
+      case 'actionrequired':
         return 1;
       case 'processing':
         return 2;
-      case 'intransit':
+      case 'shipped':
         return 3;
       case 'completed':
         return 4;
@@ -61,9 +61,7 @@ class OrderTrackingWidget extends StatelessWidget {
   }
 
   Color _getStepColor(int stepIndex, int currentIndex) {
-    if (currentStatus == 'rejected' || currentStatus == 'declined') {
-      return Appcolor.reed;
-    } else if (currentStatus == 'cancelled') {
+    if (currentStatus.toLowerCase() == 'cancelled') {
       return Appcolor.gray;
     } else if (stepIndex <= currentIndex) {
       return Appcolor.primrycolor;
@@ -76,11 +74,9 @@ class OrderTrackingWidget extends StatelessWidget {
     final steps = _getTrackingSteps();
     final currentIndex = _getCurrentStepIndex();
 
-    // Handle rejected or cancelled status
-    if (currentStatus == 'rejected' ||
-        currentStatus == 'declined' ||
-        currentStatus == 'cancelled') {
-      return _buildRejectedOrCancelledStatus();
+    // Handle cancelled status
+    if (currentStatus.toLowerCase() == 'cancelled') {
+      return _buildCancelledStatus();
     }
 
     return Container(
@@ -171,18 +167,13 @@ class OrderTrackingWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildRejectedOrCancelledStatus() {
-    final isRejected =
-        currentStatus == 'rejected' || currentStatus == 'declined';
+  Widget _buildCancelledStatus() {
     return Container(
       padding: EdgeInsets.all(20.w),
       decoration: BoxDecoration(
         color: Appcolor.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: isRejected ? Appcolor.reed : Appcolor.gray,
-          width: 2,
-        ),
+        border: Border.all(color: Appcolor.gray, width: 2),
       ),
       child: Row(
         children: [
@@ -191,15 +182,9 @@ class OrderTrackingWidget extends StatelessWidget {
             height: 50.w,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: isRejected
-                  ? Appcolor.reed.withValues(alpha: 0.1)
-                  : Appcolor.gray.withValues(alpha: 0.1),
+              color: Appcolor.gray.withValues(alpha: 0.1),
             ),
-            child: Icon(
-              isRejected ? Icons.cancel_outlined : Icons.block,
-              color: isRejected ? Appcolor.reed : Appcolor.gray,
-              size: 28.sp,
-            ),
+            child: Icon(Icons.block, color: Appcolor.gray, size: 28.sp),
           ),
           SizedBox(width: 16.w),
           Expanded(
@@ -207,20 +192,16 @@ class OrderTrackingWidget extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  isRejected
-                      ? StringsKeys.orderStatusRejectedTitle.tr
-                      : StringsKeys.orderStatusCancelledTitle.tr,
+                  StringsKeys.orderStatusCancelledTitle.tr,
                   style: TextStyle(
                     fontSize: 18.sp,
                     fontWeight: FontWeight.bold,
-                    color: isRejected ? Appcolor.reed : Appcolor.gray,
+                    color: Appcolor.gray,
                   ),
                 ),
                 SizedBox(height: 4.h),
                 Text(
-                  isRejected
-                      ? StringsKeys.orderRejectedBody.tr
-                      : StringsKeys.orderCancelledBody.tr,
+                  StringsKeys.orderCancelledBody.tr,
                   style: TextStyle(fontSize: 14.sp, color: Appcolor.gray),
                 ),
               ],

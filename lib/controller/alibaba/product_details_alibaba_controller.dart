@@ -100,9 +100,9 @@ class ProductDetailsAlibabaControllerImple
   @override
   void onInit() {
     super.onInit();
-    productId = Get.arguments['product_id'];
-    lang = Get.arguments['lang'];
-    title = Get.arguments['title'];
+    productId = Get.arguments['product_id'] as int?;
+    lang = Get.arguments['lang'] as String?;
+    title = Get.arguments['title'] as String?;
     fetchProductDetails();
   }
 
@@ -184,10 +184,10 @@ class ProductDetailsAlibabaControllerImple
       final Map<String, dynamic> newQty = await addorrmoveController
           .cartquintty(productId!.toString(), attributes);
       log("newQty=>$newQty");
-      isFavorite = newQty['in_favorite'];
+      isFavorite = newQty['in_favorite'] as bool;
       if (newQty['quantity'] != 0) {
-        quantity = newQty['quantity'];
-        cartquantityDB = newQty['quantity'];
+        quantity = newQty['quantity'] as int;
+        cartquantityDB = newQty['quantity'] as int;
         update(['quantity']);
         isInCart = true;
       } else {

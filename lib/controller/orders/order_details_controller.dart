@@ -1,7 +1,6 @@
 import 'package:e_comerece/core/class/statusrequest.dart';
-import 'package:e_comerece/core/funcations/handlingdata.dart';
 import 'package:e_comerece/core/servises/serviese.dart';
-import 'package:e_comerece/data/datasource/remote/orders/cancel_order.dart';
+import 'package:e_comerece/core/servises/custom_getx_snak_bar.dart';
 import 'package:e_comerece/data/model/ordres/order_details_model.dart';
 import 'package:e_comerece/data/repository/orders/orders_repo_impl.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
@@ -15,7 +14,6 @@ abstract class OrderDetailsController extends GetxController {
 
 class OrderDetailsControllerImp extends OrderDetailsController {
   OrdersRepoImpl ordersRepo = OrdersRepoImpl(apiService: Get.find());
-  CancelOrderData cancelOrderData = CancelOrderData(Get.find());
   Statusrequest statusrequest = Statusrequest.none;
   MyServises myServises = Get.find();
   OrderDetailsData? orderData;
@@ -85,22 +83,17 @@ class OrderDetailsControllerImp extends OrderDetailsController {
   bool canCancelOrder() {
     if (orderData == null) return false;
     final status = orderData!.status?.toLowerCase();
-    return status == 'pendingreview' ||
-        status == 'adminnotes' ||
-        status == 'approved' ||
-        status == 'awaitingpayment' ||
-        status == 'pending_approval'; // legacy
+    // يمكن الإلغاء فقط إذا كان الطلب في حالة Pending أو ActionRequired
+    return status == 'pending' || status == 'actionrequired';
   }
 
   @override
   Future<void> cancelOrder() async {
     if (!canCancelOrder()) {
-      Get.snackbar(
-        'خطأ',
-        'لا يمكن إلغاء هذا الطلب. يمكن إلغاء الطلبات قيد المراجعة أو المعتمدة فقط',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withValues(alpha: 0.9),
-        colorText: Colors.white,
+      showCustomGetSnack(
+        isGreen: false,
+        text:
+            'لا يمكن إلغاء هذا الطلب. يمكن إلغاء الطلبات في حالة المراجعة أو بانتظار العميل فقط',
         duration: const Duration(seconds: 3),
       );
       return;
@@ -129,82 +122,59 @@ class OrderDetailsControllerImp extends OrderDetailsController {
     isCancelling = true;
     update();
 
-    int userId = int.parse(
-      myServises.sharedPreferences.getString("user_id") ?? "0",
-    );
-
-    if (userId == 0) {
-      Get.snackbar(
-        'خطأ',
-        'حدث خطأ. يرجى تسجيل الدخول مرة أخرى',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withValues(alpha: 0.9),
-        colorText: Colors.white,
-      );
-      isCancelling = false;
-      update();
-      return;
-    }
-
-    final response = await cancelOrderData.cancelOrder(
-      userId: userId,
-      orderId: orderData!.id!,
-    );
+    final result = await ordersRepo.cancelOrder(orderData!.id!);
 
     isCancelling = false;
 
-    final processedStatus = handlingData(response);
+    result.fold(
+      (failure) {
+        showCustomGetSnack(
+          isGreen: false,
+          text: failure.errorMessage,
+          duration: const Duration(seconds: 4),
+        );
+      },
+      (response) {
+        if (response['success'] == true) {
+          // Create a new instance with updated status
+          orderData = OrderDetailsData(
+            id: orderData!.id,
+            orderNumber: orderData!.orderNumber,
+            addressId: orderData!.addressId,
+            address: orderData!.address,
+            paymentMethod: orderData!.paymentMethod,
+            chatId: orderData!.chatId,
+            subtotal: orderData!.subtotal,
+            couponId: orderData!.couponId,
+            coupon: orderData!.coupon,
+            couponDiscount: orderData!.couponDiscount,
+            couponName: orderData!.couponName,
+            productReviewFee: orderData!.productReviewFee,
+            deliveryTips: orderData!.deliveryTips,
+            total: orderData!.total,
+            status: 'Cancelled',
+            statusName: 'Cancelled',
+            noteUser: orderData!.noteUser,
+            noteAdmin: orderData!.noteAdmin,
+            createdAt: orderData!.createdAt,
+            updatedAt: DateTime.now().toIso8601String(),
+            items: orderData!.items,
+          );
 
-    if (processedStatus == Statusrequest.success) {
-      // Create a new instance with updated status
-      orderData = OrderDetailsData(
-        id: orderData!.id,
-        orderNumber: orderData!.orderNumber,
-        addressId: orderData!.addressId,
-        address: orderData!.address,
-        paymentMethod: orderData!.paymentMethod,
-        chatId: orderData!.chatId,
-        subtotal: orderData!.subtotal,
-        couponId: orderData!.couponId,
-        coupon: orderData!.coupon,
-        couponDiscount: orderData!.couponDiscount,
-        couponName: orderData!.couponName,
-        productReviewFee: orderData!.productReviewFee,
-        deliveryTips: orderData!.deliveryTips,
-        total: orderData!.total,
-        status: 'Cancelled', // Update status
-        statusName: 'Cancelled',
-        noteUser: orderData!.noteUser,
-        noteAdmin: orderData!.noteAdmin,
-        createdAt: orderData!.createdAt,
-        updatedAt: DateTime.now().toIso8601String(),
-        items: orderData!.items,
-      );
-
-      Get.snackbar(
-        'نجح',
-        'تم إلغاء الطلب بنجاح',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green.withValues(alpha: 0.9),
-        colorText: Colors.white,
-        duration: const Duration(seconds: 3),
-      );
-    } else {
-      String errorMessage = 'حدث خطأ أثناء إلغاء الطلب';
-
-      if (response is Map && response.containsKey('message')) {
-        errorMessage = response['message'] ?? errorMessage;
-      }
-
-      Get.snackbar(
-        'خطأ',
-        errorMessage,
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withValues(alpha: 0.9),
-        colorText: Colors.white,
-        duration: const Duration(seconds: 4),
-      );
-    }
+          showCustomGetSnack(
+            isGreen: true,
+            text: 'تم إلغاء الطلب بنجاح',
+            duration: const Duration(seconds: 3),
+          );
+        } else {
+          showCustomGetSnack(
+            isGreen: false,
+            text: response['message'] ?? 'حدث خطأ أثناء إلغاء الطلب',
+            duration: const Duration(seconds: 4),
+          );
+        }
+      },
+    );
 
     update();
   }

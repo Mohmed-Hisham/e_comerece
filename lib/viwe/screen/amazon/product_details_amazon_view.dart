@@ -8,7 +8,6 @@ import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/shared/widget_shared/loadingimage.dart';
 import 'package:e_comerece/core/shared/widget_shared/open_full_image.dart';
 import 'package:e_comerece/core/shared/widget_shared/shimmerbar.dart';
-import 'package:e_comerece/core/servises/currency_service.dart';
 import 'package:e_comerece/viwe/screen/amazon/product_for_page_detils_amazon.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_app_bar.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_right_1.dart';

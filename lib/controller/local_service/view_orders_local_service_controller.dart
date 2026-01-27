@@ -4,6 +4,13 @@ import 'package:e_comerece/data/repository/local_service/local_service_repo_impl
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+enum LocalServiceStatus {
+  awaitingPayment, // بانتظار الدفع
+  processing, // قيد التنفيذ
+  completed, // مكتمل
+  cancelled, // ملغي
+}
+
 class ViewOrdersLocalServiceController extends GetxController {
   final LocalServiceRepoImpl localServiceRepoImpl = LocalServiceRepoImpl(
     apiService: Get.find(),
@@ -17,6 +24,35 @@ class ViewOrdersLocalServiceController extends GetxController {
   bool isLoadMore = false;
   bool hasMoreData = true;
   final ScrollController scrollController = ScrollController();
+
+  // Status filter
+  LocalServiceStatus serviceStatus = LocalServiceStatus.awaitingPayment;
+
+  String localServiceStatusToString(LocalServiceStatus status) {
+    switch (status) {
+      case LocalServiceStatus.awaitingPayment:
+        return "AwaitingPayment";
+      case LocalServiceStatus.processing:
+        return "Processing";
+      case LocalServiceStatus.completed:
+        return "Completed";
+      case LocalServiceStatus.cancelled:
+        return "Cancelled";
+    }
+  }
+
+  String getStatusTitle(LocalServiceStatus status) {
+    switch (status) {
+      case LocalServiceStatus.awaitingPayment:
+        return "بانتظار الدفع";
+      case LocalServiceStatus.processing:
+        return "قيد التنفيذ";
+      case LocalServiceStatus.completed:
+        return "مكتمل";
+      case LocalServiceStatus.cancelled:
+        return "ملغي";
+    }
+  }
 
   @override
   void onInit() {
@@ -39,7 +75,8 @@ class ViewOrdersLocalServiceController extends GetxController {
     statusrequest = Statusrequest.loading;
     update();
 
-    final response = await localServiceRepoImpl.getRequestsByUser(
+    final response = await localServiceRepoImpl.getServiceRequests(
+      status: localServiceStatusToString(serviceStatus),
       page: currentPage,
       pageSize: pageSize,
     );
@@ -68,7 +105,8 @@ class ViewOrdersLocalServiceController extends GetxController {
     currentPage++;
     update();
 
-    final response = await localServiceRepoImpl.getRequestsByUser(
+    final response = await localServiceRepoImpl.getServiceRequests(
+      status: localServiceStatusToString(serviceStatus),
       page: currentPage,
       pageSize: pageSize,
     );

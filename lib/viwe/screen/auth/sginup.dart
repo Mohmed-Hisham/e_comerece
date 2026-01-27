@@ -77,7 +77,7 @@ class Sginup extends StatelessWidget {
                         controller: controller.username,
                         hint: StringsKeys.usernameHint.tr,
                         validator: (val) {
-                          return vlidateInPut(
+                          return validateInput(
                             val: val!,
                             min: 3,
                             max: 50,
@@ -96,7 +96,7 @@ class Sginup extends StatelessWidget {
                         hint: StringsKeys.emailHint.tr,
                         controller: controller.email,
                         validator: (val) {
-                          return vlidateInPut(
+                          return validateInput(
                             val: val!,
                             min: 6,
                             max: 100,
@@ -109,7 +109,7 @@ class Sginup extends StatelessWidget {
                         hint: StringsKeys.phoneHint.tr,
                         controller: controller.phone,
                         validator: (val) {
-                          return vlidateInPut(val: val!, min: 10, max: 20);
+                          return validateInput(val: val!, min: 10, max: 20);
                         },
                         focusNode: controller.phoneFocus,
                       ),
@@ -117,7 +117,7 @@ class Sginup extends StatelessWidget {
                         controller: controller.passowrd,
                         hint: StringsKeys.passwordHint.tr,
                         validator: (val) {
-                          return vlidateInPut(val: val!, min: 6, max: 100);
+                          return validateInput(val: val!, min: 6, max: 100);
                         },
                         obscureText: controller.visibility,
                         focusNode: controller.passwordFocus,

@@ -37,6 +37,7 @@ class ChatPriceApprovalHandler extends StatelessWidget {
               'service_model': controller.serviceModel,
               'quoted_price': double.parse(approvedPrice!),
               'chat_id': controller.chatid,
+              'reference_id': controller.referenceid,
             },
           );
           if (result == true) {

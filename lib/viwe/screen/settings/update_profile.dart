@@ -46,7 +46,7 @@ class UpdateProfile extends StatelessWidget {
                       controller: controller.nameController,
                       hint: StringsKeys.usernameHint.tr,
                       validator: (val) {
-                        return vlidateInPut(
+                        return validateInput(
                           val: val!,
                           min: 3,
                           max: 50,
@@ -58,7 +58,7 @@ class UpdateProfile extends StatelessWidget {
                       hint: StringsKeys.phoneHint.tr,
                       controller: controller.phoneController,
                       validator: (val) {
-                        return vlidateInPut(val: val!, min: 10, max: 20);
+                        return validateInput(val: val!, min: 10, max: 20);
                       },
                     ),
                     Custombuttonauth(

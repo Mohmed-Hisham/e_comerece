@@ -56,7 +56,7 @@ class ServiceOrderContent extends StatelessWidget {
                     children: [
                       Expanded(
                         child: Text(
-                          controller.service.serviceName ?? "",
+                          controller.service?.serviceName ?? "",
                           style: Theme.of(context).textTheme.headlineMedium
                               ?.copyWith(
                                 color: Appcolor.black,
@@ -99,7 +99,7 @@ class ServiceOrderContent extends StatelessWidget {
                   ),
                   SizedBox(height: 5.h),
                   Text(
-                    controller.service.serviceDesc ?? "",
+                    controller.service?.serviceDesc ?? "",
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: Colors.grey[600],
                       height: 1.5,

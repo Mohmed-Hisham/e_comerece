@@ -110,7 +110,7 @@ class NotifcationService {
 
   /// Initialize local notifications plugin
   static Future<void> _initializeLocalNotifications() async {
-    const androidSettings = AndroidInitializationSettings('launcher_icon');
+    const androidSettings = AndroidInitializationSettings('ic_launcher');
     const iosSettings = DarwinInitializationSettings();
     const settings = InitializationSettings(
       android: androidSettings,

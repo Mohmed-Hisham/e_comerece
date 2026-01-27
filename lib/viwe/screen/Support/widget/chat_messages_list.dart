@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/constant/sliver_spacer.dart';
 import 'package:e_comerece/core/loacallization/strings_keys.dart';
@@ -104,14 +105,7 @@ class ChatMessagesList extends StatelessWidget {
                       ),
                     ),
                     width: 280.w,
-                    child: Text(
-                      message.message ?? "",
-                      textAlign: TextAlign.end,
-                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                        color: Appcolor.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                    child: _buildMessageContent(context, message),
                   ),
                   Container(
                     margin: const EdgeInsets.symmetric(horizontal: 10),
@@ -126,6 +120,128 @@ class ChatMessagesList extends StatelessWidget {
           },
         ),
       ],
+    );
+  }
+
+  /// Build message content based on message type
+  Widget _buildMessageContent(BuildContext context, Message message) {
+    // Check if it's an image message
+    final bool isImageMessage =
+        message.messageType == 'image' ||
+        (message.imageUrl != null && message.imageUrl!.isNotEmpty);
+
+    if (isImageMessage &&
+        message.imageUrl != null &&
+        message.imageUrl!.isNotEmpty) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Image
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8.r),
+            child: GestureDetector(
+              onTap: () => _showFullImage(context, message.imageUrl!),
+              child: CachedNetworkImage(
+                imageUrl: message.imageUrl!,
+                width: 250.w,
+                height: 200.h,
+                fit: BoxFit.cover,
+                placeholder: (context, url) => Container(
+                  width: 250.w,
+                  height: 200.h,
+                  color: Appcolor.gray.withValues(alpha: 0.3),
+                  child: Center(
+                    child: CircularProgressIndicator(
+                      color: Appcolor.white,
+                      strokeWidth: 2,
+                    ),
+                  ),
+                ),
+                errorWidget: (context, url, error) => Container(
+                  width: 250.w,
+                  height: 200.h,
+                  color: Appcolor.gray.withValues(alpha: 0.3),
+                  child: Icon(
+                    Icons.broken_image,
+                    color: Appcolor.white,
+                    size: 40.sp,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          // Caption text if exists
+          if (message.message != null && message.message!.isNotEmpty) ...[
+            SizedBox(height: 8.h),
+            Text(
+              message.message!,
+              textAlign: TextAlign.start,
+              style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                color: Appcolor.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ],
+      );
+    }
+
+    // Text message
+    return Text(
+      message.message ?? "",
+      textAlign: TextAlign.start,
+      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+        color: Appcolor.white,
+        fontWeight: FontWeight.bold,
+      ),
+    );
+  }
+
+  /// Show full image in dialog
+  void _showFullImage(BuildContext context, String imageUrl) {
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: EdgeInsets.all(10.w),
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            InteractiveViewer(
+              panEnabled: true,
+              minScale: 0.5,
+              maxScale: 4,
+              child: CachedNetworkImage(
+                imageUrl: imageUrl,
+                fit: BoxFit.contain,
+                placeholder: (context, url) => Center(
+                  child: CircularProgressIndicator(color: Appcolor.white),
+                ),
+                errorWidget: (context, url, error) => Icon(
+                  Icons.broken_image,
+                  color: Appcolor.white,
+                  size: 50.sp,
+                ),
+              ),
+            ),
+            Positioned(
+              top: 0,
+              right: 0,
+              child: IconButton(
+                onPressed: () => Navigator.pop(context),
+                icon: Container(
+                  padding: EdgeInsets.all(8.w),
+                  decoration: BoxDecoration(
+                    color: Appcolor.black.withValues(alpha: 0.7),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(Icons.close, color: Appcolor.white, size: 24.sp),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -100,13 +100,18 @@ class LocalServiceRepoImpl implements LocalServiceRepo {
   }
 
   @override
-  Future<Either<Failure, ServiceRequestModel>> getRequestsByUser({
+  Future<Either<Failure, ServiceRequestModel>> getServiceRequests({
+    String? status,
     required int page,
     required int pageSize,
   }) async {
     try {
       final response = await apiService.get(
-        endpoint: ApisUrl.getRequestsByUser(page: page, pageSize: pageSize),
+        endpoint: ApisUrl.getServiceRequests(
+          status: status,
+          page: page,
+          pageSize: pageSize,
+        ),
       );
       if (response.statusCode == 200) {
         return Right(ServiceRequestModel.fromJson(response.data));

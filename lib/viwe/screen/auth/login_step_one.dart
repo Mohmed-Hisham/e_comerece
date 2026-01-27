@@ -59,7 +59,7 @@ class LoginStepOne extends StatelessWidget {
                           color: Appcolor.gray,
                         ),
                         validator: (val) {
-                          return vlidateInPut(
+                          return validateInput(
                             val: val!,
                             min: 6,
                             max: 100,

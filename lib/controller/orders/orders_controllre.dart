@@ -6,13 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 enum OrderStatus {
-  pendingReview, // انتظار مراجعة الأدمن
-  adminNotes, // ملاحظات من الأدمن - اليوزر يراجع
-  approved, // موافقة الأدمن
-  awaitingPayment, // انتظار الدفع
-  paid, // تم الدفع
-  processing, // في الطلب
-  inTransit, // في الطريق
+  pending, // قيد المراجعة
+  actionRequired, // تعديل من الإدارة - بانتظار العميل
+  processing, // قيد التنفيذ
+  shipped, // تم الشحن
   completed, // مكتمل
   cancelled, // ملغي
 }
@@ -28,24 +25,18 @@ class OrdersControllreImp extends OrdersControllre {
   List<Orders> data = [];
   ScrollController scrollController = ScrollController();
 
-  OrderStatus orderStatus = OrderStatus.pendingReview;
+  OrderStatus orderStatus = OrderStatus.pending;
 
   String orderStatusToString(OrderStatus status) {
     switch (status) {
-      case OrderStatus.pendingReview:
-        return "PendingReview";
-      case OrderStatus.adminNotes:
-        return "AdminNotes";
-      case OrderStatus.approved:
-        return "Approved";
-      case OrderStatus.awaitingPayment:
-        return "AwaitingPayment";
-      case OrderStatus.paid:
-        return "Paid";
+      case OrderStatus.pending:
+        return "Pending";
+      case OrderStatus.actionRequired:
+        return "ActionRequired";
       case OrderStatus.processing:
         return "Processing";
-      case OrderStatus.inTransit:
-        return "InTransit";
+      case OrderStatus.shipped:
+        return "Shipped";
       case OrderStatus.completed:
         return "Completed";
       case OrderStatus.cancelled:
@@ -55,24 +46,18 @@ class OrdersControllreImp extends OrdersControllre {
 
   String getStatusTitle(OrderStatus status) {
     switch (status) {
-      case OrderStatus.pendingReview:
-        return "Pending Review";
-      case OrderStatus.adminNotes:
-        return "Admin Notes";
-      case OrderStatus.approved:
-        return "Approved";
-      case OrderStatus.awaitingPayment:
-        return "Awaiting Payment";
-      case OrderStatus.paid:
-        return "Paid";
+      case OrderStatus.pending:
+        return "قيد المراجعة";
+      case OrderStatus.actionRequired:
+        return "بانتظار العميل";
       case OrderStatus.processing:
-        return "Processing";
-      case OrderStatus.inTransit:
-        return "In Transit";
+        return "قيد التنفيذ";
+      case OrderStatus.shipped:
+        return "تم الشحن";
       case OrderStatus.completed:
-        return "Completed";
+        return "مكتمل";
       case OrderStatus.cancelled:
-        return "Cancelled";
+        return "ملغي";
     }
   }
 

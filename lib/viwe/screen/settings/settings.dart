@@ -72,26 +72,26 @@ class Setting extends StatelessWidget {
                           color: Appcolor.primrycolor,
                         ),
                       ),
-                      GetBuilder<SettingsControllerImple>(
-                        id: 'notification',
-                        builder: (controller) {
-                          return ListTile(
-                            title: Text(
-                              StringsKeys.disableNotifications.tr,
-                              style: styleAll,
-                            ),
-                            trailing: Switch(
-                              trackColor: WidgetStatePropertyAll(
-                                Appcolor.primrycolor,
-                              ),
-                              value: controller.isNotification,
-                              onChanged: (val) {
-                                controller.disableNotification();
-                              },
-                            ),
-                          );
-                        },
-                      ),
+                      // GetBuilder<SettingsControllerImple>(
+                      //   id: 'notification',
+                      //   builder: (controller) {
+                      //     return ListTile(
+                      //       title: Text(
+                      //         StringsKeys.disableNotifications.tr,
+                      //         style: styleAll,
+                      //       ),
+                      //       trailing: Switch(
+                      //         trackColor: WidgetStatePropertyAll(
+                      //           Appcolor.primrycolor,
+                      //         ),
+                      //         value: controller.isNotification,
+                      //         onChanged: (val) {
+                      //           controller.disableNotification();
+                      //         },
+                      //       ),
+                      //     );
+                      //   },
+                      // ),
                       ListTile(
                         onTap: () {
                           controller.goToHistryChats();

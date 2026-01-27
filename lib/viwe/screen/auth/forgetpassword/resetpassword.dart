@@ -54,7 +54,7 @@ class Resetpassword extends StatelessWidget {
                       controller: controller.passWord,
                       hint: StringsKeys.passwordHint.tr,
                       validator: (val) {
-                        return vlidateInPut(val: val!, min: 6, max: 100);
+                        return validateInput(val: val!, min: 6, max: 100);
                       },
                     ),
                     Custtextfeld(
@@ -62,7 +62,7 @@ class Resetpassword extends StatelessWidget {
                       controller: controller.repassWord,
                       hint: StringsKeys.confirmPasswordHint.tr,
                       validator: (val) {
-                        return vlidateInPut(val: val!, min: 6, max: 100);
+                        return validateInput(val: val!, min: 6, max: 100);
                       },
                     ),
                     SizedBox(height: 10.h),

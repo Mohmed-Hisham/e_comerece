@@ -61,18 +61,19 @@ class ChatInputField extends StatelessWidget {
                             validator: (val) {
                               // Allow empty text if image is selected
                               if (controller.selectedImage != null) return null;
-                              return vlidateInPut(
+                              return validateInput(
                                 val: val!,
                                 min: 1,
                                 max: 100000,
                               );
                             },
-                            minLines: 2,
+                            minLines: 1,
                             maxLines: 10,
                             hint: isInputDisabled
                                 ? StringsKeys.chatEnded.tr
                                 : StringsKeys.yourMessage.tr,
                             controller: controller.messsageController,
+                            onChanged: (text) => controller.onTextChanged(text),
                           ),
                         ),
                       ),

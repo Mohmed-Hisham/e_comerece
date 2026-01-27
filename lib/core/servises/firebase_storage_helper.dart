@@ -21,18 +21,43 @@ class FirebaseStorageHelper {
     String? customFileName,
   }) async {
     try {
+      // Check if file exists
+      if (!await file.exists()) {
+        log('Error: File does not exist');
+        return null;
+      }
+
       // Generate unique file name if not provided
       final String extension = path.extension(file.path);
       final String fileName = customFileName ?? '${_uuid.v4()}$extension';
 
+      log('Starting upload: $folder/$fileName');
+
       // Create reference to the file location
       final Reference ref = _storage.ref().child(folder).child(fileName);
 
-      // Upload file
-      final UploadTask uploadTask = ref.putFile(file);
+      // Upload file with metadata
+      final UploadTask uploadTask = ref.putFile(
+        file,
+        SettableMetadata(contentType: _getContentType(extension)),
+      );
 
-      // Wait for upload to complete
-      final TaskSnapshot snapshot = await uploadTask;
+      // Listen to upload progress
+      uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
+        final progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        log('Upload progress: ${progress.toStringAsFixed(2)}%');
+      });
+
+      // Wait for upload to complete with timeout
+      final TaskSnapshot snapshot = await uploadTask.timeout(
+        const Duration(minutes: 2),
+        onTimeout: () {
+          log('Upload timeout after 2 minutes');
+          uploadTask.cancel();
+          throw Exception('Upload timeout');
+        },
+      );
 
       // Get download URL
       final String downloadUrl = await snapshot.ref.getDownloadURL();
@@ -45,6 +70,23 @@ class FirebaseStorageHelper {
     } catch (e) {
       log('Error uploading file: $e');
       return null;
+    }
+  }
+
+  /// Get content type based on file extension
+  static String _getContentType(String extension) {
+    switch (extension.toLowerCase()) {
+      case '.jpg':
+      case '.jpeg':
+        return 'image/jpeg';
+      case '.png':
+        return 'image/png';
+      case '.gif':
+        return 'image/gif';
+      case '.webp':
+        return 'image/webp';
+      default:
+        return 'application/octet-stream';
     }
   }
 

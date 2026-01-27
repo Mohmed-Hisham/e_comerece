@@ -48,7 +48,7 @@ class Custshearchappbar extends StatelessWidget {
 
               child: TextFormField(
                 validator: (value) {
-                  return vlidateInPut(val: value!, min: 3, max: 100);
+                  return validateInput(val: value!, min: 3, max: 100);
                 },
                 focusNode: focusNode,
                 onChanged: onChanged,

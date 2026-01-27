@@ -15,7 +15,7 @@ import 'package:e_comerece/data/model/local_service/service_request_model.dart';
 import 'package:e_comerece/data/repository/local_service/local_service_repo_impl.dart';
 
 class ServiceOrderController extends GetxController {
-  late LocalServiceData service;
+  LocalServiceData? service;
   late double quotedPrice;
   TextEditingController noteController = .new();
 
@@ -27,15 +27,45 @@ class ServiceOrderController extends GetxController {
   Statusrequest statusRequest = Statusrequest.none;
 
   String? chatId;
+  String? referenceId;
 
   @override
   void onInit() {
     service = Get.arguments['service_model'];
     quotedPrice = Get.arguments['quoted_price'];
     chatId = Get.arguments['chat_id'];
+    referenceId = Get.arguments['reference_id'];
     log("quotedPrice $quotedPrice");
     log("chatId $chatId");
+    log("referenceId $referenceId");
+
+    if (service == null && referenceId != null) {
+      _fetchServiceByReferenceId();
+    }
     super.onInit();
+  }
+
+  Future<void> _fetchServiceByReferenceId() async {
+    statusRequest = Statusrequest.loading;
+    update();
+
+    var response = await localServiceRepoImpl.getLocalServiceById(referenceId!);
+
+    response.fold(
+      (failure) {
+        statusRequest = Statusrequest.failuer;
+        showCustomGetSnack(isGreen: false, text: failure.errorMessage);
+      },
+      (model) {
+        if (model.data.isNotEmpty) {
+          service = model.data.first;
+          statusRequest = Statusrequest.success;
+        } else {
+          statusRequest = Statusrequest.noData;
+        }
+      },
+    );
+    update();
   }
 
   @override
@@ -45,6 +75,11 @@ class ServiceOrderController extends GetxController {
   }
 
   void confirmOrder() async {
+    if (service == null) {
+      showCustomGetSnack(isGreen: false, text: "Service not found");
+      return;
+    }
+
     statusRequest = Statusrequest.loading;
     update();
     if (!Get.isDialogOpen!) {
@@ -63,7 +98,7 @@ class ServiceOrderController extends GetxController {
 
     var response = await localServiceRepoImpl.addServiceRequest(
       ServiceRequestData(
-        serviceId: service.id,
+        serviceId: service!.id,
         note: noteController.text,
         addressId: addressid,
         quotedPrice: quotedPrice,

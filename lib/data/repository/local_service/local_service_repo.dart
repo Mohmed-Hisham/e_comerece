@@ -18,7 +18,8 @@ abstract class LocalServiceRepo {
   Future<Either<Failure, String>> addServiceRequest(
     ServiceRequestData serviceRequestData,
   );
-  Future<Either<Failure, ServiceRequestModel>> getRequestsByUser({
+  Future<Either<Failure, ServiceRequestModel>> getServiceRequests({
+    String? status,
     required int page,
     required int pageSize,
   });

@@ -52,21 +52,21 @@ class EditAddress extends StatelessWidget {
                   hint: StringsKeys.addressTitle.tr,
                   controller: addressTitle,
                   validator: (val) {
-                    return vlidateInPut(val: val!, min: 2, max: 100);
+                    return validateInput(val: val!, min: 2, max: 100);
                   },
                 ),
                 Custtextfeld(
                   hint: StringsKeys.city.tr,
                   controller: city,
                   validator: (val) {
-                    return vlidateInPut(val: val!, min: 2, max: 100);
+                    return validateInput(val: val!, min: 2, max: 100);
                   },
                 ),
                 Custtextfeld(
                   hint: StringsKeys.street.tr,
                   controller: street,
                   validator: (val) {
-                    return vlidateInPut(val: val!, min: 2, max: 100);
+                    return validateInput(val: val!, min: 2, max: 100);
                   },
                 ),
                 Custtextfeld(hint: StringsKeys.floor.tr, controller: floor),

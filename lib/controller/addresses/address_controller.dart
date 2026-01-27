@@ -243,7 +243,7 @@ class AddressControllerImpl extends AddressController {
 
     // Using simple logic for autocomplete status as it's not converted to repo yet
     if (response != null && response['status'] == 'OK') {
-      final places = MapPlacesModel.fromJson(response);
+      final places = MapPlacesModel.fromJson(response as Map<String, dynamic>);
       predictions.clear();
       predictions = places.predictions;
       autoCompletestatusrequest = Statusrequest.success;
@@ -259,7 +259,9 @@ class AddressControllerImpl extends AddressController {
     var response = await mapPlacesServiese.getPlaceDetails(id, sessionToken!);
 
     if (response != null && response['status'] == 'OK') {
-      final details = MapPlacesDetailsModel.fromJson(response);
+      final details = MapPlacesDetailsModel.fromJson(
+        response as Map<String, dynamic>,
+      );
       resultDetails = details.result!;
       ubdataCameraPosition(
         isontap: true,

@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:e_comerece/controller/local_service/local_service_order_details_controller.dart';
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/class/handlingdataviwe.dart';

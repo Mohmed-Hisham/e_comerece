@@ -49,8 +49,18 @@ class ApisUrl {
 
   static String getServiceRequestDetails(String id) =>
       '$_baseUrl/LocalService/GetRequestDetailsById/$id';
-  static String getRequestsByUser({required int page, required int pageSize}) =>
-      '$_baseUrl/LocalService/GetRequestsByUser?page=$page&pageSize=$pageSize';
+  static String getServiceRequests({
+    String? status,
+    required int page,
+    required int pageSize,
+  }) {
+    String url =
+        '$_baseUrl/LocalService/GetServiceRequests?pageNumber=$page&pageSize=$pageSize';
+    if (status != null) {
+      url += '&status=$status';
+    }
+    return url;
+  }
 
   //                        Order
 
@@ -59,6 +69,8 @@ class ApisUrl {
   static const String createOrder = '$_baseUrl/Order/Create';
   static String orderDetails(String id) =>
       '$_baseUrl/Order/GetOrderDetails/$id';
+  static String cancelOrder(String orderId) =>
+      '$_baseUrl/Order/CancelOrder/$orderId';
 
   //                         GetCheckOutReviewFee
   static const String getCheckOutReviewFee =

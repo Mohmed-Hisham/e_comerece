@@ -5,7 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 Widget loadingWidget({Color? color, double? height, double? width}) => Center(
   child: SizedBox(
     height: height ?? 28.h,
-    width: width ?? 26.w,
+    width: width ?? 28.w,
     child: CircularProgressIndicator(
       color: color ?? Appcolor.primrycolor,
       strokeWidth: 3,

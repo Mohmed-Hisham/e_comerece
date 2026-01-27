@@ -1,6 +1,8 @@
 import 'package:e_comerece/core/constant/color.dart';
+import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:e_comerece/viwe/screen/local_serviess/orders/widget/section_card.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:jiffy/jiffy.dart';
 
 class OrderSummaryCard extends StatelessWidget {
@@ -18,22 +20,25 @@ class OrderSummaryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SectionCard(
-      title: 'معلومات الخدمة',
+      title: StringsKeys.serviceInfoTitle.tr,
       icon: Icons.receipt_long,
       children: [
-        InfoRow(label: 'رقم الخدمة', value: '#${requestId ?? 'N/A'}'),
+        InfoRow(
+          label: StringsKeys.serviceNumber.tr,
+          value: '#${requestId ?? 'N/A'}',
+        ),
         const SectionDivider(),
         InfoRow(
-          label: 'تاريخ الخدمة',
+          label: StringsKeys.serviceDate.tr,
           value: createdAt != null
               ? Jiffy.parse(
                   createdAt!.toIso8601String(),
                 ).format(pattern: 'yyyy-MM-dd HH:mm')
-              : 'غير متوفر',
+              : StringsKeys.notAvailable.tr,
         ),
         const SectionDivider(),
         InfoRow(
-          label: 'حالة الخدمة',
+          label: StringsKeys.serviceStatus.tr,
           value: _getStatusLabel(status),
           valueColor: _getStatusColor(status),
         ),
@@ -44,20 +49,20 @@ class OrderSummaryCard extends StatelessWidget {
   String _getStatusLabel(String? status) {
     switch (status?.toLowerCase()) {
       case 'new':
-        return 'جديد';
+        return StringsKeys.statusNew.tr;
       case 'price_quoted':
-        return 'تم تحديد السعر';
+        return StringsKeys.statusPriceQuoted.tr;
       case 'approved':
-        return 'تم الموافقة';
+        return StringsKeys.statusApproved.tr;
       case 'rejected':
       case 'declined':
-        return 'مرفوض';
+        return StringsKeys.statusRejected.tr;
       case 'completed':
-        return 'مكتمل';
+        return StringsKeys.statusCompleted.tr;
       case 'cancelled':
-        return 'ملغي';
+        return StringsKeys.statusCancelled.tr;
       default:
-        return status ?? 'غير معروف';
+        return status ?? StringsKeys.statusUnknown.tr;
     }
   }
 

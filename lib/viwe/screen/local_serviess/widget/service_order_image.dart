@@ -16,10 +16,10 @@ class ServiceOrderImage extends StatelessWidget {
         right: 0,
         height: 350.h,
         child: Hero(
-          tag: controller.service.id ?? "service_image",
+          tag: controller.service?.id ?? "service_image",
           child: CustomCachedImage(
             radius: 0,
-            imageUrl: controller.service.serviceImage ?? "",
+            imageUrl: controller.service?.serviceImage ?? "",
           ),
         ),
       ),

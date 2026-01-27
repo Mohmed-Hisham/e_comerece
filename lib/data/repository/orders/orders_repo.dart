@@ -16,4 +16,6 @@ abstract class OrdersRepo {
   );
 
   Future<Either<Failure, OrderDetailsModel>> getOrderDetails(String orderId);
+
+  Future<Either<Failure, Map<String, dynamic>>> cancelOrder(String orderId);
 }

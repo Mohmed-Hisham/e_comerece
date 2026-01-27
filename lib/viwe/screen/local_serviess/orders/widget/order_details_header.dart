@@ -1,11 +1,12 @@
+import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 class OrderDetailsHeader extends StatelessWidget {
-  final String title;
+  final String? title;
 
-  const OrderDetailsHeader({super.key, this.title = 'تفاصيل الخدمة'});
+  const OrderDetailsHeader({super.key, this.title});
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +24,7 @@ class OrderDetailsHeader extends StatelessWidget {
           ),
           SizedBox(width: 10.w),
           Text(
-            title,
+            title ?? StringsKeys.serviceDetailsTitle.tr,
             style: TextStyle(
               fontSize: 24.sp,
               fontWeight: FontWeight.bold,

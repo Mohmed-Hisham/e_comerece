@@ -99,7 +99,7 @@ class LocalServiceOrderCard extends StatelessWidget {
                       ),
                       SizedBox(width: 12.w),
                       Text(
-                        '#${"" ?? 'N/A'}',
+                        '#${""}',
                         style: TextStyle(
                           fontSize: 16.sp,
                           fontWeight: FontWeight.bold,

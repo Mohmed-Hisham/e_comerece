@@ -14,7 +14,7 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
 abstract class AlibabaByimageController extends GetxController {
-  Future<void> fetchShearchByimage(String imageUrl);
+  Future<void> fetchShearchByimage(String imageUrl, {bool isLoadMore = false});
   void pickimage();
   void gotoditels({
     required int id,
@@ -96,8 +96,8 @@ class AlibabaByimageControllerllerImple extends AlibabaByimageController {
   @override
   void onInit() {
     super.onInit();
-    imageUrl = Get.arguments["url"];
-    image = Get.arguments["image"];
+    imageUrl = Get.arguments["url"] as String?;
+    image = Get.arguments["image"] as XFile?;
     fetchShearchByimage(imageUrl!);
   }
 

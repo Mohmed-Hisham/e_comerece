@@ -72,7 +72,7 @@ class Forgetpassword extends StatelessWidget {
                         );
                       },
                       hint: StringsKeys.emailHint.tr,
-                      validator: (val) => vlidateInPut(
+                      validator: (val) => validateInput(
                         val: val!,
                         min: 6,
                         max: 100,

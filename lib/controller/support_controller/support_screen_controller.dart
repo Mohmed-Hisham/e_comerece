@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:io';
 import 'package:e_comerece/core/class/statusrequest.dart';
+import 'package:e_comerece/core/servises/custom_getx_snak_bar.dart';
 import 'package:e_comerece/core/servises/serviese.dart';
 import 'package:e_comerece/core/servises/firebase_storage_helper.dart';
 import 'package:e_comerece/data/repository/local_service/local_service_repo_impl.dart';
@@ -59,11 +60,25 @@ class SupportScreenControllerImp extends SupportScreenController {
   String? serviceid;
   String? referenceid;
 
+  // Typing indicator
+  bool isOtherUserTyping = false;
+  String? typingUserType;
+  Timer? _typingTimer;
+  bool _isTyping = false;
+  StreamSubscription? _typingSubscription;
+
   @override
   void onClose() {
     super.onClose();
     messsageController.dispose();
     scrollController.dispose();
+    _typingTimer?.cancel();
+    _typingSubscription?.cancel();
+    // Leave chat and stop typing when closing
+    if (chatid != null && Get.isRegistered<SignalRService>()) {
+      Get.find<SignalRService>().sendStopTyping(chatid!, 'user');
+      Get.find<SignalRService>().leaveChat(chatid!);
+    }
   }
 
   /// Pick image from gallery
@@ -116,19 +131,35 @@ class SupportScreenControllerImp extends SupportScreenController {
     update();
 
     try {
-      // Upload image to Firebase Storage
-      final imageUrl = await FirebaseStorageHelper.uploadImage(
-        imageFile: selectedImage!,
-        folder: 'chat_images',
-      );
+      log('Starting image upload...');
+
+      // Upload image to Firebase Storage with timeout
+      final imageUrl =
+          await FirebaseStorageHelper.uploadImage(
+            imageFile: selectedImage!,
+            folder: 'chat_images',
+          ).timeout(
+            const Duration(minutes: 2),
+            onTimeout: () {
+              log('Image upload timeout');
+              return null;
+            },
+          );
 
       if (imageUrl == null) {
         log('Error: Image upload failed');
         isUploadingImage = false;
         sendMessagestatusrequest = Statusrequest.failuer;
+        selectedImage = null;
         update();
+        showCustomGetSnack(
+          isGreen: false,
+          text: 'فشل رفع الصورة، حاول مرة أخرى',
+        );
         return null;
       }
+
+      log('Image uploaded successfully: $imageUrl');
 
       // Clear selected image after upload
       selectedImage = null;
@@ -145,7 +176,9 @@ class SupportScreenControllerImp extends SupportScreenController {
       log('Error uploading image: $e');
       isUploadingImage = false;
       sendMessagestatusrequest = Statusrequest.failuer;
+      selectedImage = null;
       update();
+      showCustomGetSnack(isGreen: false, text: 'حدث خطأ أثناء رفع الصورة');
       return null;
     }
   }
@@ -226,14 +259,80 @@ class SupportScreenControllerImp extends SupportScreenController {
     signalRSubscription = signalR.messages.listen((event) {
       if (event['type'] == 'ReceiveMessage') {
         Message newMessage = Message.fromJson(event['data']);
-        // Check if message already exists to avoid duplicates (SignalR might send our own message back)
-        if (!messageList.any((m) => m.id == newMessage.id)) {
+        // Check if message already exists to avoid duplicates
+        // تحقق من الـ id أو من المحتوى + المرسل + الوقت القريب
+        final isDuplicate = messageList.any((m) {
+          if (m.id == newMessage.id) return true;
+          // تحقق من الرسائل المحلية التي أضفناها (لها id مؤقت)
+          if (m.message == newMessage.message &&
+              m.senderType == newMessage.senderType &&
+              m.senderId == newMessage.senderId) {
+            return true;
+          }
+          return false;
+        });
+
+        if (!isDuplicate) {
           messageList.insert(0, newMessage);
           update();
           scrollToBottom();
         }
       }
     });
+
+    // Setup typing indicator listener
+    _setupTypingListener(signalR);
+  }
+
+  void _setupTypingListener(SignalRService signalR) {
+    _typingSubscription = signalR.typingStream.listen((event) {
+      final eventType = event['type'];
+      final senderType = event['senderType'];
+
+      // Only show typing indicator if the other party is typing (admin/bot)
+      if (senderType != 'user') {
+        if (eventType == 'UserTyping') {
+          isOtherUserTyping = true;
+          typingUserType = senderType;
+          update();
+        } else if (eventType == 'UserStoppedTyping') {
+          isOtherUserTyping = false;
+          typingUserType = null;
+          update();
+        }
+      }
+    });
+  }
+
+  /// Called when user starts typing
+  void onUserTyping() {
+    if (chatid == null || _isTyping) return;
+
+    _isTyping = true;
+    Get.find<SignalRService>().sendTyping(chatid!, 'user');
+
+    // Reset timer
+    _typingTimer?.cancel();
+    _typingTimer = Timer(const Duration(seconds: 3), () {
+      _stopTyping();
+    });
+  }
+
+  /// Called when user stops typing
+  void _stopTyping() {
+    if (chatid == null || !_isTyping) return;
+
+    _isTyping = false;
+    Get.find<SignalRService>().sendStopTyping(chatid!, 'user');
+  }
+
+  /// Called when text changes
+  void onTextChanged(String text) {
+    if (text.isNotEmpty) {
+      onUserTyping();
+    } else {
+      _stopTyping();
+    }
   }
 
   Stream<List<Message>>? messagesStream;
@@ -244,7 +343,11 @@ class SupportScreenControllerImp extends SupportScreenController {
     required String referenceid,
     String? imagelink,
   }) async {
-    if (messsageController.text.trim().isEmpty) return null;
+    // السماح بإرسال صورة بدون نص، لكن منع إرسال رسالة فارغة بدون صورة
+    final hasImage = imagelink != null && imagelink.isNotEmpty;
+    final hasText = messsageController.text.trim().isNotEmpty;
+
+    if (!hasImage && !hasText) return null;
 
     sendMessagestatusrequest = Statusrequest.loading;
     update();
@@ -254,9 +357,7 @@ class SupportScreenControllerImp extends SupportScreenController {
       "content": messsageController.text,
       "senderId": myServises.sharedPreferences.getString("id"),
       "senderType": "user",
-      "messageType": (imagelink != null && imagelink.isNotEmpty)
-          ? "image"
-          : "text",
+      "messageType": hasImage ? "image" : "text",
       "imageUrl": imagelink,
     };
 
@@ -290,11 +391,34 @@ class SupportScreenControllerImp extends SupportScreenController {
       }
     }
 
+    // حفظ محتوى الرسالة قبل مسحها
+    final messageContent = messsageController.text;
+
     await Get.find<SignalRService>().sendChatMessage(messageDto);
+
+    // إضافة الرسالة محلياً فوراً لتظهر في الشاشة
+    final localMessage = Message(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      chatId: chatid,
+      senderType: "user",
+      senderName: myServises.sharedPreferences.getString("username") ?? "User",
+      message: messageContent,
+      isRead: 0,
+      isReplied: 0,
+      replyTo: null,
+      createdAt: DateTime.now(),
+      imageUrl: imagelink,
+      senderId: myServises.sharedPreferences.getString("id"),
+      messageType: (imagelink != null && imagelink.isNotEmpty)
+          ? "image"
+          : "text",
+    );
+    messageList.insert(0, localMessage);
 
     messsageController.clear();
     sendMessagestatusrequest = Statusrequest.success;
     update();
+    scrollToBottom();
 
     return chatid;
   }
@@ -311,7 +435,9 @@ class SupportScreenControllerImp extends SupportScreenController {
 
       if (response.statusCode == 200) {
         final messagesModel = GetMessagesModel.fromJson(response.data);
-        messageList = messagesModel.messages;
+        // عكس ترتيب الرسائل لتكون الأحدث في البداية (index 0)
+        // لأن الـ ListView يستخدم reverse: true
+        messageList = messagesModel.messages.reversed.toList();
         getMessagestatusrequest = Statusrequest.success;
       } else {
         getMessagestatusrequest = Statusrequest.failuer;

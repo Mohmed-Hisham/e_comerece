@@ -106,7 +106,7 @@ class Login extends StatelessWidget {
                                   ),
                           ),
                           validator: (val) {
-                            return vlidateInPut(val: val!, min: 6, max: 100);
+                            return validateInput(val: val!, min: 6, max: 100);
                           },
                         ),
                       ),
@@ -124,7 +124,7 @@ class Login extends StatelessWidget {
                             size: 25.sp,
                           ),
                           validator: (val) {
-                            return vlidateInPut(val: val!, min: 4, max: 100);
+                            return validateInput(val: val!, min: 4, max: 100);
                           },
                         ),
                       ),

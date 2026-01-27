@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 
 enum ValidateType { username, email }
 
-vlidateInPut({
+validateInput({
   required String val,
   required int min,
   required int max,

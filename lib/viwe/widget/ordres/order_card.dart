@@ -5,6 +5,7 @@ import 'package:e_comerece/core/funcations/format_date.dart';
 import 'package:e_comerece/core/shared/widget_shared/fix_url.dart';
 import 'package:e_comerece/core/shared/widget_shared/loadingimage.dart';
 import 'package:e_comerece/data/model/ordres/get_order_with_status_model.dart';
+import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -15,19 +16,13 @@ class OrderCard extends StatelessWidget {
 
   Color _getStatusColor(String? status) {
     switch (status) {
-      case 'PendingReview':
+      case 'Pending':
         return Appcolor.threecolor;
-      case 'AdminNotes':
+      case 'ActionRequired':
         return Appcolor.reed;
-      case 'Approved':
-        return const Color(0xff4CAF50);
-      case 'AwaitingPayment':
-        return Colors.orange;
-      case 'Paid':
-        return Colors.blue;
       case 'Processing':
         return Colors.purple;
-      case 'InTransit':
+      case 'Shipped':
         return Colors.cyan;
       case 'Completed':
         return const Color(0xff2E7D32);
@@ -40,24 +35,18 @@ class OrderCard extends StatelessWidget {
 
   String _getStatusLabel(String? status) {
     switch (status) {
-      case 'PendingReview':
-        return 'Pending Review';
-      case 'AdminNotes':
-        return 'Admin Notes';
-      case 'Approved':
-        return 'Approved';
-      case 'AwaitingPayment':
-        return 'Awaiting Payment';
-      case 'Paid':
-        return 'Paid';
+      case 'Pending':
+        return StringsKeys.orderStatusPending.tr;
+      case 'ActionRequired':
+        return StringsKeys.orderStatusActionRequired.tr;
       case 'Processing':
-        return 'Processing';
-      case 'InTransit':
-        return 'In Transit';
+        return StringsKeys.orderStatusProcessing.tr;
+      case 'Shipped':
+        return StringsKeys.orderStatusShipped.tr;
       case 'Completed':
-        return 'Completed';
+        return StringsKeys.orderStatusCompleted.tr;
       case 'Cancelled':
-        return 'Cancelled';
+        return StringsKeys.orderStatusCancelled.tr;
       default:
         return status ?? 'Unknown';
     }

@@ -8,8 +8,10 @@ import 'package:signalr_netcore/hub_connection_builder.dart';
 class SignalRService extends GetxService {
   late HubConnection hubConnection;
   final _messageController = StreamController<Map<String, dynamic>>.broadcast();
+  final _typingController = StreamController<Map<String, dynamic>>.broadcast();
 
   Stream<Map<String, dynamic>> get messages => _messageController.stream;
+  Stream<Map<String, dynamic>> get typingStream => _typingController.stream;
 
   // Constructor is now empty as _initializeHub is moved to onInit
   SignalRService();
@@ -70,6 +72,29 @@ class SignalRService extends GetxService {
     hubConnection.on('ErrorMessage', (arguments) {
       log("SignalR Error: ${arguments?[0]}");
     });
+
+    // Typing indicator handlers
+    hubConnection.on('UserTyping', (arguments) {
+      log("User Typing: $arguments");
+      if (arguments != null && arguments.length >= 2) {
+        _typingController.add({
+          'type': 'UserTyping',
+          'userId': arguments[0],
+          'senderType': arguments[1],
+        });
+      }
+    });
+
+    hubConnection.on('UserStoppedTyping', (arguments) {
+      log("User Stopped Typing: $arguments");
+      if (arguments != null && arguments.length >= 2) {
+        _typingController.add({
+          'type': 'UserStoppedTyping',
+          'userId': arguments[0],
+          'senderType': arguments[1],
+        });
+      }
+    });
   }
 
   Future<void> joinChat(String chatId) async {
@@ -114,10 +139,47 @@ class SignalRService extends GetxService {
     }
   }
 
+  /// Send typing indicator
+  Future<void> sendTyping(String chatId, String senderType) async {
+    try {
+      if (hubConnection.state == HubConnectionState.Connected) {
+        await hubConnection.invoke('Typing', args: [chatId, senderType]);
+        log('Typing indicator sent for chat: $chatId');
+      }
+    } catch (e) {
+      log('Error sending typing indicator: $e');
+    }
+  }
+
+  /// Send stop typing indicator
+  Future<void> sendStopTyping(String chatId, String senderType) async {
+    try {
+      if (hubConnection.state == HubConnectionState.Connected) {
+        await hubConnection.invoke('StopTyping', args: [chatId, senderType]);
+        log('Stop typing indicator sent for chat: $chatId');
+      }
+    } catch (e) {
+      log('Error sending stop typing indicator: $e');
+    }
+  }
+
+  /// Leave chat group
+  Future<void> leaveChat(String chatId) async {
+    try {
+      if (hubConnection.state == HubConnectionState.Connected) {
+        await hubConnection.invoke('LeaveChat', args: [chatId]);
+        log('Left Chat Group: $chatId');
+      }
+    } catch (e) {
+      log('Error leaving chat: $e');
+    }
+  }
+
   @override
   void onClose() {
     hubConnection.stop();
     _messageController.close();
+    _typingController.close();
     super.onClose();
   }
 }

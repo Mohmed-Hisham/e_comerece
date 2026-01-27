@@ -80,9 +80,9 @@ class ProductDetailsControllerImple extends ProductDetailsController {
   @override
   void onInit() {
     super.onInit();
-    productId = Get.arguments['product_id'];
-    lang = Get.arguments['lang'];
-    title = Get.arguments['title'];
+    productId = Get.arguments['product_id'] as int?;
+    lang = Get.arguments['lang'] as String?;
+    title = Get.arguments['title'] as String?;
     fetchProductDetails();
     // Future.delayed(const Duration(seconds: 1), () {
     //   searshText();
@@ -213,7 +213,7 @@ class ProductDetailsControllerImple extends ProductDetailsController {
         quantity = 1;
         inCart = false;
       } else {
-        quantity = newQty['quantity'];
+        quantity = newQty['quantity'] as int;
         inCart = true;
         update(['quantity']);
       }

@@ -285,21 +285,21 @@ class Addlocattion extends StatelessWidget {
                   hint: "address title",
                   controller: addressTitle,
                   validator: (val) {
-                    return vlidateInPut(val: val!, min: 3, max: 100);
+                    return validateInput(val: val!, min: 3, max: 100);
                   },
                 ),
                 Custtextfeld(
                   hint: "city",
                   controller: city,
                   validator: (val) {
-                    return vlidateInPut(val: val!, min: 2, max: 100);
+                    return validateInput(val: val!, min: 2, max: 100);
                   },
                 ),
                 Custtextfeld(
                   hint: "street",
                   controller: street,
                   validator: (val) {
-                    return vlidateInPut(val: val!, min: 2, max: 100);
+                    return validateInput(val: val!, min: 2, max: 100);
                   },
                 ),
                 Custtextfeld(hint: "floor", controller: floor),

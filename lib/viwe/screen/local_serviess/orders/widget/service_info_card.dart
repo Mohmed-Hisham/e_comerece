@@ -1,9 +1,11 @@
 import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/helper/custom_cached_image.dart';
+import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:e_comerece/data/model/local_service/service_request_details_model.dart';
 import 'package:e_comerece/viwe/screen/local_serviess/orders/widget/section_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 
 class ServiceInfoCard extends StatelessWidget {
   final Service service;
@@ -14,7 +16,7 @@ class ServiceInfoCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SectionCard(
-      title: 'تفاصيل الخدمة',
+      title: StringsKeys.serviceDetailsTitle.tr,
       icon: Icons.design_services,
       children: [
         Row(

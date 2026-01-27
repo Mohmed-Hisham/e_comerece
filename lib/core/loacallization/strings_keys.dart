@@ -112,17 +112,14 @@ class StringsKeys {
   static const String orders = "orders";
   static const String orderDetailsTitle = "orderDetailsTitle";
   static const String products = "products";
-  static const String orderStatusPendingApproval = "orderStatusPendingApproval";
-  static const String orderStatusApproved = "orderStatusApproved";
-  static const String orderStatusRejected = "orderStatusRejected";
-  static const String orderStatusOrdered = "orderStatusOrdered";
+  static const String orderStatusPending = "orderStatusPending";
+  static const String orderStatusActionRequired = "orderStatusActionRequired";
+  static const String orderStatusProcessing = "orderStatusProcessing";
+  static const String orderStatusShipped = "orderStatusShipped";
   static const String orderStatusCompleted = "orderStatusCompleted";
   static const String orderStatusCancelled = "orderStatusCancelled";
   static const String orderTrackingTitle = "orderTrackingTitle";
-  static const String orderStatusProcessing = "orderStatusProcessing";
-  static const String orderStatusRejectedTitle = "orderStatusRejectedTitle";
   static const String orderStatusCancelledTitle = "orderStatusCancelledTitle";
-  static const String orderRejectedBody = "orderRejectedBody";
   static const String orderCancelledBody = "orderCancelledBody";
   static const String orderPrefix = "orderPrefix";
   static const String unknownStatus = "unknownStatus";
@@ -284,4 +281,23 @@ class StringsKeys {
   static const String privacyPolicy = "privacyPolicy";
   static const String termsAndConditions = "termsAndConditions";
   static const String legal = "legal";
+
+  // Service Order Details Keys
+  static const String serviceAddressTitle = "serviceAddressTitle";
+  static const String serviceBuilding = "serviceBuilding";
+  static const String serviceFloor = "serviceFloor";
+  static const String serviceApartment = "serviceApartment";
+  static const String notesTitle = "notesTitle";
+  static const String serviceDetailsTitle = "serviceDetailsTitle";
+  static const String serviceInfoTitle = "serviceInfoTitle";
+  static const String serviceNumber = "serviceNumber";
+  static const String serviceDate = "serviceDate";
+  static const String serviceStatus = "serviceStatus";
+  static const String statusNew = "statusNew";
+  static const String statusPriceQuoted = "statusPriceQuoted";
+  static const String statusApproved = "statusApproved";
+  static const String statusRejected = "statusRejected";
+  static const String statusCompleted = "statusCompleted";
+  static const String statusCancelled = "statusCancelled";
+  static const String statusUnknown = "statusUnknown";
 }

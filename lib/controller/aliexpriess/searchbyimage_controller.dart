@@ -65,8 +65,8 @@ class SearchByimageControllerllerImple extends SearchByimageController {
   @override
   void onInit() {
     super.onInit();
-    imageUrl = Get.arguments["url"];
-    image = Get.arguments["image"];
+    imageUrl = Get.arguments["url"] as String?;
+    image = Get.arguments["image"] as XFile?;
     fetchShearchByimage(imageUrl!);
   }
 

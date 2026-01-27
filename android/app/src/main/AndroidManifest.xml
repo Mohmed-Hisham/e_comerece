@@ -6,11 +6,11 @@
   <application
     android:label="Saltk"
     android:name="${applicationName}"
-    android:icon="@mipmap/ic_launcher"
+    android:icon="@mipmap/launcher_icon"
   >
     <meta-data
       android:name="com.google.android.geo.API_KEY"
-      android:value="AIzaSyCwjcCY8zzSJevRUyyGxaM-f5DI6dHH_zk"
+      android:value="AIzaSyAXns5s1sHwP1HBvX68Bo0GeLJqRPe2ObQ"
     />
     <activity
       android:name=".MainActivity"

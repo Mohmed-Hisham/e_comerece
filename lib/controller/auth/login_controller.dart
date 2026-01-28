@@ -2,6 +2,7 @@ import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/constant/string_const.dart';
 import 'package:e_comerece/core/funcations/loading_dialog.dart';
+import 'package:e_comerece/core/helper/send_otp_helper.dart';
 import 'package:e_comerece/core/servises/serviese.dart';
 import 'package:e_comerece/data/repository/Auth_Repo/auth_repo_impl.dart';
 import 'package:e_comerece/data/model/AuthModel/auth_model.dart';
@@ -27,7 +28,9 @@ class LoginControllerimplment extends LoginController {
   late TextEditingController code;
 
   late String name;
-  late String email;
+  late String identifier; // إيميل أو هاتف
+  late bool isPhone;
+  String? verificationId; // للتحقق عبر SMS
 
   MyServises myServises = Get.find();
 
@@ -55,8 +58,34 @@ class LoginControllerimplment extends LoginController {
       if (!Get.isDialogOpen!) {
         loadingDialog();
       }
+
+      // إذا كان التحقق عبر SMS، نتحقق من الكود عبر Firebase أولاً
+      if (isPhone && verificationId != null) {
+        final smsResult = await SendOtpHelper.signInWithSmsCode(
+          verificationId: verificationId!,
+          smsCode: code.text.trim(),
+        );
+
+        final smsVerified = smsResult.fold((error) {
+          if (Get.isDialogOpen ?? false) Get.back();
+          showCustomGetSnack(isGreen: false, text: error);
+          return false;
+        }, (success) => success);
+
+        if (!smsVerified) {
+          statusrequest = Statusrequest.failuer;
+          update();
+          return;
+        }
+      }
+
+      // الآن نكمل تسجيل الدخول مع السيرفر
       var response = await authRepoImpl.loginStepTwo(
-        AuthData(email: email, password: passowrd.text, code: code.text),
+        AuthData(
+          identifier: identifier,
+          password: passowrd.text,
+          code: isPhone ? null : code.text, // لا نرسل الكود للسيرفر إذا كان SMS
+        ),
       );
 
       final r = response.fold((l) => l, (r) => r);
@@ -114,8 +143,10 @@ class LoginControllerimplment extends LoginController {
   @override
   void onInit() {
     super.onInit();
-    name = Get.arguments['name'];
-    email = Get.arguments['email'];
+    name = Get.arguments['name'] ?? '';
+    identifier = Get.arguments['identifier'] ?? Get.arguments['email'] ?? '';
+    isPhone = Get.arguments['isPhone'] ?? false;
+    verificationId = Get.arguments['verificationId'];
 
     passowrd = .new();
     code = .new();
@@ -132,6 +163,9 @@ class LoginControllerimplment extends LoginController {
 
   @override
   goToForgetpassword() {
-    Get.toNamed(AppRoutesname.forgetpassword, arguments: {"email": email});
+    Get.toNamed(
+      AppRoutesname.forgetpassword,
+      arguments: {"identifier": identifier},
+    );
   }
 }

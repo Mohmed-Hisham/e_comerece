@@ -39,11 +39,8 @@ class CheckoutPriceBreakdownCard extends StatelessWidget {
 
               if (controller.discountAmount > 0)
                 _buildRow(
-                  "${StringsKeys.promocodeDiscount.tr} (${controller.discountPercentage}%)",
-                  currencyService.convertAndFormat(
-                    amount: controller.discountAmount,
-                    from: 'USD',
-                  ),
+                  "${StringsKeys.promocodeDiscount.tr} (${controller.discountPercentage.toInt()}%)",
+                  "-${currencyService.convertAndFormat(amount: controller.discountAmount, from: 'USD')}",
                 ),
 
               if (controller.selectedTip > 0)

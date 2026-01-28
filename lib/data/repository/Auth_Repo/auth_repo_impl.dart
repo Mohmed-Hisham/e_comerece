@@ -171,4 +171,26 @@ class AuthRepoImpl implements AuthRepo {
       return Left(ServerFailure(e.toString()));
     }
   }
+
+  @override
+  Future<Either<Failure, AuthModel>> confirmPhoneVerification(
+    AuthData authData,
+  ) async {
+    try {
+      var response = await apiService.post(
+        endPoints: ApisUrl.confirmPhoneVerification,
+        data: authData.toJson(),
+      );
+      if (response.statusCode == 200) {
+        return Right(AuthModel.fromJson(response.data));
+      } else {
+        return Left(ServerFailure(response.data['message']));
+      }
+    } catch (e) {
+      if (e is DioException) {
+        return Left(ServerFailure.fromDioError(e));
+      }
+      return Left(ServerFailure(e.toString()));
+    }
+  }
 }

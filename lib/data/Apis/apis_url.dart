@@ -10,6 +10,8 @@ class ApisUrl {
   static const String verifyCode = '$_baseUrl/Auth/verify-code';
   static const String resetPassword = '$_baseUrl/Auth/reset-password';
   static const String updateUser = '$_baseUrl/Auth/update-user';
+  static const String confirmPhoneVerification =
+      '$_baseUrl/Auth/confirm-phone-verification';
 
   //                               Favorit
   static const String addFavorite = '$_baseUrl/Favorite/Add';

@@ -76,6 +76,20 @@ class MyTrenslition extends Translations {
       "verifyCodeBody": "الرجاء إدخال الرمز المكون من 5 أرقام المرسل إلى",
       "incorrectCode": "الكود غير صحيح",
       "passwordNotMatch": "كلمة المرور غير متطابقة",
+
+      // Verification Method Translations - Arabic
+      "chooseVerificationMethod": "اختر طريقة التحقق",
+      "verificationMethodBody": "كيف تريد استلام رمز التحقق؟",
+      "sendViaSms": "إرسال عبر رسالة SMS",
+      "sendViaSmsDesc": "سيتم إرسال الرمز إلى رقم هاتفك",
+      "sendViaEmail": "إرسال عبر البريد الإلكتروني",
+      "sendViaEmailDesc": "سيتم إرسال الرمز إلى بريدك الإلكتروني",
+      "smsSendFailed": "فشل إرسال رسالة SMS",
+      "tryAnotherMethod": "يرجى اختيار طريقة أخرى أو المحاولة لاحقاً",
+      "trySmsAgain": "حاول مرة أخرى عبر SMS",
+      "tryWithEmail": "حاول بالبريد الإلكتروني بدلاً من ذلك",
+      "emailOrPhoneHint": "البريد الإلكتروني أو رقم الهاتف",
+
       "textloading":
           "نقوم الآن بجلب بيانات المنتج. أحيانًا قد يستغرق الأمر بضع ثوانٍ بسبب حجم البيانات وعدد المنتجات — نشكرك على صبرك.",
       "all": "الكل",
@@ -403,6 +417,21 @@ class MyTrenslition extends Translations {
           "Enter 5-digits code we sent you\n on your phone number",
       "incorrectCode": "Incorrect code",
       "passwordNotMatch": "Passwords do not match",
+
+      // Verification Method Translations - English
+      "chooseVerificationMethod": "Choose Verification Method",
+      "verificationMethodBody":
+          "How would you like to receive the verification code?",
+      "sendViaSms": "Send via SMS",
+      "sendViaSmsDesc": "Code will be sent to your phone number",
+      "sendViaEmail": "Send via Email",
+      "sendViaEmailDesc": "Code will be sent to your email address",
+      "smsSendFailed": "Failed to send SMS",
+      "tryAnotherMethod": "Please choose another method or try again later",
+      "trySmsAgain": "Try SMS again",
+      "tryWithEmail": "Try with email instead",
+      "emailOrPhoneHint": "Email or Phone Number",
+
       "textloading":
           'We\'re fetching the product details now. This may take a few seconds due to the amount of data and the number of products — thank you for your patience.',
       "all": "All",

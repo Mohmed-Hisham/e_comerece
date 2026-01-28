@@ -117,9 +117,11 @@ class Item {
 
   factory Item.fromJson(Map<String, dynamic> json) {
     return Item(
-      itemId: json["itemId"],
+      itemId: json["itemId"]?.toString(),
       title: json["title"],
-      sales: json["sales"],
+      sales: json["sales"] is String
+          ? int.tryParse(json["sales"])
+          : json["sales"],
       itemUrl: json["itemUrl"],
       image: json["image"],
       sku: json["sku"] == null ? null : Sku.fromJson(json["sku"]),

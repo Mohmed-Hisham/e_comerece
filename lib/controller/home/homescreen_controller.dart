@@ -610,6 +610,7 @@ class HomescreenControllerImple extends HomescreenController {
         "title": title,
         "goods_id": goodsid,
         "category_id": categoryid,
+        "lang": enOrArShein(),
       },
     );
   }

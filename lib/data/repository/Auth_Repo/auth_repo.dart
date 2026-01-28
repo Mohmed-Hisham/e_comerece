@@ -11,4 +11,7 @@ abstract class AuthRepo {
   Future<Either<Failure, AuthModel>> resetPassword(AuthData authData);
   Future<Either<Failure, AuthModel>> updateUser(AuthData authData);
   Future<Either<Failure, bool>> updateFcmToken(String fcmToken);
+  Future<Either<Failure, AuthModel>> confirmPhoneVerification(
+    AuthData authData,
+  );
 }

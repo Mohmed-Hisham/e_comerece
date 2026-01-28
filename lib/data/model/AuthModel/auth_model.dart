@@ -37,6 +37,7 @@ class AuthData {
     this.token,
     this.code,
     this.newPassword,
+    this.identifier,
   });
 
   final String? name;
@@ -46,6 +47,7 @@ class AuthData {
   final String? token;
   final String? code;
   final String? newPassword;
+  final String? identifier;
 
   factory AuthData.fromJson(Map<String, dynamic> json) {
     return AuthData(
@@ -66,5 +68,6 @@ class AuthData {
     if (password != null) "password": password,
     if (code != null) "code": code,
     if (newPassword != null) "newPassword": newPassword,
+    if (identifier != null) "identifier": identifier,
   };
 }

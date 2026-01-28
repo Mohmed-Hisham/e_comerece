@@ -143,7 +143,7 @@ class OrderAddress {
 class OrderCoupon {
   String? id;
   String? couponName;
-  double? couponDiscount;
+  int? couponDiscount;
   String? couponPlatfrom;
   String? couponExpired;
   int? usageLimit;
@@ -162,7 +162,7 @@ class OrderCoupon {
   OrderCoupon.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     couponName = json['coupon_name'];
-    couponDiscount = (json['coupon_discount'] as num?)?.toDouble();
+    couponDiscount = json['coupon_discount'];
     couponPlatfrom = json['coupon_platfrom'];
     couponExpired = json['coupon_expired'];
     usageLimit = json['usage_limit'];

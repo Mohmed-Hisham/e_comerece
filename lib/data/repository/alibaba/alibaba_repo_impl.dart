@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:e_comerece/data/Apis/alibaba_urls.dart';
@@ -62,7 +60,6 @@ class AlibabaRepoImpl implements AlibabaRepo {
           "",
         ),
       );
-      log(response.data.toString());
       if (response.statusCode == 200) {
         return Right(ProductAliBabaHomeModel.fromJson(response.data['data']));
       } else {

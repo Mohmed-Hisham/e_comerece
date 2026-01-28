@@ -34,7 +34,7 @@ class CouponData {
 
   final String? id;
   final String? couponName;
-  final double? couponDiscount;
+  final int? couponDiscount;
   final String? couponPlatfrom;
   final DateTime? couponExpired;
   final int? usageLimit;
@@ -44,7 +44,7 @@ class CouponData {
     return CouponData(
       id: json["id"],
       couponName: json["coupon_name"],
-      couponDiscount: json["coupon_discount"]?.toDouble(),
+      couponDiscount: json["coupon_discount"],
       couponPlatfrom: json["coupon_platfrom"],
       couponExpired: DateTime.tryParse(json["coupon_expired"] ?? ""),
       usageLimit: json["usage_limit"],

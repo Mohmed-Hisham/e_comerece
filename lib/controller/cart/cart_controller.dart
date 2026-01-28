@@ -328,7 +328,7 @@ class CartControllerImpl extends CartController {
         if (responsModel.data?.couponPlatfrom!.toLowerCase() == "all") {
           couponId = responsModel.data?.id;
           couponCode = responsModel.data?.couponName;
-          discountPercentage = responsModel.data?.couponDiscount;
+          discountPercentage = responsModel.data?.couponDiscount?.toDouble();
           calculateDiscountAmount();
           totalbuild = total();
           showCustomGetSnack(
@@ -345,7 +345,8 @@ class CartControllerImpl extends CartController {
                 responsModel.data?.couponPlatfrom!.toLowerCase()) {
               couponId = responsModel.data?.id;
               couponCode = responsModel.data?.couponName;
-              discountPercentage = responsModel.data?.couponDiscount;
+              discountPercentage = responsModel.data?.couponDiscount
+                  ?.toDouble();
               calculateDiscountAmount();
               totalbuild = total();
               showCustomGetSnack(

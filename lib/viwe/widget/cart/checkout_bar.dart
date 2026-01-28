@@ -128,6 +128,16 @@ class CheckoutBar extends StatelessWidget {
                         ],
                       ),
                     ),
+                    if (controller.discountAmount != null &&
+                        controller.discountPercentage != null)
+                      Text(
+                        "${StringsKeys.discount.tr}: ${controller.discountPercentage!.toInt()}%",
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.green,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     if (controller.discountAmount != null)
                       Text(
                         currencyService.convertAndFormat(

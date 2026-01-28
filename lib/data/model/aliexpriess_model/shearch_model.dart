@@ -155,9 +155,13 @@ class Item {
   });
 
   Item.fromJson(Map<String, dynamic> json) {
-    itemId = json['itemId'];
+    itemId = json['itemId'] is String
+        ? int.tryParse(json['itemId'])
+        : json['itemId'];
     title = json['title'];
-    sales = json['sales'];
+    sales = json['sales'] is String
+        ? int.tryParse(json['sales'])
+        : json['sales'];
     itemUrl = json['itemUrl'];
     image = json['image'];
     video = json['video'];
@@ -182,7 +186,7 @@ class Def {
   Def({this.price, this.promotionPrice});
 
   Def.fromJson(Map<String, dynamic> json) {
-    price = json['price'];
-    promotionPrice = json['promotionPrice'];
+    price = json['price']?.toString();
+    promotionPrice = json['promotionPrice']?.toString();
   }
 }

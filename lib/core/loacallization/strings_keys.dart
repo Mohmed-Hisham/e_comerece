@@ -52,6 +52,20 @@ class StringsKeys {
   static const String passwordNotMatch = "passwordNotMatch";
   static const String successResetPasswordTitle = "successResetPasswordTitle";
   static const String successResetPasswordBody = "successResetPasswordBody";
+
+  // Verification Method Keys
+  static const String chooseVerificationMethod = "chooseVerificationMethod";
+  static const String verificationMethodBody = "verificationMethodBody";
+  static const String sendViaSms = "sendViaSms";
+  static const String sendViaSmsDesc = "sendViaSmsDesc";
+  static const String sendViaEmail = "sendViaEmail";
+  static const String sendViaEmailDesc = "sendViaEmailDesc";
+  static const String smsSendFailed = "smsSendFailed";
+  static const String tryAnotherMethod = "tryAnotherMethod";
+  static const String trySmsAgain = "trySmsAgain";
+  static const String tryWithEmail = "tryWithEmail";
+  static const String emailOrPhoneHint = "emailOrPhoneHint";
+
   static const String all = "all";
   static const String productFromAliexpress = "productFromAliexpress";
   static const String loadMoreAliexpress = "loadMoreAliexpress";

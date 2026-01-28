@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:e_comerece/data/Apis/aliexpriss_urls.dart';
 import 'package:e_comerece/core/class/api_service.dart';
 import 'package:e_comerece/core/class/failure.dart';
+import 'dart:developer';
 import 'package:e_comerece/data/model/aliexpriess_model/category_model.dart';
 import 'package:e_comerece/data/model/aliexpriess_model/hotproductmodel.dart';
 import 'package:e_comerece/data/model/aliexpriess_model/itemdetelis_model.dart';
@@ -39,14 +40,15 @@ class AlexpressRepoImpl implements AlexpressRepo {
   ) async {
     try {
       var response = await apiService.get(
-        endpoint: AliexprissUrls.hotProducts(lang, page, "women fashion"),
+        endpoint: AliexprissUrls.hotProducts(lang, page, "clothes"),
       );
       if (response.statusCode == 200) {
         return Right(HotProductModel.fromJson(response.data['data']));
       } else {
         return Left(ServerFailure(response.data["message"]));
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
+      log(e.toString() + stackTrace.toString());
       if (e is DioException) {
         return Left(ServerFailure.fromDioError(e));
       }
@@ -69,7 +71,9 @@ class AlexpressRepoImpl implements AlexpressRepo {
       } else {
         return Left(ServerFailure(response.data["message"]));
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
+      log(e.toString() + stackTrace.toString());
+
       if (e is DioException) {
         return Left(ServerFailure.fromDioError(e));
       }
@@ -115,7 +119,9 @@ class AlexpressRepoImpl implements AlexpressRepo {
       } else {
         return Left(ServerFailure(response.data["message"]));
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
+      log(e.toString() + stackTrace.toString());
+
       if (e is DioException) {
         return Left(ServerFailure.fromDioError(e));
       }

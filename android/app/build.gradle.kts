@@ -38,15 +38,9 @@ kotlinOptions {
 
     buildTypes {
         getByName("release") {
-            // Kotlin DSL uses isMinifyEnabled / isShrinkResources
-            isMinifyEnabled = true
-            isShrinkResources = true
-
-            // ملفات ProGuard / R8
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                file("proguard-rules.pro")
-            )
+            // إيقاف الـ minification لتجنب حذف الكلاسات المهمة
+            isMinifyEnabled = false
+            isShrinkResources = false
 
             // signing config كما كان عندك
             signingConfig = signingConfigs.getByName("debug")

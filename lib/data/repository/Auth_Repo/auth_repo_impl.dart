@@ -193,4 +193,24 @@ class AuthRepoImpl implements AuthRepo {
       return Left(ServerFailure(e.toString()));
     }
   }
+
+  @override
+  Future<Either<Failure, AuthModel>> googleLogin(String googleToken) async {
+    try {
+      var response = await apiService.post(
+        endPoints: ApisUrl.googleLogin,
+        data: {"googleToken": googleToken},
+      );
+      if (response.statusCode == 200) {
+        return Right(AuthModel.fromJson(response.data));
+      } else {
+        return Left(ServerFailure(response.data['message']));
+      }
+    } catch (e) {
+      if (e is DioException) {
+        return Left(ServerFailure.fromDioError(e));
+      }
+      return Left(ServerFailure(e.toString()));
+    }
+  }
 }

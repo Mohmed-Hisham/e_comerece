@@ -1,7 +1,7 @@
 import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:get/get.dart';
 
-enum ValidateType { username, email }
+enum ValidateType { username, email, emailOrPhone }
 
 validateInput({
   required String val,
@@ -20,6 +20,16 @@ validateInput({
   if (type == ValidateType.email) {
     if (!GetUtils.isEmail(val)) {
       return StringsKeys.notValidEmail.tr;
+    }
+  }
+  if (type == ValidateType.emailOrPhone) {
+    // إزالة المسافات والشرطات للتحقق من رقم الهاتف
+    final cleanVal = val.replaceAll(RegExp(r'[\s\-\(\)]'), '');
+    // يدعم أرقام مصر (11 رقم) واليمن (9 أرقام)
+    final isPhone = RegExp(r'^\+?[0-9]{9,15}$').hasMatch(cleanVal);
+    final isEmail = GetUtils.isEmail(val);
+    if (!isEmail && !isPhone) {
+      return StringsKeys.notValidEmailOrPhone.tr;
     }
   }
 

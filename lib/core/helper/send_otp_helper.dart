@@ -2,12 +2,11 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:dartz/dartz.dart';
+import 'package:e_comerece/core/helper/hepler.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-/// نوع طريقة التحقق المختارة
 enum VerificationMethod { sms, email }
 
-/// بيانات التحقق عبر SMS
 class VerificationData {
   final String verificationId;
   final int? resendToken;
@@ -15,7 +14,6 @@ class VerificationData {
   VerificationData({required this.verificationId, this.resendToken});
 }
 
-/// نتيجة إرسال OTP - تحتوي على رسالة خطأ للمستخدم أو بيانات التحقق
 class OtpResult {
   final bool success;
   final String? userFriendlyError; // رسالة ودية للمستخدم
@@ -51,40 +49,6 @@ class OtpResult {
 }
 
 class SendOtpHelper {
-  /// تحويل أخطاء Firebase إلى رسائل ودية للمستخدم
-  static String _getFirebaseErrorFriendlyMessage(
-    String? code,
-    String? message,
-  ) {
-    // سجل الخطأ التقني للمطورين
-    log('Firebase Error: code=$code, message=$message');
-
-    switch (code) {
-      case 'invalid-phone-number':
-        return 'رقم الهاتف غير صحيح، يرجى التأكد من الرقم';
-      case 'too-many-requests':
-        return 'تم إرسال طلبات كثيرة، يرجى المحاولة لاحقاً';
-      case 'quota-exceeded':
-        return 'تم تجاوز الحد المسموح، يرجى المحاولة لاحقاً';
-      case 'app-not-authorized':
-      case 'captcha-check-failed':
-      case 'missing-client-identifier':
-        return 'حدث خطأ في التحقق، يرجى المحاولة مرة أخرى';
-      case 'network-request-failed':
-        return 'تحقق من اتصالك بالإنترنت';
-      case 'session-expired':
-        return 'انتهت صلاحية الجلسة، يرجى المحاولة مرة أخرى';
-      case 'invalid-verification-code':
-        return 'رمز التحقق غير صحيح';
-      case 'invalid-verification-id':
-        return 'انتهت صلاحية الرمز، يرجى طلب رمز جديد';
-      default:
-        // رسالة عامة للأخطاء غير المعروفة
-        return 'فشل إرسال رمز التحقق، يرجى المحاولة عبر البريد الإلكتروني';
-    }
-  }
-
-  /// إرسال OTP عبر رقم الهاتف
   static Future<OtpResult> verifyPhone(
     String phoneNumber, {
     Duration timeout = const Duration(seconds: 60),
@@ -132,7 +96,7 @@ class SendOtpHelper {
           if (!completer.isCompleted) {
             completer.complete(
               OtpResult.failure(
-                userFriendlyError: _getFirebaseErrorFriendlyMessage(
+                userFriendlyError: Hepler.getFirebaseErrorFriendlyMessage(
                   e.code,
                   e.message,
                 ),
@@ -186,9 +150,7 @@ class SendOtpHelper {
     return result;
   }
 
-  /// التحقق من رمز SMS المُدخل
-  /// Returns Either<errorMessage, bool>
-  static Future<Either<String, bool>> signInWithSmsCode({
+  static Future<Either<String, String>> signInWithSmsCode({
     required String verificationId,
     required String smsCode,
   }) async {
@@ -204,32 +166,26 @@ class SendOtpHelper {
         credential,
       );
 
-      // نجاح
-      log('Signed in UID: ${userCredential.user?.uid}');
-      return const Right(true);
+      String? idToken = await userCredential.user?.getIdToken();
+      log('🔑 Firebase ID Token: $idToken');
+
+      if (idToken == null) {
+        return const Left('فشل الحصول على التوكن');
+      }
+
+      return Right(idToken);
     } on FirebaseAuthException catch (e) {
       log(
         'FirebaseAuthException during signInWithSmsCode: ${e.code} - ${e.message}',
       );
-      // رسالة ودية للمستخدم بدلاً من رسالة Firebase
-      final friendlyError = _getFirebaseErrorFriendlyMessage(e.code, e.message);
+      final friendlyError = Hepler.getFirebaseErrorFriendlyMessage(
+        e.code,
+        e.message,
+      );
       return Left(friendlyError);
     } catch (e, st) {
       log('Unknown error during signInWithSmsCode: $e\n$st');
       return const Left('حدث خطأ غير متوقع، يرجى المحاولة مرة أخرى');
-    }
-  }
-
-  /// Legacy method - للتوافق مع الكود القديم
-  static Future<Either<String, VerificationData>> verifyPhoneLegacy(
-    String phoneNumber, {
-    Duration timeout = const Duration(seconds: 60),
-  }) async {
-    final result = await verifyPhone(phoneNumber, timeout: timeout);
-    if (result.success && result.verificationData != null) {
-      return Right(result.verificationData!);
-    } else {
-      return Left(result.userFriendlyError ?? 'فشل إرسال رمز التحقق');
     }
   }
 }

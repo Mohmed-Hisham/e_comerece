@@ -2,6 +2,8 @@ import 'package:e_comerece/core/class/failure.dart';
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/funcations/loading_dialog.dart';
+import 'package:e_comerece/core/helper/auth_success_handler.dart';
+import 'package:e_comerece/core/helper/google_sign_in_helper.dart';
 import 'package:e_comerece/core/helper/input_type_helper.dart';
 import 'package:e_comerece/core/helper/send_otp_helper.dart';
 import 'package:e_comerece/core/loacallization/strings_keys.dart';
@@ -15,6 +17,7 @@ import 'package:get/get.dart';
 abstract class LoginStepOneController extends GetxController {
   goToSginup();
   loginStepOne();
+  signInWithGoogle();
 }
 
 class LLoginStepOneControllerimplment extends LoginStepOneController {
@@ -31,6 +34,49 @@ class LLoginStepOneControllerimplment extends LoginStepOneController {
   // بيانات التحقق عبر SMS
   VerificationData? smsVerificationData;
 
+  // 🇩‍ لكشف البلد ديناميكياً
+  String? detectedCountry; // 'EG', 'YE', or null
+
+  @override
+  void onInit() {
+    super.onInit();
+    // مراقبة الإدخال لكشف البلد
+    email.addListener(_onInputChanged);
+  }
+
+  void _onInputChanged() {
+    final input = email.text.trim();
+    final newCountry = InputTypeHelper.detectCountry(input);
+
+    if (newCountry != detectedCountry) {
+      detectedCountry = newCountry;
+      update(['country_prefix']); // تحديث الـ UI فقط للـ prefix
+    }
+  }
+
+  // الحصول على بيانات البلد
+  String? get countryFlag {
+    switch (detectedCountry) {
+      case 'EG':
+        return '🇪🇬';
+      case 'YE':
+        return '🇾🇪';
+      default:
+        return null;
+    }
+  }
+
+  String? get countryCode {
+    switch (detectedCountry) {
+      case 'EG':
+        return '+20';
+      case 'YE':
+        return '+967';
+      default:
+        return null;
+    }
+  }
+
   @override
   goToSginup() {
     Get.offAllNamed(AppRoutesname.sginin);
@@ -38,6 +84,7 @@ class LLoginStepOneControllerimplment extends LoginStepOneController {
 
   @override
   void dispose() {
+    email.removeListener(_onInputChanged);
     super.dispose();
     email.dispose();
     emailFocus.dispose();
@@ -68,8 +115,8 @@ class LLoginStepOneControllerimplment extends LoginStepOneController {
         // إذا كان الإدخال رقم هاتف، نحتاج لإرسال OTP عبر Firebase
         if (isPhone) {
           // السيرفر رد بـ "Please verify via SMS" مع رقم الهاتف
-          final phoneNumber =
-              r.authData?.phone ?? InputTypeHelper.formatPhoneNumber(input);
+          final phoneNumber = InputTypeHelper.formatPhoneNumber(input);
+          debugPrint('📱 Sending OTP to: $phoneNumber (original: $input)');
 
           // إرسال OTP عبر Firebase
           final otpResult = await SendOtpHelper.verifyPhone(phoneNumber);
@@ -126,5 +173,49 @@ class LLoginStepOneControllerimplment extends LoginStepOneController {
       statusrequest = Statusrequest.success;
       update();
     }
+  }
+
+  @override
+  Future<void> signInWithGoogle() async {
+    statusrequest = Statusrequest.loading;
+    update();
+    loadingDialog();
+
+    // 1️⃣ الحصول على Google ID Token
+    final googleToken = await GoogleSignInHelper.signIn();
+
+    // إذا فشل أو ألغى المستخدم
+    if (googleToken == null) {
+      if (Get.isDialogOpen ?? false) Get.back();
+      statusrequest = Statusrequest.none;
+      update();
+      return;
+    }
+
+    debugPrint('🔑 Got Google Token, sending to backend...');
+
+    // 2️⃣ إرسال Token للـ Backend
+    final response = await authRepoImpl.googleLogin(googleToken);
+
+    if (Get.isDialogOpen ?? false) Get.back();
+
+    final result = response.fold((l) => l, (r) => r);
+
+    if (result is AuthModel &&
+        result.success == true &&
+        result.authData != null) {
+      // ✅ نجاح التسجيل/الدخول
+      showCustomGetSnack(
+        isGreen: true,
+        text: result.message ?? 'تم تسجيل الدخول بنجاح',
+      );
+      await AuthSuccessHandler.handleAuthSuccess(result.authData!);
+    } else if (result is Failure) {
+      // ❌ خطأ من السيرفر
+      showCustomGetSnack(isGreen: false, text: result.errorMessage);
+    }
+
+    statusrequest = Statusrequest.none;
+    update();
   }
 }

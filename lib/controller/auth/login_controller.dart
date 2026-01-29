@@ -1,17 +1,16 @@
+import 'package:dartz/dartz.dart';
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
-import 'package:e_comerece/core/constant/string_const.dart';
 import 'package:e_comerece/core/funcations/loading_dialog.dart';
+import 'package:e_comerece/core/helper/auth_success_handler.dart';
 import 'package:e_comerece/core/helper/send_otp_helper.dart';
 import 'package:e_comerece/core/servises/serviese.dart';
 import 'package:e_comerece/data/repository/Auth_Repo/auth_repo_impl.dart';
 import 'package:e_comerece/data/model/AuthModel/auth_model.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:e_comerece/core/servises/custom_getx_snak_bar.dart';
 import 'package:e_comerece/core/class/failure.dart';
-import 'package:e_comerece/core/funcations/sanitize_topic.dart';
 
 abstract class LoginController extends GetxController {
   Future<void> login();
@@ -59,6 +58,8 @@ class LoginControllerimplment extends LoginController {
         loadingDialog();
       }
 
+      String? firebaseIdToken;
+
       // إذا كان التحقق عبر SMS، نتحقق من الكود عبر Firebase أولاً
       if (isPhone && verificationId != null) {
         final smsResult = await SendOtpHelper.signInWithSmsCode(
@@ -66,71 +67,45 @@ class LoginControllerimplment extends LoginController {
           smsCode: code.text.trim(),
         );
 
-        final smsVerified = smsResult.fold((error) {
+        final tokenOrError = smsResult.fold((error) {
           if (Get.isDialogOpen ?? false) Get.back();
           showCustomGetSnack(isGreen: false, text: error);
-          return false;
-        }, (success) => success);
+          return null;
+        }, (token) => token);
 
-        if (!smsVerified) {
+        if (tokenOrError == null) {
           statusrequest = Statusrequest.failuer;
           update();
           return;
         }
+
+        firebaseIdToken = tokenOrError;
+        debugPrint(
+          '🔑 Got Firebase Token: ${firebaseIdToken.substring(0, 50)}...',
+        );
       }
 
-      // الآن نكمل تسجيل الدخول مع السيرفر
-      var response = await authRepoImpl.loginStepTwo(
-        AuthData(
-          identifier: identifier,
-          password: passowrd.text,
-          code: isPhone ? null : code.text, // لا نرسل الكود للسيرفر إذا كان SMS
-        ),
-      );
+      late final Either<Failure, AuthModel> response;
+
+      if (isPhone && firebaseIdToken != null) {
+        response = await authRepoImpl.confirmPhoneVerification(
+          AuthData(phone: identifier, firebaseToken: firebaseIdToken),
+        );
+      } else {
+        response = await authRepoImpl.loginStepTwo(
+          AuthData(
+            identifier: identifier,
+            password: passowrd.text,
+            code: code.text,
+          ),
+        );
+      }
 
       final r = response.fold((l) => l, (r) => r);
       if (Get.isDialogOpen ?? false) Get.back();
 
       if (r is AuthModel) {
-        myServises.saveSecureData(token, r.authData!.token!);
-        myServises.saveSecureData(userName, r.authData!.name!);
-        myServises.saveSecureData(userEmail, r.authData!.email!);
-        myServises.saveSecureData(userPhone, r.authData!.phone!);
-
-        FirebaseMessaging.instance.subscribeToTopic("users");
-        FirebaseMessaging.instance.subscribeToTopic(
-          sanitizeTopic("user${r.authData!.email!}"),
-        );
-
-        if (myServises.sharedPreferences.getString("step") == "1") {
-          Get.offNamed(AppRoutesname.homepage);
-        } else {
-          Get.offNamed(AppRoutesname.onBoarding);
-        }
-        myServises.saveStep("2");
-
-        // Token Update Logic
-        try {
-          String? fcmToken = await FirebaseMessaging.instance.getToken();
-
-          if (fcmToken != null) {
-            String? savedToken = await myServises.getSecureData("fcm_token");
-            if (savedToken != fcmToken) {
-              final response = await authRepoImpl.updateFcmToken(fcmToken);
-              response.fold(
-                (failure) => debugPrint(
-                  "Failed to update FCM token: ${failure.errorMessage}",
-                ),
-                (success) async {
-                  await myServises.saveSecureData("fcm_token", fcmToken);
-                  debugPrint("FCM token updated successfully");
-                },
-              );
-            }
-          }
-        } catch (e) {
-          debugPrint("Error updating token: $e");
-        }
+        await AuthSuccessHandler.handleAuthSuccess(r.authData!);
       }
       if (r is Failure) {
         showCustomGetSnack(isGreen: false, text: r.errorMessage);

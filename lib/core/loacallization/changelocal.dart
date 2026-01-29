@@ -3,12 +3,13 @@ import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/servises/serviese.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LocaleController extends GetxController {
   Locale? language;
   ThemeData themeData = themeEn;
 
-  MyServises myServises = Get.find();
+  late MyServises myServises;
 
   changelang(String langcode) {
     Locale locale = Locale(langcode);
@@ -21,7 +22,25 @@ class LocaleController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    _initLocale();
+  }
+
+  Future<void> _initLocale() async {
+    // جلب MyServises بشكل آمن
+    if (Get.isRegistered<MyServises>()) {
+      myServises = Get.find<MyServises>();
+    } else {
+      // fallback: استخدم SharedPreferences مباشرة
+      final prefs = await SharedPreferences.getInstance();
+      _setLocaleFromPrefs(prefs.getString("lang"));
+      return;
+    }
+
     String? shardPrLang = myServises.sharedPreferences.getString("lang");
+    _setLocaleFromPrefs(shardPrLang);
+  }
+
+  void _setLocaleFromPrefs(String? shardPrLang) {
     if (shardPrLang == "ar") {
       language = const Locale("ar");
       themeData = themeAr.copyWith(

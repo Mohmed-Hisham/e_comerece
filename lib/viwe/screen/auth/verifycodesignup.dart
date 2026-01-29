@@ -65,7 +65,7 @@ class Verifycodesignup extends StatelessWidget {
                     fillColor: Appcolor.primrycolor,
                     fieldWidth: 50.w,
                     borderRadius: BorderRadius.circular(15.r),
-                    numberOfFields: 5,
+                    numberOfFields: 6,
                     borderColor: Appcolor.primrycolor,
                     showFieldAsBox: true,
                     onCodeChanged: (String code) {},

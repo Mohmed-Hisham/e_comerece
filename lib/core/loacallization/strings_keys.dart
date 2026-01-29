@@ -88,6 +88,7 @@ class StringsKeys {
   static const String cantBeEmpty = "cantBeEmpty";
   static const String notValidUsername = "notValidUsername";
   static const String notValidEmail = "notValidEmail";
+  static const String notValidEmailOrPhone = "notValidEmailOrPhone";
   static const String cantBeLessThan = "cantBeLessThan";
   static const String cantBeLargerThan = "cantBeLargerThan";
   static const String disableNotifications = "disableNotifications";

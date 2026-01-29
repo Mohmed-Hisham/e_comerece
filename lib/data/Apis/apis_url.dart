@@ -12,6 +12,7 @@ class ApisUrl {
   static const String updateUser = '$_baseUrl/Auth/update-user';
   static const String confirmPhoneVerification =
       '$_baseUrl/Auth/confirm-phone-verification';
+  static const String googleLogin = '$_baseUrl/Auth/google-login';
 
   //                               Favorit
   static const String addFavorite = '$_baseUrl/Favorite/Add';

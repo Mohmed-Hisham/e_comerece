@@ -1,5 +1,8 @@
+import 'dart:developer';
+
 import 'package:e_comerece/core/constant/imagesassets.dart';
 import 'package:e_comerece/core/helper/circular_widget.dart';
+import 'package:e_comerece/core/loacallization/changelocal.dart';
 import 'package:e_comerece/core/servises/currency_service.dart';
 import 'package:e_comerece/core/servises/notifcation_service.dart';
 import 'package:e_comerece/core/servises/serviese.dart';
@@ -9,6 +12,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 
 class AppSplashScreen extends StatefulWidget {
   const AppSplashScreen({super.key});
@@ -45,29 +49,47 @@ class _AppSplashScreenState extends State<AppSplashScreen>
   }
 
   Future<void> _initializeApp() async {
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
-    FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+    try {
+      log('Starting app initialization...');
 
-    await NotifcationService.initializeNotifications();
-    await initlizserviese();
-    // await DBHelper.init();
-    // await DBHelper.cleanupExpired();
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
+      log('Firebase initialized');
 
-    // await Supabase.initialize(
-    //   url: SupabaseConfig.url,
-    //   anonKey: SupabaseConfig.anonKey,
-    // );
+      FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
 
-    // Initialize Currency Service
-    await initCurrencyService();
+      await NotifcationService.initializeNotifications();
+      log('Notifications initialized');
 
-    // Navigate immediately after initialization is complete
-    if (mounted) {
-      setState(() {
-        _isInitialized = true;
-      });
+      await initlizserviese();
+      log('Services initialized');
+
+      // تسجيل LocaleController بعد MyServises
+      Get.put(LocaleController());
+
+      // await DBHelper.init();
+      // await DBHelper.cleanupExpired();
+
+      // Initialize Currency Service
+      await initCurrencyService();
+      log('Currency service initialized');
+
+      // Navigate immediately after initialization is complete
+      if (mounted) {
+        setState(() {
+          _isInitialized = true;
+        });
+      }
+    } catch (e, stackTrace) {
+      log('Error during app initialization: $e');
+      log('Stack trace: $stackTrace');
+      // Even if there's an error, try to proceed to the app
+      if (mounted) {
+        setState(() {
+          _isInitialized = true;
+        });
+      }
     }
   }
 

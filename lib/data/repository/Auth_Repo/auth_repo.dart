@@ -14,4 +14,5 @@ abstract class AuthRepo {
   Future<Either<Failure, AuthModel>> confirmPhoneVerification(
     AuthData authData,
   );
+  Future<Either<Failure, AuthModel>> googleLogin(String googleToken);
 }

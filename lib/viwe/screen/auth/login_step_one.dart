@@ -43,29 +43,68 @@ class LoginStepOne extends StatelessWidget {
                     children: [
                       SizedBox(height: 510.h),
 
-                      Custtextfeld(
-                        focusNode: controller.emailFocus,
-                        onTap: () {
-                          scrollWhenKeyboardOpens(
-                            controller.scrollController,
-                            context,
-                            200.h,
-                          );
-                        },
-                        controller: controller.email,
-                        hint: StringsKeys.emailHint.tr,
-                        suffixIcon: Icon(
-                          Icons.email_outlined,
-                          color: Appcolor.gray,
+                      // حقل الإدخال مع prefix ديناميكي للعلم وكود الدولة
+                      GetBuilder<LLoginStepOneControllerimplment>(
+                        id: 'country_prefix',
+                        builder: (ctrl) => Custtextfeld(
+                          focusNode: controller.emailFocus,
+                          onTap: () {
+                            scrollWhenKeyboardOpens(
+                              controller.scrollController,
+                              context,
+                              200.h,
+                            );
+                          },
+                          controller: controller.email,
+                          hint: StringsKeys.emailOrPhoneHint.tr,
+                          // 🏳️ العلم وكود الدولة (يظهر فقط لو رقم هاتف)
+                          prefixIcon: ctrl.detectedCountry != null
+                              ? Padding(
+                                  padding: EdgeInsets.only(
+                                    left: 15.w,
+                                    right: 5.w,
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        ctrl.countryFlag ?? '',
+                                        style: TextStyle(fontSize: 20.sp),
+                                      ),
+                                      SizedBox(width: 5.w),
+                                      Text(
+                                        ctrl.countryCode ?? '',
+                                        style: TextStyle(
+                                          fontSize: 14.sp,
+                                          color: Appcolor.gray,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                      SizedBox(width: 5.w),
+                                      Container(
+                                        height: 20.h,
+                                        width: 1,
+                                        color: Appcolor.gray.withOpacity(0.5),
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              : null,
+                          suffixIcon: Icon(
+                            ctrl.detectedCountry != null
+                                ? Icons.phone_android
+                                : Icons.person_outline,
+                            color: Appcolor.gray,
+                          ),
+                          validator: (val) {
+                            return validateInput(
+                              val: val!,
+                              min: 6,
+                              max: 100,
+                              type: ValidateType.emailOrPhone,
+                            );
+                          },
                         ),
-                        validator: (val) {
-                          return validateInput(
-                            val: val!,
-                            min: 6,
-                            max: 100,
-                            type: ValidateType.email,
-                          );
-                        },
                       ),
 
                       Custombuttonauth(
@@ -86,13 +125,31 @@ class LoginStepOne extends StatelessWidget {
                           borderRadius: BorderRadius.circular(25.r),
                         ),
                         child: MaterialButton(
-                          onPressed: () {},
-                          child: Text(
-                            StringsKeys.google.tr,
-                            style: TextStyle(
-                              color: Appcolor.primrycolor,
-                              fontWeight: FontWeight.bold,
-                            ),
+                          onPressed: () {
+                            controller.signInWithGoogle();
+                          },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Image.asset(
+                                'assets/icon/google.png',
+                                height: 24.h,
+                                width: 24.w,
+                                errorBuilder: (_, __, ___) => Icon(
+                                  Icons.g_mobiledata,
+                                  color: Appcolor.primrycolor,
+                                  size: 28.sp,
+                                ),
+                              ),
+                              SizedBox(width: 10.w),
+                              Text(
+                                StringsKeys.google.tr,
+                                style: TextStyle(
+                                  color: Appcolor.primrycolor,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),

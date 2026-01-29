@@ -38,6 +38,7 @@ class AuthData {
     this.code,
     this.newPassword,
     this.identifier,
+    this.firebaseToken,
   });
 
   final String? name;
@@ -48,6 +49,7 @@ class AuthData {
   final String? code;
   final String? newPassword;
   final String? identifier;
+  final String? firebaseToken;
 
   factory AuthData.fromJson(Map<String, dynamic> json) {
     return AuthData(
@@ -69,5 +71,6 @@ class AuthData {
     if (code != null) "code": code,
     if (newPassword != null) "newPassword": newPassword,
     if (identifier != null) "identifier": identifier,
+    if (firebaseToken != null) "firebaseToken": firebaseToken,
   };
 }

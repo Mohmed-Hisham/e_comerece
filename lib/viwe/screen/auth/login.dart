@@ -9,6 +9,7 @@ import 'package:e_comerece/viwe/widget/Positioned/login_step_one/positioned_left
 import 'package:e_comerece/viwe/widget/auth/custombuttonauth.dart';
 import 'package:e_comerece/viwe/widget/auth/custtextfeld.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
@@ -65,7 +66,7 @@ class Login extends StatelessWidget {
                               ),
                         ),
                         Text(
-                          " ${controller.name}!!",
+                          " ${controller.name}!",
                           style: Theme.of(context).textTheme.headlineLarge!
                               .copyWith(
                                 fontWeight: FontWeight.bold,
@@ -75,71 +76,74 @@ class Login extends StatelessWidget {
                       ],
                     ),
 
-                    GetBuilder<LoginControllerimplment>(
-                      builder: (cont) => Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 35.w),
-                        child: Custtextfeld(
-                          focusNode: controller.focus,
-                          onTap: () {
-                            scrollWhenKeyboardOpens(
-                              controller.scrollController,
-                              context,
-                              110.h,
-                            );
-                          },
-                          obscureText: controller.visibility,
-                          controller: controller.passowrd,
-                          hint: StringsKeys.passwordHint.tr,
-                          suffixIcon: IconButton(
-                            onPressed: () => controller.visibilityFun(),
-
-                            icon: controller.visibility == true
-                                ? Icon(
-                                    Icons.lock_outline_rounded,
-                                    color: Appcolor.gray,
-                                    size: 25.sp,
-                                  )
-                                : Icon(
-                                    Icons.lock_open_rounded,
-                                    color: Appcolor.primrycolor,
-                                    size: 25.sp,
-                                  ),
+                    if (!controller.isPhone)
+                      GetBuilder<LoginControllerimplment>(
+                        builder: (cont) => Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 10.w),
+                          child: Custtextfeld(
+                            focusNode: controller.focus,
+                            onTap: () {
+                              scrollWhenKeyboardOpens(
+                                controller.scrollController,
+                                context,
+                                110.h,
+                              );
+                            },
+                            obscureText: controller.visibility,
+                            controller: controller.passowrd,
+                            hint: StringsKeys.passwordHint.tr,
+                            suffixIcon: IconButton(
+                              onPressed: () => controller.visibilityFun(),
+                              icon: controller.visibility == true
+                                  ? Icon(
+                                      Icons.lock_outline_rounded,
+                                      color: Appcolor.gray,
+                                      size: 25.sp,
+                                    )
+                                  : Icon(
+                                      Icons.lock_open_rounded,
+                                      color: Appcolor.primrycolor,
+                                      size: 25.sp,
+                                    ),
+                            ),
+                            validator: (val) {
+                              return validateInput(val: val!, min: 6, max: 100);
+                            },
                           ),
-                          validator: (val) {
-                            return validateInput(val: val!, min: 6, max: 100);
-                          },
                         ),
                       ),
-                    ),
-                    GetBuilder<LoginControllerimplment>(
-                      builder: (cont) => Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 35.w),
-                        child: Custtextfeld(
-                          obscureText: false,
-                          controller: controller.code,
-                          hint: "Code",
-                          suffixIcon: Icon(
-                            Icons.code,
-                            color: Appcolor.gray,
-                            size: 25.sp,
-                          ),
-                          validator: (val) {
-                            return validateInput(val: val!, min: 4, max: 100);
-                          },
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 60.h),
-                    InkWell(
-                      onTap: () {
-                        controller.focus.unfocus();
-                        controller.goToForgetpassword();
+                    OtpTextField(
+                      numberOfFields: 6,
+                      fieldWidth: 50.w,
+                      borderRadius: BorderRadius.circular(15.r),
+                      enabledBorderColor: Appcolor.black,
+                      focusedBorderColor: Appcolor.primrycolor,
+                      fillColor: Appcolor.somgray,
+                      filled: true,
+                      borderColor: Appcolor.primrycolor,
+                      showFieldAsBox: true,
+                      onCodeChanged: (String code) {
+                        controller.code.text = code;
                       },
-                      child: Text(
-                        StringsKeys.forgotPassword.tr,
-                        style: TextStyle(fontSize: 16.sp),
-                      ),
+                      onSubmit: (String verificationCode) {
+                        controller.code.text = verificationCode;
+                        controller.login();
+                      },
                     ),
+                    if (!controller.isPhone) ...[
+                      SizedBox(height: 60.h),
+                      InkWell(
+                        onTap: () {
+                          controller.focus.unfocus();
+                          controller.goToForgetpassword();
+                        },
+                        child: Text(
+                          StringsKeys.forgotPassword.tr,
+                          style: TextStyle(fontSize: 16.sp),
+                        ),
+                      ),
+                    ],
+                    if (controller.isPhone) SizedBox(height: 30.h),
                     Custombuttonauth(
                       inputtext: StringsKeys.next.tr,
                       onPressed: () {

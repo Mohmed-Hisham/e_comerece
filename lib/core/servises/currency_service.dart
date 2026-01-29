@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:e_comerece/core/class/api_service.dart';
@@ -26,7 +27,9 @@ class CurrencyService extends GetxService {
   Future<void> fetchRates() async {
     try {
       final apiService = Get.put(ApiService());
-      final response = await apiService.get(endpoint: ApisUrl.getCurrency);
+      final response = await apiService
+          .get(endpoint: ApisUrl.getCurrency)
+          .timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200 && response.data['success'] == true) {
         ratesData = RatesData.fromMap(response.data['data']);

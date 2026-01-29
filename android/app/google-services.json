@@ -12,7 +12,20 @@
           "package_name": "com.example.e_comerece"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "612566346205-1u6ls6g1poqccf2drglttcns81arh3jn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.e_comerece",
+            "certificate_hash": "8148896d6d4549266c24fdffa1326d9e9436c43f"
+          }
+        },
+        {
+          "client_id": "612566346205-lef857a9opnt5iqsbcv462r9sfd8ab4n.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyB7Z6I6_fCFBAXocinu-9WLjV0q9-rlSPI"
@@ -20,7 +33,55 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "612566346205-lef857a9opnt5iqsbcv462r9sfd8ab4n.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "612566346205-eupm9tnsocv90ijd31jgn8hehoipc4nm.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.eComerece"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:612566346205:android:0b2dd9421e1c6dfff46e34",
+        "android_client_info": {
+          "package_name": "com.example.slutk_admin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "612566346205-lef857a9opnt5iqsbcv462r9sfd8ab4n.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB7Z6I6_fCFBAXocinu-9WLjV0q9-rlSPI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "612566346205-lef857a9opnt5iqsbcv462r9sfd8ab4n.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "612566346205-eupm9tnsocv90ijd31jgn8hehoipc4nm.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.eComerece"
+              }
+            }
+          ]
         }
       }
     },
@@ -31,7 +92,12 @@
           "package_name": "com.example.todo_app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "612566346205-lef857a9opnt5iqsbcv462r9sfd8ab4n.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyB7Z6I6_fCFBAXocinu-9WLjV0q9-rlSPI"
@@ -39,7 +105,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "612566346205-lef857a9opnt5iqsbcv462r9sfd8ab4n.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "612566346205-eupm9tnsocv90ijd31jgn8hehoipc4nm.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.eComerece"
+              }
+            }
+          ]
         }
       }
     }

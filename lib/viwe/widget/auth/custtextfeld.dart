@@ -5,6 +5,7 @@ class Custtextfeld extends StatelessWidget {
   final String hint;
   final TextEditingController? controller;
   final Widget? suffixIcon;
+  final Widget? prefixIcon;
   final String? Function(String?)? validator;
   final bool? obscureText;
   final int? maxLines;
@@ -18,6 +19,7 @@ class Custtextfeld extends StatelessWidget {
     required this.hint,
     this.controller,
     this.suffixIcon,
+    this.prefixIcon,
     this.validator,
     this.obscureText,
     this.onChanged,
@@ -66,6 +68,7 @@ class Custtextfeld extends StatelessWidget {
             ),
             filled: true,
             fillColor: Appcolor.somgray,
+            prefixIcon: prefixIcon,
             suffixIcon: suffixIcon,
             errorStyle: TextStyle(color: Appcolor.reed, fontSize: 12),
             errorMaxLines: 2,

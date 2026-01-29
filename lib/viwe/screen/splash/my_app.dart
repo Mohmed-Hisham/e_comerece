@@ -12,7 +12,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    LocaleController localeController = Get.put(LocaleController());
+    LocaleController localeController = Get.find<LocaleController>();
     return ScreenUtilInit(
       designSize: const Size(430, 932),
       minTextAdapt: true,

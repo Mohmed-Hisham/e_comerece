@@ -29,6 +29,7 @@ class ApiService {
         onRequest: (options, handler) async {
           try {
             final token = await _storage.read(key: 'token');
+            log("token $token");
             if (token != null && token.isNotEmpty) {
               options.headers['Authorization'] = 'Bearer $token';
             }

@@ -40,7 +40,7 @@ class AuthSuccessHandler {
     await _myServises.saveSecureData(token, authData.token!);
     await _myServises.saveSecureData(userName, authData.name!);
     await _myServises.saveSecureData(userEmail, authData.email!);
-    await _myServises.saveSecureData(userPhone, authData.phone!);
+    await _myServises.saveSecureData(userPhone, authData.phone ?? '');
   }
 
   /// الاشتراك في Firebase Messaging Topics

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:e_comerece/core/class/failure.dart';
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
@@ -211,6 +213,7 @@ class LLoginStepOneControllerimplment extends LoginStepOneController {
       );
       await AuthSuccessHandler.handleAuthSuccess(result.authData!);
     } else if (result is Failure) {
+      log("Google login failed: ${result.errorMessage}");
       // ❌ خطأ من السيرفر
       showCustomGetSnack(isGreen: false, text: result.errorMessage);
     }

@@ -1,6 +1,7 @@
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/servises/serviese.dart';
 import 'package:e_comerece/core/servises/custom_getx_snak_bar.dart';
+import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:e_comerece/data/model/ordres/order_details_model.dart';
 import 'package:e_comerece/data/repository/orders/orders_repo_impl.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
@@ -92,8 +93,7 @@ class OrderDetailsControllerImp extends OrderDetailsController {
     if (!canCancelOrder()) {
       showCustomGetSnack(
         isGreen: false,
-        text:
-            'لا يمكن إلغاء هذا الطلب. يمكن إلغاء الطلبات في حالة المراجعة أو بانتظار العميل فقط',
+        text: StringsKeys.cannotCancelOrder.tr,
         duration: const Duration(seconds: 3),
       );
       return;
@@ -101,17 +101,17 @@ class OrderDetailsControllerImp extends OrderDetailsController {
 
     final confirmed = await Get.dialog<bool>(
       AlertDialog(
-        title: const Text('تأكيد الإلغاء'),
-        content: const Text('هل أنت متأكد من إلغاء هذا الطلب؟'),
+        title: Text(StringsKeys.confirmCancellation.tr),
+        content: Text(StringsKeys.confirmCancelOrderMessage.tr),
         actions: [
           TextButton(
             onPressed: () => Get.back(result: false),
-            child: const Text('لا'),
+            child: Text(StringsKeys.no.tr),
           ),
           TextButton(
             onPressed: () => Get.back(result: true),
             style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('نعم، إلغاء الطلب'),
+            child: Text(StringsKeys.yesCancelOrder.tr),
           ),
         ],
       ),
@@ -163,13 +163,13 @@ class OrderDetailsControllerImp extends OrderDetailsController {
 
           showCustomGetSnack(
             isGreen: true,
-            text: 'تم إلغاء الطلب بنجاح',
+            text: StringsKeys.orderCancelledSuccess.tr,
             duration: const Duration(seconds: 3),
           );
         } else {
           showCustomGetSnack(
             isGreen: false,
-            text: response['message'] ?? 'حدث خطأ أثناء إلغاء الطلب',
+            text: response['message'] ?? StringsKeys.errorCancellingOrder.tr,
             duration: const Duration(seconds: 4),
           );
         }

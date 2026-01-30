@@ -18,21 +18,49 @@ class ServerFailure extends Failure {
       case DioExceptionType.receiveTimeout:
         return ServerFailure('Receive Timeout!');
       case DioExceptionType.badResponse:
-        if (dioError.response?.statusCode == 401) {
-          return ServerFailure('Unauthorized!');
-        }
-        if (
-        // dioError.response?.statusCode == 401 ||
-        dioError.response?.statusCode == 400 ||
-            // dioError.response?.statusCode == 404 ||
-            dioError.response?.statusCode == 403 ||
-            dioError.response?.statusCode == 405) {
-          // print(dioError.response!.data['message']);
+        final statusCode = dioError.response?.statusCode;
+        final data = dioError.response?.data;
+        if (statusCode == 401 ||
+            statusCode == 400 ||
+            statusCode == 403 ||
+            statusCode == 404 ||
+            statusCode == 405) {
+          if (statusCode == 401) {
+            return ServerFailure('Unauthorized, please login again');
+          }
 
-          return ServerFailure(
-            dioError.response!.data['message'] ??
-                dioError.response!.data['errors'],
-          );
+          if (statusCode == 404) {
+            return ServerFailure('Not Found!');
+          }
+
+          if (data is Map<String, dynamic>) {
+            String? errorMessage;
+
+            if (data['errors'] != null && data['errors'] is Map) {
+              final Map<String, dynamic> errors = data['errors'];
+              final List<String> allErrors = [];
+              errors.forEach((key, value) {
+                if (value is List) {
+                  allErrors.addAll(value.map((e) => e.toString()));
+                } else if (value != null) {
+                  allErrors.add(value.toString());
+                }
+              });
+              if (allErrors.isNotEmpty) {
+                errorMessage = allErrors.join('. ');
+              }
+            }
+
+            errorMessage ??= data['message']?.toString();
+
+            return ServerFailure(errorMessage ?? 'Unexpected server response');
+          }
+
+          if (data is String) {
+            return ServerFailure(data);
+          }
+
+          return ServerFailure('Bad Response!');
         } else {
           return ServerFailure('Bad Request!');
         }

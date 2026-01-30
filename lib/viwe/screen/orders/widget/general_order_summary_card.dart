@@ -63,25 +63,18 @@ class GeneralOrderSummaryCard extends StatelessWidget {
 
   String _getStatusLabel(String? status) {
     switch (status?.toLowerCase()) {
-      case 'pendingreview':
-      case 'pending_approval': // Keep backward compatibility just in case
-        return 'انتظار مراجعة الأدمن';
-      case 'adminnotes':
-        return 'ملاحظات من الأدمن';
-      case 'approved':
-        return 'موافقة الأدمن';
-      case 'awaitingpayment':
-        return 'انتظار الدفع';
-      case 'paid':
-        return 'تم الدفع';
+      case 'pending':
+        return StringsKeys.orderStatusPending.tr;
+      case 'actionrequired':
+        return StringsKeys.orderStatusActionRequired.tr;
       case 'processing':
-        return 'في الطلب';
-      case 'intransit':
-        return 'في الطريق';
+        return StringsKeys.orderStatusProcessing.tr;
+      case 'shipped':
+        return StringsKeys.orderStatusShipped.tr;
       case 'completed':
-        return 'مكتمل';
+        return StringsKeys.orderStatusCompleted.tr;
       case 'cancelled':
-        return 'ملغي';
+        return StringsKeys.orderStatusCancelled.tr;
       default:
         return status ?? StringsKeys.unknownStatus.tr;
     }
@@ -89,21 +82,14 @@ class GeneralOrderSummaryCard extends StatelessWidget {
 
   Color _getStatusColor(String? status) {
     switch (status?.toLowerCase()) {
-      case 'pendingreview':
-      case 'pending_approval':
-        return Appcolor.threecolor; // Orange-ish
-      case 'adminnotes':
+      case 'pending':
+        return Appcolor.threecolor; // Orange
+      case 'actionrequired':
         return Colors.orangeAccent;
-      case 'approved':
-        return const Color(0xff4CAF50); // Green
-      case 'awaitingpayment':
-        return Appcolor.primrycolor; // Blue
-      case 'paid':
-        return const Color(0xff4CAF50);
       case 'processing':
-        return const Color(0xff2196F3);
-      case 'intransit':
-        return const Color(0xff2196F3);
+        return const Color(0xff2196F3); // Blue
+      case 'shipped':
+        return const Color(0xff4CAF50); // Green
       case 'completed':
         return const Color(0xff2E7D32); // Dark Green
       case 'cancelled':

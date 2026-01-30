@@ -1,6 +1,7 @@
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/servises/custom_getx_snak_bar.dart';
+import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:e_comerece/data/model/favorite_model.dart';
 import 'package:e_comerece/data/repository/Favorite/favorit_repo_impl.dart';
 import 'package:get/get.dart';
@@ -58,7 +59,10 @@ class FavoriteViewController extends GetxController {
     favorites.removeWhere((favorite) => favorite.productId == productId);
     groupFavoritesByPlatform();
     update();
-    showCustomGetSnack(isGreen: true, text: 'Removed from favorites');
+    showCustomGetSnack(
+      isGreen: true,
+      text: StringsKeys.removedFromFavorites.tr,
+    );
     favoriteRepoImpl.delete(productId);
   }
 

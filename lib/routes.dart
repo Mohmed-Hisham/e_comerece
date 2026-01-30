@@ -25,6 +25,7 @@ import 'package:e_comerece/viwe/screen/aliexpress/home_aliexpriess.dart';
 import 'package:e_comerece/viwe/screen/cart/cart_view.dart';
 import 'package:e_comerece/viwe/screen/favorite/favorite_view.dart';
 import 'package:e_comerece/viwe/screen/home/homenavbar.dart';
+import 'package:e_comerece/viwe/screen/home/search_screen.dart';
 import 'package:e_comerece/viwe/screen/settings/language.dart';
 import 'package:e_comerece/viwe/screen/local_serviess/local_service_details_view.dart';
 import 'package:e_comerece/viwe/screen/local_serviess/orders/local_service_order_details_view.dart';
@@ -39,11 +40,15 @@ import 'package:e_comerece/viwe/screen/shein/product_details_shein_view.dart';
 import 'package:e_comerece/viwe/screen/orders/order_details_screen.dart';
 import 'package:e_comerece/viwe/screen/splashscreen/splashscreen.dart';
 import 'package:e_comerece/viwe/screen/settings/legal_view.dart';
+import 'package:e_comerece/viwe/screen/our_products/our_products_view.dart';
+import 'package:e_comerece/viwe/screen/our_products/our_product_details_view.dart';
+import 'package:e_comerece/viwe/screen/our_products/our_products_search_view.dart';
 import 'package:get/get_navigation/src/routes/get_route.dart';
 import 'package:get/get_navigation/src/routes/transitions_type.dart';
 
-final int transitionDurations = 300;
-final Transition transitionType = Transition.cupertino;
+// ✅ تقليل مدة التنقل لتحسين الأداء
+final int transitionDurations = 200;
+final Transition transitionType = Transition.fadeIn;
 List<GetPage<dynamic>>? routes = [
   // Onboarding
   GetPage(
@@ -141,6 +146,38 @@ List<GetPage<dynamic>>? routes = [
     name: AppRoutesname.homepage,
     page: () => const Homenavbar(),
     transition: transitionType,
+    transitionDuration: Duration(milliseconds: transitionDurations),
+  ),
+  // Main Tab Routes (with bottom bar)
+  GetPage(
+    name: AppRoutesname.cartTab,
+    page: () => const Homenavbar(initialTab: 1),
+    transition: transitionType,
+    transitionDuration: Duration(milliseconds: transitionDurations),
+  ),
+  GetPage(
+    name: AppRoutesname.ordersTab,
+    page: () => const Homenavbar(initialTab: 2),
+    transition: transitionType,
+    transitionDuration: Duration(milliseconds: transitionDurations),
+  ),
+  GetPage(
+    name: AppRoutesname.localServicesTab,
+    page: () => const Homenavbar(initialTab: 3),
+    transition: transitionType,
+    transitionDuration: Duration(milliseconds: transitionDurations),
+  ),
+  GetPage(
+    name: AppRoutesname.settingsTab,
+    page: () => const Homenavbar(initialTab: 4),
+    transition: transitionType,
+    transitionDuration: Duration(milliseconds: transitionDurations),
+  ),
+  // Search Screen
+  GetPage(
+    name: AppRoutesname.searchScreen,
+    page: () => const SearchScreen(),
+    transition: Transition.cupertino,
     transitionDuration: Duration(milliseconds: transitionDurations),
   ),
   GetPage(
@@ -305,6 +342,26 @@ List<GetPage<dynamic>>? routes = [
   GetPage(
     name: AppRoutesname.legal,
     page: () => const LegalView(title: ""),
+    transition: transitionType,
+    transitionDuration: Duration(milliseconds: transitionDurations),
+  ),
+
+  // Our Products (Local Products)
+  GetPage(
+    name: AppRoutesname.ourProductsView,
+    page: () => const OurProductsView(),
+    transition: transitionType,
+    transitionDuration: Duration(milliseconds: transitionDurations),
+  ),
+  GetPage(
+    name: AppRoutesname.ourProductDetails,
+    page: () => const OurProductDetailsView(),
+    transition: transitionType,
+    transitionDuration: Duration(milliseconds: transitionDurations),
+  ),
+  GetPage(
+    name: AppRoutesname.ourProductsSearch,
+    page: () => const OurProductsSearchView(),
     transition: transitionType,
     transitionDuration: Duration(milliseconds: transitionDurations),
   ),

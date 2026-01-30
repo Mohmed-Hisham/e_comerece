@@ -1,6 +1,7 @@
 import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/helper/custom_cached_image.dart';
+import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:e_comerece/data/model/local_service/service_request_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -35,20 +36,20 @@ class LocalServiceOrderCard extends StatelessWidget {
   String _getStatusLabel(String? status) {
     switch (status?.toLowerCase()) {
       case 'new':
-        return 'جديد';
+        return StringsKeys.statusNew.tr;
       case 'price_quoted':
-        return 'تم تحديد السعر';
+        return StringsKeys.priceSet.tr;
       case 'approved':
-        return 'تم الموافقة';
+        return StringsKeys.statusApproved.tr;
       case 'rejected':
       case 'declined':
-        return 'مرفوض';
+        return StringsKeys.statusRejected.tr;
       case 'completed':
-        return 'مكتمل';
+        return StringsKeys.statusCompleted.tr;
       case 'cancelled':
-        return 'ملغي';
+        return StringsKeys.statusCancelled.tr;
       default:
-        return status ?? 'غير معروف';
+        return status ?? StringsKeys.statusUnknown.tr;
     }
   }
 

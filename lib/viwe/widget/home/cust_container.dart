@@ -15,6 +15,7 @@ class CustCntainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 2),
       decoration: BoxDecoration(
         color: color,
         borderRadius: BorderRadius.circular(15),
@@ -22,6 +23,7 @@ class CustCntainer extends StatelessWidget {
       child: Center(
         child: Text(
           text,
+          maxLines: 1,
           style: TextStyle(
             color: Appcolor.white,
             fontWeight: FontWeight.bold,

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:e_comerece/core/class/api_service.dart';
@@ -83,6 +85,7 @@ class FavoriteRepoImpl implements FavoriteRepo {
         return Left(ServerFailure(msg));
       }
     } catch (e) {
+      log(e.toString());
       if (e is DioException) {
         return Left(ServerFailure.fromDioError(e));
       }

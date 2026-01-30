@@ -3,9 +3,9 @@ import 'package:e_comerece/core/class/handlingdataviwe.dart';
 import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/funcations/validate.dart';
 import 'package:e_comerece/core/helper/bluer_dilog.dart';
+import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:e_comerece/core/shared/widget_shared/animations.dart';
 import 'package:e_comerece/data/model/address/address_model.dart';
-import 'package:e_comerece/viwe/widget/Positioned/positioned_app_bar.dart';
 import 'package:e_comerece/viwe/widget/auth/custombuttonauth.dart';
 import 'package:e_comerece/viwe/widget/auth/custtextfeld.dart';
 import 'package:e_comerece/viwe/widget/maps/shaimmer_botton_widget.dart';
@@ -223,12 +223,19 @@ class _CustGoogleMapState extends State<AddAddress> {
                 left: 0,
                 child: Row(
                   children: [
-                    PositionedAppBar(title: "", onPressed: Get.back),
+                    IconButton(
+                      onPressed: Get.back,
+                      icon: Icon(
+                        Icons.arrow_back_rounded,
+                        color: Colors.black,
+                        size: 38.sp,
+                      ),
+                    ),
                     SizedBox(
                       width: 350.w,
                       child: Custtextfeld(
                         controller: getxcontroller.searchController,
-                        hint: "Search Place",
+                        hint: StringsKeys.searchPlace.tr,
                         onChanged: (val) {
                           if (val.isNotEmpty) {
                             getxcontroller.search(val);

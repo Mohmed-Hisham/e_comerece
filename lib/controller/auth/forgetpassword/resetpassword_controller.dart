@@ -23,8 +23,13 @@ class ResetpasswordIemeent extends ResetcodeController {
 
   Statusrequest? statusrequest;
 
+  String? identifier;
   String? email;
+  String? phone;
   String? code;
+  String? firebaseToken;
+  bool isPhone = false;
+
   FocusNode passFocus = FocusNode();
   FocusNode repassFocus = FocusNode();
   ScrollController scrollController = ScrollController();
@@ -47,9 +52,26 @@ class ResetpasswordIemeent extends ResetcodeController {
       if (!Get.isDialogOpen!) {
         loadingDialog();
       }
-      var response = await authRepoImpl.resetPassword(
-        AuthData(email: email!, code: code!, newPassword: passWord.text),
-      );
+
+      // إرسال البيانات حسب نوع التحقق
+      final AuthData authData;
+      if (isPhone && firebaseToken != null) {
+        // 📱 إعادة تعيين عبر الهاتف
+        authData = AuthData(
+          identifier: identifier ?? phone,
+          firebaseToken: firebaseToken,
+          newPassword: passWord.text,
+        );
+      } else {
+        // 📧 إعادة تعيين عبر الإيميل
+        authData = AuthData(
+          identifier: identifier ?? email,
+          code: code,
+          newPassword: passWord.text,
+        );
+      }
+
+      var response = await authRepoImpl.resetPassword(authData);
 
       final r = response.fold((l) => l, (r) => r);
       if (Get.isDialogOpen ?? false) Get.back();
@@ -69,10 +91,19 @@ class ResetpasswordIemeent extends ResetcodeController {
   @override
   void onInit() {
     super.onInit();
+    identifier = Get.arguments['identifier'];
     email = Get.arguments['email'];
+    phone = Get.arguments['phone'];
     code = Get.arguments['code'];
+    firebaseToken = Get.arguments['firebaseToken'];
+    isPhone = Get.arguments['isPhone'] ?? false;
+
     passWord = .new();
     repassWord = .new();
+
+    debugPrint('🔑 Reset Password - isPhone: $isPhone');
+    debugPrint('📧 Email: $email');
+    debugPrint('📱 Phone: $phone');
   }
 
   @override

@@ -61,22 +61,66 @@ class Forgetpassword extends StatelessWidget {
                     ),
                     Customtextbody(text: StringsKeys.forgotPasswordBody.tr),
                     SizedBox(height: 10.h),
-                    Custtextfeld(
-                      controller: controller.email,
-                      focusNode: controller.focus,
-                      onTap: () {
-                        scrollWhenKeyboardOpens(
-                          controller.scrollController,
-                          context,
-                          60.h,
-                        );
-                      },
-                      hint: StringsKeys.emailHint.tr,
-                      validator: (val) => validateInput(
-                        val: val!,
-                        min: 6,
-                        max: 100,
-                        type: ValidateType.email,
+                    // 📧📱 حقل الإدخال مع prefix ديناميكي
+                    GetBuilder<Forgetpassowrdlment>(
+                      id: 'country_prefix',
+                      builder: (ctrl) => Custtextfeld(
+                        controller: controller.email,
+                        focusNode: controller.focus,
+                        onTap: () {
+                          scrollWhenKeyboardOpens(
+                            controller.scrollController,
+                            context,
+                            60.h,
+                          );
+                        },
+                        hint: StringsKeys.emailOrPhoneHint.tr,
+                        prefixIcon: ctrl.detectedCountry != null
+                            ? Padding(
+                                padding: EdgeInsets.only(
+                                  left: 15.w,
+                                  right: 5.w,
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      ctrl.countryFlag ?? '',
+                                      style: TextStyle(fontSize: 20.sp),
+                                    ),
+                                    SizedBox(width: 5.w),
+                                    Text(
+                                      ctrl.countryCode ?? '',
+                                      style: TextStyle(
+                                        fontSize: 14.sp,
+                                        color: Appcolor.gray,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                    SizedBox(width: 5.w),
+                                    Container(
+                                      height: 20.h,
+                                      width: 1,
+                                      color: Appcolor.gray.withOpacity(0.5),
+                                    ),
+                                  ],
+                                ),
+                              )
+                            : null,
+                        suffixIcon: Icon(
+                          ctrl.detectedCountry != null
+                              ? Icons.phone_android
+                              : Icons.email_outlined,
+                          color: ctrl.detectedCountry != null
+                              ? Appcolor.primrycolor
+                              : Appcolor.gray,
+                        ),
+                        validator: (val) => validateInput(
+                          val: val!,
+                          min: 6,
+                          max: 100,
+                          type: ValidateType.emailOrPhone,
+                        ),
                       ),
                     ),
                     SizedBox(height: 25.h),

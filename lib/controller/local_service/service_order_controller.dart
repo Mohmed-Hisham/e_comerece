@@ -7,6 +7,7 @@ import 'package:e_comerece/core/funcations/success_dialog.dart';
 import 'package:e_comerece/core/servises/custom_getx_snak_bar.dart';
 import 'package:e_comerece/core/servises/serviese.dart';
 import 'package:e_comerece/core/class/api_service.dart';
+import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:e_comerece/data/Apis/apis_url.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -76,7 +77,7 @@ class ServiceOrderController extends GetxController {
 
   void confirmOrder() async {
     if (service == null) {
-      showCustomGetSnack(isGreen: false, text: "Service not found");
+      showCustomGetSnack(isGreen: false, text: StringsKeys.serviceNotFound.tr);
       return;
     }
 
@@ -90,7 +91,10 @@ class ServiceOrderController extends GetxController {
     String addressid = await myServises.getSecureData("default_address") ?? "";
 
     if (addressid == "") {
-      showCustomGetSnack(isGreen: false, text: "Please select an address");
+      showCustomGetSnack(
+        isGreen: false,
+        text: StringsKeys.pleaseSelectAddress.tr,
+      );
       statusRequest = Statusrequest.none;
       update();
       return;

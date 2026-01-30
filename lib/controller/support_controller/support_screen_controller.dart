@@ -4,6 +4,7 @@ import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/servises/custom_getx_snak_bar.dart';
 import 'package:e_comerece/core/servises/serviese.dart';
 import 'package:e_comerece/core/servises/firebase_storage_helper.dart';
+import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:e_comerece/data/repository/local_service/local_service_repo_impl.dart';
 import 'package:e_comerece/data/model/local_service/get_local_service_model.dart';
 import 'package:e_comerece/data/model/local_service/service_request_details_model.dart'
@@ -154,7 +155,7 @@ class SupportScreenControllerImp extends SupportScreenController {
         update();
         showCustomGetSnack(
           isGreen: false,
-          text: 'فشل رفع الصورة، حاول مرة أخرى',
+          text: StringsKeys.imageUploadFailed.tr,
         );
         return null;
       }
@@ -178,7 +179,10 @@ class SupportScreenControllerImp extends SupportScreenController {
       sendMessagestatusrequest = Statusrequest.failuer;
       selectedImage = null;
       update();
-      showCustomGetSnack(isGreen: false, text: 'حدث خطأ أثناء رفع الصورة');
+      showCustomGetSnack(
+        isGreen: false,
+        text: StringsKeys.errorUploadingImage.tr,
+      );
       return null;
     }
   }

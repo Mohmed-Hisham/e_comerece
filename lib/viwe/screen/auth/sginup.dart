@@ -1,6 +1,5 @@
 import 'package:e_comerece/controller/auth/sginup_controller.dart';
 import 'package:e_comerece/core/constant/color.dart';
-import 'package:e_comerece/core/constant/imagesassets.dart';
 import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:e_comerece/core/funcations/exitdiloge.dart';
 import 'package:e_comerece/core/funcations/validate.dart';
@@ -12,7 +11,6 @@ import 'package:e_comerece/viwe/widget/auth/customtexttitleauth.dart';
 import 'package:e_comerece/viwe/widget/auth/custtextfeld.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 
 class Sginup extends StatelessWidget {
@@ -36,18 +34,7 @@ class Sginup extends StatelessWidget {
               children: [
                 PositionedLeft1(),
                 PositionedRight3(),
-                Positioned(
-                  top: 275.h,
-                  left: 35.w,
-                  child: SvgPicture.asset(
-                    AppImagesassets.shapcamera,
-                    fit: BoxFit.cover,
-                    colorFilter: const ColorFilter.mode(
-                      Appcolor.primrycolor,
-                      BlendMode.srcIn,
-                    ),
-                  ),
-                ),
+
                 Positioned(
                   top: 65.h,
                   left: 15.w,
@@ -70,7 +57,7 @@ class Sginup extends StatelessWidget {
                           scrollWhenKeyboardOpens(
                             controller.scrollController,
                             context,
-                            200.h,
+                            270.h,
                           );
                         },
                         focusNode: controller.usernameFocus,
@@ -90,7 +77,7 @@ class Sginup extends StatelessWidget {
                           scrollWhenKeyboardOpens(
                             controller.scrollController,
                             context,
-                            200.h,
+                            270.h,
                           );
                         },
                         hint: StringsKeys.emailHint.tr,
@@ -105,13 +92,55 @@ class Sginup extends StatelessWidget {
                         },
                         focusNode: controller.emailFocus,
                       ),
-                      Custtextfeld(
-                        hint: StringsKeys.phoneHint.tr,
-                        controller: controller.phone,
-                        validator: (val) {
-                          return validateInput(val: val!, min: 10, max: 20);
-                        },
-                        focusNode: controller.phoneFocus,
+                      // 📱 حقل الهاتف مع prefix ديناميكي
+                      GetBuilder<SginupControllerimplemnt>(
+                        id: 'phone_prefix',
+                        builder: (ctrl) => Custtextfeld(
+                          hint: StringsKeys.phoneHint.tr,
+                          controller: controller.phone,
+                          validator: (val) {
+                            return validateInput(val: val!, min: 9, max: 20);
+                          },
+                          focusNode: controller.phoneFocus,
+                          prefixIcon: ctrl.detectedCountry != null
+                              ? Padding(
+                                  padding: EdgeInsets.only(
+                                    left: 15.w,
+                                    right: 5.w,
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        ctrl.countryFlag ?? '',
+                                        style: TextStyle(fontSize: 20.sp),
+                                      ),
+                                      SizedBox(width: 5.w),
+                                      Text(
+                                        ctrl.countryCode ?? '',
+                                        style: TextStyle(
+                                          fontSize: 14.sp,
+                                          color: Appcolor.gray,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                      SizedBox(width: 5.w),
+                                      Container(
+                                        height: 20.h,
+                                        width: 1,
+                                        color: Appcolor.gray.withOpacity(0.5),
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              : null,
+                          suffixIcon: Icon(
+                            Icons.phone_android,
+                            color: ctrl.detectedCountry != null
+                                ? Appcolor.primrycolor
+                                : Appcolor.gray,
+                          ),
+                        ),
                       ),
                       Custtextfeld(
                         controller: controller.passowrd,
@@ -132,6 +161,98 @@ class Sginup extends StatelessWidget {
                                   Icons.lock_open_rounded,
                                   color: Appcolor.primrycolor,
                                 ),
+                        ),
+                      ),
+
+                      // 🔄 Switch لاختيار طريقة التحقق
+                      GetBuilder<SginupControllerimplemnt>(
+                        id: 'verification_switch',
+                        builder: (ctrl) => Container(
+                          margin: EdgeInsets.symmetric(horizontal: 25.w),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 16.w,
+                            vertical: 12.h,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Appcolor.somgray,
+                            borderRadius: BorderRadius.circular(15.r),
+                            border: Border.all(
+                              color: ctrl.verifyViaPhone
+                                  ? Colors.green.withOpacity(0.5)
+                                  : Colors.blue.withOpacity(0.5),
+                              width: 1.5,
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              // أيقونة
+                              AnimatedContainer(
+                                duration: const Duration(milliseconds: 300),
+                                padding: EdgeInsets.all(8.r),
+                                decoration: BoxDecoration(
+                                  color: ctrl.verifyViaPhone
+                                      ? Colors.green.withOpacity(0.15)
+                                      : Colors.blue.withOpacity(0.15),
+                                  borderRadius: BorderRadius.circular(10.r),
+                                ),
+                                child: Icon(
+                                  ctrl.verifyViaPhone
+                                      ? Icons.phone_android
+                                      : Icons.email_outlined,
+                                  color: ctrl.verifyViaPhone
+                                      ? Colors.green
+                                      : Colors.blue,
+                                  size: 22.sp,
+                                ),
+                              ),
+                              SizedBox(width: 12.w),
+                              // النص
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      StringsKeys.chooseVerificationMethod.tr,
+                                      style: TextStyle(
+                                        fontSize: 12.sp,
+                                        color: Appcolor.gray,
+                                      ),
+                                    ),
+                                    SizedBox(height: 2.h),
+                                    Text(
+                                      ctrl.verifyViaPhone
+                                          ? StringsKeys.verifyViaPhone.tr
+                                          : StringsKeys.verifyViaEmail.tr,
+                                      style: TextStyle(
+                                        fontSize: 14.sp,
+                                        fontWeight: FontWeight.w600,
+                                        color: ctrl.verifyViaPhone
+                                            ? Colors.green
+                                            : Colors.blue,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              // Switch
+                              Transform.scale(
+                                scale: 0.9,
+                                child: Switch(
+                                  value: ctrl.verifyViaPhone,
+                                  onChanged: (_) =>
+                                      ctrl.toggleVerificationMethod(),
+                                  activeColor: Colors.green,
+                                  activeTrackColor: Colors.green.withOpacity(
+                                    0.3,
+                                  ),
+                                  inactiveThumbColor: Colors.blue,
+                                  inactiveTrackColor: Colors.blue.withOpacity(
+                                    0.3,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
 

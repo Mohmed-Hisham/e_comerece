@@ -5,43 +5,25 @@ import 'package:e_comerece/core/class/failure.dart';
 import 'package:e_comerece/core/servises/custom_getx_snak_bar.dart';
 import 'package:e_comerece/data/repository/shein/shein_repo_impl.dart';
 import 'package:e_comerece/data/model/shein_models/trending_products_model.dart';
-import 'package:e_comerece/data/repository/slider_repo.dart';
-import 'package:e_comerece/data/model/slider_model.dart';
 import 'package:get/get.dart';
 
 class SheinHomController extends GetxController {
-  Statusrequest statusrequestproduct = Statusrequest.none;
+  Statusrequest statusrequestproduct = Statusrequest.loading;
   SheinRepoImpl sheinRepoImpl = SheinRepoImpl(apiService: Get.find());
   List<Product> products = [];
   bool isLoading = false;
   bool hasMore = true;
   int pageindexHotProduct = 1;
-  SliderRepoImpl sliderRepoImpl = SliderRepoImpl(apiService: Get.find());
-  List<SliderModel> sliders = [];
-  Statusrequest statusRequestSlider = Statusrequest.none;
 
-  fetchSliders() async {
-    statusRequestSlider = Statusrequest.loading;
-    update(['slider']);
-    var response = await sliderRepoImpl.getSliders(platform: 'shein');
-    response.fold(
-      (l) {
-        statusRequestSlider = Statusrequest.failuer;
-      },
-      (r) {
-        sliders.clear();
-        sliders.addAll(r);
-        statusRequestSlider = Statusrequest.success;
-      },
-    );
-    update(['slider']);
-  }
-
+  // @override
+  // void onInit () {
+  //   super.onInit();
+  //   fetchproducts();
+  // }
   @override
-  void onInit() {
-    super.onInit();
+  void onReady() {
+    super.onReady();
     fetchproducts();
-    fetchSliders();
   }
 
   loadMoreproductShein() {

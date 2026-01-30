@@ -1,12 +1,13 @@
-import 'package:e_comerece/app_api/link_api.dart';
+import 'dart:io';
+
 import 'package:e_comerece/core/class/failure.dart';
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/funcations/loading_dialog.dart';
 import 'package:e_comerece/core/loacallization/translate_data.dart';
 import 'package:e_comerece/core/servises/custom_getx_snak_bar.dart';
+import 'package:e_comerece/core/servises/firebase_storage_helper.dart';
 import 'package:e_comerece/core/shared/image_manger/image_manag_controller.dart';
-import 'package:e_comerece/data/datasource/remote/upload_to_cloudinary.dart';
 import 'package:e_comerece/data/model/aliexpriess_model/searchbyimage_model.dart';
 import 'package:e_comerece/data/repository/aliexpriss/alexpress_repo_impl.dart';
 import 'package:get/get.dart';
@@ -108,10 +109,9 @@ class SearchByimageControllerllerImple extends SearchByimageController {
         if (!Get.isDialogOpen!) {
           loadingDialog();
         }
-        uploadToCloudinary(
-              filePath: image.path,
-              cloudName: Appapi.cloudName,
-              uploadPreset: Appapi.uploadPreset,
+        FirebaseStorageHelper.uploadImage(
+              imageFile: File(image.path),
+              folder: 'aliexpress_search_images',
             )
             .then((url) {
               if (Get.isDialogOpen ?? false) Get.back();

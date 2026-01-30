@@ -18,12 +18,12 @@ class Custombottonbar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
+    final color = isactive ? Appcolor.primrycolor : Appcolor.gray;
+
+    return GestureDetector(
       onTap: onPressed,
-      borderRadius: BorderRadius.vertical(top: Radius.circular(40.r)),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 400),
-        curve: Curves.easeOutQuart,
+      behavior: HitTestBehavior.opaque,
+      child: Container(
         padding: EdgeInsets.symmetric(
           horizontal: isactive ? 16 : 12,
           vertical: 10,
@@ -37,47 +37,24 @@ class Custombottonbar extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            TweenAnimationBuilder<Color?>(
-              tween: ColorTween(
-                begin: Appcolor.gray,
-                end: isactive ? Appcolor.primrycolor : Appcolor.gray,
-              ),
-              duration: const Duration(milliseconds: 300),
-              builder: (context, color, child) {
-                return SvgPicture.asset(
-                  iconPath,
-                  colorFilter: ColorFilter.mode(
-                    color ?? Appcolor.gray,
-                    BlendMode.srcIn,
-                  ),
-                  height: 26.h,
-                );
-              },
+            SvgPicture.asset(
+              iconPath,
+              colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
+              height: 26.h,
             ),
-            AnimatedSize(
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeInOut,
-              child: SizedBox(
-                width: isactive
-                    ? null
-                    : 0, // Let it be intrinsic when active, 0 when not
-                child: isactive
-                    ? Padding(
-                        padding: const EdgeInsets.only(left: 8.0),
-                        child: Text(
-                          "$text",
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            color: Appcolor.primrycolor,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 15.sp,
-                          ),
-                        ),
-                      )
-                    : const SizedBox.shrink(),
+            if (isactive) ...[
+              const SizedBox(width: 8),
+              Text(
+                text ?? '',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: Appcolor.primrycolor,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15.sp,
+                ),
               ),
-            ),
+            ],
           ],
         ),
       ),

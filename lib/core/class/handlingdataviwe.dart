@@ -36,7 +36,7 @@ class Handlingdataviwe extends StatelessWidget {
     Widget boxChild(Widget child) => Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        if (statusrequest != Statusrequest.loading)
+        if (statusrequest != Statusrequest.loading && ontryagain != null)
           Container(
             margin: const EdgeInsets.only(top: 10),
             child: CustButtonBotton(
@@ -419,41 +419,131 @@ class HandlingdataviweNoEmty extends StatelessWidget {
   }
 }
 
-// class HandlingdatRequest extends StatelessWidget {
-//   final Statusrequest statusrequest;
-//   final Widget widget;
-//   const HandlingdatRequest({
-//     super.key,
-//     required this.statusrequest,
-//     required this.widget,
-//   });
+class HandlingdatRequestNoFild extends StatelessWidget {
+  final Statusrequest statusrequest;
+  final Widget widget;
+  final Widget? shimmer;
+  final bool isSliver;
+  final bool isSizedBox;
+  final double height;
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return statusrequest == Statusrequest.loading
-//         ? Center(
-//             child: Lottie.asset(
-//               Lottieassets.shoppingcart,
-//               width: 250,
-//               height: 300,
-//             ),
-//           )
-//         : statusrequest == Statusrequest.oflinefailuer
-//         ? Center(
-//             child: Lottie.asset(
-//               Lottieassets.nointernetlottie,
-//               width: 250,
-//               height: 300,
-//             ),
-//           )
-//         : statusrequest == Statusrequest.serverfailuer
-//         ? Center(
-//             child: Lottie.asset(
-//               Lottieassets.srverfailuerlottie,
-//               width: 250,
-//               height: 300,
-//             ),
-//           )
-//         : widget;
-//   }
-// }
+  const HandlingdatRequestNoFild({
+    super.key,
+    required this.statusrequest,
+    required this.widget,
+    this.shimmer,
+    this.isSliver = false,
+    this.isSizedBox = false,
+    this.height = 220,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    Widget boxChild(Widget child) => Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Center(
+          child: TweenAnimationBuilder<double>(
+            tween: Tween(begin: 0, end: 1),
+            duration: const Duration(milliseconds: 600),
+            curve: Curves.easeInOut,
+            builder: (context, value, _) => Opacity(
+              opacity: value,
+              child: Transform.translate(
+                offset: Offset(0, 30 * (1 - value)),
+                child: child,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+
+    Widget sliverChild(Widget child, {bool mediaQuery = true}) =>
+        SliverToBoxAdapter(
+          child: SizedBox(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (isSizedBox) SizedBox(height: height.h),
+
+                Center(
+                  child: TweenAnimationBuilder<double>(
+                    tween: Tween(begin: 0, end: 1),
+                    duration: const Duration(milliseconds: 600),
+                    curve: Curves.easeInOut,
+                    builder: (context, value, _) => Opacity(
+                      opacity: value,
+                      child: Transform.translate(
+                        offset: Offset(0, 30 * (1 - value)),
+                        child: child,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+
+    if (isSliver) {
+      switch (statusrequest) {
+        case Statusrequest.loading:
+          if (shimmer != null) return sliverChild(shimmer!, mediaQuery: false);
+          return sliverChild(
+            Column(
+              children: [
+                Lottie.asset(
+                  Lottieassets.shoppingcart,
+                  width: 180,
+                  height: 180,
+                ),
+              ],
+            ),
+          );
+        case Statusrequest.noData:
+          return sliverChild(SizedBox());
+        case Statusrequest.oflinefailuer:
+          return sliverChild(SizedBox());
+        case Statusrequest.serverfailuer:
+          return sliverChild(SizedBox());
+        case Statusrequest.failuer:
+          return sliverChild(SizedBox());
+        case Statusrequest.failuerTryAgain:
+          return sliverChild(SizedBox());
+        default:
+          return widget;
+      }
+    } else {
+      switch (statusrequest) {
+        case Statusrequest.loading:
+          return shimmer ??
+              boxChild(
+                Column(
+                  // crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Lottie.asset(
+                      Lottieassets.shoppingcart,
+                      width: 180,
+                      height: 180,
+                    ),
+                  ],
+                ),
+              );
+        case Statusrequest.noData:
+          return boxChild(SizedBox());
+        case Statusrequest.oflinefailuer:
+          return boxChild(SizedBox());
+        case Statusrequest.serverfailuer:
+          return boxChild(SizedBox());
+        case Statusrequest.failuer:
+          return boxChild(SizedBox());
+        case Statusrequest.failuerTryAgain:
+          return boxChild(SizedBox());
+        default:
+          return widget;
+      }
+    }
+  }
+}

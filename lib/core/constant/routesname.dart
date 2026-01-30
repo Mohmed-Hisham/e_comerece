@@ -15,9 +15,15 @@ class AppRoutesname {
   static const String successsginup = "/successsginup";
   // static const String checkEmail = "/checkEmail";
 
-  // Home
+  // Home & Main Tabs
   static const String homepage = "/homepage";
   static const String homepage1 = "/homepage1";
+  static const String cartTab = "/cart-tab";
+  static const String ordersTab = "/orders-tab";
+  static const String localServicesTab = "/local-services-tab";
+  static const String settingsTab = "/settings-tab";
+  static const String searchScreen = "/search-screen";
+
   static const String detelspage = "/detelspage";
   static const String shearchname = "/Shearchname";
   static const String favoritescreen = "/FavoriteScreen";
@@ -64,4 +70,9 @@ class AppRoutesname {
       "/local-service-order-details-view";
   static const String serviceOrderScreen = "/service-order-screen";
   static const String legal = "/legal";
+
+  // Our Products (Local Products)
+  static const String ourProductsView = "/our-products-view";
+  static const String ourProductDetails = "/our-product-details";
+  static const String ourProductsSearch = "/our-products-search";
 }

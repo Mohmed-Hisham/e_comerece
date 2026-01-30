@@ -65,6 +65,10 @@ class StringsKeys {
   static const String trySmsAgain = "trySmsAgain";
   static const String tryWithEmail = "tryWithEmail";
   static const String emailOrPhoneHint = "emailOrPhoneHint";
+  static const String verifyViaEmail = "verifyViaEmail";
+  static const String verifyViaPhone = "verifyViaPhone";
+  static const String codeSentToPhone = "codeSentToPhone";
+  static const String codeSentToEmail = "codeSentToEmail";
 
   static const String all = "all";
   static const String productFromAliexpress = "productFromAliexpress";
@@ -85,6 +89,8 @@ class StringsKeys {
   static const String trendingProductsFromShein = "trendingProductsFromShein";
   static const String sales = "sales";
   static const String searchHint = "searchHint";
+  static const String searchPlatforms = "searchPlatforms";
+  static const String searchForProducts = "searchForProducts";
   static const String cantBeEmpty = "cantBeEmpty";
   static const String notValidUsername = "notValidUsername";
   static const String notValidEmail = "notValidEmail";
@@ -315,4 +321,93 @@ class StringsKeys {
   static const String statusCompleted = "statusCompleted";
   static const String statusCancelled = "statusCancelled";
   static const String statusUnknown = "statusUnknown";
+
+  // Additional Keys - Chat & Support
+  static const String imageAttached = "imageAttached";
+  static const String pressSendToUploadImage = "pressSendToUploadImage";
+  static const String chooseImageSource = "chooseImageSource";
+  static const String gallery = "gallery";
+  static const String camera = "camera";
+  static const String messagesFromSupport = "messagesFromSupport";
+
+  // Additional Keys - Order Status Extended
+  static const String pendingAdminReview = "pendingAdminReview";
+  static const String adminNotes = "adminNotes";
+  static const String adminApproved = "adminApproved";
+  static const String awaitingPayment = "awaitingPayment";
+  static const String inOrder = "inOrder";
+  static const String inTransit = "inTransit";
+
+  // Additional Keys - Local Service
+  static const String newService = "newService";
+  static const String inChat = "inChat";
+  static const String trackService = "trackService";
+  static const String serviceRejected = "serviceRejected";
+  static const String serviceCancelled = "serviceCancelled";
+  static const String requestRejectedByAdmin = "requestRejectedByAdmin";
+  static const String serviceCancelledMessage = "serviceCancelledMessage";
+  static const String priceSet = "priceSet";
+
+  // Additional Keys - Currency & Settings
+  static const String selectDisplayCurrency = "selectDisplayCurrency";
+  static const String confirm = "confirm";
+
+  // Additional Keys - Maps & Location
+  static const String notes = "notes";
+  static const String addSpecialInstructions = "addSpecialInstructions";
+  static const String locationLabel = "locationLabel";
+  static const String searchPlace = "searchPlace";
+
+  // Additional Keys - Dialog & Alerts
+  static const String confirmCancellation = "confirmCancellation";
+  static const String confirmCancelOrderMessage = "confirmCancelOrderMessage";
+  static const String no = "no";
+  static const String yesCancelOrder = "yesCancelOrder";
+  static const String orderCancelledSuccess = "orderCancelledSuccess";
+  static const String errorCancellingOrder = "errorCancellingOrder";
+  static const String cannotCancelOrder = "cannotCancelOrder";
+  static const String ok = "ok";
+  static const String info = "info";
+  static const String noDescriptionAvailable = "noDescriptionAvailable";
+
+  // Additional Keys - Error Messages
+  static const String errorWithMessage = "errorWithMessage";
+  static const String imageUploadFailed = "imageUploadFailed";
+  static const String errorUploadingImage = "errorUploadingImage";
+
+  // Additional Keys - Success Messages
+  static const String verificationCodeSent = "verificationCodeSent";
+  static const String loginSuccess = "loginSuccess";
+  static const String verificationSuccess = "verificationSuccess";
+
+  // Additional Keys - Network
+  static const String noInternetConnection = "noInternetConnection";
+  static const String internetConnectionRestored = "internetConnectionRestored";
+
+  // Additional Keys - Service Order
+  static const String serviceNotFound = "serviceNotFound";
+  static const String pleaseSelectAddress = "pleaseSelectAddress";
+
+  // Additional Keys - Favorites
+  static const String removedFromFavorites = "removedFromFavorites";
+
+  // Additional Keys - Checkout
+  static const String orderPlacedSuccessfully = "orderPlacedSuccessfully";
+
+  // Additional Keys - Service Order Content
+  static const String agreedPrice = "agreedPrice";
+  static const String confirmAndOrder = "confirmAndOrder";
+
+  // Our Products (Local Products)
+  static const String ourProducts = "ourProducts";
+  static const String ourProductsFeatured = "ourProductsFeatured";
+  static const String ourProductsYouMightLike = "ourProductsYouMightLike";
+  static const String searchInOurProducts = "searchInOurProducts";
+  static const String viewAll = "viewAll";
+  static const String noProductsFound = "noProductsFound";
+  static const String saltk = "saltk";
+  static const String productDetails = "productDetails";
+  static const String addedToCart = "addedToCart";
+  static const String relatedProducts = "relatedProducts";
+  static const String seeAll = "seeAll";
 }

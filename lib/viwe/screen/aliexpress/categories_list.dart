@@ -47,7 +47,7 @@ class CategoriesList extends StatelessWidget {
 
                             child: Container(
                               height: 60.h,
-                              width: 55.w,
+                              width: 60.w,
                               decoration: BoxDecoration(
                                 color: Appcolor.white,
                                 border: Border.all(

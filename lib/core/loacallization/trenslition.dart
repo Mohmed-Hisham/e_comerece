@@ -89,6 +89,10 @@ class MyTrenslition extends Translations {
       "trySmsAgain": "حاول مرة أخرى عبر SMS",
       "tryWithEmail": "حاول بالبريد الإلكتروني بدلاً من ذلك",
       "emailOrPhoneHint": "البريد الإلكتروني أو رقم الهاتف",
+      "verifyViaEmail": "التحقق عبر البريد الإلكتروني",
+      "verifyViaPhone": "التحقق عبر الهاتف (SMS)",
+      "codeSentToPhone": "تم إرسال الرمز إلى هاتفك",
+      "codeSentToEmail": "تم إرسال الرمز إلى بريدك الإلكتروني",
 
       "textloading":
           "نقوم الآن بجلب بيانات المنتج. أحيانًا قد يستغرق الأمر بضع ثوانٍ بسبب حجم البيانات وعدد المنتجات — نشكرك على صبرك.",
@@ -111,6 +115,8 @@ class MyTrenslition extends Translations {
       "trendingProductsFromShein": "المنتجات الرائجة من شي إن",
       "sales": "مبيعة",
       "searchHint": "بحث عن منتج",
+      "searchPlatforms": "(علي إكسبريس، شي إن،...)",
+      "searchForProducts": "ابحث عن منتجاتك المفضلة",
       "cantBeEmpty": "لا يمكن أن يكون فارغاً",
       "notValidUsername": "اسم المستخدم غير صالح",
       "notValidEmail": "البريد الإلكتروني غير صالح",
@@ -346,6 +352,98 @@ class MyTrenslition extends Translations {
       StringsKeys.statusCompleted: "مكتمل",
       StringsKeys.statusCancelled: "ملغي",
       StringsKeys.statusUnknown: "غير معروف",
+
+      // Additional Keys - Chat & Support
+      StringsKeys.imageAttached: "صورة مرفقة",
+      StringsKeys.pressSendToUploadImage: "اضغط ارسال لإرسال الصورة",
+      StringsKeys.chooseImageSource: "اختر مصدر الصورة",
+      StringsKeys.gallery: "المعرض",
+      StringsKeys.camera: "الكاميرا",
+      StringsKeys.messagesFromSupport: "هناك رسائل من الدعم",
+
+      // Additional Keys - Order Status Extended
+      StringsKeys.pendingAdminReview: "انتظار مراجعة الأدمن",
+      StringsKeys.adminNotes: "ملاحظات من الأدمن",
+      StringsKeys.adminApproved: "موافقة الأدمن",
+      StringsKeys.awaitingPayment: "انتظار الدفع",
+      StringsKeys.inOrder: "في الطلب",
+      StringsKeys.inTransit: "في الطريق",
+
+      // Additional Keys - Local Service
+      StringsKeys.newService: "خدمة جديدة",
+      StringsKeys.inChat: "في المحادثة",
+      StringsKeys.trackService: "تتبع الخدمة",
+      StringsKeys.serviceRejected: "خدمة مرفوضة",
+      StringsKeys.serviceCancelled: "خدمة ملغية",
+      StringsKeys.requestRejectedByAdmin: "تم رفض طلبك من قبل الإدارة",
+      StringsKeys.serviceCancelledMessage: "تم إلغاء هذه الخدمة",
+      StringsKeys.priceSet: "تم تحديد السعر",
+
+      // Additional Keys - Currency & Settings
+      StringsKeys.selectDisplayCurrency: "اختر عملة العرض",
+      StringsKeys.confirm: "تأكيد",
+
+      // Additional Keys - Maps & Location
+      StringsKeys.notes: "ملاحظات",
+      StringsKeys.addSpecialInstructions: "أضف أي تعليمات خاصة...",
+      StringsKeys.locationLabel: "الموقع",
+      StringsKeys.searchPlace: "ابحث عن مكان",
+
+      // Additional Keys - Dialog & Alerts
+      StringsKeys.confirmCancellation: "تأكيد الإلغاء",
+      StringsKeys.confirmCancelOrderMessage: "هل أنت متأكد من إلغاء هذا الطلب؟",
+      StringsKeys.no: "لا",
+      StringsKeys.yesCancelOrder: "نعم، إلغاء الطلب",
+      StringsKeys.orderCancelledSuccess: "تم إلغاء الطلب بنجاح",
+      StringsKeys.errorCancellingOrder: "حدث خطأ أثناء إلغاء الطلب",
+      StringsKeys.cannotCancelOrder:
+          "لا يمكن إلغاء هذا الطلب. يمكن إلغاء الطلبات في حالة المراجعة أو بانتظار العميل فقط",
+      StringsKeys.ok: "حسناً",
+      StringsKeys.info: "معلومات",
+      StringsKeys.noDescriptionAvailable: "لا يوجد وصف متاح",
+
+      // Additional Keys - Error Messages
+      StringsKeys.errorWithMessage: "خطأ",
+      StringsKeys.imageUploadFailed: "فشل رفع الصورة، حاول مرة أخرى",
+      StringsKeys.errorUploadingImage: "حدث خطأ أثناء رفع الصورة",
+
+      // Additional Keys - Success Messages
+      StringsKeys.verificationCodeSent: "تم إرسال رمز التحقق",
+      StringsKeys.loginSuccess: "تم تسجيل الدخول بنجاح",
+      StringsKeys.verificationSuccess: "تم التحقق بنجاح",
+
+      // Additional Keys - Network
+      StringsKeys.noInternetConnection: "الإنترنت غير متوفر الآن",
+      StringsKeys.internetConnectionRestored: "تم استعادة الاتصال بالإنترنت",
+
+      // Additional Keys - Service Order
+      StringsKeys.serviceNotFound: "الخدمة غير موجودة",
+      StringsKeys.pleaseSelectAddress: "يرجى اختيار عنوان",
+
+      // Additional Keys - Favorites
+      StringsKeys.removedFromFavorites: "تمت الإزالة من المفضلة",
+
+      // Additional Keys - Checkout
+      StringsKeys.orderPlacedSuccessfully: "تم تأكيد الطلب بنجاح",
+
+      // Additional Keys - Service Order Content
+      StringsKeys.agreedPrice: "السعر المتفق عليه",
+      StringsKeys.confirmAndOrder: "تأكيد وطلب",
+
+      // Our Products (Local Products)
+      StringsKeys.ourProducts: "منتجاتنا",
+      StringsKeys.ourProductsFeatured: "منتجاتنا المميزة",
+      StringsKeys.ourProductsYouMightLike: "منتجاتنا قد تعجبك",
+      StringsKeys.searchInOurProducts: "البحث في منتجاتنا",
+      StringsKeys.viewAll: "عرض الكل",
+      StringsKeys.noProductsFound: "لا توجد منتجات",
+      StringsKeys.saltk: "سلتك",
+      StringsKeys.productDetails: "تفاصيل المنتج",
+      StringsKeys.inStock: "متوفر",
+      StringsKeys.addToCart: "أضف للسلة",
+      StringsKeys.addedToCart: "تمت الإضافة للسلة",
+      StringsKeys.relatedProducts: "منتجات مشابهة",
+      StringsKeys.seeAll: "عرض الكل",
     },
     "en": {
       // Splashscreen
@@ -432,6 +530,10 @@ class MyTrenslition extends Translations {
       "trySmsAgain": "Try SMS again",
       "tryWithEmail": "Try with email instead",
       "emailOrPhoneHint": "Email or Phone Number",
+      "verifyViaEmail": "Verify via Email",
+      "verifyViaPhone": "Verify via Phone (SMS)",
+      "codeSentToPhone": "Code sent to your phone",
+      "codeSentToEmail": "Code sent to your email",
 
       "textloading":
           'We\'re fetching the product details now. This may take a few seconds due to the amount of data and the number of products — thank you for your patience.',
@@ -453,7 +555,9 @@ class MyTrenslition extends Translations {
       "hotDealsFromAmazon": "Hot Deals from Amazon",
       "trendingProductsFromShein": "Trending Products from Shein",
       "sales": "sales",
-      "searchHint": "Search item",
+      "searchHint": "Search",
+      "searchPlatforms": "(AliExpress, Shein,...)",
+      "searchForProducts": "Search for your favorite products",
       "cantBeEmpty": "can't be Empty",
       "notValidUsername": "Not Valid Username",
       "notValidEmail": "Not Valid Email",
@@ -690,6 +794,99 @@ class MyTrenslition extends Translations {
       StringsKeys.statusCompleted: "Completed",
       StringsKeys.statusCancelled: "Cancelled",
       StringsKeys.statusUnknown: "Unknown",
+
+      // Additional Keys - Chat & Support
+      StringsKeys.imageAttached: "Image Attached",
+      StringsKeys.pressSendToUploadImage: "Press send to upload the image",
+      StringsKeys.chooseImageSource: "Choose Image Source",
+      StringsKeys.gallery: "Gallery",
+      StringsKeys.camera: "Camera",
+      StringsKeys.messagesFromSupport: "You have messages from support",
+
+      // Additional Keys - Order Status Extended
+      StringsKeys.pendingAdminReview: "Pending Admin Review",
+      StringsKeys.adminNotes: "Admin Notes",
+      StringsKeys.adminApproved: "Admin Approved",
+      StringsKeys.awaitingPayment: "Awaiting Payment",
+      StringsKeys.inOrder: "In Order",
+      StringsKeys.inTransit: "In Transit",
+
+      // Additional Keys - Local Service
+      StringsKeys.newService: "New Service",
+      StringsKeys.inChat: "In Chat",
+      StringsKeys.trackService: "Track Service",
+      StringsKeys.serviceRejected: "Service Rejected",
+      StringsKeys.serviceCancelled: "Service Cancelled",
+      StringsKeys.requestRejectedByAdmin: "Your request was rejected by admin",
+      StringsKeys.serviceCancelledMessage: "This service has been cancelled",
+      StringsKeys.priceSet: "Price Set",
+
+      // Additional Keys - Currency & Settings
+      StringsKeys.selectDisplayCurrency: "Select Display Currency",
+      StringsKeys.confirm: "Confirm",
+
+      // Additional Keys - Maps & Location
+      StringsKeys.notes: "Notes",
+      StringsKeys.addSpecialInstructions: "Add any special instructions...",
+      StringsKeys.locationLabel: "Location",
+      StringsKeys.searchPlace: "Search Place",
+
+      // Additional Keys - Dialog & Alerts
+      StringsKeys.confirmCancellation: "Confirm Cancellation",
+      StringsKeys.confirmCancelOrderMessage:
+          "Are you sure you want to cancel this order?",
+      StringsKeys.no: "No",
+      StringsKeys.yesCancelOrder: "Yes, Cancel Order",
+      StringsKeys.orderCancelledSuccess: "Order cancelled successfully",
+      StringsKeys.errorCancellingOrder: "Error cancelling order",
+      StringsKeys.cannotCancelOrder:
+          "Cannot cancel this order. Only orders in pending or action required status can be cancelled",
+      StringsKeys.ok: "OK",
+      StringsKeys.info: "Info",
+      StringsKeys.noDescriptionAvailable: "No description available",
+
+      // Additional Keys - Error Messages
+      StringsKeys.errorWithMessage: "Error",
+      StringsKeys.imageUploadFailed: "Image upload failed, please try again",
+      StringsKeys.errorUploadingImage: "Error uploading image",
+
+      // Additional Keys - Success Messages
+      StringsKeys.verificationCodeSent: "Verification code sent",
+      StringsKeys.loginSuccess: "Login successful",
+      StringsKeys.verificationSuccess: "Verification successful",
+
+      // Additional Keys - Network
+      StringsKeys.noInternetConnection: "No internet connection",
+      StringsKeys.internetConnectionRestored: "Internet connection restored",
+
+      // Additional Keys - Service Order
+      StringsKeys.serviceNotFound: "Service not found",
+      StringsKeys.pleaseSelectAddress: "Please select an address",
+
+      // Additional Keys - Favorites
+      StringsKeys.removedFromFavorites: "Removed from favorites",
+
+      // Additional Keys - Checkout
+      StringsKeys.orderPlacedSuccessfully: "Order placed successfully",
+
+      // Additional Keys - Service Order Content
+      StringsKeys.agreedPrice: "Agreed Price",
+      StringsKeys.confirmAndOrder: "Confirm & Order",
+
+      // Our Products (Local Products)
+      StringsKeys.ourProducts: "Our Products",
+      StringsKeys.ourProductsFeatured: "Featured Products",
+      StringsKeys.ourProductsYouMightLike: "Our products you might like",
+      StringsKeys.searchInOurProducts: "Search in our products",
+      StringsKeys.viewAll: "View All",
+      StringsKeys.noProductsFound: "No products found",
+      StringsKeys.saltk: "SaltK",
+      StringsKeys.productDetails: "Product Details",
+      StringsKeys.inStock: "In Stock",
+      StringsKeys.addToCart: "Add to Cart",
+      StringsKeys.addedToCart: "Added to cart",
+      StringsKeys.relatedProducts: "Related Products",
+      StringsKeys.seeAll: "See All",
     },
   };
 }

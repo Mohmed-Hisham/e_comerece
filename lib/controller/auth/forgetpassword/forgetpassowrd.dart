@@ -27,6 +27,49 @@ class Forgetpassowrdlment extends Forgetpassowrd {
   // بيانات التحقق عبر SMS
   VerificationData? smsVerificationData;
 
+  // 🔄 لكشف البلد ديناميكياً
+  String? detectedCountry;
+
+  @override
+  void onInit() {
+    super.onInit();
+    email = TextEditingController(
+      text: Get.arguments?['email'] ?? Get.arguments?['identifier'] ?? '',
+    );
+    email.addListener(_onInputChanged);
+  }
+
+  void _onInputChanged() {
+    final input = email.text.trim();
+    final newCountry = InputTypeHelper.detectCountry(input);
+    if (newCountry != detectedCountry) {
+      detectedCountry = newCountry;
+      update(['country_prefix']);
+    }
+  }
+
+  String? get countryFlag {
+    switch (detectedCountry) {
+      case 'EG':
+        return '🇪🇬';
+      case 'YE':
+        return '🇾🇪';
+      default:
+        return null;
+    }
+  }
+
+  String? get countryCode {
+    switch (detectedCountry) {
+      case 'EG':
+        return '+20';
+      case 'YE':
+        return '+967';
+      default:
+        return null;
+    }
+  }
+
   @override
   goToveyfiycode() async {
     if (formState.currentState!.validate()) {
@@ -103,15 +146,8 @@ class Forgetpassowrdlment extends Forgetpassowrd {
   }
 
   @override
-  void onInit() {
-    super.onInit();
-    email = TextEditingController(
-      text: Get.arguments['email'] ?? Get.arguments['identifier'] ?? '',
-    );
-  }
-
-  @override
   void dispose() {
+    email.removeListener(_onInputChanged);
     super.dispose();
     email.dispose();
     focus.dispose();

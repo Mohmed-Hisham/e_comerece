@@ -9,8 +9,10 @@ import 'package:e_comerece/core/funcations/handle_paging_response.dart';
 import 'package:e_comerece/core/loacallization/translate_data.dart';
 import 'package:e_comerece/core/servises/custom_getx_snak_bar.dart';
 import 'package:e_comerece/core/servises/platform_ext.dart';
+import 'package:e_comerece/data/model/our_product_model.dart';
 import 'package:e_comerece/data/repository/alibaba/alibaba_repo_impl.dart';
 import 'package:e_comerece/data/repository/amazon/amazon_repo_impl.dart';
+import 'package:e_comerece/data/repository/local_product/local_product_repo_impl.dart';
 import 'package:e_comerece/data/repository/shein/shein_repo_impl.dart';
 import 'package:e_comerece/data/model/slider_model.dart';
 import 'package:e_comerece/data/repository/slider_repo.dart';
@@ -93,6 +95,7 @@ class HomescreenControllerImple extends HomescreenController {
       }
     });
     fetchSliders();
+    fetchOurProducts();
   }
 
   // @override
@@ -147,11 +150,11 @@ class HomescreenControllerImple extends HomescreenController {
   bool initShow = false;
 
   List<Widget> pages = [
-    Homepage(),
-    CartView(),
-    OrdersScreen(),
-    LocalServiessScreen(),
-    Setting(),
+    const Homepage(),
+    const CartView(),
+    const OrdersScreen(),
+    const LocalServiessScreen(),
+    const Setting(),
   ];
   int pageindexHome = 0;
   int previousIndex = 0;
@@ -165,6 +168,16 @@ class HomescreenControllerImple extends HomescreenController {
   int currentIndex = 0;
   Statusrequest statusRequestHome = Statusrequest.none;
   Statusrequest statusRequestSlider = Statusrequest.none;
+
+  // Our Products
+  Statusrequest ourProductsStatusRequest = Statusrequest.none;
+  List<LocalProductModel> ourProducts = [];
+  bool hasMoreOurProducts = true;
+  bool _isLoadingMoreOurProducts = false;
+  bool get isLoadingMoreOurProducts => _isLoadingMoreOurProducts;
+  int _ourProductsPage = 1;
+  static const int _ourProductsPageSize = 6;
+  late LocalProductRepoImpl _localProductRepo;
 
   List<SliderModel> sliders = [];
 
@@ -183,6 +196,75 @@ class HomescreenControllerImple extends HomescreenController {
       },
     );
     update(['slider']);
+  }
+
+  // Initialize Local Product Repository
+  void _initLocalProductRepo() {
+    _localProductRepo = LocalProductRepoImpl(apiService: Get.find());
+  }
+
+  // Fetch Our Products (Featured) from API
+  fetchOurProducts() async {
+    _initLocalProductRepo();
+    ourProductsStatusRequest = Statusrequest.loading;
+    _ourProductsPage = 1;
+    hasMoreOurProducts = true;
+    ourProducts.clear();
+    update(['ourProducts']);
+
+    final result = await _localProductRepo.getProducts(
+      page: _ourProductsPage,
+      pageSize: _ourProductsPageSize,
+    );
+
+    result.fold(
+      (failure) {
+        ourProductsStatusRequest = Statusrequest.failuer;
+      },
+      (response) {
+        if (response.products != null && response.products!.isNotEmpty) {
+          ourProducts.addAll(response.products!);
+          hasMoreOurProducts = response.hasMore;
+          ourProductsStatusRequest = Statusrequest.success;
+        } else {
+          ourProductsStatusRequest = Statusrequest.noData;
+          hasMoreOurProducts = false;
+        }
+      },
+    );
+
+    update(['ourProducts']);
+  }
+
+  // Load more Our Products (Pagination)
+  loadMoreOurProducts() async {
+    if (_isLoadingMoreOurProducts || !hasMoreOurProducts) return;
+
+    _isLoadingMoreOurProducts = true;
+    update(['ourProducts']);
+    _ourProductsPage++;
+
+    final result = await _localProductRepo.getProducts(
+      page: _ourProductsPage,
+      pageSize: _ourProductsPageSize,
+    );
+
+    result.fold(
+      (failure) {
+        _ourProductsPage--;
+      },
+      (response) {
+        if (response.products != null && response.products!.isNotEmpty) {
+          ourProducts.addAll(response.products!);
+          hasMoreOurProducts = response.hasMore;
+        } else {
+          hasMoreOurProducts = false;
+        }
+      },
+    );
+
+    _isLoadingMoreOurProducts = false;
+    update(['ourProducts']);
   }
 
   int lengthAliexpress = 10;
@@ -217,8 +299,17 @@ class HomescreenControllerImple extends HomescreenController {
   @override
   void changepage(int i) {
     if (pageindexHome == i) return;
+    previousIndex = pageindexHome;
     pageindexHome = i;
-    update();
+    update(['bottomBar']); // ✅ تحديث الـ bottom bar فقط
+  }
+
+  /// Set page without navigation (used when coming from route)
+  void setPageWithoutNav(int i) {
+    if (pageindexHome == i) return;
+    previousIndex = pageindexHome;
+    pageindexHome = i;
+    update(['bottomBar']); // ✅ تحديث الـ bottom bar فقط
   }
 
   @override

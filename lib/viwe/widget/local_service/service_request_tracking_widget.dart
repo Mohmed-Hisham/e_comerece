@@ -1,6 +1,8 @@
 import 'package:e_comerece/core/constant/color.dart';
+import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 
 class ServiceRequestTrackingWidget extends StatelessWidget {
   final String currentStatus;
@@ -11,25 +13,29 @@ class ServiceRequestTrackingWidget extends StatelessWidget {
     return [
       TrackingStep(
         status: 'new',
-        title: 'خدمة جديدة',
+        title: StringsKeys.newService.tr,
         icon: Icons.new_releases_outlined,
       ),
       TrackingStep(
         status: 'in_chat',
-        title: 'في المحادثة',
+        title: StringsKeys.inChat.tr,
         icon: Icons.chat_outlined,
       ),
       TrackingStep(
         status: 'price_quoted',
-        title: 'تحديد السعر',
+        title: StringsKeys.quotedPrice.tr,
         icon: Icons.attach_money,
       ),
       TrackingStep(
         status: 'approved',
-        title: 'تمت الموافقة',
+        title: StringsKeys.statusApproved.tr,
         icon: Icons.check_circle_outline,
       ),
-      TrackingStep(status: 'completed', title: 'مكتمل', icon: Icons.done_all),
+      TrackingStep(
+        status: 'completed',
+        title: StringsKeys.statusCompleted.tr,
+        icon: Icons.done_all,
+      ),
     ];
   }
 
@@ -82,7 +88,7 @@ class ServiceRequestTrackingWidget extends StatelessWidget {
         children: [
           // Title
           Text(
-            'تتبع الخدمة',
+            StringsKeys.trackService.tr,
             style: TextStyle(
               fontSize: 18.sp,
               fontWeight: FontWeight.bold,
@@ -188,7 +194,9 @@ class ServiceRequestTrackingWidget extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  isRejected ? 'خدمة مرفوضة' : 'خدمة ملغية',
+                  isRejected
+                      ? StringsKeys.serviceRejected.tr
+                      : StringsKeys.serviceCancelled.tr,
                   style: TextStyle(
                     fontSize: 18.sp,
                     fontWeight: FontWeight.bold,
@@ -198,8 +206,8 @@ class ServiceRequestTrackingWidget extends StatelessWidget {
                 SizedBox(height: 4.h),
                 Text(
                   isRejected
-                      ? 'تم رفض طلبك من قبل الإدارة'
-                      : 'تم إلغاء هذه الخدمة',
+                      ? StringsKeys.requestRejectedByAdmin.tr
+                      : StringsKeys.serviceCancelledMessage.tr,
                   style: TextStyle(fontSize: 14.sp, color: Appcolor.gray),
                 ),
               ],

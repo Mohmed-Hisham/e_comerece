@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'package:e_comerece/controller/home/homescreen_controller.dart';
 import 'package:e_comerece/core/class/handlingdataviwe.dart';
 import 'package:e_comerece/core/constant/color.dart';
@@ -13,7 +12,6 @@ import 'package:e_comerece/viwe/screen/home/plateform_search/search_amazon.dart'
 import 'package:e_comerece/viwe/screen/home/plateform_search/search_shein.dart';
 import 'package:e_comerece/viwe/screen/shein/cust_label_container.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 class SearchHomeView extends StatelessWidget {
@@ -23,7 +21,6 @@ class SearchHomeView extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetBuilder<HomescreenControllerImple>(
       builder: (controller) {
-        log('build');
         return Handlingdataviwe(
           statusrequest: controller.statusRequestHome,
           widget: Column(
@@ -358,7 +355,6 @@ class SearchHomeView extends StatelessWidget {
                   ],
                 ),
               ),
-              SizedBox(height: 55.h),
             ],
           ),
         );

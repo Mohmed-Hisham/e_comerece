@@ -1,4 +1,5 @@
 import 'package:e_comerece/controller/settings_controller.dart';
+import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:e_comerece/viwe/widget/language/custombuttonlang.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -16,14 +17,14 @@ class LogoutScreen extends StatelessWidget {
           children: [
             Spacer(),
             Custombuttonlang(
-              textbutton: "Logout",
+              textbutton: StringsKeys.logout.tr,
               onPressed: () {
                 controller.logout();
               },
             ),
 
             Custombuttonlang(
-              textbutton: "Cancel",
+              textbutton: StringsKeys.cancel.tr,
               onPressed: () {
                 Get.back();
               },

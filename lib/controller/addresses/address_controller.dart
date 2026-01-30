@@ -108,9 +108,21 @@ class AddressControllerImpl extends AddressController {
         if (placemarks.isNotEmpty) {
           Placemark place = placemarks[0];
           country = place.country ?? '';
-          city = place.locality ?? place.subAdministrativeArea ?? '';
+          // Try multiple fields for city name - some areas don't have locality
+          city =
+              place.locality ??
+              place.subLocality ??
+              place.subAdministrativeArea ??
+              place.administrativeArea ??
+              '';
           administrativeArea = place.administrativeArea ?? '';
-          street = place.street ?? '';
+          street = place.street ?? place.name ?? '';
+
+          log(
+            "Placemark: locality=${place.locality}, subLocality=${place.subLocality}, "
+            "subAdministrativeArea=${place.subAdministrativeArea}, "
+            "administrativeArea=${place.administrativeArea}, street=${place.street}, name=${place.name}",
+          );
         }
       } catch (e) {
         log("error placemarks $e");

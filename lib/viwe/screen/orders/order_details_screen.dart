@@ -189,7 +189,7 @@ class OrderDetailsScreen extends StatelessWidget {
                   ),
                   SizedBox(height: 4.h),
                   Text(
-                    "هناك رسائل من الدعم",
+                    StringsKeys.messagesFromSupport.tr,
                     style: TextStyle(fontSize: 12.sp, color: Appcolor.gray),
                   ),
                 ],

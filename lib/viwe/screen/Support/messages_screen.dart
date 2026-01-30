@@ -43,7 +43,7 @@ class MessagesScreen extends StatelessWidget {
                       ? const ChatShimmer()
                       : controller.getMessagestatusrequest ==
                             Statusrequest.failuer
-                      ? const Center(child: Text("Error"))
+                      ? Center(child: Text(StringsKeys.error.tr))
                       : Column(
                           children: [
                             Expanded(

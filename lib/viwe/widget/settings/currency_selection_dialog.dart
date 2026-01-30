@@ -1,5 +1,6 @@
 import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/servises/currency_service.dart';
+import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -43,7 +44,7 @@ class _CurrencySelectionDialogState extends State<CurrencySelectionDialog> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              'اختر عملة العرض',
+              StringsKeys.selectDisplayCurrency.tr,
               style: TextStyle(
                 fontSize: 20.sp,
                 fontWeight: FontWeight.bold,
@@ -138,7 +139,7 @@ class _CurrencySelectionDialogState extends State<CurrencySelectionDialog> {
                   child: TextButton(
                     onPressed: () => Navigator.pop(context),
                     child: Text(
-                      'إلغاء',
+                      StringsKeys.cancel.tr,
                       style: TextStyle(color: Colors.grey, fontSize: 16.sp),
                     ),
                   ),
@@ -159,7 +160,7 @@ class _CurrencySelectionDialogState extends State<CurrencySelectionDialog> {
                       if (context.mounted) Navigator.pop(context, true);
                     },
                     child: Text(
-                      'تأكيد',
+                      StringsKeys.confirm.tr,
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 16.sp,

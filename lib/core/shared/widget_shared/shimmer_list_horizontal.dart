@@ -4,7 +4,14 @@ import 'package:shimmer/shimmer.dart';
 
 class ShimmerListHorizontal extends StatelessWidget {
   final bool isSlevr;
-  const ShimmerListHorizontal({super.key, required this.isSlevr});
+  final int count;
+  final Axis scrollDirection;
+  const ShimmerListHorizontal({
+    super.key,
+    required this.isSlevr,
+    this.count = 6,
+    this.scrollDirection = Axis.horizontal,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -47,8 +54,8 @@ class ShimmerListHorizontal extends StatelessWidget {
         height: 250.h,
         child: ListView.separated(
           physics: const BouncingScrollPhysics(),
-          scrollDirection: Axis.horizontal,
-          itemCount: 6,
+          scrollDirection: scrollDirection,
+          itemCount: count,
           separatorBuilder: (_, __) => const SizedBox(width: 1),
           itemBuilder: (context, index) {
             return widget;

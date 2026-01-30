@@ -78,7 +78,7 @@ class Product {
   }
 
   Map<String, dynamic> toJson() => {
-    "id": id,
+    if (id != null) "id": id,
     "product_id": productId,
     "product_title": productTitle,
     "product_image": productImage,
@@ -86,6 +86,6 @@ class Product {
     "favorite_platform": favoritePlatform,
     "goods_sn": goodsSn,
     "category_id": categoryId,
-    "created_at": createdAt?.toIso8601String(),
+    if (createdAt != null) "created_at": createdAt?.toIso8601String(),
   };
 }

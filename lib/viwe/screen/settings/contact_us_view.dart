@@ -34,7 +34,7 @@ class ContactUsView extends StatelessWidget {
           SafeArea(
             child: Column(
               children: [
-                PositionedAppBar(
+                AppBarContent(
                   title: StringsKeys.contactUs.tr,
                   onPressed: () => Get.back(),
                 ),

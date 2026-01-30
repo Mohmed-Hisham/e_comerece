@@ -103,4 +103,32 @@ class ApisUrl {
   //                           Legal
   static const String getLegal = '$_baseUrl/Legal/GetAll';
   static String getLegalByKey(String key) => '$_baseUrl/Legal/$key';
+
+  //                           Local Products
+  static const String getLocalProductCategories =
+      '$_baseUrl/LocalProduct/categories';
+
+  static String getLocalProducts({required int page, required int pageSize}) =>
+      '$_baseUrl/LocalProduct/products?page=$page&pageSize=$pageSize';
+
+  static String getLocalProductsByCategory({
+    required String categoryId,
+    required int page,
+    required int pageSize,
+  }) =>
+      '$_baseUrl/LocalProduct/products/category/$categoryId?page=$page&pageSize=$pageSize';
+
+  static String getLocalProductById({
+    required String productId,
+    int relatedPage = 1,
+    int relatedPageSize = 4,
+  }) =>
+      '$_baseUrl/LocalProduct/products/$productId?relatedPage=$relatedPage&relatedPageSize=$relatedPageSize';
+
+  static String searchLocalProducts({
+    required String query,
+    required int page,
+    required int pageSize,
+  }) =>
+      '$_baseUrl/LocalProduct/products/search?query=$query&page=$page&pageSize=$pageSize';
 }

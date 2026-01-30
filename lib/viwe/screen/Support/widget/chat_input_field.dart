@@ -135,7 +135,7 @@ class ChatInputField extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'صورة مرفقة',
+                  StringsKeys.imageAttached.tr,
                   style: TextStyle(
                     fontSize: 14.sp,
                     fontWeight: FontWeight.w600,
@@ -144,7 +144,7 @@ class ChatInputField extends StatelessWidget {
                 ),
                 SizedBox(height: 4.h),
                 Text(
-                  'اضغط ارسال لإرسال الصورة',
+                  StringsKeys.pressSendToUploadImage.tr,
                   style: TextStyle(fontSize: 12.sp, color: Appcolor.gray),
                 ),
               ],
@@ -182,7 +182,7 @@ class ChatInputField extends StatelessWidget {
               ),
               SizedBox(height: 20.h),
               Text(
-                'اختر مصدر الصورة',
+                StringsKeys.chooseImageSource.tr,
                 style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 20.h),
@@ -191,7 +191,7 @@ class ChatInputField extends StatelessWidget {
                 children: [
                   _buildPickerOption(
                     icon: Icons.photo_library,
-                    label: 'المعرض',
+                    label: StringsKeys.gallery.tr,
                     onTap: () {
                       Get.back();
                       controller.pickImage();
@@ -199,7 +199,7 @@ class ChatInputField extends StatelessWidget {
                   ),
                   _buildPickerOption(
                     icon: Icons.camera_alt,
-                    label: 'الكاميرا',
+                    label: StringsKeys.camera.tr,
                     onTap: () {
                       Get.back();
                       controller.pickImageFromCamera();

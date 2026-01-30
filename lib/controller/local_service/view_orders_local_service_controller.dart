@@ -1,4 +1,5 @@
 import 'package:e_comerece/core/class/statusrequest.dart';
+import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:e_comerece/data/model/local_service/service_request_model.dart';
 import 'package:e_comerece/data/repository/local_service/local_service_repo_impl.dart';
 import 'package:flutter/material.dart';
@@ -44,13 +45,13 @@ class ViewOrdersLocalServiceController extends GetxController {
   String getStatusTitle(LocalServiceStatus status) {
     switch (status) {
       case LocalServiceStatus.awaitingPayment:
-        return "بانتظار الدفع";
+        return StringsKeys.awaitingPayment.tr;
       case LocalServiceStatus.processing:
-        return "قيد التنفيذ";
+        return StringsKeys.orderStatusProcessing.tr;
       case LocalServiceStatus.completed:
-        return "مكتمل";
+        return StringsKeys.statusCompleted.tr;
       case LocalServiceStatus.cancelled:
-        return "ملغي";
+        return StringsKeys.statusCancelled.tr;
     }
   }
 

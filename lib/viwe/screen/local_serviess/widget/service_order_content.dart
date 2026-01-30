@@ -1,6 +1,7 @@
 import 'package:e_comerece/controller/local_service/service_order_controller.dart';
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/color.dart';
+import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:e_comerece/viwe/screen/Address/botton_sheet_location.dart';
 import 'package:e_comerece/viwe/widget/auth/custombuttonauth.dart';
 import 'package:flutter/material.dart';
@@ -70,7 +71,7 @@ class ServiceOrderContent extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           Text(
-                            "Agreed Price",
+                            StringsKeys.agreedPrice.tr,
                             style: Theme.of(
                               context,
                             ).textTheme.bodySmall?.copyWith(color: Colors.grey),
@@ -92,7 +93,7 @@ class ServiceOrderContent extends StatelessWidget {
 
                   // About Service
                   Text(
-                    "Description",
+                    StringsKeys.description.tr,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -111,7 +112,7 @@ class ServiceOrderContent extends StatelessWidget {
 
                   // Note Field
                   Text(
-                    "Notes",
+                    StringsKeys.notes.tr,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -120,7 +121,7 @@ class ServiceOrderContent extends StatelessWidget {
                   TextField(
                     controller: controller.noteController,
                     decoration: InputDecoration(
-                      hintText: "Add any special instructions...",
+                      hintText: StringsKeys.addSpecialInstructions.tr,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10.r),
                         borderSide: BorderSide(color: Colors.grey[300]!),
@@ -136,7 +137,7 @@ class ServiceOrderContent extends StatelessWidget {
                   SizedBox(height: 20.h),
 
                   Text(
-                    "Location",
+                    StringsKeys.locationLabel.tr,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -154,7 +155,7 @@ class ServiceOrderContent extends StatelessWidget {
                   SizedBox(height: 20.h),
 
                   Custombuttonauth(
-                    inputtext: "Confirm & Order",
+                    inputtext: StringsKeys.confirmAndOrder.tr,
                     onPressed:
                         (controller.statusRequest == Statusrequest.loading ||
                             controller.statusRequest == Statusrequest.success)

@@ -8,6 +8,7 @@
     android:label="Saltk"
     android:name="${applicationName}"
     android:icon="@mipmap/launcher_icon"
+    android:enableOnBackInvokedCallback="true"
   >
     <meta-data
       android:name="com.google.android.geo.API_KEY"

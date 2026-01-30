@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:e_comerece/core/funcations/checkinternet.dart';
 import 'package:e_comerece/core/servises/custom_getx_snak_bar.dart';
+import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:get/get.dart';
 
 class ConnectivityController extends GetxController {
@@ -33,7 +34,7 @@ class ConnectivityController extends GetxController {
         showCustomGetSnack(
           isGreen: false,
           duration: const Duration(minutes: 10),
-          text: 'الإنترنت غير متوفر الآن',
+          text: StringsKeys.noInternetConnection.tr,
         );
       }
     } else {
@@ -42,7 +43,10 @@ class ConnectivityController extends GetxController {
           Get.back();
         }
         _snackShown = false;
-        showCustomGetSnack(isGreen: true, text: 'تم استعادة الاتصال بالإنترنت');
+        showCustomGetSnack(
+          isGreen: true,
+          text: StringsKeys.internetConnectionRestored.tr,
+        );
       }
     }
   }

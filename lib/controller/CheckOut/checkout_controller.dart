@@ -4,6 +4,7 @@ import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/servises/custom_getx_snak_bar.dart';
 import 'package:e_comerece/core/servises/serviese.dart';
+import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:e_comerece/data/model/cartmodel.dart';
 import 'package:e_comerece/data/model/checkout/checkout_review_fee_model.dart';
 import 'package:e_comerece/data/model/ordres/create_order_request.dart';
@@ -161,7 +162,10 @@ class CheckOutControllerImpl extends CheckOutController {
 
     response.fold((failure) {}, (data) {
       statusrequest = Statusrequest.success;
-      showCustomGetSnack(isGreen: true, text: "Order placed successfully");
+      showCustomGetSnack(
+        isGreen: true,
+        text: StringsKeys.orderPlacedSuccessfully.tr,
+      );
       Get.toNamed(AppRoutesname.homepage);
     });
 
@@ -205,14 +209,14 @@ class CheckOutControllerImpl extends CheckOutController {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(reviewFeeData!.key ?? 'Info'),
+        title: Text(reviewFeeData!.key ?? StringsKeys.info.tr),
         content: Text(
-          reviewFeeData!.description ?? 'No description available.',
+          reviewFeeData!.description ?? StringsKeys.noDescriptionAvailable.tr,
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
+            child: Text(StringsKeys.ok.tr),
           ),
         ],
       ),

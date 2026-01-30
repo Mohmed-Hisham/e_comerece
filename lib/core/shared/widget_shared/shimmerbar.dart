@@ -11,7 +11,7 @@ class ShimmerBar extends StatelessWidget {
     super.key,
     this.height = 5,
 
-    this.borderRadius = 100,
+    this.borderRadius = 150,
     this.animationDuration = 1,
   });
 

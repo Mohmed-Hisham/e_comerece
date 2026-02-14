@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/loacallization/translate_data.dart';
+import 'package:e_comerece/core/servises/currency_service.dart';
 import 'package:e_comerece/data/model/amazon_models/categories_amazon_model.dart';
 import 'package:e_comerece/data/model/amazon_models/hotdeals_amazon_model.dart';
 import 'package:e_comerece/core/class/failure.dart';
@@ -273,7 +274,7 @@ class AmazonHomeControllerImpl extends AmazonHomeController {
 
   @override
   otherProducts({bool isLoadMore = false}) async {
-    final String query = "fashion";
+    final String query = AppConfigService.to.qAmzon ?? "fashion";
 
     if (isLoadMore) {
       if (isLoading || !hasMore) return;

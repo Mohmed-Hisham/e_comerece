@@ -1,11 +1,9 @@
-import 'package:e_comerece/controller/favorite/favorites_controller.dart';
 import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:e_comerece/core/servises/currency_service.dart';
 import 'package:e_comerece/data/model/our_product_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 
 class ProductInfoSection extends StatelessWidget {
@@ -28,7 +26,7 @@ class ProductInfoSection extends StatelessWidget {
         borderRadius: BorderRadius.circular(20.r),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
@@ -61,30 +59,30 @@ class ProductInfoSection extends StatelessWidget {
             ),
           ),
         ),
-        GetBuilder<FavoritesController>(
-          builder: (favController) {
-            final productId = product.id?.toString() ?? "";
-            bool isFav = favController.isFavorite[productId] ?? false;
+        // GetBuilder<FavoritesController>(
+        //   builder: (favController) {
+        //     final productId = product.id?.toString() ?? "";
+        //     bool isFav = favController.isFavorite[productId] ?? false;
 
-            return IconButton(
-              onPressed: () {
-                favController.toggleFavorite(
-                  productId,
-                  product.title ?? "",
-                  product.mainImage ?? "",
-                  (product.discountPrice ?? product.price ?? 0).toString(),
-                  "LocalProduct",
-                  categoryid: product.categoryId?.toString(),
-                );
-              },
-              icon: FaIcon(
-                isFav ? FontAwesomeIcons.solidHeart : FontAwesomeIcons.heart,
-                color: Appcolor.reed,
-                size: 22.sp,
-              ),
-            );
-          },
-        ),
+        //     return IconButton(
+        //       onPressed: () {
+        //         favController.toggleFavorite(
+        //           productId,
+        //           product.title ?? "",
+        //           product.mainImage ?? "",
+        //           (product.discountPrice ?? product.price ?? 0).toString(),
+        //           "LocalProduct",
+        //           categoryid: product.categoryId?.toString(),
+        //         );
+        //       },
+        //       icon: FaIcon(
+        //         isFav ? FontAwesomeIcons.solidHeart : FontAwesomeIcons.heart,
+        //         color: Appcolor.reed,
+        //         size: 22.sp,
+        //       ),
+        //     );
+        //   },
+        // ),
       ],
     );
   }
@@ -120,7 +118,7 @@ class ProductInfoSection extends StatelessWidget {
           Container(
             padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
             decoration: BoxDecoration(
-              color: Appcolor.reed.withOpacity(0.1),
+              color: Appcolor.reed.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8.r),
             ),
             child: Text(

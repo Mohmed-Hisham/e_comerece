@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:developer';
-
 import 'package:dartz/dartz.dart';
 import 'package:e_comerece/core/helper/hepler.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -169,11 +168,7 @@ class SendOtpHelper {
       String? idToken = await userCredential.user?.getIdToken();
       log('🔑 Firebase ID Token: $idToken');
 
-      if (idToken == null) {
-        return const Left('فشل الحصول على التوكن');
-      }
-
-      return Right(idToken);
+      return Right(idToken!);
     } on FirebaseAuthException catch (e) {
       log(
         'FirebaseAuthException during signInWithSmsCode: ${e.code} - ${e.message}',

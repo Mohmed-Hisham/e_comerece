@@ -1,4 +1,3 @@
-import 'package:e_comerece/controller/favorite/favorites_controller.dart';
 import 'package:e_comerece/controller/shein/home_shein_controller.dart';
 import 'package:e_comerece/core/class/handlingdataviwe.dart';
 import 'package:e_comerece/core/class/statusrequest.dart';
@@ -28,7 +27,7 @@ class HomeSheinView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Get.put(HomeSheinControllerImpl());
-    Get.put(FavoritesController());
+    // Get.put(FavoritesController());
 
     return Scaffold(
       resizeToAvoidBottomInset: false,

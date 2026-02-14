@@ -406,8 +406,31 @@ class StringsKeys {
   static const String viewAll = "viewAll";
   static const String noProductsFound = "noProductsFound";
   static const String saltk = "saltk";
-  static const String productDetails = "productDetails";
-  static const String addedToCart = "addedToCart";
-  static const String relatedProducts = "relatedProducts";
-  static const String seeAll = "seeAll";
+  static const String productDetails = "product_details";
+  static const String relatedProducts = "related_products";
+  static const String addedToCart = "added_to_cart";
+
+  // Cart
+  static const String walletBalance = 'wallet_balance';
+  static const String walletTransactions = 'wallet_transactions';
+  static const String walletNoTransactions = 'wallet_no_transactions';
+  static const String walletRecharge = 'wallet_recharge';
+  static const String walletRechargeAmount = 'wallet_recharge_amount';
+  static const String walletRechargeHint = 'wallet_recharge_hint';
+  static const String walletRechargeButton = 'wallet_recharge_button';
+  static const String walletRechargeSuccess = 'wallet_recharge_success';
+  static const String walletRechargeFailed = 'wallet_recharge_failed';
+
+  // Bottom Nav Bar
+  static const String navHome = 'nav_home';
+  static const String navCart = 'nav_cart';
+  static const String navOrders = 'nav_orders';
+  static const String navServices = 'nav_services';
+  static const String navProfile = 'nav_profile';
+
+  // Platform Names
+  static const String platformShein = 'platform_shein';
+  static const String platformAlibaba = 'platform_alibaba';
+  static const String platformAliexpress = 'platform_aliexpress';
+  static const String platformAmazon = 'platform_amazon';
 }

@@ -5,6 +5,7 @@ import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/funcations/loading_dialog.dart';
 import 'package:e_comerece/core/loacallization/translate_data.dart';
+import 'package:e_comerece/core/servises/currency_service.dart';
 import 'package:e_comerece/core/servises/custom_getx_snak_bar.dart';
 import 'package:e_comerece/core/servises/firebase_storage_helper.dart';
 import 'package:e_comerece/core/shared/image_manger/image_manag_controller.dart';
@@ -112,6 +113,7 @@ class ProductAlibabaHomeControllerImp extends ProductAlibabaHomeController {
     final response = await alibabaRepoImpl.fetchProducts(
       enOrAr(isArSA: true),
       pageindex,
+      AppConfigService.to.qAlibaba ?? "fashion",
     );
     final r = response.fold((l) => l, (r) => r);
 

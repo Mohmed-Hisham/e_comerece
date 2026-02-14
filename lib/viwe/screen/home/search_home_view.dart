@@ -3,6 +3,7 @@ import 'package:e_comerece/core/class/handlingdataviwe.dart';
 import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/constant/sliver_spacer.dart';
 import 'package:e_comerece/core/loacallization/strings_keys.dart';
+import 'package:e_comerece/core/servises/currency_service.dart';
 import 'package:e_comerece/core/servises/platform_ext.dart';
 import 'package:e_comerece/core/shared/widget_shared/cust_button_botton.dart';
 import 'package:e_comerece/core/shared/widget_shared/shimmerbar.dart';
@@ -41,42 +42,60 @@ class SearchHomeView extends StatelessWidget {
                           scrollDirection: Axis.horizontal,
                           physics: const BouncingScrollPhysics(),
                           child: Row(
-                            children: PlatformSource.values.map((p) {
-                              return Container(
-                                margin: const EdgeInsets.symmetric(
-                                  horizontal: 6,
-                                ),
-                                child: ChoiceChip(
-                                  checkmarkColor: controller.selected == p
-                                      ? Appcolor.white
-                                      : Appcolor.black,
-                                  labelStyle: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: controller.selected == p
-                                        ? Appcolor.white
-                                        : Appcolor.black,
-                                  ),
-                                  selectedColor: Appcolor.primrycolor,
-                                  label: Text(
-                                    p == PlatformSource.all
-                                        ? StringsKeys.all.tr
-                                        : p.name,
-                                  ),
-                                  selected: controller.selected == p,
-                                  onSelected: (val) {
-                                    controller.setPlatform(p);
-                                  },
-                                ),
-                              );
-                            }).toList(),
+                            children: PlatformSource.values
+                                .where((p) {
+                                  if (p == PlatformSource.aliexpress) {
+                                    return AppConfigService.to.showAliExpress;
+                                  }
+                                  if (p == PlatformSource.alibaba) {
+                                    return AppConfigService.to.showAlibaba;
+                                  }
+                                  if (p == PlatformSource.amazon) {
+                                    return AppConfigService.to.showAmazon;
+                                  }
+                                  if (p == PlatformSource.shein) {
+                                    return AppConfigService.to.showShein;
+                                  }
+                                  return true;
+                                })
+                                .map((p) {
+                                  return Container(
+                                    margin: const EdgeInsets.symmetric(
+                                      horizontal: 6,
+                                    ),
+                                    child: ChoiceChip(
+                                      checkmarkColor: controller.selected == p
+                                          ? Appcolor.white
+                                          : Appcolor.black,
+                                      labelStyle: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: controller.selected == p
+                                            ? Appcolor.white
+                                            : Appcolor.black,
+                                      ),
+                                      selectedColor: Appcolor.primrycolor,
+                                      label: Text(
+                                        p == PlatformSource.all
+                                            ? StringsKeys.all.tr
+                                            : p.name,
+                                      ),
+                                      selected: controller.selected == p,
+                                      onSelected: (val) {
+                                        controller.setPlatform(p);
+                                      },
+                                    ),
+                                  );
+                                })
+                                .toList(),
                           ),
                         ),
                       ),
                     ),
 
                     SliverSpacer(15),
-                    if (controller.selected == PlatformSource.all ||
-                        controller.selected == PlatformSource.aliexpress) ...[
+                    if ((controller.selected == PlatformSource.all ||
+                            controller.selected == PlatformSource.aliexpress) &&
+                        AppConfigService.to.showAliExpress) ...[
                       SliverToBoxAdapter(
                         child: Row(
                           children: [
@@ -146,8 +165,9 @@ class SearchHomeView extends StatelessWidget {
                       SliverSpacer(25),
                     ],
 
-                    if (controller.selected == PlatformSource.all ||
-                        controller.selected == PlatformSource.alibaba) ...[
+                    if ((controller.selected == PlatformSource.all ||
+                            controller.selected == PlatformSource.alibaba) &&
+                        AppConfigService.to.showAlibaba) ...[
                       SliverToBoxAdapter(
                         child: Row(
                           children: [
@@ -216,8 +236,9 @@ class SearchHomeView extends StatelessWidget {
                       SliverSpacer(25),
                     ],
 
-                    if (controller.selected == PlatformSource.all ||
-                        controller.selected == PlatformSource.amazon) ...[
+                    if ((controller.selected == PlatformSource.all ||
+                            controller.selected == PlatformSource.amazon) &&
+                        AppConfigService.to.showAmazon) ...[
                       SliverToBoxAdapter(
                         child: Row(
                           children: [
@@ -285,8 +306,9 @@ class SearchHomeView extends StatelessWidget {
                       ),
                       SliverSpacer(25),
                     ],
-                    if (controller.selected == PlatformSource.all ||
-                        controller.selected == PlatformSource.shein) ...[
+                    if ((controller.selected == PlatformSource.all ||
+                            controller.selected == PlatformSource.shein) &&
+                        AppConfigService.to.showShein) ...[
                       SliverToBoxAdapter(
                         child: Row(
                           children: [

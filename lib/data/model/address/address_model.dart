@@ -85,6 +85,8 @@ class AddressData {
     if (apartment != null) "apartment": apartment,
     if (floor != null) "floor": floor,
     if (phone != null) "phone": phone,
+    if (lat != null) "lat": lat,
+    if (lng != null) "lng": lng,
     if (isDefault != null) "is_default": isDefault,
   };
 }

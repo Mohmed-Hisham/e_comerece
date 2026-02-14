@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 
 translateData(columnen, columnar) {
   MyServises myServises = Get.find();
-  if (myServises.sharedPreferences.getString("lang") == "ar") {
+  if (myServises.lang == "ar") {
     return columnar;
   } else {
     return columnen;
@@ -12,7 +12,7 @@ translateData(columnen, columnar) {
 
 String enOrAr({bool isArSA = false}) {
   MyServises myServises = Get.find();
-  if (myServises.sharedPreferences.getString("lang") == "ar") {
+  if (myServises.lang == "ar") {
     return isArSA ? "ar_SA" : "ar_MA";
   } else {
     return "en_US";
@@ -41,7 +41,7 @@ String detectLangFromQueryAmazon(String query) {
 
 String enOrArAmazon() {
   final MyServises myServises = Get.find();
-  if (myServises.sharedPreferences.getString("lang") == "ar") {
+  if (myServises.lang == "ar") {
     return "ar_AE";
   } else {
     return "en_AE";
@@ -50,7 +50,7 @@ String enOrArAmazon() {
 
 String enOrArShein() {
   MyServises myServises = Get.find();
-  if (myServises.sharedPreferences.getString("lang") == "ar") {
+  if (myServises.lang == "ar") {
     return "SA";
   } else {
     return "US";
@@ -68,5 +68,5 @@ String detectLangFromQueryShein(String query) {
 
 bool langDirection() {
   MyServises myServises = Get.find();
-  return myServises.sharedPreferences.getString("lang") != "ar";
+  return myServises.lang != "ar";
 }

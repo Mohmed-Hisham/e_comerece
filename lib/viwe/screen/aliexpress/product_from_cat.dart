@@ -27,7 +27,7 @@ class ProductFromCat extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Get.put(ShearchnameControllerImple());
-    Get.put(FavoritesController());
+    // Get.put(FavoritesController());
     final ScrollController scrollController = ScrollController();
 
     return Scaffold(

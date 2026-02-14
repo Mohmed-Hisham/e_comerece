@@ -69,7 +69,6 @@ class VerifycodesignupControllerImp extends VeirfycodesignupController {
         statusrequest = Statusrequest.failuer;
       }
     } else {
-      // 📧 التحقق عبر الإيميل
       final response = await authRepoImpl.verifyCode(
         AuthData(email: email!, code: verifycodeSignup),
       );

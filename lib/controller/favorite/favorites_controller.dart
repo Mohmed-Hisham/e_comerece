@@ -1,5 +1,6 @@
 import 'package:e_comerece/core/servises/custom_getx_snak_bar.dart';
 import 'package:e_comerece/core/shared/widget_shared/likeanimationpage.dart';
+import 'package:e_comerece/core/servises/serviese.dart';
 import 'package:e_comerece/data/model/favorite_model.dart';
 import 'package:e_comerece/data/repository/Favorite/favorit_repo_impl.dart';
 import 'package:flutter/material.dart';
@@ -44,15 +45,21 @@ class FavoritesController extends GetxController {
     bool currentStatus = isFavorite[productId] ?? false;
 
     if (currentStatus == true) {
+      // Optimistic update - remove immediately
       setFavorite(productId, false);
       var response = await favoriteRepoImpl.delete(productId);
       response.fold(
-        (l) => showCustomGetSnack(isGreen: false, text: l.errorMessage),
+        (l) {
+          // Rollback on failure
+          setFavorite(productId, true);
+          showCustomGetSnack(isGreen: false, text: l.errorMessage);
+        },
         (r) {
           showCustomGetSnack(isGreen: true, text: r);
         },
       );
     } else {
+      // Optimistic update - add immediately
       setFavorite(productId, true);
       var response = await favoriteRepoImpl.add(
         Product(
@@ -66,7 +73,11 @@ class FavoritesController extends GetxController {
         ),
       );
       response.fold(
-        (l) => showCustomGetSnack(isGreen: false, text: l.errorMessage),
+        (l) {
+          // Rollback on failure
+          setFavorite(productId, false);
+          showCustomGetSnack(isGreen: false, text: l.errorMessage);
+        },
         (r) async {
           if (Get.isDialogOpen ?? false) return;
 
@@ -103,6 +114,9 @@ class FavoritesController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    fetchFavorites();
+    final myServises = Get.find<MyServises>();
+    if (myServises.step == "2") {
+      fetchFavorites();
+    }
   }
 }

@@ -2,7 +2,6 @@ import 'dart:developer';
 
 class Hepler {
   static String getFirebaseErrorFriendlyMessage(String? code, String? message) {
-    // سجل الخطأ التقني للمطورين
     log('Firebase Error: code=$code, message=$message');
 
     switch (code) {
@@ -25,7 +24,6 @@ class Hepler {
       case 'invalid-verification-id':
         return 'انتهت صلاحية الرمز، يرجى طلب رمز جديد';
       default:
-        // رسالة عامة للأخطاء غير المعروفة
         return 'فشل إرسال رمز التحقق، يرجى المحاولة عبر البريد الإلكتروني';
     }
   }

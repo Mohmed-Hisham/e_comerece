@@ -68,7 +68,7 @@ class OurProductsSearchView extends StatelessWidget {
                     borderRadius: BorderRadius.circular(15.r),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
+                        color: Colors.black.withValues(alpha: 0.05),
                         blurRadius: 10,
                         offset: const Offset(0, 2),
                       ),
@@ -194,7 +194,7 @@ class OurProductsSearchView extends StatelessWidget {
           borderRadius: BorderRadius.circular(12.r),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.03),
+              color: Colors.black.withValues(alpha: 0.03),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
@@ -208,9 +208,12 @@ class OurProductsSearchView extends StatelessWidget {
               child: SizedBox(
                 width: 60.w,
                 height: 60.w,
-                child: CustomCachedImage(
-                  imageUrl: product.mainImage ?? "",
-                  fit: BoxFit.cover,
+                child: Hero(
+                  tag: product.id ?? "",
+                  child: CustomCachedImage(
+                    imageUrl: product.mainImage ?? "",
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
             ),
@@ -302,7 +305,7 @@ class OurProductsSearchView extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
-                        height: 14.h,
+                        height: 10.h,
                         width: double.infinity,
                         color: Colors.white,
                       ),
@@ -415,7 +418,7 @@ class OurProductsSearchView extends StatelessWidget {
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         crossAxisSpacing: 12.w,
-        mainAxisSpacing: 12.h,
+        mainAxisSpacing: 10.h,
         childAspectRatio: 0.58,
       ),
       itemCount: 6,
@@ -442,7 +445,7 @@ class OurProductsSearchView extends StatelessWidget {
           Icon(
             Icons.search_off,
             size: 80.sp,
-            color: Appcolor.gray.withOpacity(0.5),
+            color: Appcolor.gray.withValues(alpha: 0.5),
           ),
           SizedBox(height: 16.h),
           Text(
@@ -462,20 +465,12 @@ class OurProductsSearchView extends StatelessWidget {
           Icon(
             Icons.search,
             size: 80.sp,
-            color: Appcolor.gray.withOpacity(0.3),
+            color: Appcolor.gray.withValues(alpha: 0.3),
           ),
           SizedBox(height: 16.h),
           Text(
             StringsKeys.searchInOurProducts.tr,
             style: TextStyle(color: Appcolor.gray, fontSize: 16.sp),
-          ),
-          SizedBox(height: 8.h),
-          Text(
-            "اكتب حرفين على الأقل للبحث",
-            style: TextStyle(
-              color: Appcolor.gray.withOpacity(0.7),
-              fontSize: 13.sp,
-            ),
           ),
         ],
       ),

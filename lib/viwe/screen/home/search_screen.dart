@@ -95,8 +95,10 @@ class _SearchScreenState extends State<SearchScreen> {
                   1.0,
                 ),
                 child: Icon(
-                  Icons.arrow_back_ios_new,
-                  color: Appcolor.primrycolor,
+                  langDirection()
+                      ? Icons.arrow_back_ios_new
+                      : Icons.arrow_forward_ios,
+                  color: Appcolor.black2,
                 ),
               ),
             ),

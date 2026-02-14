@@ -1,9 +1,9 @@
 import 'package:e_comerece/controller/favorite/favorites_controller.dart';
 import 'package:e_comerece/core/constant/color.dart';
+import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/helper/custom_cached_image.dart';
 import 'package:e_comerece/core/servises/currency_service.dart';
 import 'package:e_comerece/data/model/our_product_model.dart';
-import 'package:e_comerece/viwe/screen/our_products/our_product_details_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -23,9 +23,10 @@ class RelatedProductCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        Get.off(
-          () => const OurProductDetailsView(),
+        Get.toNamed(
+          AppRoutesname.ourProductDetails,
           arguments: {'product': product},
+          preventDuplicates: false,
         );
       },
       child: Container(
@@ -36,7 +37,7 @@ class RelatedProductCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(15.r),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 10,
               offset: const Offset(0, 3),
             ),
@@ -58,9 +59,12 @@ class RelatedProductCard extends StatelessWidget {
           child: SizedBox(
             height: 140.h,
             width: double.infinity,
-            child: CustomCachedImage(
-              imageUrl: product.mainImage ?? "",
-              fit: BoxFit.cover,
+            child: Hero(
+              tag: product.id ?? "",
+              child: CustomCachedImage(
+                imageUrl: product.mainImage ?? "",
+                fit: BoxFit.cover,
+              ),
             ),
           ),
         ),
@@ -119,7 +123,7 @@ class RelatedProductCard extends StatelessWidget {
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
+                    color: Colors.black.withValues(alpha: 0.1),
                     blurRadius: 4,
                   ),
                 ],
@@ -160,7 +164,7 @@ class RelatedProductCard extends StatelessWidget {
   }
 
   Widget _buildPriceRow() {
-    return Row(
+    return Column(
       children: [
         Text(
           currencyService.convertAndFormat(

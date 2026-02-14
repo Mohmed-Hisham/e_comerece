@@ -65,7 +65,7 @@ class AboutUsView extends StatelessWidget {
 
   Widget _buildCard(item) {
     return Card(
-      color: Colors.white.withOpacity(0.7),
+      color: Colors.white.withValues(alpha: 0.7),
       elevation: 4,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
       child: Padding(

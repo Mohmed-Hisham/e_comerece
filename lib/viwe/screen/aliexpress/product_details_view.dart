@@ -1,6 +1,5 @@
 import 'package:e_comerece/controller/aliexpriess/product_details_controller.dart';
 import 'package:e_comerece/controller/cart/cart_from_detils.dart';
-import 'package:e_comerece/controller/favorite/favorites_controller.dart';
 import 'package:e_comerece/core/class/handlingdataviwe.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/loacallization/strings_keys.dart';
@@ -14,9 +13,9 @@ import 'package:e_comerece/viwe/widget/Positioned/positioned_app_bar.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_right_1.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_right_2.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_support.dart';
+import 'package:e_comerece/viwe/widget/aliexpress/add_button_to_cart.dart';
 import 'package:e_comerece/viwe/widget/aliexpress/custattribute_selection.dart';
 import 'package:e_comerece/viwe/widget/aliexpress/custbuildpricedisplay.dart';
-import 'package:e_comerece/viwe/widget/aliexpress/custbutton_add_cart.dart';
 import 'package:e_comerece/viwe/widget/aliexpress/custmedia_carousel.dart';
 import 'package:e_comerece/viwe/widget/aliexpress/custpackage_info.dart';
 import 'package:e_comerece/viwe/widget/aliexpress/custstock_info.dart';
@@ -32,10 +31,6 @@ class ProductDetailsView extends StatelessWidget {
     String? productId = Get.arguments['product_id']?.toString();
     Get.put(ProductDetailsControllerImple(), tag: productId);
 
-    AddorrmoveControllerimple addcontroller = Get.put(
-      AddorrmoveControllerimple(),
-    );
-    Get.put(FavoritesController());
     return Scaffold(
       body: GetBuilder<ProductDetailsControllerImple>(
         tag: productId,
@@ -46,6 +41,7 @@ class ProductDetailsView extends StatelessWidget {
               PositionedRight2(),
 
               Container(
+                margin: EdgeInsets.only(bottom: 50.h),
                 padding: EdgeInsets.only(top: 100.h),
                 child: Handlingdataviwe(
                   isproductdetails: true,
@@ -87,10 +83,11 @@ class ProductDetailsView extends StatelessWidget {
                 title: StringsKeys.productDetailsTitle.tr,
                 onPressed: Get.back,
               ),
-              CustbuttonAddCart(
-                addcontroller: addcontroller,
-                tag: controller.productId.toString(),
-              ),
+              // CustbuttonAddCart(
+              //   addcontroller: addcontroller,
+              //   tag: controller.productId.toString(),
+              // ),
+              AddButtonToCart(tag: controller.productId.toString()),
               PositionedSupport(
                 onPressed: () {
                   Get.toNamed(
@@ -258,18 +255,58 @@ class ProductDetailsView extends StatelessWidget {
       builder: (controller) {
         final specs = controller.specifications;
         if (specs.isEmpty) return const SizedBox.shrink();
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              StringsKeys.specifications.tr,
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            const SizedBox(height: 8),
-            ...specs.map((s) {
-              return Column(
+        return Container(
+          padding: EdgeInsets.all(14.w),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(14.r),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.05),
+                blurRadius: 10,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
                 children: [
-                  Row(
+                  Container(
+                    width: 4.w,
+                    height: 20.h,
+                    decoration: BoxDecoration(
+                      color: Appcolor.primrycolor,
+                      borderRadius: BorderRadius.circular(2.r),
+                    ),
+                  ),
+                  SizedBox(width: 8.w),
+                  Text(
+                    StringsKeys.specifications.tr,
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 12.h),
+              ...specs.asMap().entries.map((entry) {
+                final index = entry.key;
+                final s = entry.value;
+                final isEven = index % 2 == 0;
+                return Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 12.w,
+                    vertical: 10.h,
+                  ),
+                  decoration: BoxDecoration(
+                    color: isEven
+                        ? Appcolor.primrycolor.withValues(alpha: 0.05)
+                        : Colors.transparent,
+                    borderRadius: BorderRadius.circular(8.r),
+                  ),
+                  child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Expanded(
@@ -278,36 +315,31 @@ class ProductDetailsView extends StatelessWidget {
                           s.name ?? '',
                           style: Theme.of(context).textTheme.bodyMedium
                               ?.copyWith(
-                                color: Appcolor.black,
-                                fontWeight: FontWeight.bold,
+                                color: Appcolor.gray,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 13.sp,
                               ),
                         ),
                       ),
-                      const SizedBox(width: 8),
+                      SizedBox(width: 8.w),
                       Expanded(
                         flex: 3,
-                        child: SizedBox(
-                          height: 35,
-                          child: ListView(
-                            scrollDirection: Axis.horizontal,
-
-                            children: [
-                              Text(
-                                s.value!,
-                                style: Theme.of(context).textTheme.bodyMedium
-                                    ?.copyWith(color: Appcolor.black2),
+                        child: Text(
+                          s.value ?? '',
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(
+                                color: Appcolor.black,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 13.sp,
                               ),
-                            ],
-                          ),
                         ),
                       ),
                     ],
                   ),
-                  Divider(color: Appcolor.gray, endIndent: 20, indent: 20),
-                ],
-              );
-            }),
-          ],
+                );
+              }),
+            ],
+          ),
         );
       },
     );

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:e_comerece/data/Apis/amazon_urls.dart';
@@ -21,6 +23,7 @@ class AmazonRepoImpl implements AmazonRepo {
       var response = await apiService.get(
         endpoint: AmazonUrls.categories(lang),
       );
+      log(response.toString());
       if (response.statusCode == 200) {
         return Right(CategoriesAmazonModel.fromJson(response.data["data"]));
       } else {

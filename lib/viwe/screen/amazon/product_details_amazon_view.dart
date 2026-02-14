@@ -1,24 +1,20 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e_comerece/controller/amazon_controllers/product_details_amazon_controller.dart';
-import 'package:e_comerece/controller/cart/cart_from_detils.dart';
-import 'package:e_comerece/controller/favorite/toggle_favorite_controller.dart';
 import 'package:e_comerece/core/class/handlingdataviwe.dart';
 import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
-import 'package:e_comerece/core/shared/widget_shared/loadingimage.dart';
-import 'package:e_comerece/core/shared/widget_shared/open_full_image.dart';
+import 'package:e_comerece/core/helper/pagination_listener.dart';
 import 'package:e_comerece/core/shared/widget_shared/shimmerbar.dart';
 import 'package:e_comerece/viwe/screen/amazon/product_for_page_detils_amazon.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_app_bar.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_right_1.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_right_2.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_support.dart';
+import 'package:e_comerece/viwe/widget/amazon/add_to_cart_button_amazon.dart';
 import 'package:e_comerece/viwe/widget/amazon/product_images_carousel_amazon.dart';
+import 'package:e_comerece/viwe/widget/amazon/variations_section_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
-import 'dart:convert';
 import 'package:e_comerece/core/loacallization/strings_keys.dart';
 
 class ProductDetailsAmazonView extends StatelessWidget {
@@ -27,11 +23,6 @@ class ProductDetailsAmazonView extends StatelessWidget {
   Widget build(BuildContext context) {
     final String asin = Get.arguments['asin'];
     Get.put(ProductDetailsAmazonControllerImple(), tag: asin);
-    // Get.put(AddorrmoveControllerimple());
-    AddorrmoveControllerimple cartcontroller = Get.put(
-      AddorrmoveControllerimple(),
-    );
-    Get.put(TogglefavoriteController());
     return Scaffold(
       body: GetBuilder<ProductDetailsAmazonControllerImple>(
         tag: asin,
@@ -47,60 +38,54 @@ class ProductDetailsAmazonView extends StatelessWidget {
                   isproductdetails: true,
                   ontryagain: () => controller.fetchProductDetails(),
                   statusrequest: controller.statusrequest,
-                  widget: NotificationListener<ScrollNotification>(
-                    onNotification: (scrollInfo) {
-                      if (scrollInfo is ScrollUpdateNotification) {
-                        if (scrollInfo.metrics.axis == Axis.vertical) {
-                          if (!controller.isLoading &&
-                              scrollInfo.metrics.pixels >=
-                                  scrollInfo.metrics.maxScrollExtent * 0.8) {
-                            final atEdge = scrollInfo.metrics.atEdge;
-                            final pixels = scrollInfo.metrics.pixels;
-                            final maxScrollExtent =
-                                scrollInfo.metrics.maxScrollExtent;
-                            if (atEdge && pixels == maxScrollExtent) {
-                              if (controller.loadSearchOne == 0) {
-                                controller.searshText();
-                                controller.loadSearchOne = 1;
-                              } else {
-                                controller.loadMoreSearch();
-                              }
-                            }
-                          }
-                        }
+                  widget: PaginationListener(
+                    onLoadMore: () {
+                      if (controller.loadSearchOne == 0) {
+                        controller.searshText();
+                        controller.loadSearchOne = 1;
+                      } else {
+                        controller.loadMoreSearch();
                       }
-                      return false;
                     },
+                    isLoading: controller.isLoading,
 
-                    child: CustomScrollView(
-                      physics: const BouncingScrollPhysics(),
-                      slivers: [
-                        SliverToBoxAdapter(
-                          child: _buildProductDetails(
-                            context,
-                            controller,
-                            cartcontroller,
-                            asin,
+                    child: Column(
+                      children: [
+                        Expanded(
+                          child: CustomScrollView(
+                            physics: const BouncingScrollPhysics(),
+                            slivers: [
+                              SliverToBoxAdapter(
+                                child: _buildProductDetails(
+                                  context,
+                                  controller,
+                                  asin,
+                                ),
+                              ),
+
+                              SliverPadding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16.0,
+                                ),
+                                sliver: ProductForPageDetilsAmazon(tag: asin),
+                              ),
+                              GetBuilder<ProductDetailsAmazonControllerImple>(
+                                tag: asin,
+                                id: 'product',
+                                builder: (con) {
+                                  return SliverToBoxAdapter(
+                                    child: ShimmerBar(
+                                      height: 10,
+                                      animationDuration: 1,
+                                    ),
+                                  );
+                                },
+                              ),
+                              SliverToBoxAdapter(child: SizedBox(height: 5.h)),
+                            ],
                           ),
                         ),
-
-                        SliverPadding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                          sliver: ProductForPageDetilsAmazon(tag: asin),
-                        ),
-                        GetBuilder<ProductDetailsAmazonControllerImple>(
-                          tag: asin,
-                          id: 'product',
-                          builder: (con) {
-                            return SliverToBoxAdapter(
-                              child: ShimmerBar(
-                                height: 10,
-                                animationDuration: 1,
-                              ),
-                            );
-                          },
-                        ),
-                        SliverToBoxAdapter(child: SizedBox(height: 5.h)),
+                        SizedBox(height: 80.h),
                       ],
                     ),
                   ),
@@ -110,6 +95,7 @@ class ProductDetailsAmazonView extends StatelessWidget {
                 title: StringsKeys.productDetailsTitle.tr,
                 onPressed: Get.back,
               ),
+              AddToCartButtonAmazon(tag: asin),
               PositionedSupport(
                 onPressed: () {
                   Get.toNamed(
@@ -132,7 +118,6 @@ class ProductDetailsAmazonView extends StatelessWidget {
   Widget _buildProductDetails(
     BuildContext context,
     ProductDetailsAmazonControllerImple controller,
-    AddorrmoveControllerimple cartController,
     String asin,
   ) {
     return Column(
@@ -146,13 +131,9 @@ class ProductDetailsAmazonView extends StatelessWidget {
             children: [
               _buildProductTitle(context, controller),
               const SizedBox(height: 12),
-              _buildVariationsSection(context, controller, asin),
+              VariationsSectionWidget(asin: asin),
               const SizedBox(height: 16),
               _buildPriceSection(context, controller, asin),
-              const SizedBox(height: 16),
-              _buildQuantitySection(context, controller, asin),
-              const SizedBox(height: 16),
-              _buildAddToCartButton(context, controller, cartController, asin),
               const SizedBox(height: 16),
               _buildProductInfo(context, controller),
               const SizedBox(height: 16),
@@ -172,185 +153,10 @@ class ProductDetailsAmazonView extends StatelessWidget {
   ) {
     final title = controller.productTitle;
     if (title == null) return const SizedBox.shrink();
-    return GetBuilder<AddorrmoveControllerimple>(
-      id: 'fetchCart',
-      builder: (cot) {
-        bool isInCart = cot.isCart[controller.asin.toString()] ?? false;
-        return Row(
-          children: [
-            Expanded(
-              child: Text(
-                title,
-                style: Theme.of(context).textTheme.headlineSmall,
-              ),
-            ),
-            if (isInCart)
-              const Icon(Icons.shopping_cart, color: Appcolor.primrycolor),
-          ],
-        );
-      },
-    );
-  }
-
-  Widget _buildVariationsSection(
-    BuildContext context,
-    ProductDetailsAmazonControllerImple controller,
-    String asin,
-  ) {
-    return GetBuilder<ProductDetailsAmazonControllerImple>(
-      tag: asin,
-      id: 'selectedVariations',
-      builder: (controller) {
-        final dimensions = controller.productVariationsDimensions;
-        if (dimensions.isEmpty) return const SizedBox.shrink();
-
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Color variations
-            if (dimensions.contains('color'))
-              _buildColorVariations(context, controller),
-            const SizedBox(height: 12),
-            // Size variations
-            if (dimensions.contains('size'))
-              _buildSizeVariations(context, controller),
-          ],
-        );
-      },
-    );
-  }
-
-  Widget _buildColorVariations(
-    BuildContext context,
-    ProductDetailsAmazonControllerImple controller,
-  ) {
-    final colors = controller.productVariations?.color ?? [];
-    if (colors.isEmpty) return const SizedBox.shrink();
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return Row(
       children: [
-        Text(
-          StringsKeys.colorVariationInstruction.tr,
-          style: Theme.of(context).textTheme.titleMedium,
-        ),
-        const SizedBox(height: 8),
-        Wrap(
-          spacing: 8,
-          children: colors.map((color) {
-            final isSelected = controller.isVariationSelected(
-              'color',
-              color.value!,
-            );
-            return InkWell(
-              onDoubleTap: () => openFullImage(context, color.photo ?? ''),
-              onTap: () =>
-                  controller.updateSelectedVariation('color', color.value!),
-              child: Container(
-                width: 150,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 8,
-                ),
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: isSelected ? Appcolor.primrycolor : Colors.grey,
-                    width: isSelected ? 2 : 1,
-                  ),
-                  borderRadius: BorderRadius.circular(8),
-                  color: isSelected
-                      ? Appcolor.primrycolor.withValues(alpha: 0.1)
-                      : null,
-                ),
-                child: Row(
-                  spacing: 5,
-                  children: [
-                    SizedBox(
-                      height: 40,
-                      width: 40,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: CachedNetworkImage(
-                          imageUrl: color.photo ?? '',
-                          fit: BoxFit.cover,
-                          width: double.infinity,
-                          placeholder: (context, url) => const Loadingimage(),
-                          errorWidget: (context, url, error) =>
-                              const Icon(Icons.error),
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: Text(
-                        color.value!,
-                        style: TextStyle(
-                          color: isSelected
-                              ? Appcolor.primrycolor
-                              : Colors.black,
-                          fontWeight: isSelected
-                              ? FontWeight.bold
-                              : FontWeight.normal,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          }).toList(),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildSizeVariations(
-    BuildContext context,
-    ProductDetailsAmazonControllerImple controller,
-  ) {
-    final sizes = controller.getAvailableSizes();
-    if (sizes.isEmpty) return const SizedBox.shrink();
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          StringsKeys.size.tr,
-          style: Theme.of(context).textTheme.titleMedium,
-        ),
-        const SizedBox(height: 8),
-        Wrap(
-          spacing: 8,
-          children: sizes.map((size) {
-            final isSelected = controller.isVariationSelected('size', size);
-            return GestureDetector(
-              onTap: () => controller.updateSelectedVariation('size', size),
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 8,
-                ),
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: isSelected ? Appcolor.primrycolor : Colors.grey,
-                    width: isSelected ? 2 : 1,
-                  ),
-                  borderRadius: BorderRadius.circular(8),
-                  color: isSelected
-                      ? Appcolor.primrycolor.withValues(alpha: 0.1)
-                      : null,
-                ),
-                child: Text(
-                  size,
-                  style: TextStyle(
-                    color: isSelected ? Appcolor.primrycolor : Colors.black,
-                    fontWeight: isSelected
-                        ? FontWeight.bold
-                        : FontWeight.normal,
-                  ),
-                ),
-              ),
-            );
-          }).toList(),
+        Expanded(
+          child: Text(title, style: Theme.of(context).textTheme.headlineSmall),
         ),
       ],
     );
@@ -388,163 +194,7 @@ class ProductDetailsAmazonView extends StatelessWidget {
                   ),
               ],
             ),
-            const SizedBox(height: 4),
-            if (controller.couponDiscountPercentage != null)
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: Colors.green,
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: Text(
-                  '${controller.couponDiscountPercentage}% ${StringsKeys.off.tr}',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
           ],
-        );
-      },
-    );
-  }
-
-  Widget _buildQuantitySection(
-    BuildContext context,
-    ProductDetailsAmazonControllerImple controller,
-    String asin,
-  ) {
-    return GetBuilder<ProductDetailsAmazonControllerImple>(
-      tag: asin,
-      id: 'quantity',
-      builder: (controller) {
-        return Column(
-          children: [
-            Row(
-              children: [
-                Text(
-                  StringsKeys.quantity.tr,
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                const SizedBox(width: 16),
-                Row(
-                  children: [
-                    IconButton(
-                      onPressed: controller.decrementQuantity,
-                      icon: const Icon(Icons.remove_circle_outline),
-                    ),
-                    Text(
-                      controller.quantity.toString(),
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                    IconButton(
-                      onPressed: controller.incrementQuantity,
-                      icon: const Icon(Icons.add_circle_outline),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                Text(
-                  StringsKeys.totalPrice.tr,
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                const SizedBox(width: 16),
-                Text(
-                  controller.getTotalPriceFormatted(),
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    color: Appcolor.primrycolor,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Widget _buildAddToCartButton(
-    BuildContext context,
-    ProductDetailsAmazonControllerImple controller,
-    AddorrmoveControllerimple cartController,
-    String asin,
-  ) {
-    return GetBuilder<ProductDetailsAmazonControllerImple>(
-      tag: asin,
-      id: 'quantity',
-      builder: (controller) {
-        return SizedBox(
-          width: double.infinity,
-          child: Row(
-            children: [
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: () {
-                    cartController.add(
-                      controller.getCurrentAsin() ?? '',
-                      controller.productTitle ?? '',
-                      controller.productPhoto ?? '',
-                      controller.getRawUsdPrice(),
-                      'Amazon',
-                      controller.quantity,
-                      jsonEncode(controller.selectedVariations),
-                      1000, // Available quantity - you might want to get this from API
-                      tier: '',
-                      porductink: controller.productUrl ?? '',
-                    );
-                    controller.incart();
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: controller.isInCart
-                        ? Appcolor.black2
-                        : Appcolor.primrycolor,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                  ),
-                  child: Text(
-                    controller.isInCart
-                        ? StringsKeys.updateCart.tr
-                        : StringsKeys.addToCart.tr,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-              GetBuilder<TogglefavoriteController>(
-                builder: (favoritesController) {
-                  favoritesController.currentStatus = controller.isFavorite;
-                  return IconButton(
-                    onPressed: () {
-                      controller.changisfavorite();
-                      favoritesController.toggleFavorite(
-                        controller.getCurrentAsin() ?? '',
-                        controller.productTitle ?? '',
-                        controller.productPhoto ?? '',
-                        controller.getRawUsdPrice().toString(),
-                        "Amazon",
-                      );
-                    },
-                    icon: FaIcon(
-                      controller.isFavorite
-                          ? FontAwesomeIcons.solidHeart
-                          : FontAwesomeIcons.heart,
-                      color: controller.isFavorite
-                          ? Appcolor.reed
-                          : Appcolor.reed,
-                    ),
-                  );
-                },
-              ),
-            ],
-          ),
         );
       },
     );

@@ -8,7 +8,11 @@ import 'package:e_comerece/data/model/aliexpriess_model/shearch_model.dart';
 
 abstract class AlexpressRepo {
   Future<Either<Failure, CategorisModel>> fetchCategories(String lang);
-  Future<Either<Failure, HotProductModel>> fetchProducts(String lang, int page);
+  Future<Either<Failure, HotProductModel>> fetchProducts(
+    String lang,
+    int page,
+    String query,
+  );
   Future<Either<Failure, HotProductModel>> searchProducts(
     String lang,
     int page,

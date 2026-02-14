@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +15,7 @@ abstract class AddorrmoveController extends GetxController {
   });
   Future<void> removprise({required CartData cartData});
   Future<Map<String, dynamic>> cartquintty(String productid, String attributes);
-  Future<void> add(
+  Future<bool> add(
     String productid,
     String producttitle,
     String productimage,
@@ -42,7 +44,7 @@ class AddorrmoveControllerimple extends AddorrmoveController {
   }
 
   @override
-  Future<void> add(
+  Future<bool> add(
     String productid,
     String producttitle,
     String productimage,
@@ -76,17 +78,17 @@ class AddorrmoveControllerimple extends AddorrmoveController {
 
     var response = await cartRepo.addCart(cartData);
 
-    statusRequest = response.fold(
+    return response.fold(
       (l) {
         showCustomGetSnack(isGreen: false, text: l.errorMessage);
-        return Statusrequest.failuer;
+        return false;
       },
       (r) {
+        log('Add to cart successful: $r');
         showCustomGetSnack(isGreen: true, text: r);
-        return Statusrequest.success;
+        return true;
       },
     );
-    update();
   }
 
   @override

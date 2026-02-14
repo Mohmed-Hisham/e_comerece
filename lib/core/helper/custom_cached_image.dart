@@ -21,20 +21,17 @@ class CustomCachedImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // لو لم تمرر width/height استخدم قيم افتراضية معقولة لتقليل Decode
     final w = width ?? MediaQuery.of(context).size.width;
 
     return RepaintBoundary(
       child: ClipRRect(
         borderRadius: BorderRadius.circular(radius.r),
         child: CachedNetworkImage(
-          // cacheManager: MyCacheManager(),
           imageUrl: safeImageUrl(imageUrl),
           width: width ?? double.infinity,
           height: height,
           fit: fit,
           placeholder: (context, url) {
-            // placeholder بسيط وخفيف
             return Container(
               width: width ?? double.infinity,
               height: height ?? 200.h,
@@ -49,9 +46,7 @@ class CustomCachedImage extends StatelessWidget {
               child: const Icon(Icons.error),
             );
           },
-          // هنا نستخدم imageBuilder ونقلل الـ decode عبر ResizeImage
           imageBuilder: (context, imageProvider) {
-            // نخفض حجم الـ decode حسب الـ width المراد
             final int decodeWidth =
                 (w * MediaQuery.of(context).devicePixelRatio).toInt();
             final ImageProvider resized = ResizeImage(

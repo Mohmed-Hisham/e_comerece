@@ -1,15 +1,15 @@
 import 'dart:developer';
-
 import 'package:e_comerece/core/constant/imagesassets.dart';
 import 'package:e_comerece/core/helper/circular_widget.dart';
 import 'package:e_comerece/core/loacallization/changelocal.dart';
+import 'package:e_comerece/core/servises/awesome/awesome_fcm_service.dart';
+import 'package:e_comerece/core/servises/awesome/awesome_notification_service.dart';
+import 'package:e_comerece/core/servises/awesome/notification_controller.dart';
 import 'package:e_comerece/core/servises/currency_service.dart';
-import 'package:e_comerece/core/servises/notifcation_service.dart';
 import 'package:e_comerece/core/servises/serviese.dart';
 import 'package:e_comerece/firebase_options.dart';
 import 'package:e_comerece/viwe/screen/splash/my_app.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -57,19 +57,16 @@ class _AppSplashScreenState extends State<AppSplashScreen>
       );
       log('Firebase initialized');
 
-      FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+      await AwesomeNotificationService.initialize();
+      await AwesomeFcmService.initialize();
+      NotificationController.initializeListeners();
 
-      await NotifcationService.initializeNotifications();
       log('Notifications initialized');
 
       await initlizserviese();
       log('Services initialized');
 
-      // تسجيل LocaleController بعد MyServises
       Get.put(LocaleController());
-
-      // await DBHelper.init();
-      // await DBHelper.cleanupExpired();
 
       // Initialize Currency Service
       await initCurrencyService();
@@ -84,7 +81,6 @@ class _AppSplashScreenState extends State<AppSplashScreen>
     } catch (e, stackTrace) {
       log('Error during app initialization: $e');
       log('Stack trace: $stackTrace');
-      // Even if there's an error, try to proceed to the app
       if (mounted) {
         setState(() {
           _isInitialized = true;

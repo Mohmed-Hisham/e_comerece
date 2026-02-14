@@ -198,7 +198,7 @@ class Setting extends StatelessWidget {
             ],
           ),
         ),
-        SizedBox(height: 100.h),
+        SizedBox(height: 70.h),
       ],
     );
   }

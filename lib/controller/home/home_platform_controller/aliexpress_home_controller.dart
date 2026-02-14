@@ -2,7 +2,7 @@ import 'package:e_comerece/controller/home/homescreen_controller.dart';
 import 'package:e_comerece/core/class/failure.dart';
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/loacallization/translate_data.dart';
-import 'package:e_comerece/core/servises/custom_getx_snak_bar.dart';
+import 'package:e_comerece/core/servises/currency_service.dart';
 import 'package:e_comerece/data/model/aliexpriess_model/hotproductmodel.dart';
 import 'package:e_comerece/data/repository/aliexpriss/alexpress_repo_impl.dart';
 import 'package:get/get.dart';
@@ -15,7 +15,7 @@ class AliexpressHomeController extends GetxController {
   List<ResultListHotprosuct> productsAliExpress = [];
   bool hasMore = true;
   bool isLoading = false;
-  Statusrequest statusrequestAliExpress = Statusrequest.loading;
+  Statusrequest statusrequestAliExpress = Statusrequest.none;
 
   // @override
   // void onInit() async {
@@ -29,6 +29,9 @@ class AliexpressHomeController extends GetxController {
   }
 
   fetchProductsAliExpress({isLoadMore = false}) async {
+    if (!AppConfigService.to.showAliExpress) {
+      return;
+    }
     if (isLoadMore) {
       if (isLoading || !hasMore) return;
       isLoading = true;
@@ -43,6 +46,7 @@ class AliexpressHomeController extends GetxController {
     final response = await alexpressRepoImpl.fetchProducts(
       enOrAr(),
       pageindexALiexpress,
+      AppConfigService.to.qAliExpriess ?? "clothes",
     );
     final r = response.fold((l) => l, (r) => r);
 
@@ -50,7 +54,7 @@ class AliexpressHomeController extends GetxController {
       if (!isLoadMore) {
         statusrequestAliExpress = Statusrequest.failuer;
       }
-      showCustomGetSnack(isGreen: false, text: r.errorMessage);
+      // showCustomGetSnack(isGreen: false, text: r.errorMessage);
     }
 
     if (r is HotProductModel) {

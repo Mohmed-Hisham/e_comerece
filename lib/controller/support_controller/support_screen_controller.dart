@@ -67,12 +67,11 @@ class SupportScreenControllerImp extends SupportScreenController {
   Timer? _typingTimer;
   bool _isTyping = false;
   StreamSubscription? _typingSubscription;
+  bool _isDisposed = false;
 
   @override
   void onClose() {
-    super.onClose();
-    messsageController.dispose();
-    scrollController.dispose();
+    _isDisposed = true;
     _typingTimer?.cancel();
     _typingSubscription?.cancel();
     // Leave chat and stop typing when closing
@@ -80,6 +79,11 @@ class SupportScreenControllerImp extends SupportScreenController {
       Get.find<SignalRService>().sendStopTyping(chatid!, 'user');
       Get.find<SignalRService>().leaveChat(chatid!);
     }
+    messsageController.dispose();
+    scrollController.dispose();
+    focusNode.dispose();
+
+    super.onClose();
   }
 
   /// Pick image from gallery
@@ -235,20 +239,22 @@ class SupportScreenControllerImp extends SupportScreenController {
     String? autoMessage = Get.arguments?['auto_message'];
     // String? referenceId = Get.arguments?['reference_id'];
 
-    if (autoMessage != null) {
-      messsageController = TextEditingController(text: autoMessage);
-    } else {
-      messsageController = linkProduct == null
-          ? TextEditingController()
-          : TextEditingController(text: "$linkProduct\n\n\n");
-    }
+    messsageController = TextEditingController(
+      text: autoMessage ?? linkProduct,
+    );
     setupSignalR();
     checkChatStatus();
   }
 
   late StreamSubscription signalRSubscription;
+  bool _signalRInitialized = false;
 
   void setupSignalR() async {
+    // Cancel previous subscription to avoid duplicate listeners
+    if (_signalRInitialized) {
+      signalRSubscription.cancel();
+    }
+
     // Create SignalRService if not exists, then start connection
     if (!Get.isRegistered<SignalRService>()) {
       Get.put(SignalRService());
@@ -264,13 +270,14 @@ class SupportScreenControllerImp extends SupportScreenController {
       if (event['type'] == 'ReceiveMessage') {
         Message newMessage = Message.fromJson(event['data']);
         // Check if message already exists to avoid duplicates
-        // تحقق من الـ id أو من المحتوى + المرسل + الوقت القريب
         final isDuplicate = messageList.any((m) {
+          // تطابق بالـ id الحقيقي من السيرفر
           if (m.id == newMessage.id) return true;
-          // تحقق من الرسائل المحلية التي أضفناها (لها id مؤقت)
-          if (m.message == newMessage.message &&
-              m.senderType == newMessage.senderType &&
-              m.senderId == newMessage.senderId) {
+          // تطابق بالمحتوى + نوع المرسل (للرسائل المحلية اللي ليها id مؤقت)
+          if (m.senderType == newMessage.senderType &&
+              m.message == newMessage.message &&
+              m.messageType == newMessage.messageType &&
+              m.imageUrl == newMessage.imageUrl) {
             return true;
           }
           return false;
@@ -283,6 +290,7 @@ class SupportScreenControllerImp extends SupportScreenController {
         }
       }
     });
+    _signalRInitialized = true;
 
     // Setup typing indicator listener
     _setupTypingListener(signalR);
@@ -347,6 +355,8 @@ class SupportScreenControllerImp extends SupportScreenController {
     required String referenceid,
     String? imagelink,
   }) async {
+    if (_isDisposed) return null;
+
     // السماح بإرسال صورة بدون نص، لكن منع إرسال رسالة فارغة بدون صورة
     final hasImage = imagelink != null && imagelink.isNotEmpty;
     final hasText = messsageController.text.trim().isNotEmpty;
@@ -356,10 +366,13 @@ class SupportScreenControllerImp extends SupportScreenController {
     sendMessagestatusrequest = Statusrequest.loading;
     update();
 
+    final userId = await myServises.getSecureData("token");
+    final userName = await myServises.getSecureData("username");
+
     final messageDto = {
       "chatId": chatid,
       "content": messsageController.text,
-      "senderId": myServises.sharedPreferences.getString("id"),
+      "senderId": userId,
       "senderType": "user",
       "messageType": hasImage ? "image" : "text",
       "imageUrl": imagelink,
@@ -395,24 +408,28 @@ class SupportScreenControllerImp extends SupportScreenController {
       }
     }
 
+    if (_isDisposed) return null;
+
     // حفظ محتوى الرسالة قبل مسحها
     final messageContent = messsageController.text;
 
     await Get.find<SignalRService>().sendChatMessage(messageDto);
+
+    if (_isDisposed) return chatid;
 
     // إضافة الرسالة محلياً فوراً لتظهر في الشاشة
     final localMessage = Message(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       chatId: chatid,
       senderType: "user",
-      senderName: myServises.sharedPreferences.getString("username") ?? "User",
+      senderName: userName ?? "User",
       message: messageContent,
       isRead: 0,
       isReplied: 0,
       replyTo: null,
       createdAt: DateTime.now(),
       imageUrl: imagelink,
-      senderId: myServises.sharedPreferences.getString("id"),
+      senderId: userId,
       messageType: (imagelink != null && imagelink.isNotEmpty)
           ? "image"
           : "text",

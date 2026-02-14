@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:e_comerece/core/class/api_service.dart';
@@ -113,6 +115,7 @@ class LocalServiceRepoImpl implements LocalServiceRepo {
           pageSize: pageSize,
         ),
       );
+      log("getServiceRequests response: ${response.data}");
       if (response.statusCode == 200) {
         return Right(ServiceRequestModel.fromJson(response.data));
       } else {

@@ -41,9 +41,6 @@ class FavoriteScreen extends StatelessWidget {
               GetBuilder<FavoriteViewController>(
                 builder: (controller) {
                   return Handlingdataviwe(
-                    ontryagain: () {
-                      controller.getFavorites();
-                    },
                     statusrequest: controller.statusrequest,
                     widget: Expanded(
                       child: ListView.builder(

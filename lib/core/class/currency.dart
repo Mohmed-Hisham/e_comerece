@@ -38,6 +38,90 @@ class RatesData {
   }
 }
 
+class PlatformVisibility {
+  final bool showShein;
+  final bool showAlibaba;
+  final bool showAliexpress;
+  final bool showAmazon;
+  final bool showLocalProducts;
+
+  PlatformVisibility({
+    this.showShein = true,
+    this.showAlibaba = true,
+    this.showAliexpress = true,
+    this.showAmazon = true,
+    this.showLocalProducts = true,
+  });
+
+  factory PlatformVisibility.fromMap(Map<String, dynamic> map) {
+    return PlatformVisibility(
+      showShein: map['show_shein'] ?? true,
+      showAlibaba: map['show_alibaba'] ?? true,
+      showAliexpress: map['show_aliexpress'] ?? true,
+      showAmazon: map['show_amazon'] ?? true,
+      showLocalProducts: map['show_local_products'] ?? true,
+    );
+  }
+}
+
+class GeneralSettings {
+  final bool maintenanceMode;
+  final String? minVersionAndroid;
+  final String? minVersionIos;
+
+  GeneralSettings({
+    this.maintenanceMode = false,
+    this.minVersionAndroid,
+    this.minVersionIos,
+  });
+
+  factory GeneralSettings.fromMap(Map<String, dynamic> map) {
+    return GeneralSettings(
+      maintenanceMode: map['maintenance_mode'] ?? false,
+      minVersionAndroid: map['min_version_android'],
+      minVersionIos: map['min_version_ios'],
+    );
+  }
+}
+
+class AppConfigModel {
+  final RatesData ratesData;
+  final PlatformVisibility platformVisibility;
+  final GeneralSettings generalSettings;
+
+  // New nullable fields (Fees/Coefficients)
+  final String? qAmzon;
+  final String? qAliExpriess;
+  final String? qAlibaba;
+  final String? qShein;
+
+  AppConfigModel({
+    required this.ratesData,
+    required this.platformVisibility,
+    required this.generalSettings,
+    this.qAmzon,
+    this.qAliExpriess,
+    this.qAlibaba,
+    this.qShein,
+  });
+
+  factory AppConfigModel.fromMap(Map<String, dynamic> map) {
+    return AppConfigModel(
+      ratesData: RatesData.fromMap(map),
+      platformVisibility: PlatformVisibility.fromMap(
+        Map<String, dynamic>.from(map['platform_visibility'] ?? {}),
+      ),
+      generalSettings: GeneralSettings.fromMap(
+        Map<String, dynamic>.from(map['general_settings'] ?? {}),
+      ),
+      qAmzon: map['qAmzon']?.toString(),
+      qAliExpriess: map['qAliExpriess']?.toString(),
+      qAlibaba: map['qAlibaba']?.toString(),
+      qShein: map['qShein']?.toString(),
+    );
+  }
+}
+
 class ConversionResult {
   final bool success;
   final double? value; // rounded (for display)
@@ -60,7 +144,6 @@ class ConversionResult {
   });
 }
 
-/// الدالة الأساسية للتحويل
 ConversionResult convertUsingRatesData({
   required RatesData data,
   required double amount,
@@ -90,18 +173,14 @@ ConversionResult convertUsingRatesData({
     );
   }
 
-  // Ensure rates contain the base currency
   final base = data.baseCurrency.toUpperCase();
   if (!data.rates.containsKey(base)) {
-    // ensure base present
     data.rates[base] = 1.0;
   }
 
-  // Look up rates
   final rateFrom = data.rates[f];
   final rateTo = data.rates[t];
 
-  // If either rate is missing -> fail with informative message
   if (rateFrom == null) {
     return ConversionResult(
       success: false,
@@ -129,9 +208,6 @@ ConversionResult convertUsingRatesData({
     );
   }
 
-  // Conversion formula (all rates are units-per-1-baseCurrency, e.g. 1 USD = 3.75 SAR)
-  // price_in_base = amount / rateFrom
-  // result = price_in_base * rateTo
   final priceInBase = amount / rateFrom;
   final rawResult = priceInBase * rateTo;
   final rounded = double.parse(rawResult.toStringAsFixed(decimals));

@@ -18,7 +18,7 @@ void showCustomGetSnack({
     margin: EdgeInsets.only(left: 12, right: 12, bottom: 18),
     padding: EdgeInsets.zero,
     borderRadius: 0,
-    duration: duration,
+    duration: isGreen ? duration : const Duration(minutes: 5),
     messageText: Container(
       decoration: BoxDecoration(
         color: isGreen

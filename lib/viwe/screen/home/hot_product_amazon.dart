@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:e_comerece/controller/favorite/favorites_controller.dart';
 import 'package:e_comerece/controller/home/homescreen_controller.dart';
 import 'package:e_comerece/core/class/handlingdataviwe.dart';
@@ -63,6 +65,7 @@ class HotProductAmazon extends StatelessWidget {
 
                             return InkWell(
                               onTap: () {
+                                log(product.productAsin.toString());
                                 controller.gotoditels(
                                   platform: PlatformSource.amazon,
                                   asin: product.productAsin.toString(),

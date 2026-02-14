@@ -1,7 +1,8 @@
 import 'package:e_comerece/controller/cart/cart_controller.dart';
+import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/class/handlingdataviwe.dart';
-import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
+import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:e_comerece/data/model/cartmodel.dart';
 import 'package:e_comerece/viwe/screen/shein/cust_label_container.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_app_bar.dart';
@@ -19,15 +20,18 @@ class CartView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Get.put(CartControllerImpl());
+    final controller = Get.put(CartControllerImpl(), permanent: true);
+    if (controller.cartItems.isEmpty &&
+        controller.statusrequest != Statusrequest.loading) {
+      controller.getCartItems();
+    }
     return Scaffold(
       body: Stack(
         children: [
           PositionedRight1(),
           PositionedRight2(),
           PositionedAppBar(title: StringsKeys.cart.tr),
-          GetBuilder(
-            init: CartControllerImpl()..getCartItems(),
+          GetBuilder<CartControllerImpl>(
             builder: (controller) {
               return Handlingdataviwe(
                 statusrequest: controller.statusrequest,
@@ -36,8 +40,7 @@ class CartView extends StatelessWidget {
                     SizedBox(height: 90.h),
                     Expanded(
                       child: ListView.builder(
-                        padding: EdgeInsets.only(bottom: 270.h),
-                        physics: const BouncingScrollPhysics(),
+                        padding: EdgeInsets.only(bottom: 200.h),
                         itemCount: controller.cartByPlatform.keys.length,
                         itemBuilder: (context, index) {
                           String platform = controller.cartByPlatform.keys
@@ -48,9 +51,11 @@ class CartView extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               SizedBox(height: 10.h),
-                              Row(
-                                children: [CustLabelContainer(text: platform)],
+                              Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 12.w),
+                                child: CustLabelContainer(text: platform),
                               ),
+                              SizedBox(height: 6.h),
                               ListView.builder(
                                 padding: EdgeInsets.zero,
                                 shrinkWrap: true,
@@ -66,7 +71,7 @@ class CartView extends StatelessWidget {
                         },
                       ),
                     ),
-                    SizedBox(height: 60.h),
+                    SizedBox(height: 50.h),
                   ],
                 ),
               );

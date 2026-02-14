@@ -98,6 +98,11 @@ class FavoriteViewPlatformControllerImpl
             "lang": enOrArShein(),
           },
         );
+      case "LocalProduct":
+        Get.toNamed(
+          AppRoutesname.ourProductDetails,
+          arguments: {'productid': productId},
+        );
         break;
     }
   }

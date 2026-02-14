@@ -1,27 +1,41 @@
-import 'package:e_comerece/core/class/crud.dart';
+import 'package:e_comerece/core/class/api_service.dart';
 
 class MapPlacesServiese {
-  Crud crud;
+  ApiService apiService;
 
-  MapPlacesServiese(this.crud);
+  MapPlacesServiese(this.apiService);
   static const String _apiKey = "AIzaSyAdOeHEcFmucmNlUK4t8qyImM7C2U4ABLw";
 
   static const String _baseUrl =
       "https://maps.googleapis.com/maps/api/place/autocomplete/json";
 
-  fetchPredictions(String input, String sessionToken) async {
-    var response = await crud.getData(
-      "$_baseUrl?input=$input&key=$_apiKey&sessionToken=$sessionToken",
-    );
-
-    return response.fold((l) => l, (r) => r);
+  Future<Map<String, dynamic>?> fetchPredictions(
+    String input,
+    String sessionToken,
+  ) async {
+    try {
+      var response = await apiService.get(
+        endpoint:
+            "$_baseUrl?input=$input&key=$_apiKey&sessionToken=$sessionToken",
+      );
+      return response.data;
+    } catch (e) {
+      return null;
+    }
   }
 
-  getPlaceDetails(String placeId, String sessionToken) async {
-    var response = await crud.getData(
-      "https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&key=$_apiKey&sessionToken=$sessionToken",
-    );
-
-    return response.fold((l) => l, (r) => r);
+  Future<Map<String, dynamic>?> getPlaceDetails(
+    String placeId,
+    String sessionToken,
+  ) async {
+    try {
+      var response = await apiService.get(
+        endpoint:
+            "https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&key=$_apiKey&sessionToken=$sessionToken",
+      );
+      return response.data;
+    } catch (e) {
+      return null;
+    }
   }
 }

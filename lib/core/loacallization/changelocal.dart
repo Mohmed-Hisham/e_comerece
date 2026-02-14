@@ -3,7 +3,6 @@ import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/servises/serviese.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class LocaleController extends GetxController {
   Locale? language;
@@ -11,9 +10,9 @@ class LocaleController extends GetxController {
 
   late MyServises myServises;
 
-  changelang(String langcode) {
+  changelang(String langcode) async {
     Locale locale = Locale(langcode);
-    myServises.sharedPreferences.setString("lang", langcode);
+    await myServises.saveSecureData("lang", langcode);
     themeData = langcode == "ar" ? themeAr : themeEn;
     Get.changeTheme(themeData);
     Get.updateLocale(locale);
@@ -26,17 +25,20 @@ class LocaleController extends GetxController {
   }
 
   Future<void> _initLocale() async {
-    // جلب MyServises بشكل آمن
     if (Get.isRegistered<MyServises>()) {
       myServises = Get.find<MyServises>();
     } else {
-      // fallback: استخدم SharedPreferences مباشرة
-      final prefs = await SharedPreferences.getInstance();
-      _setLocaleFromPrefs(prefs.getString("lang"));
+      _setLocaleFromPrefs(null);
       return;
     }
 
-    String? shardPrLang = myServises.sharedPreferences.getString("lang");
+    String? shardPrLang = myServises.lang;
+    if (shardPrLang == null) {
+      // أول مرة — نحدد اللغة من الموبايل ونحفظها
+      final deviceLang = Get.deviceLocale?.languageCode;
+      shardPrLang = (deviceLang == "ar") ? "ar" : "en";
+      myServises.saveSecureData("lang", shardPrLang);
+    }
     _setLocaleFromPrefs(shardPrLang);
   }
 
@@ -46,11 +48,11 @@ class LocaleController extends GetxController {
       themeData = themeAr.copyWith(
         scaffoldBackgroundColor: Appcolor.white2,
         textSelectionTheme: TextSelectionThemeData(
-          cursorColor: Colors.red, // لون الكيرسور
+          cursorColor: Colors.red,
           selectionColor: Colors.orange.withValues(
             alpha: 0.4,
-          ), // لون خلفية التحديد
-          selectionHandleColor: Colors.orange, // لون المقبض اللي يمسك التحديد
+          ), 
+          selectionHandleColor: Colors.orange,
         ),
       );
     } else if (shardPrLang == "en") {
@@ -58,23 +60,25 @@ class LocaleController extends GetxController {
       themeData = themeEn.copyWith(
         scaffoldBackgroundColor: Appcolor.white2,
         textSelectionTheme: TextSelectionThemeData(
-          cursorColor: Colors.red, // لون الكيرسور
+          cursorColor: Colors.red, 
           selectionColor: Colors.orange.withValues(
             alpha: 0.4,
-          ), // لون خلفية التحديد
-          selectionHandleColor: Colors.orange, // لون المقبض اللي يمسك التحديد
+          ), 
+          selectionHandleColor: Colors.orange, 
         ),
       );
     } else {
-      language = Locale(Get.deviceLocale!.languageCode);
-      themeData = themeEn.copyWith(
+      final deviceLang = Get.deviceLocale?.languageCode ?? "en";
+      final isAr = deviceLang == "ar";
+      language = Locale(deviceLang);
+      themeData = (isAr ? themeAr : themeEn).copyWith(
         scaffoldBackgroundColor: Appcolor.white2,
         textSelectionTheme: TextSelectionThemeData(
-          cursorColor: Colors.red, // لون الكيرسور
+          cursorColor: Colors.red, 
           selectionColor: Colors.orange.withValues(
             alpha: 0.4,
-          ), // لون خلفية التحديد
-          selectionHandleColor: Colors.orange, // لون المقبض اللي يمسك التحديد
+          ), 
+          selectionHandleColor: Colors.orange, 
         ),
       );
     }

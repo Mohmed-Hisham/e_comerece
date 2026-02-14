@@ -55,12 +55,12 @@ class OurProductsCategoriesList extends GetView<OurProductsController> {
             border: Border.all(
               color: isSelected
                   ? Appcolor.primrycolor
-                  : Appcolor.gray.withOpacity(0.3),
+                  : Appcolor.gray.withValues(alpha: 0.3),
             ),
             boxShadow: isSelected
                 ? [
                     BoxShadow(
-                      color: Appcolor.primrycolor.withOpacity(0.3),
+                      color: Appcolor.primrycolor.withValues(alpha: 0.3),
                       blurRadius: 8,
                       offset: const Offset(0, 2),
                     ),

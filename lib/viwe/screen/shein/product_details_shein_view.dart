@@ -1,7 +1,6 @@
 import 'dart:developer';
 import 'package:e_comerece/controller/cart/cart_from_detils.dart';
 import 'package:e_comerece/controller/shein/product_details_shein_controller.dart';
-import 'package:e_comerece/controller/favorite/toggle_favorite_controller.dart';
 import 'package:e_comerece/core/class/handlingdataviwe.dart';
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/color.dart';
@@ -10,6 +9,7 @@ import 'package:e_comerece/core/constant/sliver_spacer.dart';
 import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:e_comerece/core/helper/custom_cached_image.dart';
 import 'package:e_comerece/core/shared/widget_shared/shimmerbar.dart';
+import 'package:e_comerece/viwe/screen/shein/add_button_to_cart.dart';
 import 'package:e_comerece/viwe/screen/shein/cust_label_container.dart';
 import 'package:e_comerece/viwe/screen/shein/product_from_details.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_app_bar.dart';
@@ -18,6 +18,7 @@ import 'package:e_comerece/viwe/widget/Positioned/positioned_right_2.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_support.dart';
 import 'package:e_comerece/viwe/widget/shein/product_images_carousel_shein.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 class ProductDetailsSheinView extends StatelessWidget {
@@ -110,6 +111,7 @@ class ProductDetailsSheinView extends StatelessWidget {
                             }
                           },
                         ),
+                        SliverSpacer(100.h),
                       ],
                     ),
                   ),
@@ -119,12 +121,13 @@ class ProductDetailsSheinView extends StatelessWidget {
                 title: StringsKeys.productDetailsTitle.tr,
                 onPressed: Get.back,
               ),
+              AddButtonToCart(tag: goodssn),
               PositionedSupport(
                 onPressed: () {
                   Get.toNamed(
                     AppRoutesname.messagesScreen,
                     arguments: {
-                      "platform": 'alibaba',
+                      "platform": 'Shein',
                       "link_Product": controller
                           .productDitelsSheinModel
                           ?.data
@@ -160,7 +163,8 @@ class ProductDetailsSheinView extends StatelessWidget {
             children: [
               _TitleRowShein(
                 controller: controller,
-                cartController: cartController,
+                // cartController: cartController,
+                tag: goodssn,
               ),
               const SizedBox(height: 12),
               _PriceSectionShein(controller: controller),
@@ -172,14 +176,14 @@ class ProductDetailsSheinView extends StatelessWidget {
               _MallStockSectionShein(controller: controller),
               const SizedBox(height: 16),
               const SizedBox(height: 16),
-              _QuantitySectionShein(controller: controller, tag: goodssn),
+              // _QuantitySectionShein(controller: controller, tag: goodssn),
               const SizedBox(height: 16),
-              _AddToCartButtonShein(
-                controller: controller,
-                cartController: cartController,
-                tag: goodssn,
-              ),
-              const SizedBox(height: 16),
+              // _AddToCartButtonShein(
+              //   controller: controller,
+              //   cartController: cartController,
+              //   tag: goodssn,
+              // ),
+              const SizedBox(height: 10),
             ],
           ),
         ),
@@ -190,10 +194,12 @@ class ProductDetailsSheinView extends StatelessWidget {
 
 class _TitleRowShein extends StatefulWidget {
   final ProductDetailsSheinControllerImple controller;
-  final AddorrmoveControllerimple cartController;
+  // final AddorrmoveControllerimple cartController;
+  final String tag;
   const _TitleRowShein({
     required this.controller,
-    required this.cartController,
+    // required this.cartController,
+    required this.tag,
   });
 
   @override
@@ -208,64 +214,60 @@ class _TitleRowSheinState extends State<_TitleRowShein> {
     final subject = widget.controller.subject;
     if (subject == null) return const SizedBox.shrink();
     log('Title $subject');
-    return GetBuilder<AddorrmoveControllerimple>(
-      id: 'fetchCart',
-      builder: (cot) {
-        bool isInCart =
-            cot.isCart[widget.controller.goodssn.toString()] ?? false;
-        return Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: GestureDetector(
-                onTap: () {
-                  setState(() {
-                    isExpanded = !isExpanded;
-                  });
-                },
-                child: Text(
-                  subject,
-                  style: Theme.of(context).textTheme.headlineSmall,
-                  maxLines: isExpanded ? null : 3,
-                  overflow: isExpanded
-                      ? TextOverflow.visible
-                      : TextOverflow.ellipsis,
-                ),
-              ),
-            ),
-            if (isInCart)
-              const Padding(
-                padding: EdgeInsets.only(left: 8.0),
-                child: Icon(Icons.shopping_cart, color: Appcolor.primrycolor),
-              ),
-            const SizedBox(width: 8),
-            GetBuilder<TogglefavoriteController>(
-              builder: (favController) {
-                favController.currentStatus = widget.controller.isFavorite;
-                return IconButton(
-                  onPressed: () {
-                    widget.controller.changisfavorite();
-                    favController.toggleFavorite(
-                      widget.controller.goodssn.toString(),
-                      widget.controller.subject.toString(),
-                      widget.controller.imageListFromApi.first.toString(),
-                      widget.controller.getRawUsdPrice().toString(),
-                      "Shein",
-                    );
-                  },
-                  icon: Icon(
-                    widget.controller.isFavorite
-                        ? Icons.favorite
-                        : Icons.favorite_border,
-                    color: widget.controller.isFavorite ? Colors.red : null,
-                  ),
-                );
-              },
-            ),
-          ],
-        );
-      },
+    // final cartController = Get.isRegistered<AddorrmoveControllerimple>()
+    //     ? Get.find<AddorrmoveControllerimple>()
+    //     : Get.put(AddorrmoveControllerimple());
+    return
+    //  GetBuilder<AddorrmoveControllerimple>(
+    //   // init: cartController,
+    //   id: 'fetchCart',
+    //   builder: (cot) {
+    // bool isInCart =
+    //     cot.isCart[widget.controller.goodssn.toString()] ?? false;
+    Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: Text(
+            subject,
+            style: Theme.of(context).textTheme.headlineSmall,
+            maxLines: isExpanded ? null : 3,
+            overflow: isExpanded ? TextOverflow.visible : TextOverflow.ellipsis,
+          ),
+        ),
+        // if (isInCart)
+        //   const Padding(
+        //     padding: EdgeInsets.only(left: 8.0),
+        //     child: Icon(Icons.shopping_cart, color: Appcolor.primrycolor),
+        //   ),
+        // const SizedBox(width: 8),
+        // GetBuilder<TogglefavoriteController>(
+        //   builder: (favController) {
+        //     favController.currentStatus = widget.controller.isFavorite;
+        //     return IconButton(
+        //       onPressed: () {
+        //         widget.controller.changisfavorite();
+        //         favController.toggleFavorite(
+        //           widget.controller.goodssn.toString(),
+        //           widget.controller.subject.toString(),
+        //           widget.controller.imageListFromApi.first.toString(),
+        //           widget.controller.getRawUsdPrice().toString(),
+        //           "Shein",
+        //         );
+        //       },
+        //       icon: Icon(
+        //         widget.controller.isFavorite
+        //             ? Icons.favorite
+        //             : Icons.favorite_border,
+        //         color: widget.controller.isFavorite ? Colors.red : null,
+        //       ),
+        // );
+        // },
+        // ),
+      ],
     );
+    //   },
+    // );
   }
 }
 
@@ -358,12 +360,9 @@ class _VariantSelectorShein extends StatelessWidget {
               return InkWell(
                 onTap: () {
                   controller.updateSelectedVariant(v);
-                  // print('Selected variant: ${v.goodsSn}');
                   controller.goodssn = v.goodsSn ?? '';
                   controller.fetchImageListFromApi();
-                  controller.getquiqtity(
-                    '{"size":"${controller.label}", "model":"${controller.imageListFromApi.first.toString()}"}',
-                  );
+                  controller.getCartItemInfo();
                 },
                 child: Container(
                   margin: EdgeInsets.all(4),
@@ -431,126 +430,126 @@ class _MallStockSectionShein extends StatelessWidget {
   }
 }
 
-class _QuantitySectionShein extends StatelessWidget {
-  final ProductDetailsSheinControllerImple controller;
-  final String tag;
-  const _QuantitySectionShein({required this.controller, required this.tag});
+// class _QuantitySectionShein extends StatelessWidget {
+//   final ProductDetailsSheinControllerImple controller;
+//   final String tag;
+//   const _QuantitySectionShein({required this.controller, required this.tag});
 
-  @override
-  Widget build(BuildContext context) {
-    return GetBuilder<ProductDetailsSheinControllerImple>(
-      tag: tag,
-      id: 'quantity',
-      builder: (_) {
-        return Row(
-          children: [
-            IconButton(
-              onPressed: controller.decrementQuantity,
-              icon: const Icon(Icons.remove_circle_outline),
-            ),
-            Text(
-              controller.quantity.toString(),
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            IconButton(
-              onPressed: controller.incrementQuantity,
-              icon: const Icon(Icons.add_circle_outline),
-            ),
-          ],
-        );
-      },
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return GetBuilder<ProductDetailsSheinControllerImple>(
+//       tag: tag,
+//       id: 'quantity',
+//       builder: (_) {
+//         return Row(
+//           children: [
+//             IconButton(
+//               onPressed: controller.decrementQuantity,
+//               icon: const Icon(Icons.remove_circle_outline),
+//             ),
+//             Text(
+//               controller.quantity.toString(),
+//               style: Theme.of(context).textTheme.titleLarge,
+//             ),
+//             IconButton(
+//               onPressed: controller.incrementQuantity,
+//               icon: const Icon(Icons.add_circle_outline),
+//             ),
+//           ],
+//         );
+//       },
+//     );
+//   }
+// }
 
-class _AddToCartButtonShein extends StatelessWidget {
-  final ProductDetailsSheinControllerImple controller;
-  final AddorrmoveControllerimple cartController;
-  final String tag;
-  const _AddToCartButtonShein({
-    required this.controller,
-    required this.cartController,
-    required this.tag,
-  });
+// class _AddToCartButtonShein extends StatelessWidget {
+//   final ProductDetailsSheinControllerImple controller;
+//   final AddorrmoveControllerimple cartController;
+//   final String tag;
+//   const _AddToCartButtonShein({
+//     required this.controller,
+//     required this.cartController,
+//     required this.tag,
+//   });
 
-  @override
-  Widget build(BuildContext context) {
-    return GetBuilder<ProductDetailsSheinControllerImple>(
-      tag: tag,
-      id: 'quantity',
-      builder: (_) {
-        final bool isInCart = controller.isInCart;
-        final bool isAvailable = controller.activeMallList.any(
-          (mall) => (mall.stock ?? 0) > 0,
-        );
-        return SizedBox(
-          height: 50,
-          width: double.infinity,
-          child: ElevatedButton(
-            onPressed: isAvailable
-                ? () async {
-                    await cartController.add(
-                      controller.goodssn.toString(),
-                      controller.subject.toString(),
-                      controller.imageListFromApi.first.toString(),
-                      controller.getRawUsdPrice(),
-                      'Shein',
-                      controller.quantity,
-                      '{"size":"${controller.label}", "model":"${controller.imageListFromApi.first.toString()}"}',
-                      1000,
-                      tier: "",
-                      goodsSn: controller.goodssn.toString(),
-                      categoryId: controller.categoryid.toString(),
-                      porductink: controller.productLink ?? "",
-                    );
-                    controller.getquiqtity(
-                      '{"size":"${controller.label}", "model":"${controller.imageListFromApi.first.toString()}"}',
-                    );
-                  }
-                : null,
-            style: ElevatedButton.styleFrom(
-              backgroundColor:
-                  isInCart && controller.quantity != controller.cartquantityDB
-                  ? Appcolor.soecendcolor
-                  : isInCart
-                  ? Appcolor.soecendcolor
-                  : Appcolor.primrycolor,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  isInCart && controller.quantity != controller.cartquantityDB
-                      ? Icons.update
-                      : isInCart
-                      ? Icons.check
-                      : Icons.shopping_cart,
-                  color: Colors.white,
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  isInCart && controller.quantity != controller.cartquantityDB
-                      ? StringsKeys.updateCart.tr
-                      : isInCart
-                      ? StringsKeys.addedToCartLabel.tr
-                      : StringsKeys.addToCart.tr,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return GetBuilder<ProductDetailsSheinControllerImple>(
+//       tag: tag,
+//       id: 'quantity',
+//       builder: (_) {
+//         final bool isInCart = controller.isInCart;
+//         final bool isAvailable = controller.activeMallList.any(
+//           (mall) => (mall.stock ?? 0) > 0,
+//         );
+//         return SizedBox(
+//           height: 50,
+//           width: double.infinity,
+//           child: ElevatedButton(
+//             onPressed: isAvailable
+//                 ? () async {
+//                     await cartController.add(
+//                       controller.goodssn.toString(),
+//                       controller.subject.toString(),
+//                       controller.imageListFromApi.first.toString(),
+//                       controller.getRawUsdPrice(),
+//                       'Shein',
+//                       controller.quantity,
+//                       '{"size":"${controller.label}", "model":"${controller.imageListFromApi.first.toString()}"}',
+//                       1000,
+//                       tier: "",
+//                       goodsSn: controller.goodssn.toString(),
+//                       categoryId: controller.categoryid.toString(),
+//                       porductink: controller.productLink ?? "",
+//                     );
+//                     // controller.getquiqtity(
+//                     //   '{"size":"${controller.label}", "model":"${controller.imageListFromApi.first.toString()}"}',
+//                     // );
+//                   }
+//                 : null,
+//             style: ElevatedButton.styleFrom(
+//               backgroundColor:
+//                   isInCart && controller.quantity != controller.cartquantityDB
+//                   ? Appcolor.soecendcolor
+//                   : isInCart
+//                   ? Appcolor.soecendcolor
+//                   : Appcolor.primrycolor,
+//               shape: RoundedRectangleBorder(
+//                 borderRadius: BorderRadius.circular(12),
+//               ),
+//             ),
+//             child: Row(
+//               mainAxisAlignment: MainAxisAlignment.center,
+//               children: [
+//                 Icon(
+//                   isInCart && controller.quantity != controller.cartquantityDB
+//                       ? Icons.update
+//                       : isInCart
+//                       ? Icons.check
+//                       : Icons.shopping_cart,
+//                   color: Colors.white,
+//                 ),
+//                 const SizedBox(width: 8),
+//                 Text(
+//                   isInCart && controller.quantity != controller.cartquantityDB
+//                       ? StringsKeys.updateCart.tr
+//                       : isInCart
+//                       ? StringsKeys.addedToCartLabel.tr
+//                       : StringsKeys.addToCart.tr,
+//                   style: const TextStyle(
+//                     color: Colors.white,
+//                     fontWeight: FontWeight.bold,
+//                     fontSize: 16,
+//                   ),
+//                 ),
+//               ],
+//             ),
+//           ),
+//         );
+//       },
+//     );
+//   }
+// }
 
 class _SizeTemplateSection extends StatelessWidget {
   final String tag;
@@ -605,9 +604,7 @@ class _SizeTemplateSection extends StatelessWidget {
                       onTap: () {
                         controller.selectValue(attrId, valueId);
                         controller.label = label;
-                        controller.getquiqtity(
-                          '{"size":"${controller.label}", "model":"${controller.imageListFromApi.first.toString()}"}',
-                        );
+                        controller.getCartItemInfo();
                       },
                       child: AnimatedContainer(
                         duration: const Duration(milliseconds: 150),

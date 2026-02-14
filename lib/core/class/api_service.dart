@@ -1,8 +1,11 @@
 import 'dart:developer';
 import 'package:dio/dio.dart';
+import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/funcations/checkinternet.dart';
+import 'package:e_comerece/core/servises/serviese.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:get/get.dart ' as getx;
 
 class ApiService {
   ApiService._internal() {
@@ -13,6 +16,7 @@ class ApiService {
 
   final Dio _dio = Dio();
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
+  MyServises myServices = getx.Get.find();
 
   final _defaultHeaders = {'Content-Type': 'application/json'};
 
@@ -29,16 +33,21 @@ class ApiService {
         onRequest: (options, handler) async {
           try {
             final token = await _storage.read(key: 'token');
-            log("token $token");
+            // log('Token from storage: $token');
             if (token != null && token.isNotEmpty) {
               options.headers['Authorization'] = 'Bearer $token';
             }
+            final lang = myServices.lang;
+            options.headers['Accept-Language'] = lang ?? 'ar';
           } catch (e) {
             log('Error reading token in interceptor: $e');
           }
           return handler.next(options);
         },
         onError: (error, handler) {
+          if (error.response?.statusCode == 403) {
+            getx.Get.toNamed(AppRoutesname.messagesScreen);
+          }
           return handler.next(error);
         },
       ),

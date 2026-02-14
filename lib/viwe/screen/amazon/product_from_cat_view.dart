@@ -25,7 +25,7 @@ class ProductFromCatView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Get.put(ProductFromCategoriesControllerImpl());
-    Get.put(FavoritesController());
+    // Get.put(FavoritesController());
 
     return Scaffold(
       body: Stack(

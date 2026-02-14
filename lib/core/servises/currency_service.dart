@@ -3,46 +3,63 @@ import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:e_comerece/core/class/api_service.dart';
 import 'package:e_comerece/core/class/currency.dart';
+import 'package:e_comerece/core/helper/format_price.dart';
+import 'package:e_comerece/core/servises/serviese.dart';
 import 'package:e_comerece/data/Apis/apis_url.dart';
 import 'package:get/get.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class CurrencyService extends GetxService {
   static const String _currencyKey = 'selected_currency';
   static const String _defaultCurrency = 'USD';
 
-  late SharedPreferences _prefs;
+  late MyServises _myServises;
+  AppConfigModel? appConfig;
   RatesData? ratesData;
   String selectedCurrency = _defaultCurrency;
 
   final List<String> availableCurrencies = ['USD', 'SAR', 'AED', 'YER'];
 
+  PlatformVisibility? get platformVisibility => appConfig?.platformVisibility;
+  GeneralSettings? get generalSettings => appConfig?.generalSettings;
+
+  // Convenience Getters for Platform Visibility (AppConfig Style)
+  bool get showShein => platformVisibility?.showShein ?? false;
+  bool get showAlibaba => platformVisibility?.showAlibaba ?? false;
+  bool get showAliExpress => platformVisibility?.showAliexpress ?? false;
+  bool get showAmazon => platformVisibility?.showAmazon ?? false;
+  bool get showLocalProducts => platformVisibility?.showLocalProducts ?? false;
+
+  // Convenience Getters for Quotas/Fees
+  String? get qAmzon => appConfig?.qAmzon;
+  String? get qAliExpriess => appConfig?.qAliExpriess;
+  String? get qAlibaba => appConfig?.qAlibaba;
+  String? get qShein => appConfig?.qShein;
+
   Future<CurrencyService> init() async {
-    _prefs = await SharedPreferences.getInstance();
-    selectedCurrency = _prefs.getString(_currencyKey) ?? _defaultCurrency;
+    _myServises = Get.find<MyServises>();
+    final saved = await _myServises.getSecureData(_currencyKey);
+    selectedCurrency = saved ?? _defaultCurrency;
     await fetchRates();
     return this;
   }
 
   Future<void> fetchRates() async {
     try {
-      final apiService = Get.put(ApiService());
-      final response = await apiService
-          .get(endpoint: ApisUrl.getCurrency)
-          .timeout(const Duration(seconds: 10));
-
+      final apiService = Get.put(ApiService(), permanent: true);
+      final response = await apiService.get(endpoint: ApisUrl.getAppConfig);
       if (response.statusCode == 200 && response.data['success'] == true) {
-        ratesData = RatesData.fromMap(response.data['data']);
-        log('Currency rates loaded: ${ratesData!.rates}');
+        appConfig = AppConfigModel.fromMap(response.data['data']);
+        ratesData = appConfig?.ratesData;
+        log('App Config loaded: Rates=${ratesData?.rates}');
       } else {
-        log('Failed to fetch currency rates: ${response.data['message']}');
+        log('Failed to fetch app config: ${response.data['message']}');
         _setDefaultRates();
       }
     } on DioException catch (e) {
-      log('DioException fetching rates: ${e.message}');
+      log('DioException fetching config: ${e.message}');
       _setDefaultRates();
     } catch (e) {
-      log('Error fetching rates: $e');
+      log('Error fetching config: $e');
       _setDefaultRates();
     }
   }
@@ -58,7 +75,7 @@ class CurrencyService extends GetxService {
   Future<void> setSelectedCurrency(String currency) async {
     if (availableCurrencies.contains(currency)) {
       selectedCurrency = currency;
-      await _prefs.setString(_currencyKey, currency);
+      await _myServises.saveSecureData(_currencyKey, currency);
       log('Currency changed to: $currency');
     }
   }
@@ -86,7 +103,7 @@ class CurrencyService extends GetxService {
     int decimals = 2,
   }) {
     if (ratesData == null) {
-      return '${getCurrencySymbol(from)}${amount.toStringAsFixed(decimals)}';
+      return '${getCurrencySymbol(from)}${formatPrice(amount)}';
     }
 
     final result = convertUsingRatesData(
@@ -100,13 +117,13 @@ class CurrencyService extends GetxService {
     if (result.success && result.value != null) {
       final symbol = getCurrencySymbol(selectedCurrency);
       if (selectedCurrency == 'USD') {
-        return '$symbol${result.value!.toStringAsFixed(decimals)}';
+        return '$symbol${formatPrice(result.value!)}';
       }
-      return '${result.value!.toStringAsFixed(decimals)} $symbol';
+      return '${formatPrice(result.value!)} $symbol';
     }
 
     // Fallback to original amount if conversion fails
-    return '${getCurrencySymbol(from)}${amount.toStringAsFixed(decimals)}';
+    return '${getCurrencySymbol(from)}${formatPrice(amount)}';
   }
 
   /// Handles both single prices and ranges (e.g., "$0.55 - 1.69" or "$1.00").
@@ -188,4 +205,8 @@ class CurrencyService extends GetxService {
 
 Future<void> initCurrencyService() async {
   await Get.putAsync(() => CurrencyService().init());
+}
+
+class AppConfigService {
+  static CurrencyService get to => Get.find<CurrencyService>();
 }

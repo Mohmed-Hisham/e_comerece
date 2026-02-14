@@ -1,15 +1,14 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class MyServises extends GetxService {
-  late SharedPreferences sharedPreferences;
   final FlutterSecureStorage secureStorage = const FlutterSecureStorage();
   String? step;
+  String? lang;
 
   Future<MyServises> init() async {
-    sharedPreferences = await SharedPreferences.getInstance();
     step = await secureStorage.read(key: "step");
+    lang = await secureStorage.read(key: "lang");
     // await secureStorage.delete(key: token);
     // await secureStorage.write(
     //   key: token,
@@ -30,22 +29,30 @@ class MyServises extends GetxService {
 
   Future<void> saveSecureData(String key, String value) async {
     if (key == "step") step = value;
+    if (key == "lang") lang = value;
     await secureStorage.write(key: key, value: value);
   }
 
   Future<String?> getSecureData(String key) async {
     if (key == "step") return step;
+    if (key == "lang") return lang;
     return await secureStorage.read(key: key);
   }
 
   Future<void> deleteSecureData(String key) async {
     if (key == "step") step = null;
+    if (key == "lang") lang = null;
     await secureStorage.delete(key: key);
   }
 
   Future<void> clearAllSecureData() async {
+    final savedLang = lang;
     step = null;
     await secureStorage.deleteAll();
+    lang = savedLang;
+    if (savedLang != null) {
+      await secureStorage.write(key: "lang", value: savedLang);
+    }
   }
 }
 

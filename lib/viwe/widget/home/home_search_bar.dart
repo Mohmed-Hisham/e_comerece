@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 
-/// Search bar للـ Homepage - يفتح صفحة البحث لما يضغط عليه
 class HomeSearchBar extends StatelessWidget {
   final void Function()? favoriteOnPressed;
   final void Function()? imageOnPressed;

@@ -11,12 +11,14 @@ class PositionedRight1 extends StatelessWidget {
     return Positioned(
       top: -1,
       right: -5,
-      child: SvgPicture.asset(
-        AppImagesassets.bubbleRight,
-        fit: BoxFit.cover,
-        colorFilter: const ColorFilter.mode(
-          Appcolor.fourcolor,
-          BlendMode.srcIn,
+      child: IgnorePointer(
+        child: SvgPicture.asset(
+          AppImagesassets.bubbleRight,
+          fit: BoxFit.cover,
+          colorFilter: const ColorFilter.mode(
+            Appcolor.fourcolor,
+            BlendMode.srcIn,
+          ),
         ),
       ),
     );

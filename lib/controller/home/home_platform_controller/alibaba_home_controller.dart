@@ -2,7 +2,7 @@ import 'package:e_comerece/controller/home/homescreen_controller.dart';
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/funcations/handle_paging_response.dart';
 import 'package:e_comerece/core/loacallization/translate_data.dart';
-import 'package:e_comerece/core/servises/custom_getx_snak_bar.dart';
+import 'package:e_comerece/core/servises/currency_service.dart';
 import 'package:e_comerece/data/repository/alibaba/alibaba_repo_impl.dart';
 import 'package:get/get.dart';
 import 'package:e_comerece/data/model/alibaba_model/productalibaba_home_model.dart'
@@ -28,6 +28,9 @@ class AlibabaHomeController extends GetxController {
   }
 
   Future<void> fethcProductsAlibaba({isLoadMore = false}) async {
+    if (!AppConfigService.to.showAlibaba) {
+      return;
+    }
     if (isLoadMore) {
       if (isLoading || !hasMore) return;
       isLoading = true;
@@ -41,14 +44,14 @@ class AlibabaHomeController extends GetxController {
     final response = await alibabaRepoImpl.searchProducts(
       enOrAr(isArSA: true),
       pageindexALiba,
-      "fashion",
+      AppConfigService.to.qAlibaba ?? "fashion",
       "1",
       "1000",
     );
 
     statusrequestAlibaba = response.fold(
       (l) {
-        showCustomGetSnack(isGreen: false, text: l.errorMessage);
+        // showCustomGetSnack(isGreen: false, text: l.errorMessage);
         return Statusrequest.failuer;
       },
       (r) {

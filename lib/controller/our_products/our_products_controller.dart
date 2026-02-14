@@ -28,6 +28,7 @@ class OurProductsController extends GetxController {
   static const int _pageSize = 10;
   bool hasMore = true;
   bool _isLoadingMore = false;
+  bool get isLoadingMore => _isLoadingMore;
 
   // Filters
   String? selectedCategoryId;
@@ -146,8 +147,10 @@ class OurProductsController extends GetxController {
     if (_isLoadingMore || !hasMore) return;
 
     _isLoadingMore = true;
+    update(['products']);
     await fetchProducts();
     _isLoadingMore = false;
+    update(['products']);
   }
 
   /// Refresh products

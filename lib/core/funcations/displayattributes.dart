@@ -2,15 +2,15 @@ import 'dart:developer';
 
 import 'package:e_comerece/controller/aliexpriess/product_details_controller.dart';
 
-// >> الدالة الآن تُرجع Map أكثر تعقيداً <<
 Map<String, Map<String, String?>> buildDisplayAttributes(
-  ProductDetailsControllerImple controller,
+  Map<String, String> selectedAttributes,
+  List<ProductSKUPropertyList> uiSkuProperties,
 ) {
   final Map<String, Map<String, String?>> displayAttributes = {};
 
-  controller.selectedAttributes.forEach((attributeId, valueId) {
+  selectedAttributes.forEach((attributeId, valueId) {
     try {
-      final attribute = controller.uiSkuProperties.firstWhere(
+      final attribute = uiSkuProperties.firstWhere(
         (attr) => attr.skuPropertyId == attributeId,
       );
 

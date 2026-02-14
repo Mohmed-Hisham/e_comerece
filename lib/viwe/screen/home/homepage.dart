@@ -1,4 +1,3 @@
-import 'package:e_comerece/controller/favorite/favorites_controller.dart';
 import 'package:e_comerece/controller/home/homescreen_controller.dart';
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/color.dart';
@@ -27,7 +26,7 @@ class Homepage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Get.put(FavoritesController());
+    // Get.put(FavoritesController());
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Appcolor.white2,
@@ -91,10 +90,8 @@ class Homepage extends StatelessWidget {
 
                           const HotProductAmazon(),
                           SliverSpacer(10.h),
-
                           const HotProductShein(),
                           SliverSpacer(10.h),
-
                           const OurProductsHomeSection(),
                           SliverSpacer(100.h),
                         ],

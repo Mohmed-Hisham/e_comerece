@@ -114,9 +114,9 @@ class ChatInputField extends StatelessWidget {
       margin: EdgeInsets.only(bottom: 8.h),
       padding: EdgeInsets.all(8.r),
       decoration: BoxDecoration(
-        color: Appcolor.gray.withOpacity(0.1),
+        color: Appcolor.gray.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(color: Appcolor.primrycolor.withOpacity(0.3)),
+        border: Border.all(color: Appcolor.primrycolor.withValues(alpha: 0.3)),
       ),
       child: Row(
         children: [
@@ -176,7 +176,7 @@ class ChatInputField extends StatelessWidget {
                 width: 40.w,
                 height: 4.h,
                 decoration: BoxDecoration(
-                  color: Appcolor.gray.withOpacity(0.3),
+                  color: Appcolor.gray.withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(2.r),
                 ),
               ),
@@ -226,7 +226,7 @@ class ChatInputField extends StatelessWidget {
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 32.w, vertical: 16.h),
         decoration: BoxDecoration(
-          color: Appcolor.primrycolor.withOpacity(0.1),
+          color: Appcolor.primrycolor.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(12.r),
         ),
         child: Column(

@@ -56,11 +56,9 @@ class CheckOutControllerImpl extends CheckOutController {
   void applyCustomTip() {
     if (customTipController.text.isNotEmpty) {
       final double? amount = double.tryParse(customTipController.text);
-      if (amount != null && amount > 0) {
+      if (amount != null) {
         updateTip(amount);
         isCustomTipInputVisible = false;
-      } else {
-        Get.snackbar("Invalid Amount", "Please enter a valid number");
       }
     }
   }
@@ -99,16 +97,8 @@ class CheckOutControllerImpl extends CheckOutController {
         subTotal - discountAmount; // Apply calculated discount amount
     if (isReviewFeeEnabled) totalVal += reviewFeeAmount;
     totalVal += selectedTip;
-    // Add Delivery Fee if available (currently hardcoded 0 or not in controller properly)
-    // Assuming 'total' arg passed in includes basic calc, but let's recalculate mostly.
     return totalVal > 0 ? totalVal : 0;
   }
-
-  // @override
-  // void updatePaymentMethod(String method) {
-  //   selectedPaymentMethod = method;
-  //   update(['payment']);
-  // }
 
   @override
   void updateTip(double amount) {
@@ -119,12 +109,6 @@ class CheckOutControllerImpl extends CheckOutController {
     }
     update(['tips', 'breakdown']);
   }
-
-  // @override
-  // void updateAlternativeAction(String action) {
-  //   selectedAlternativeAction = action;
-  //   update(['alternative']);
-  // }
 
   @override
   Future<void> placeOrder() async {
@@ -166,21 +150,21 @@ class CheckOutControllerImpl extends CheckOutController {
         isGreen: true,
         text: StringsKeys.orderPlacedSuccessfully.tr,
       );
-      Get.toNamed(AppRoutesname.homepage);
+      Get.offAllNamed(AppRoutesname.homepage);
     });
 
     update();
   }
 
-  showMore() {
-    if (isShowMore) {
-      isShowMore = false;
-      update(['location']);
-    } else {
-      isShowMore = true;
-      update(['location']);
-    }
-  }
+  // showMore() {
+  //   if (isShowMore) {
+  //     isShowMore = false;
+  //     update(['location']);
+  //   } else {
+  //     isShowMore = true;
+  //     update(['location']);
+  //   }
+  // }
 
   getReviewFee() async {
     final response = await checkoutRepo.getCheckOutReviewFee();
@@ -200,7 +184,6 @@ class CheckOutControllerImpl extends CheckOutController {
 
   void toggleReviewFee(bool value) {
     isReviewFeeEnabled = value;
-    // total calculation is now dynamic in getFinalTotal(), but we might need to update total var if used elsewhere
     update(['reviewFee', 'breakdown']);
   }
 

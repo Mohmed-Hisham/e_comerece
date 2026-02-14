@@ -27,22 +27,19 @@ class LLoginStepOneControllerimplment extends LoginStepOneController {
   FocusNode emailFocus = .new();
 
   AuthRepoImpl authRepoImpl = AuthRepoImpl(apiService: Get.find());
-  TextEditingController email = .new(); // يقبل إيميل أو رقم هاتف
+  TextEditingController email = .new();
   MyServises myServises = Get.find();
   Statusrequest statusrequest = Statusrequest.none;
 
   GlobalKey<FormState> formState = GlobalKey<FormState>();
 
-  // بيانات التحقق عبر SMS
   VerificationData? smsVerificationData;
 
-  // 🇩‍ لكشف البلد ديناميكياً
-  String? detectedCountry; // 'EG', 'YE', or null
+  String? detectedCountry;
 
   @override
   void onInit() {
     super.onInit();
-    // مراقبة الإدخال لكشف البلد
     email.addListener(_onInputChanged);
   }
 
@@ -52,11 +49,10 @@ class LLoginStepOneControllerimplment extends LoginStepOneController {
 
     if (newCountry != detectedCountry) {
       detectedCountry = newCountry;
-      update(['country_prefix']); // تحديث الـ UI فقط للـ prefix
+      update(['country_prefix']);
     }
   }
 
-  // الحصول على بيانات البلد
   String? get countryFlag {
     switch (detectedCountry) {
       case 'EG':
@@ -106,7 +102,6 @@ class LLoginStepOneControllerimplment extends LoginStepOneController {
       final input = email.text.trim();
       final isPhone = InputTypeHelper.isPhoneNumber(input);
 
-      // أرسل للسيرفر - السيرفر سيفهم تلقائياً إذا كان إيميل أو هاتف
       final response = await authRepoImpl.loginStepOne(
         AuthData(identifier: input),
       );
@@ -114,19 +109,15 @@ class LLoginStepOneControllerimplment extends LoginStepOneController {
       final r = response.fold((l) => l, (r) => r);
 
       if (r is AuthModel && r.success == true) {
-        // إذا كان الإدخال رقم هاتف، نحتاج لإرسال OTP عبر Firebase
         if (isPhone) {
-          // السيرفر رد بـ "Please verify via SMS" مع رقم الهاتف
           final phoneNumber = InputTypeHelper.formatPhoneNumber(input);
           debugPrint('📱 Sending OTP to: $phoneNumber (original: $input)');
 
-          // إرسال OTP عبر Firebase
           final otpResult = await SendOtpHelper.verifyPhone(phoneNumber);
 
           if (Get.isDialogOpen ?? false) Get.back();
 
           if (otpResult.success && otpResult.verificationData != null) {
-            // نجح إرسال SMS
             smsVerificationData = otpResult.verificationData;
             showCustomGetSnack(
               isGreen: true,
@@ -143,7 +134,6 @@ class LLoginStepOneControllerimplment extends LoginStepOneController {
               },
             );
           } else {
-            // فشل إرسال SMS - اقترح استخدام الإيميل
             showCustomGetSnack(
               isGreen: false,
               text:
@@ -151,7 +141,6 @@ class LLoginStepOneControllerimplment extends LoginStepOneController {
             );
           }
         } else {
-          // الإدخال إيميل - السيرفر أرسل الكود للإيميل
           if (Get.isDialogOpen ?? false) Get.back();
           showCustomGetSnack(isGreen: true, text: r.message!);
           Get.toNamed(

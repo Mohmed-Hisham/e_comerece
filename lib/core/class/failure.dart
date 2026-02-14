@@ -28,6 +28,9 @@ class ServerFailure extends Failure {
           if (statusCode == 401) {
             return ServerFailure('Unauthorized, please login again');
           }
+          // if (statusCode == 403) {
+          //   return ServerFailure('Access Forbidden!');
+          // }
 
           if (statusCode == 404) {
             return ServerFailure('Not Found!');

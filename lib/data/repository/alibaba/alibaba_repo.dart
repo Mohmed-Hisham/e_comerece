@@ -8,6 +8,7 @@ abstract class AlibabaRepo {
   Future<Either<Failure, ProductAliBabaHomeModel>> fetchProducts(
     String lang,
     int page,
+    String q,
   );
   Future<Either<Failure, ProductAliBabaHomeModel>> searchProducts(
     String lang,

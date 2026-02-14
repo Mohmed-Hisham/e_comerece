@@ -162,13 +162,13 @@ class _MethodButton extends StatelessWidget {
         padding: EdgeInsets.all(15.r),
         decoration: BoxDecoration(
           color: isPrimary
-              ? Appcolor.primrycolor.withOpacity(0.1)
+              ? Appcolor.primrycolor.withValues(alpha: 0.1)
               : Appcolor.white,
           borderRadius: BorderRadius.circular(12.r),
           border: Border.all(
             color: isPrimary
                 ? Appcolor.primrycolor
-                : Appcolor.gray.withOpacity(0.3),
+                : Appcolor.gray.withValues(alpha: 0.3),
             width: isPrimary ? 2 : 1,
           ),
         ),
@@ -178,8 +178,8 @@ class _MethodButton extends StatelessWidget {
               padding: EdgeInsets.all(10.r),
               decoration: BoxDecoration(
                 color: isPrimary
-                    ? Appcolor.primrycolor.withOpacity(0.2)
-                    : Appcolor.gray.withOpacity(0.1),
+                    ? Appcolor.primrycolor.withValues(alpha: 0.2)
+                    : Appcolor.gray.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(10.r),
               ),
               child: Icon(
@@ -338,7 +338,7 @@ class SmsErrorDialog extends StatelessWidget {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10.r),
                   ),
-                  side: BorderSide(color: Appcolor.gray.withOpacity(0.5)),
+                  side: BorderSide(color: Appcolor.gray.withValues(alpha: 0.5)),
                 ),
               ),
             ),

@@ -22,15 +22,15 @@ class _ProductImageCarouselState extends State<ProductImageCarousel> {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 16.w),
       decoration: BoxDecoration(
-        color: Appcolor.white,
+        // color: Appcolor.white,
         borderRadius: BorderRadius.circular(20.r),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 15,
-            offset: const Offset(0, 5),
-          ),
-        ],
+        // boxShadow: [
+        //   BoxShadow(
+        //     color: Colors.black.withValues(alpha: 0.05),
+        //     blurRadius: 15,
+        //     offset: const Offset(0, 5),
+        //   ),
+        // ],
       ),
       child: Column(
         children: [
@@ -53,9 +53,12 @@ class _ProductImageCarouselState extends State<ProductImageCarousel> {
       return CarouselSlider.builder(
         itemCount: widget.product.images!.length,
         itemBuilder: (context, index, _) {
-          return CustomCachedImage(
-            imageUrl: widget.product.images![index],
-            fit: BoxFit.contain,
+          return Hero(
+            tag: widget.product.id ?? "",
+            child: CustomCachedImage(
+              imageUrl: widget.product.images![index],
+              fit: BoxFit.contain,
+            ),
           );
         },
         options: CarouselOptions(
@@ -93,7 +96,7 @@ class _ProductImageCarouselState extends State<ProductImageCarousel> {
             decoration: BoxDecoration(
               color: currentImageIndex == index
                   ? Appcolor.primrycolor
-                  : Appcolor.gray.withOpacity(0.3),
+                  : Appcolor.gray.withValues(alpha: 0.3),
               borderRadius: BorderRadius.circular(4.r),
             ),
           ),

@@ -118,7 +118,8 @@ class OrderDetailsScreen extends StatelessWidget {
           OrderPriceSummaryCard(
             subtotal: order.subtotal ?? 0,
             discountAmount: order.couponDiscount ?? 0,
-            shippingAmount: order.deliveryTips ?? 0,
+            productReviewFee: order.productReviewFee,
+            deliveryTips: order.deliveryTips,
             totalAmount: order.total ?? 0,
           ),
           SizedBox(height: 20.h),

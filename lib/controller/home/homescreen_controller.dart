@@ -7,6 +7,7 @@ import 'package:e_comerece/core/class/failure.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/funcations/handle_paging_response.dart';
 import 'package:e_comerece/core/loacallization/translate_data.dart';
+import 'package:e_comerece/core/servises/currency_service.dart';
 import 'package:e_comerece/core/servises/custom_getx_snak_bar.dart';
 import 'package:e_comerece/core/servises/platform_ext.dart';
 import 'package:e_comerece/data/model/our_product_model.dart';
@@ -157,14 +158,16 @@ class HomescreenControllerImple extends HomescreenController {
     const Setting(),
   ];
   int pageindexHome = 0;
+  final RxInt pageIndex = 0.obs;
   int previousIndex = 0;
-  List nameBottonBar = [
-    {'title': 'Home', 'icon': 'assets/svg/home_icon.svg'},
-    {'title': 'Cart', 'icon': 'assets/svg/cart_icon.svg'},
-    {'title': 'Orders', 'icon': 'assets/svg/orders_icon.svg'},
-    {'title': 'Services', 'icon': 'assets/svg/local_service.svg'},
-    {'title': 'Profile', 'icon': 'assets/svg/persson_icon.svg'},
-  ];
+  final List<int> _navigationHistory = [0];
+  // List nameBottonBar = [
+  //   {'title': StringsKeys.navHome, 'icon': 'assets/svg/home_icon.svg'},
+  //   {'title': StringsKeys.navCart, 'icon': 'assets/svg/cart_icon.svg'},
+  //   {'title': StringsKeys.navOrders, 'icon': 'assets/svg/orders_icon.svg'},
+  //   {'title': StringsKeys.navServices, 'icon': 'assets/svg/local_service.svg'},
+  //   {'title': StringsKeys.navProfile, 'icon': 'assets/svg/persson_icon.svg'},
+  // ];
   int currentIndex = 0;
   Statusrequest statusRequestHome = Statusrequest.none;
   Statusrequest statusRequestSlider = Statusrequest.none;
@@ -177,7 +180,9 @@ class HomescreenControllerImple extends HomescreenController {
   bool get isLoadingMoreOurProducts => _isLoadingMoreOurProducts;
   int _ourProductsPage = 1;
   static const int _ourProductsPageSize = 6;
-  late LocalProductRepoImpl _localProductRepo;
+  final LocalProductRepoImpl _localProductRepo = LocalProductRepoImpl(
+    apiService: Get.find(),
+  );
 
   List<SliderModel> sliders = [];
 
@@ -198,14 +203,11 @@ class HomescreenControllerImple extends HomescreenController {
     update(['slider']);
   }
 
-  // Initialize Local Product Repository
-  void _initLocalProductRepo() {
-    _localProductRepo = LocalProductRepoImpl(apiService: Get.find());
-  }
-
   // Fetch Our Products (Featured) from API
   fetchOurProducts() async {
-    _initLocalProductRepo();
+    if (!AppConfigService.to.showLocalProducts) {
+      return;
+    }
     ourProductsStatusRequest = Statusrequest.loading;
     _ourProductsPage = 1;
     hasMoreOurProducts = true;
@@ -238,6 +240,9 @@ class HomescreenControllerImple extends HomescreenController {
 
   // Load more Our Products (Pagination)
   loadMoreOurProducts() async {
+    if (!AppConfigService.to.showLocalProducts) {
+      return;
+    }
     if (_isLoadingMoreOurProducts || !hasMoreOurProducts) return;
 
     _isLoadingMoreOurProducts = true;
@@ -300,17 +305,40 @@ class HomescreenControllerImple extends HomescreenController {
   void changepage(int i) {
     if (pageindexHome == i) return;
     previousIndex = pageindexHome;
+    _navigationHistory.add(i);
     pageindexHome = i;
-    update(['bottomBar']); // ✅ تحديث الـ bottom bar فقط
+    pageIndex.value = i;
+    Future.delayed(const Duration(milliseconds: 200), () {
+      update(['bottomBar']);
+    });
   }
 
-  /// Set page without navigation (used when coming from route)
   void setPageWithoutNav(int i) {
     if (pageindexHome == i) return;
     previousIndex = pageindexHome;
     pageindexHome = i;
-    update(['bottomBar']); // ✅ تحديث الـ bottom bar فقط
+    pageIndex.value = i;
+    Future.delayed(const Duration(milliseconds: 200), () {
+      update(['bottomBar']);
+    });
   }
+
+  bool goBack() {
+    if (_navigationHistory.length > 1) {
+      _navigationHistory.removeLast();
+      final previousPage = _navigationHistory.last;
+      previousIndex = pageindexHome;
+      pageindexHome = previousPage;
+      pageIndex.value = previousPage;
+      Future.delayed(const Duration(milliseconds: 200), () {
+        update(['bottomBar']);
+      });
+      return true;
+    }
+    return false;
+  }
+
+  bool get canGoBack => _navigationHistory.length > 1;
 
   @override
   goToFavorit() {
@@ -456,6 +484,9 @@ class HomescreenControllerImple extends HomescreenController {
   Statusrequest statusrequestAliExpress = Statusrequest.loading;
 
   searsAliexpress({bool isLoadMore = false}) async {
+    if (!AppConfigService.to.showAliExpress) {
+      return;
+    }
     if (isLoadMore) {
       if (isLoadingAliExpress || !hasMoreAliexpress) return;
       isLoadingAliExpress = true;
@@ -511,6 +542,9 @@ class HomescreenControllerImple extends HomescreenController {
     startPrice = "1",
     endPrice = "1000000",
   }) async {
+    if (!AppConfigService.to.showAlibaba) {
+      return;
+    }
     if (isLoadMore) {
       if (isLoadingSearchAlibaba || !hasMoresearchAlibaba) return;
       isLoadingSearchAlibaba = true;
@@ -564,6 +598,9 @@ class HomescreenControllerImple extends HomescreenController {
   List<search.Product> searchProducts = [];
 
   searshAmazon({bool isLoadMore = false, bool other = false}) async {
+    if (!AppConfigService.to.showAmazon) {
+      return;
+    }
     if (isLoadMore) {
       if (isLoadingAmazon || !hasMoreAmazon) return;
       isLoadingAmazon = true;
@@ -626,6 +663,9 @@ class HomescreenControllerImple extends HomescreenController {
     startPrice = "1",
     endPrice = "1000000",
   }) async {
+    if (!AppConfigService.to.showShein) {
+      return;
+    }
     if (isLoadMore) {
       if (isLoadingSearchShein || !hasMoresearchShein) return;
       isLoadingSearchShein = true;

@@ -77,6 +77,8 @@ class SearchShein extends StatelessWidget {
                       product.goodsImg!,
                       extractPrice(product.salePrice?.usdAmount).toString(),
                       "Shein",
+                      goodsSn: product.goodsSn!,
+                      categoryid: product.catId ?? "",
                     );
                   },
                   icon: FaIcon(

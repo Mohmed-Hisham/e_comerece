@@ -23,7 +23,7 @@ class ProductByCategory extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Get.put(ProductByCategoryControllerImple());
-    Get.put(FavoritesController());
+    // Get.put(FavoritesController());
 
     return Scaffold(
       body: Stack(

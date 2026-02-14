@@ -37,10 +37,11 @@ class AlexpressRepoImpl implements AlexpressRepo {
   Future<Either<Failure, HotProductModel>> fetchProducts(
     String lang,
     int page,
+    String query,
   ) async {
     try {
       var response = await apiService.get(
-        endpoint: AliexprissUrls.hotProducts(lang, page, "clothes"),
+        endpoint: AliexprissUrls.hotProducts(lang, page, query),
       );
       if (response.statusCode == 200) {
         return Right(HotProductModel.fromJson(response.data['data']));

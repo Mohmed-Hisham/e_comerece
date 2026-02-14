@@ -1,4 +1,7 @@
+import 'package:e_comerece/controller/favorite/favorites_controller.dart';
 import 'package:e_comerece/controller/our_products/our_product_details_controller.dart';
+import 'package:e_comerece/core/class/handlingdataviwe.dart';
+import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:e_comerece/core/servises/currency_service.dart';
@@ -13,6 +16,7 @@ import 'package:e_comerece/viwe/widget/Positioned/positioned_right_1.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_right_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 
 class OurProductDetailsView extends StatefulWidget {
@@ -23,96 +27,127 @@ class OurProductDetailsView extends StatefulWidget {
 }
 
 class _OurProductDetailsViewState extends State<OurProductDetailsView> {
-  late LocalProductModel product;
   late OurProductDetailsController detailsController;
-  int quantity = 1;
   final currencyService = Get.find<CurrencyService>();
+  late final String _tag;
 
   @override
   void initState() {
     super.initState();
     final args = Get.arguments as Map<String, dynamic>?;
-    product = args?['product'] as LocalProductModel;
-    detailsController = Get.put(OurProductDetailsController());
+    final productId = args?['product']?.id ?? args?['productid'] ?? '';
+    _tag =
+        'product_detail_${productId}_${DateTime.now().millisecondsSinceEpoch}';
+    detailsController = Get.put(OurProductDetailsController(), tag: _tag);
   }
 
-  void _incrementQuantity() {
-    if (product.stockQuantity == null || quantity < product.stockQuantity!) {
-      setState(() => quantity++);
-    }
-  }
-
-  void _decrementQuantity() {
-    if (quantity > 1) {
-      setState(() => quantity--);
-    }
-  }
-
-  void _addToCart() {
-    Get.snackbar(
-      "success",
-      StringsKeys.addedToCart.tr,
-      backgroundColor: Appcolor.primrycolor,
-      colorText: Appcolor.white,
-      snackPosition: SnackPosition.BOTTOM,
-    );
+  @override
+  void dispose() {
+    Get.delete<OurProductDetailsController>(tag: _tag);
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Appcolor.white2,
-      body: Stack(
-        children: [
-          const PositionedRight1(),
-          const PositionedRight2(),
-          _buildContent(),
-          _buildAppBar(),
-          BottomAddToCartBar(
-            product: product,
-            quantity: quantity,
-            onIncrement: _incrementQuantity,
-            onDecrement: _decrementQuantity,
-            onAddToCart: _addToCart,
-          ),
-        ],
+      body: GetBuilder<OurProductDetailsController>(
+        tag: _tag,
+        builder: (controller) {
+          return Stack(
+            children: [
+              const PositionedRight1(),
+              const PositionedRight2(),
+              ListView(
+                controller: controller.scrollController,
+                children: [
+                  if (controller.pageStatus == Statusrequest.loading)
+                    SizedBox(height: 250.h),
+                  Handlingdataviwe(
+                    isSizedBox: true,
+                    statusrequest: controller.pageStatus,
+                    widget: controller.product == null
+                        ? const SizedBox()
+                        : _buildBody(controller.product!),
+                  ),
+                ],
+              ),
+              GetBuilder<OurProductDetailsController>(
+                tag: _tag,
+                id: 'productInfo',
+                builder: (controller) {
+                  return BottomAddToCartBar(
+                    onToggleFavorite: GetBuilder<FavoritesController>(
+                      builder: (favController) {
+                        final productId =
+                            controller.product?.id?.toString() ?? "";
+                        bool isFav =
+                            favController.isFavorite[productId] ?? false;
+
+                        return IconButton(
+                          onPressed: () {
+                            favController.toggleFavorite(
+                              productId,
+                              controller.product?.title ?? "",
+                              controller.product?.mainImage ?? "",
+                              (controller.product?.discountPrice ??
+                                      controller.product?.price ??
+                                      0)
+                                  .toString(),
+                              "LocalProduct",
+                              categoryid: controller.product?.categoryId
+                                  ?.toString(),
+                            );
+                          },
+                          icon: FaIcon(
+                            isFav
+                                ? FontAwesomeIcons.solidHeart
+                                : FontAwesomeIcons.heart,
+                            color: Appcolor.reed,
+                            size: 22.sp,
+                          ),
+                        );
+                      },
+                    ),
+                    quantity: controller.quantity,
+                    onIncrement: controller.increment,
+                    onDecrement: controller.decrement,
+                    onAddToCart: () =>
+                        controller.onAddToCart(controller.selectedAttributes),
+                    isLoading: controller.isInfoLoading,
+                    buttonState: controller.cartButtonState,
+                  );
+                },
+              ),
+              PositionedAppBar(
+                title: StringsKeys.productDetails.tr,
+                onPressed: Get.back,
+              ),
+            ],
+          );
+        },
       ),
     );
   }
 
-  Widget _buildContent() {
-    return Column(
-      children: [
-        SizedBox(height: 100.h),
-        Expanded(
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ProductImageCarousel(product: product),
-                SizedBox(height: 20.h),
-                ProductInfoSection(
-                  product: product,
-                  currencyService: currencyService,
-                ),
-                SizedBox(height: 16.h),
-                if (product.description != null &&
-                    product.description!.isNotEmpty)
-                  ProductDescriptionSection(description: product.description!),
-                RelatedProductsSection(currencyService: currencyService),
-                SizedBox(height: 100.h),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
+  Widget _buildBody(LocalProductModel product) {
+    return _buildContent(product);
   }
 
-  Widget _buildAppBar() {
-    return PositionedAppBar(
-      title: StringsKeys.productDetails.tr,
-      onPressed: () => Get.back(),
+  Widget _buildContent(LocalProductModel product) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        SizedBox(height: 100.h),
+        ProductImageCarousel(product: product),
+        SizedBox(height: 20.h),
+        ProductInfoSection(product: product, currencyService: currencyService),
+        SizedBox(height: 16.h),
+        if (product.description != null && product.description!.isNotEmpty)
+          ProductDescriptionSection(description: product.description!),
+        RelatedProductsSection(currencyService: currencyService, tag: _tag),
+        SizedBox(height: 150.h),
+      ],
     );
   }
 }

@@ -39,7 +39,7 @@ class ReviewFeeCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      controller.reviewFeeData!.key ??
+                      controller.reviewFeeData!.name ??
                           StringsKeys.reviewService.tr,
                       style: TextStyle(
                         fontSize: 16.sp,

@@ -1,9 +1,9 @@
+import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:e_comerece/core/servises/serviese.dart';
 import 'package:e_comerece/core/servises/custom_getx_snak_bar.dart';
-import 'package:e_comerece/data/model/AuthModel/auth_model.dart';
-import 'package:e_comerece/data/repository/Auth_Repo/auth_repo_impl.dart';
+import 'package:e_comerece/data/repository/user_profile/user_profile_repo_impl.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:e_comerece/viwe/screen/settings/update_profile.dart';
 import 'package:flutter/material.dart';
@@ -16,10 +16,13 @@ abstract class SettingsController extends GetxController {
   void disableNotification();
   void goToUpdateProfile();
   void updateProfile();
+  void fetchUserProfile();
 }
 
 class SettingsControllerImple extends SettingsController {
-  AuthRepoImpl authRepoImpl = AuthRepoImpl(apiService: Get.find());
+  UserProfileRepoImpl userProfileRepo = UserProfileRepoImpl(
+    apiService: Get.find(),
+  );
   MyServises myServises = Get.find();
   bool isNotification = true;
 
@@ -27,14 +30,21 @@ class SettingsControllerImple extends SettingsController {
   late TextEditingController phoneController;
   GlobalKey<FormState> formState = GlobalKey<FormState>();
 
-  @override
-  logout() {
-    final String id = myServises.sharedPreferences.getString('id') ?? "";
+  Statusrequest profileStatus = Statusrequest.none;
+  String profileName = '';
+  String profilePhone = '';
 
+  @override
+  void onInit() {
+    super.onInit();
+    nameController = TextEditingController();
+    phoneController = TextEditingController();
+  }
+
+  @override
+  logout() async {
     FirebaseMessaging.instance.unsubscribeFromTopic('users');
-    FirebaseMessaging.instance.unsubscribeFromTopic('user$id');
-    myServises.sharedPreferences.clear();
-    myServises.clearAllSecureData();
+    await myServises.clearAllSecureData();
     Get.offAllNamed(AppRoutesname.loginStepOne);
   }
 
@@ -55,38 +65,72 @@ class SettingsControllerImple extends SettingsController {
   }
 
   @override
+  fetchUserProfile() async {
+    profileStatus = Statusrequest.loading;
+    update(['profile']);
+
+    var response = await userProfileRepo.getUserProfile();
+
+    profileStatus = response.fold(
+      (failure) {
+        showCustomGetSnack(isGreen: false, text: failure.errorMessage);
+        return Statusrequest.failuer;
+      },
+      (profileResponse) {
+        if (profileResponse.success == true && profileResponse.data != null) {
+          profileName = profileResponse.data!.name ?? '';
+          profilePhone = profileResponse.data!.phone ?? '';
+          nameController.text = profileName;
+          phoneController.text = profilePhone;
+          return Statusrequest.success;
+        }
+        return Statusrequest.failuer;
+      },
+    );
+
+    update(['profile']);
+  }
+
+  @override
   goToUpdateProfile() async {
-    nameController = TextEditingController(
-      text: await myServises.getSecureData("username") ?? "",
-    );
-    phoneController = TextEditingController(
-      text: await myServises.getSecureData("phone") ?? "",
-    );
+    fetchUserProfile();
     Get.to(() => const UpdateProfile());
   }
 
   @override
   updateProfile() async {
     if (formState.currentState!.validate()) {
-      final authData = AuthData(
+      profileStatus = Statusrequest.loading;
+      update(['profile']);
+
+      final response = await userProfileRepo.updateUserProfile(
         name: nameController.text,
         phone: phoneController.text,
-        token: await myServises.getSecureData("token") ?? "",
       );
 
-      final response = await authRepoImpl.updateUser(authData);
-      response.fold(
-        (l) => showCustomGetSnack(isGreen: false, text: l.errorMessage),
-        (r) {
-          myServises.saveSecureData("phone", phoneController.text);
-          myServises.saveSecureData("username", nameController.text);
-          showCustomGetSnack(
-            isGreen: true,
-            text: r.message ?? StringsKeys.updateSuccess.tr,
-          );
-          Get.back();
+      profileStatus = response.fold(
+        (failure) {
+          showCustomGetSnack(isGreen: false, text: failure.errorMessage);
+          return Statusrequest.failuer;
+        },
+        (profileResponse) {
+          if (profileResponse.success == true && profileResponse.data != null) {
+            profileName = profileResponse.data!.name ?? '';
+            profilePhone = profileResponse.data!.phone ?? '';
+            myServises.saveSecureData("phone", profilePhone);
+            myServises.saveSecureData("username", profileName);
+            showCustomGetSnack(
+              isGreen: true,
+              text: profileResponse.message ?? StringsKeys.updateSuccess.tr,
+            );
+            Get.back();
+            return Statusrequest.success;
+          }
+          return Statusrequest.failuer;
         },
       );
+
+      update(['profile']);
     }
   }
 }

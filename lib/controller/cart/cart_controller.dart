@@ -1,8 +1,8 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/loacallization/strings_keys.dart';
-import 'package:e_comerece/core/funcations/loading_dialog.dart';
 import 'package:e_comerece/core/servises/custom_getx_snak_bar.dart';
 import 'package:e_comerece/core/servises/platform_ext.dart';
 import 'package:e_comerece/core/servises/serviese.dart';
@@ -115,21 +115,26 @@ class CartControllerImpl extends CartController {
   }
 
   removeItem(String cartId) async {
-    if (!Get.isDialogOpen!) {
-      loadingDialog();
-    }
+    // Remove from list immediately
+    cartItems.removeWhere((item) => item.id == cartId);
+    groupcartByPlatform();
+    calculateDiscountAmount();
+    totalbuild = total();
+    update();
+    update(['1']);
+
     var response = await cartRepo.deleteCart(cartId);
-    if (Get.isDialogOpen ?? false) Get.back();
 
     response.fold(
-      (l) => showCustomGetSnack(isGreen: false, text: l.errorMessage),
-      (r) {
-        showCustomGetSnack(isGreen: true, text: r);
+      (l) {
+        showCustomGetSnack(isGreen: false, text: l.errorMessage);
+        // Re-fetch on failure to restore the item
         getCartItems();
       },
+      (r) {
+        showCustomGetSnack(isGreen: true, text: r);
+      },
     );
-
-    update();
   }
 
   List<Map<String, dynamic>> _parseTiers(String? tierJson) {
@@ -161,9 +166,7 @@ class CartControllerImpl extends CartController {
         break;
       }
     }
-    // If no specific tier matched (shouldn't happen if logic is correct and tiers cover all ranges), return first tier or 0.
-    // Fallback to the price of the first tier if quantity < min of first tier (though user shouldn't be able to add less).
-    // Or if likely quantity > max of all tiers, use last tier.
+
     if (selectedPrice == null) {
       if (quantity <
           (int.tryParse(tiers.first['minquantity'].toString()) ?? 0)) {
@@ -206,11 +209,6 @@ class CartControllerImpl extends CartController {
       return;
     }
 
-    // We send the potentially updated availableQuantity to the repo.
-    // NOTE: If the backend logic strictly checks against what's in the DB for "available_quantity" column,
-    // this might fail if the DB column isn't updated. However, the requirement implies we should handle it here.
-    // If the backend RE-CHECKS availability, and DB says 99, it might fail there.
-    // Assuming backend trusts this param or checks logic correctly.
     var response = await cartRepo.increaseQuantity(
       cartData.productId!.toString(),
       cartData.cartAttributes,
@@ -392,6 +390,9 @@ class CartControllerImpl extends CartController {
       case PlatformSource.shein:
         return AppRoutesname.productDetailsSheinView;
 
+      case PlatformSource.localProduct:
+        return AppRoutesname.ourProductDetails;
+
       default:
         return '';
     }
@@ -408,16 +409,19 @@ class CartControllerImpl extends CartController {
     required categoryid,
     required platform,
   }) {
+    log("platform: $platform, id: $id");
     Get.toNamed(
       goTODetails(platform),
       arguments: {
         "product_id": id,
+        "productid": id,
         "lang": lang,
         "title": title,
         "asin": asin,
         "goods_sn": goodssn,
         "goods_id": goodsid,
         "category_id": categoryid,
+        "attributes": "",
       },
     );
   }

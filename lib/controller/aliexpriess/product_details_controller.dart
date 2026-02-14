@@ -1,6 +1,10 @@
+import 'dart:convert';
+import 'dart:developer';
 import 'package:carousel_slider/carousel_controller.dart';
 import 'package:chewie/chewie.dart';
 import 'package:e_comerece/controller/cart/cart_from_detils.dart';
+import 'package:e_comerece/controller/mixins/cart_info_mixin.dart';
+import 'package:e_comerece/core/funcations/displayattributes.dart';
 import 'package:e_comerece/core/helper/format_price.dart';
 import 'package:e_comerece/core/class/failure.dart';
 import 'package:e_comerece/core/class/statusrequest.dart';
@@ -12,13 +16,15 @@ import 'package:e_comerece/data/model/cartmodel.dart';
 import 'package:e_comerece/data/model/aliexpriess_model/hotproductmodel.dart';
 import 'package:e_comerece/data/model/aliexpriess_model/itemdetelis_model.dart';
 import 'package:e_comerece/data/repository/aliexpriss/alexpress_repo_impl.dart';
+import 'package:e_comerece/viwe/screen/our_products/widgets/bottom_add_to_cart_bar.dart';
 import 'package:get/get.dart';
 import 'package:video_player/video_player.dart';
 
-abstract class ProductDetailsController extends GetxController {
+abstract class ProductDetailsController extends GetxController
+    with CartInfoMixin {
   Future<void> fetchProductDetails();
   Future<void> initializeVideoPlayer();
-  Future<void> getquiqtity(String attributes);
+  // Future<void> getquiqtity(String attributes);
   Future<void> searshText();
 
   void initializeDefaultAttributes();
@@ -35,11 +41,13 @@ abstract class ProductDetailsController extends GetxController {
   });
 }
 
-class ProductDetailsControllerImple extends ProductDetailsController {
+class ProductDetailsControllerImple extends ProductDetailsController
+    with CartInfoMixin {
   AlexpressRepoImpl alexpressRepoImpl = AlexpressRepoImpl(
     apiService: Get.find(),
   );
 
+  @override
   AddorrmoveControllerimple addorrmoveController = Get.put(
     AddorrmoveControllerimple(),
   );
@@ -54,6 +62,7 @@ class ProductDetailsControllerImple extends ProductDetailsController {
 
   Map<String, String> selectedAttributes = {};
   SkuPriceList? currentSku;
+  @override
   int quantity = 1;
   VideoPlayerController? videoPlayerController;
   ChewieController? chewieController;
@@ -73,6 +82,16 @@ class ProductDetailsControllerImple extends ProductDetailsController {
   Statusrequest statusrequestsearch = Statusrequest.loading;
   List<ResultListHotprosuct> searchProducts = [];
   int loadSearchOne = 0;
+  @override
+  bool isInfoLoading = true;
+  @override
+  bool isFavorite = false;
+  @override
+  bool isInCart = false;
+  @override
+  int cartquantityDB = 0;
+  @override
+  CartButtonState cartButtonState = CartButtonState.addToCart;
 
   final CarouselSliderController carouselController =
       CarouselSliderController();
@@ -142,6 +161,7 @@ class ProductDetailsControllerImple extends ProductDetailsController {
         }
       }
       updateCurrentSku();
+      getCartItemInfo();
     }
   }
 
@@ -149,6 +169,7 @@ class ProductDetailsControllerImple extends ProductDetailsController {
   updateSelectedAttribute(attributeId, valueId) {
     selectedAttributes[attributeId] = valueId;
     updateCurrentSku();
+    getCartItemInfo();
 
     update(['selectedAttributes']);
   }
@@ -158,6 +179,7 @@ class ProductDetailsControllerImple extends ProductDetailsController {
     if (currentSku != null && quantity < currentSku!.skuVal!.availQuantity!) {
       quantity++;
     }
+    _updateButtonState();
     update(['quantity']);
   }
 
@@ -166,8 +188,59 @@ class ProductDetailsControllerImple extends ProductDetailsController {
     if (quantity > 1) {
       quantity--;
     }
+    _updateButtonState();
     update(['quantity']);
   }
+
+  void _updateButtonState() {
+    if (isInCart && quantity != cartquantityDB) {
+      cartButtonState = CartButtonState.updateInCart;
+    } else if (isInCart && quantity == cartquantityDB) {
+      cartButtonState = CartButtonState.added;
+    } else {
+      cartButtonState = CartButtonState.addToCart;
+    }
+  }
+
+  void addTOCart() async {
+    final productid = productId?.toString() ?? '';
+    final title = subject?.toString() ?? '';
+    final imageUrl = imageList.isNotEmpty ? imageList[0].toString() : '';
+    final stock = currentSku?.skuVal?.availQuantity ?? 0;
+    cartButtonState = CartButtonState.loadingAddButton;
+    update(['quantity']);
+
+    try {
+      bool success = await addorrmoveController.add(
+        productid,
+        title,
+        imgageAttribute ?? imageUrl,
+        getRawUsdPrice(),
+        "aliexpress",
+        quantity,
+        jsonEncode(buildDisplayAttributes(selectedAttributes, uiSkuProperties)),
+        stock,
+        tier: "",
+        porductink: productLink ?? "",
+      );
+      if (success) {
+        cartquantityDB = quantity;
+        isInCart = true;
+        cartButtonState = CartButtonState.added;
+        update(['quantity']);
+      }
+    } on Exception catch (e) {
+      log('addTOCart error: $e');
+    }
+  }
+
+  // Implementing methods required by CartInfoMixin
+  @override
+  String getProductId() => productId!.toString();
+
+  @override
+  String getSelectedAttributesJson() =>
+      jsonEncode(buildDisplayAttributes(selectedAttributes, uiSkuProperties));
 
   @override
   updateCurrentSku() {
@@ -203,34 +276,8 @@ class ProductDetailsControllerImple extends ProductDetailsController {
   }
 
   @override
-  getquiqtity(attributes) async {
-    statusrequestquantity = Statusrequest.loading;
-    update();
-    try {
-      final Map<String, dynamic> newQty = await addorrmoveController
-          .cartquintty(productId!.toString(), attributes);
-      if (newQty['quantity'] == 0) {
-        quantity = 1;
-        inCart = false;
-      } else {
-        quantity = newQty['quantity'] as int;
-        inCart = true;
-        update(['quantity']);
-      }
-      statusrequestquantity = Statusrequest.success;
-      update(['quantity']);
-    } catch (e) {
-      inCart = false;
-      statusrequestquantity = Statusrequest.failuer;
-      update(['quantity']);
-      // print('getquiqtity error: $e');
-    }
-  }
-
-  @override
   indexchange(index) {
     currentIndex = index;
-    // carouselController.animateToPage(index);
     update(["index"]);
   }
 

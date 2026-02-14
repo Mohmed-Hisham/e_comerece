@@ -15,6 +15,20 @@ class MyTrenslition extends Translations {
       "exitDialogMessage": "هل تريد الخروج من التطبيق نهائياً؟",
       "cancel": "إلغاء",
       "exit": "خروج",
+
+      // Bottom Nav Bar
+      StringsKeys.navHome: "الرئيسية",
+      StringsKeys.navCart: "السلة",
+      StringsKeys.navOrders: "الطلبات",
+      StringsKeys.navServices: "خدمات",
+      StringsKeys.navProfile: "حسابي",
+
+      // Platform Names
+      StringsKeys.platformShein: "شي إن",
+      StringsKeys.platformAlibaba: "علي بابا",
+      StringsKeys.platformAliexpress: "علي إكسبريس",
+      StringsKeys.platformAmazon: "أمازون",
+
       "google": "جوجل",
       "gotIt": "فهمت",
       "error": "خطأ",
@@ -225,7 +239,7 @@ class MyTrenslition extends Translations {
       "productDetailsTitle": "تفاصيل المنتج",
       "product": "منتج",
       "platform": "المنصة",
-      "colorVariationInstruction": "اللون: اضغط مرتين لفتح الصورة بالكامل",
+      "colorVariationInstruction": "اللون:",
       "size": "المقاس",
       "quantity": "الكمية",
       "totalPrice": "السعر الإجمالي",
@@ -249,7 +263,7 @@ class MyTrenslition extends Translations {
       "aboutThisProduct": "حول هذا المنتج",
       "topReviews": "أهم المراجعات",
       "byAuthor": "بواسطة",
-      "allColors": "كل الألوان @number",
+      "allColors": "متاح بـ @number لون",
       "shein": "شي إن",
       "trending": "شائع",
       "productAddedToCart": "تم اضافة المنتج الي السله ",
@@ -439,25 +453,36 @@ class MyTrenslition extends Translations {
       StringsKeys.noProductsFound: "لا توجد منتجات",
       StringsKeys.saltk: "سلتك",
       StringsKeys.productDetails: "تفاصيل المنتج",
-      StringsKeys.inStock: "متوفر",
-      StringsKeys.addToCart: "أضف للسلة",
       StringsKeys.addedToCart: "تمت الإضافة للسلة",
       StringsKeys.relatedProducts: "منتجات مشابهة",
-      StringsKeys.seeAll: "عرض الكل",
     },
     "en": {
       // Splashscreen
-      "appName": "SaltK",
-      "letsGetStarted": "Let's get started",
-      "alreadyHaveAccount": "I already have an account?",
+      "appName": "Slatk",
+      "letsGetStarted": "Let's Get Started",
+      "alreadyHaveAccount": "Already have an account?",
 
       // Exit Dialog
       "exitDialogTitle": "Warning",
-      "exitDialogMessage": "Do you want to exit the app?",
+      "exitDialogMessage": "Do you want to exit the application permanently?",
       "cancel": "Cancel",
       "exit": "Exit",
+
+      // Bottom Nav Bar
+      StringsKeys.navHome: "Home",
+      StringsKeys.navCart: "Cart",
+      StringsKeys.navOrders: "Orders",
+      StringsKeys.navServices: "Services",
+      StringsKeys.navProfile: "Profile",
+
+      // Platform Names
+      StringsKeys.platformShein: "Shein",
+      StringsKeys.platformAlibaba: "Alibaba",
+      StringsKeys.platformAliexpress: "AliExpress",
+      StringsKeys.platformAmazon: "Amazon",
+
       "google": "Google",
-      "gotIt": "Got it",
+      "gotIt": "Got It",
       "error": "Error",
       "passwordIncorrect": "Password Incorrect",
       "accountNotFound": "Account not found",
@@ -667,7 +692,7 @@ class MyTrenslition extends Translations {
       "productDetailsTitle": "Product Details",
       "product": "Product",
       "platform": "Platform",
-      "colorVariationInstruction": "Color: double tap to open full image",
+      "colorVariationInstruction": "Color:",
       "size": "Size",
       "quantity": "Quantity",
       "totalPrice": "Total Price",
@@ -691,7 +716,7 @@ class MyTrenslition extends Translations {
       "aboutThisProduct": "About this product",
       "topReviews": "Top Reviews",
       "byAuthor": "By",
-      "allColors": "all @number colors",
+      "allColors": "Available in @number colors",
       "shein": "SHEIN",
       "trending": "Trending",
       "productAddedToCart": "Product added to cart",
@@ -882,11 +907,8 @@ class MyTrenslition extends Translations {
       StringsKeys.noProductsFound: "No products found",
       StringsKeys.saltk: "SaltK",
       StringsKeys.productDetails: "Product Details",
-      StringsKeys.inStock: "In Stock",
-      StringsKeys.addToCart: "Add to Cart",
       StringsKeys.addedToCart: "Added to cart",
       StringsKeys.relatedProducts: "Related Products",
-      StringsKeys.seeAll: "See All",
     },
   };
 }

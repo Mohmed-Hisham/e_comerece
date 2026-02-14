@@ -71,10 +71,11 @@ class Handlingdataviwe extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 if (isSizedBox) SizedBox(height: height.h),
-                if (statusrequest != Statusrequest.loading)
+                if (statusrequest != Statusrequest.loading &&
+                    ontryagain != null)
                   CustButtonBotton(
                     onTap: ontryagain,
-                    title: StringsKeys.tryAgain.tr,
+                    title: texttryagain ?? StringsKeys.tryAgain.tr,
                   ),
 
                 Center(
@@ -503,6 +504,8 @@ class HandlingdatRequestNoFild extends StatelessWidget {
           );
         case Statusrequest.noData:
           return sliverChild(SizedBox());
+        case Statusrequest.none:
+          return sliverChild(SizedBox());
         case Statusrequest.oflinefailuer:
           return sliverChild(SizedBox());
         case Statusrequest.serverfailuer:
@@ -532,6 +535,8 @@ class HandlingdatRequestNoFild extends StatelessWidget {
                 ),
               );
         case Statusrequest.noData:
+          return boxChild(SizedBox());
+        case Statusrequest.none:
           return boxChild(SizedBox());
         case Statusrequest.oflinefailuer:
           return boxChild(SizedBox());

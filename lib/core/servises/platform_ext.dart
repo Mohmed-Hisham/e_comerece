@@ -1,4 +1,4 @@
-enum PlatformSource { all, aliexpress, alibaba, amazon, shein }
+enum PlatformSource { all, aliexpress, alibaba, amazon, shein, localProduct }
 
 extension PlatformExt on PlatformSource {
   String get name {
@@ -11,6 +11,8 @@ extension PlatformExt on PlatformSource {
         return 'amazon';
       case PlatformSource.shein:
         return 'shein';
+      case PlatformSource.localProduct:
+        return 'localproduct';
       default:
         return '';
     }
@@ -26,6 +28,8 @@ extension PlatformExt on PlatformSource {
         return PlatformSource.amazon;
       case 'shein':
         return PlatformSource.shein;
+      case 'localproduct':
+        return PlatformSource.localProduct;
       default:
         return PlatformSource.all;
     }

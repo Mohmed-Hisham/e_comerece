@@ -1,5 +1,8 @@
+import 'dart:developer';
+
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/loacallization/strings_keys.dart';
+import 'package:e_comerece/core/servises/custom_getx_snak_bar.dart';
 import 'package:e_comerece/data/model/local_service/service_request_model.dart';
 import 'package:e_comerece/data/repository/local_service/local_service_repo_impl.dart';
 import 'package:flutter/material.dart';
@@ -81,10 +84,12 @@ class ViewOrdersLocalServiceController extends GetxController {
       page: currentPage,
       pageSize: pageSize,
     );
+    log("Response: $response");
 
     response.fold(
       (failure) {
         statusrequest = Statusrequest.failuer;
+        showCustomGetSnack(isGreen: false, text: failure.errorMessage);
       },
       (model) {
         data.addAll(model.data);

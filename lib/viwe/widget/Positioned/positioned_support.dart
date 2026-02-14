@@ -23,8 +23,23 @@ class _PositionedSupportState extends State<PositionedSupport> {
   @override
   void initState() {
     super.initState();
-    right = myServices.sharedPreferences.getDouble('support_right') ?? -10;
-    bottom = myServices.sharedPreferences.getDouble('support_bottom') ?? 300.h;
+    right = -10;
+    bottom = 300.h;
+    _loadPosition();
+  }
+
+  Future<void> _loadPosition() async {
+    final savedRight = await myServices.secureStorage.read(
+      key: 'support_right',
+    );
+    final savedBottom = await myServices.secureStorage.read(
+      key: 'support_bottom',
+    );
+    if (!mounted) return;
+    setState(() {
+      if (savedRight != null) right = double.tryParse(savedRight) ?? -10;
+      if (savedBottom != null) bottom = double.tryParse(savedBottom) ?? 300.h;
+    });
   }
 
   @override
@@ -42,8 +57,14 @@ class _PositionedSupportState extends State<PositionedSupport> {
         onPanEnd: (details) {
           log("right $right");
           log("bottom $bottom");
-          myServices.sharedPreferences.setDouble('support_right', right);
-          myServices.sharedPreferences.setDouble('support_bottom', bottom);
+          myServices.secureStorage.write(
+            key: 'support_right',
+            value: right.toString(),
+          );
+          myServices.secureStorage.write(
+            key: 'support_bottom',
+            value: bottom.toString(),
+          );
         },
         onTap: widget.onPressed,
         child: Container(

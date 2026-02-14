@@ -2,7 +2,7 @@ import 'package:e_comerece/controller/home/homescreen_controller.dart';
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/loacallization/translate_data.dart';
 import 'package:e_comerece/core/class/failure.dart';
-import 'package:e_comerece/core/servises/custom_getx_snak_bar.dart';
+import 'package:e_comerece/core/servises/currency_service.dart';
 import 'package:e_comerece/data/repository/shein/shein_repo_impl.dart';
 import 'package:e_comerece/data/model/shein_models/trending_products_model.dart';
 import 'package:get/get.dart';
@@ -31,6 +31,9 @@ class SheinHomController extends GetxController {
   }
 
   fetchproducts({bool isLoadMore = false}) async {
+    if (!AppConfigService.to.showShein) {
+      return;
+    }
     if (isLoadMore) {
       if (isLoading || !hasMore) return;
       isLoading = true;
@@ -50,7 +53,7 @@ class SheinHomController extends GetxController {
     final r = response.fold((l) => l, (r) => r);
     if (r is Failure) {
       statusrequestproduct = Statusrequest.failuer;
-      showCustomGetSnack(isGreen: false, text: r.errorMessage);
+      // showCustomGetSnack(isGreen: false, text: r.errorMessage);
     }
     if (r is TrendingProductsModel) {
       if (r.data!.products.isEmpty) {

@@ -5,6 +5,7 @@ import 'dart:math' as math;
 import 'package:carousel_slider/carousel_controller.dart';
 import 'package:chewie/chewie.dart';
 import 'package:e_comerece/controller/cart/cart_from_detils.dart';
+import 'package:e_comerece/controller/mixins/cart_info_mixin.dart';
 import 'package:e_comerece/core/class/failure.dart';
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
@@ -18,6 +19,7 @@ import 'package:e_comerece/data/model/alibaba_model/product_ditels_alibaba_model
 import 'package:e_comerece/data/model/alibaba_model/productalibaba_home_model.dart';
 import 'package:e_comerece/data/model/cartmodel.dart';
 import 'package:e_comerece/data/repository/alibaba/alibaba_repo_impl.dart';
+import 'package:e_comerece/viwe/screen/our_products/widgets/bottom_add_to_cart_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -26,7 +28,6 @@ import 'package:video_player/video_player.dart';
 abstract class ProductDetailsAlibabaController extends GetxController {
   Future<void> fetchProductDetails();
   Future<void> initializeVideoPlayer();
-  Future<void> getquiqtity(String attributes);
   Future<void> searshText();
 
   // SKU and Attribute Management
@@ -50,9 +51,11 @@ abstract class ProductDetailsAlibabaController extends GetxController {
 }
 
 class ProductDetailsAlibabaControllerImple
-    extends ProductDetailsAlibabaController {
+    extends ProductDetailsAlibabaController
+    with CartInfoMixin {
   AlibabaRepoImpl alibabaRepoImpl = AlibabaRepoImpl(apiService: Get.find());
 
+  @override
   AddorrmoveControllerimple addorrmoveController = Get.put(
     AddorrmoveControllerimple(),
   );
@@ -65,7 +68,9 @@ class ProductDetailsAlibabaControllerImple
 
   Map<String, alibaba_model.Value> selectedAttributes = {};
   alibaba_model.Base? currentSku;
+  @override
   int quantity = 1;
+  @override
   int cartquantityDB = 0;
   VideoPlayerController? videoPlayerController;
   ChewieController? chewieController;
@@ -86,8 +91,14 @@ class ProductDetailsAlibabaControllerImple
   List<ResultList> searchProducts = [];
   int loadSearchOne = 0;
 
+  @override
+  bool isInfoLoading = true;
+  @override
   bool isInCart = false;
+  @override
   bool isFavorite = false;
+  @override
+  CartButtonState cartButtonState = CartButtonState.addToCart;
 
   changisfavorite() {
     isFavorite = !isFavorite;
@@ -116,7 +127,6 @@ class ProductDetailsAlibabaControllerImple
   @override
   fetchProductDetails({int? prodId}) async {
     final int resolvedId = prodId ?? productId!;
-    log("lang=>===========================$lang");
 
     statusrequest = Statusrequest.loading;
     update();
@@ -137,7 +147,7 @@ class ProductDetailsAlibabaControllerImple
       initializeDefaultAttributes();
 
       statusrequest = Statusrequest.success;
-      getquiqtity(jsonEncode(selectedAttributesToMapForDb(selectedAttributes)));
+      getCartItemInfo();
     }
     update(['selectedAttributes']);
 
@@ -175,29 +185,6 @@ class ProductDetailsAlibabaControllerImple
       debugPrint('PlatformException: ${e.code} - ${e.message} - ${e.details}');
     } catch (e, st) {
       debugPrint('Video init failed: $e\n$st');
-    }
-  }
-
-  @override
-  getquiqtity(attributes) async {
-    try {
-      final Map<String, dynamic> newQty = await addorrmoveController
-          .cartquintty(productId!.toString(), attributes);
-      log("newQty=>$newQty");
-      isFavorite = newQty['in_favorite'] as bool;
-      if (newQty['quantity'] != 0) {
-        quantity = newQty['quantity'] as int;
-        cartquantityDB = newQty['quantity'] as int;
-        update(['quantity']);
-        isInCart = true;
-      } else {
-        quantity = getMinQuantity();
-        cartquantityDB = 0;
-        isInCart = false;
-        update(['quantity']);
-      }
-    } catch (e) {
-      log('getquiqtity error: $e');
     }
   }
 
@@ -443,11 +430,11 @@ class ProductDetailsAlibabaControllerImple
   void incrementQuantity({int? pressedCount}) {
     if (pressedCount == null) {
       quantity++;
-      update(['quantity']);
     } else if (pressedCount >= getMinQuantity()) {
       quantity = pressedCount;
-      update(['quantity']);
     }
+    _updateButtonState();
+    update(['quantity']);
   }
 
   @override
@@ -455,8 +442,9 @@ class ProductDetailsAlibabaControllerImple
     int minQty = getMinQuantity();
     if (quantity > minQty) {
       quantity--;
-      update(['quantity']);
     }
+    _updateButtonState();
+    update(['quantity']);
   }
 
   // Additional utility methods
@@ -537,6 +525,58 @@ class ProductDetailsAlibabaControllerImple
     return productDitelsAliBabaModel?.result?.item?.available ?? false;
   }
 
+  @override
+  String getProductId() => productId!.toString();
+
+  @override
+  String getSelectedAttributesJson() =>
+      jsonEncode(selectedAttributesToMapForDb(selectedAttributes));
+
+  void _updateButtonState() {
+    if (isInCart && quantity != cartquantityDB) {
+      cartButtonState = CartButtonState.updateInCart;
+    } else if (isInCart && quantity == cartquantityDB) {
+      cartButtonState = CartButtonState.added;
+    } else {
+      cartButtonState = CartButtonState.addToCart;
+    }
+  }
+
+  void addToCart() async {
+    final productid = productId?.toString() ?? '';
+    final titleText = subject?.toString() ?? '';
+    final imageUrl = imageList.isNotEmpty ? imageList[0].toString() : '';
+    final stock = getCurrentPriceList()?.maxQuantity ?? 0;
+
+    cartButtonState = CartButtonState.loadingAddButton;
+    update(['quantity']);
+
+    try {
+      bool success = await addorrmoveController.add(
+        productid,
+        titleText,
+        imgageAttribute ?? imageUrl,
+        getCurrentPrice() ?? 0.0,
+        'Alibaba',
+        quantity,
+        getSelectedAttributesJson(),
+        stock,
+        tier: jsonEncode(priceListToMap(priceListFromModel)),
+        porductink: productLink ?? "",
+      );
+      if (success) {
+        cartquantityDB = quantity;
+        isInCart = true;
+        cartButtonState = CartButtonState.added;
+        update(['quantity']);
+      }
+    } catch (e) {
+      log('addToCart error: \$e');
+      cartButtonState = CartButtonState.addToCart;
+      update(['quantity']);
+    }
+  }
+
   String getMinOrderQuantityFormatted() {
     return productDitelsAliBabaModel
             ?.result
@@ -586,45 +626,4 @@ class ProductDetailsAlibabaControllerImple
   String? getCompanyContactName() {
     return productDitelsAliBabaModel?.result?.company?.companyContact?.name;
   }
-
-  // @override
-  // void resetStateForNewProduct() {
-  //   try {
-  //     if (chewieController != null) {
-  //       chewieController!.pause();
-  //       chewieController!.dispose();
-  //       chewieController = null;
-  //     }
-  //   } catch (_) {}
-  //   try {
-  //     if (videoPlayerController != null) {
-  //       videoPlayerController!.pause();
-  //       videoPlayerController!.dispose();
-  //       videoPlayerController = null;
-  //     }
-  //   } catch (_) {}
-
-  //   productDitelsAliBabaModel = null;
-  //   selectedAttributes.clear();
-  //   currentSku = null;
-  //   quantity = 1;
-  //   priceList.clear();
-  //   uiSkuProperties.clear();
-  //   imgageAttribute = null;
-  //   currentIndex = 0;
-
-  //   statusrequest = Statusrequest.loading;
-  //   isLoading = false;
-  //   hasMoresearch = true;
-  //   pageIndexSearch = 0;
-  //   statusrequestsearch = Statusrequest.loading;
-  //   searchProducts.clear();
-  //   loadSearchOne = 0;
-
-  //   cartQuantities.clear();
-
-  //   // PageController is now managed locally in the widget
-
-  //   update();
-  // }
 }

@@ -1,5 +1,4 @@
 import 'package:e_comerece/controller/aliexpriess/aliexprise_home_controller.dart';
-import 'package:e_comerece/controller/favorite/favorites_controller.dart';
 import 'package:e_comerece/core/class/handlingdataviwe.dart';
 import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
@@ -32,7 +31,7 @@ class HomePage1 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Get.put(HomePageControllerImpl());
-    Get.put(FavoritesController());
+    // Get.put(FavoritesController());
     Get.lazyPut(() => ImageManagerController());
 
     return Scaffold(

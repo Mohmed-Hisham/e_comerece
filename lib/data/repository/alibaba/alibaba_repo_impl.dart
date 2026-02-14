@@ -16,17 +16,11 @@ class AlibabaRepoImpl implements AlibabaRepo {
   Future<Either<Failure, ProductAliBabaHomeModel>> fetchProducts(
     String lang,
     int page,
+    String q,
   ) async {
     try {
       var response = await apiService.get(
-        endpoint: AlibabaUrls.hotProducts(
-          lang,
-          page,
-          "fashion",
-          "1",
-          "1000",
-          "",
-        ),
+        endpoint: AlibabaUrls.hotProducts(lang, page, q, "1", "1000", ""),
       );
       if (response.statusCode == 200) {
         return Right(ProductAliBabaHomeModel.fromJson(response.data['data']));

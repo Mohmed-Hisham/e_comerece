@@ -62,12 +62,15 @@ class ChatMessagesList extends StatelessWidget {
                     ? CrossAxisAlignment.end
                     : CrossAxisAlignment.start,
                 children: [
-                  if (message.senderType == 'bot')
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      child: Row(
-                        children: [
-                          CircleAvatar(
+                  Row(
+                    mainAxisAlignment: isUser
+                        ? MainAxisAlignment.end
+                        : MainAxisAlignment.start,
+                    children: [
+                      if (message.senderType == 'bot')
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 5),
+                          child: CircleAvatar(
                             radius: 15,
                             backgroundColor: Appcolor.primrycolor,
                             child: Icon(
@@ -76,36 +79,29 @@ class ChatMessagesList extends StatelessWidget {
                               size: 18,
                             ),
                           ),
-                          SizedBox(width: 8),
-                          Text(
-                            "Bot",
-                            style: Theme.of(context).textTheme.bodySmall!
-                                .copyWith(
-                                  color: Appcolor.gray,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                        ),
+                      Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 10),
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: isUser
+                              ? Appcolor.soecendcolor
+                              : Appcolor.black2,
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(10.r),
+                            topRight: Radius.circular(10.r),
+                            bottomLeft: isUser
+                                ? Radius.circular(0)
+                                : Radius.circular(10.r),
+                            bottomRight: isUser
+                                ? Radius.circular(10.r)
+                                : Radius.circular(0),
                           ),
-                        ],
+                        ),
+                        width: 280.w,
+                        child: _buildMessageContent(context, message),
                       ),
-                    ),
-                  Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 10),
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: isUser ? Appcolor.soecendcolor : Appcolor.black2,
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(10.r),
-                        topRight: Radius.circular(10.r),
-                        bottomLeft: isUser
-                            ? Radius.circular(0)
-                            : Radius.circular(10.r),
-                        bottomRight: isUser
-                            ? Radius.circular(10.r)
-                            : Radius.circular(0),
-                      ),
-                    ),
-                    width: 280.w,
-                    child: _buildMessageContent(context, message),
+                    ],
                   ),
                   Container(
                     margin: const EdgeInsets.symmetric(horizontal: 10),

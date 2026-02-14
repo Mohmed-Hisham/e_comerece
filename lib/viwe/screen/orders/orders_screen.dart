@@ -16,7 +16,7 @@ class OrdersScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Get.lazyPut(() => OrdersControllreImp());
+    Get.put(OrdersControllreImp(), permanent: true);
     return Scaffold(
       body: Stack(
         children: [
@@ -33,11 +33,10 @@ class OrdersScreen extends StatelessWidget {
                   physics: const BouncingScrollPhysics(),
                   slivers: [
                     SliverToBoxAdapter(
-                      child: SizedBox(height: 60.h, child: CustStateOrders()),
+                      child: SizedBox(height: 50.h, child: CustStateOrders()),
                     ),
                     SliverSpacer(10.h),
-                    GetBuilder(
-                      init: OrdersControllreImp(),
+                    GetBuilder<OrdersControllreImp>(
                       builder: (controller) {
                         return Handlingdataviwe(
                           isSizedBox: true,

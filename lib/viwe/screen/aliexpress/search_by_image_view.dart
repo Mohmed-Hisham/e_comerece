@@ -25,7 +25,7 @@ class SearchByImageView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Get.put(SearchByimageControllerllerImple());
-    Get.put(FavoritesController());
+    // Get.put(FavoritesController());
     return Scaffold(
       body: Stack(
         children: [

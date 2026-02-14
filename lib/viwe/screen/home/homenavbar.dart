@@ -1,5 +1,4 @@
 import 'package:e_comerece/controller/home/homescreen_controller.dart';
-import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/funcations/exitdiloge.dart';
 import 'package:e_comerece/viwe/widget/home/custbottonappbar.dart';
 import 'package:flutter/material.dart';
@@ -9,38 +8,41 @@ class Homenavbar extends StatefulWidget {
   final int initialTab;
   const Homenavbar({super.key, this.initialTab = 0});
 
-  // Routes للتنقل بين الصفحات
-  static const List<String> tabRoutes = [
-    AppRoutesname.homepage,
-    AppRoutesname.cartTab,
-    AppRoutesname.ordersTab,
-    AppRoutesname.localServicesTab,
-    AppRoutesname.settingsTab,
-  ];
-
-  /// Navigate to tab using Get.offNamed
-  static void navigateToTab(int index) {
-    if (index >= 0 && index < tabRoutes.length) {
-      Get.offNamed(tabRoutes[index]);
-    }
-  }
-
   @override
   State<Homenavbar> createState() => _HomenavbarState();
 }
 
 class _HomenavbarState extends State<Homenavbar> {
   late HomescreenControllerImple controller;
+  late PageController _pageController;
 
   @override
   void initState() {
     super.initState();
     controller = Get.put(HomescreenControllerImple());
 
-    // Set initial tab بشكل مباشر
+    _pageController = PageController(initialPage: widget.initialTab);
+
     if (controller.pageindexHome != widget.initialTab) {
       controller.setPageWithoutNav(widget.initialTab);
     }
+
+    ever<int>(controller.pageIndex, (index) {
+      if (_pageController.hasClients &&
+          _pageController.page?.round() != index) {
+        _pageController.animateToPage(
+          index,
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeOut,
+        );
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
   }
 
   @override
@@ -51,22 +53,25 @@ class _HomenavbarState extends State<Homenavbar> {
         canPop: false,
         onPopInvokedWithResult: (bool didPop, dynamic result) {
           if (didPop) return;
-          if (controller.pageindexHome != 0) {
-            Homenavbar.navigateToTab(0);
-          } else {
+          if (!controller.goBack()) {
             exitDiloge();
           }
         },
         child: Stack(
           children: [
-            // ✅ RepaintBoundary لعزل إعادة الرسم
             RepaintBoundary(
-              child: GetBuilder<HomescreenControllerImple>(
-                builder: (ctrl) => ctrl.pages[ctrl.pageindexHome],
+              child: PageView(
+                controller: _pageController,
+                physics: const NeverScrollableScrollPhysics(),
+                onPageChanged: (index) {
+                  if (controller.pageindexHome != index) {
+                    controller.setPageWithoutNav(index);
+                  }
+                },
+                children: controller.pages,
               ),
             ),
 
-            // ✅ Bottom bar مع RepaintBoundary
             const Positioned(
               left: 0,
               right: 0,

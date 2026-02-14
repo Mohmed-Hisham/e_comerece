@@ -26,17 +26,20 @@ class CheckoutReviewFeeModel {
 class CheckoutReviewFeeData {
   CheckoutReviewFeeData({
     required this.key,
+    required this.name,
     required this.value,
     required this.description,
   });
 
   final String? key;
+  final String? name;
   final double? value;
   final String? description;
 
   factory CheckoutReviewFeeData.fromJson(Map<String, dynamic> json) {
     return CheckoutReviewFeeData(
       key: json["key"],
+      name: json["name"],
       value: (json["value"] as num?)?.toDouble(),
       description: json["description"],
     );

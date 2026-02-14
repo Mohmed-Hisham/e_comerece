@@ -52,10 +52,10 @@ class TipsSection extends GetView<CheckOutControllerImpl> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
+                    _buildTipChip(1, controller),
+                    _buildTipChip(5, controller),
                     _buildTipChip(10, controller),
-                    _buildTipChip(15, controller),
                     _buildTipChip(20, controller),
-                    _buildTipChip(30, controller),
                     _buildTipChip(
                       null,
                       controller,
@@ -139,11 +139,10 @@ class TipsSection extends GetView<CheckOutControllerImpl> {
     if (amount != null) {
       isSelected = controller.selectedTip == amount;
     } else {
-      // Custom Chip logic validation
       isSelected =
           controller.isCustomTipInputVisible ||
           (controller.selectedTip > 0 &&
-              ![10.0, 15.0, 20.0, 30.0].contains(controller.selectedTip));
+              ![1.0, 5.0, 10.0, 20.0].contains(controller.selectedTip));
     }
 
     return GestureDetector(

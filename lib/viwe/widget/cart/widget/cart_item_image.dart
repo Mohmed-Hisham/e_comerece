@@ -1,8 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/shared/widget_shared/fix_url.dart';
 import 'package:e_comerece/core/shared/widget_shared/loadingimage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CartItemImage extends StatelessWidget {
   final String? imageUrl;
@@ -16,44 +16,53 @@ class CartItemImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      clipBehavior: Clip.none,
-      children: [
-        ClipRRect(
-          borderRadius: BorderRadius.circular(15),
-          child: CachedNetworkImage(
-            imageUrl: secureUrl(imageUrl) ?? '',
-            width: 75,
-            height: 75,
-            fit: BoxFit.cover,
-            placeholder: (context, url) => const Loadingimage(),
-            errorWidget: (context, url, error) =>
-                const Center(child: Icon(Icons.broken_image)),
-          ),
-        ),
-        Positioned(
-          height: 30,
-          width: 30,
-          top: -5,
-          left: -5,
-          child: Container(
-            alignment: Alignment.center,
+    return SizedBox(
+      width: 85.w,
+      height: 85.w,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Container(
             decoration: BoxDecoration(
-              color: Appcolor.somgray,
-              borderRadius: BorderRadius.circular(30),
+              borderRadius: BorderRadius.circular(12.r),
+              border: Border.all(color: Colors.grey.shade200, width: 1),
             ),
-            child: IconButton(
-              alignment: Alignment.center,
-              iconSize: 15,
-              icon: const Icon(
-                Icons.delete_outline,
-                color: Appcolor.primrycolor,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12.r),
+              child: CachedNetworkImage(
+                imageUrl: secureUrl(imageUrl) ?? '',
+                width: 85.w,
+                height: 85.w,
+                fit: BoxFit.cover,
+                placeholder: (context, url) => const Loadingimage(),
+                errorWidget: (context, url, error) =>
+                    Center(child: Icon(Icons.broken_image, size: 24.sp)),
               ),
-              onPressed: onDelete,
             ),
           ),
-        ),
-      ],
+          Positioned(
+            top: -6,
+            left: -6,
+            child: GestureDetector(
+              onTap: onDelete,
+              child: Container(
+                width: 24.w,
+                height: 24.w,
+                decoration: BoxDecoration(
+                  color: Colors.red.shade50,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.red.shade200, width: 1),
+                ),
+                child: Icon(
+                  Icons.close_rounded,
+                  color: Colors.red,
+                  size: 14.sp,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

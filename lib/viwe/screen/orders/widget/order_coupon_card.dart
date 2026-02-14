@@ -47,7 +47,7 @@ class OrderCouponCard extends StatelessWidget {
               ],
             ),
             Text(
-              '-\$${coupon.couponDiscount ?? 0}',
+              '%${coupon.couponDiscount ?? 0}',
               style: TextStyle(
                 fontSize: 18.sp,
                 fontWeight: FontWeight.bold,

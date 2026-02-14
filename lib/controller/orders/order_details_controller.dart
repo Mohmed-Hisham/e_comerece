@@ -39,11 +39,6 @@ class OrderDetailsControllerImp extends OrderDetailsController {
   }
 
   @override
-  void onClose() {
-    super.onClose();
-  }
-
-  @override
   Future<void> getOrderDetails(String orderId) async {
     statusrequest = Statusrequest.loading;
     update();

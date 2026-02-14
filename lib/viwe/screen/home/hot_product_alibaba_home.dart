@@ -5,6 +5,7 @@ import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:e_comerece/core/loacallization/translate_data.dart';
 import 'package:e_comerece/core/helper/custom_cached_image.dart';
+import 'package:e_comerece/core/servises/currency_service.dart';
 import 'package:e_comerece/core/servises/platform_ext.dart';
 import 'package:e_comerece/core/shared/widget_shared/shimmer_list_horizontal.dart';
 import 'package:e_comerece/viwe/screen/alibaba/extension_geter_product_home.dart';
@@ -54,6 +55,8 @@ class HotProductAlibabaHome extends StatelessWidget {
                           final product = controller
                               .alibabaHomeController
                               .productsAlibaba[index];
+                          final currencyService = Get.find<CurrencyService>();
+                          const sourceCurrency = 'USD';
 
                           return InkWell(
                             onTap: () {
@@ -77,9 +80,15 @@ class HotProductAlibabaHome extends StatelessWidget {
                                       imageUrl: product.mainImageUrl,
                                     ),
                                   ),
-                                  disc: product.skuPriceFormatted,
+                                  disc: currencyService.convertAndFormatRange(
+                                    priceText: product.skuPriceFormatted,
+                                    from: sourceCurrency,
+                                  ),
                                   title: product.titel,
-                                  price: product.skuPriceFormatted,
+                                  price: currencyService.convertAndFormatRange(
+                                    priceText: product.skuPriceFormatted,
+                                    from: sourceCurrency,
+                                  ),
                                   icon: GetBuilder<FavoritesController>(
                                     builder: (controller) {
                                       bool isFav =

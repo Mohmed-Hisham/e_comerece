@@ -128,7 +128,9 @@ class Sginup extends StatelessWidget {
                                       Container(
                                         height: 20.h,
                                         width: 1,
-                                        color: Appcolor.gray.withOpacity(0.5),
+                                        color: Appcolor.gray.withValues(
+                                          alpha: 0.5,
+                                        ),
                                       ),
                                     ],
                                   ),
@@ -178,8 +180,8 @@ class Sginup extends StatelessWidget {
                             borderRadius: BorderRadius.circular(15.r),
                             border: Border.all(
                               color: ctrl.verifyViaPhone
-                                  ? Colors.green.withOpacity(0.5)
-                                  : Colors.blue.withOpacity(0.5),
+                                  ? Colors.green.withValues(alpha: 0.5)
+                                  : Colors.blue.withValues(alpha: 0.5),
                               width: 1.5,
                             ),
                           ),
@@ -191,8 +193,8 @@ class Sginup extends StatelessWidget {
                                 padding: EdgeInsets.all(8.r),
                                 decoration: BoxDecoration(
                                   color: ctrl.verifyViaPhone
-                                      ? Colors.green.withOpacity(0.15)
-                                      : Colors.blue.withOpacity(0.15),
+                                      ? Colors.green.withValues(alpha: 0.15)
+                                      : Colors.blue.withValues(alpha: 0.15),
                                   borderRadius: BorderRadius.circular(10.r),
                                 ),
                                 child: Icon(
@@ -241,13 +243,13 @@ class Sginup extends StatelessWidget {
                                   value: ctrl.verifyViaPhone,
                                   onChanged: (_) =>
                                       ctrl.toggleVerificationMethod(),
-                                  activeColor: Colors.green,
-                                  activeTrackColor: Colors.green.withOpacity(
-                                    0.3,
+                                  activeThumbColor: Colors.green,
+                                  activeTrackColor: Colors.green.withValues(
+                                    alpha: 0.3,
                                   ),
                                   inactiveThumbColor: Colors.blue,
-                                  inactiveTrackColor: Colors.blue.withOpacity(
-                                    0.3,
+                                  inactiveTrackColor: Colors.blue.withValues(
+                                    alpha: 0.3,
                                   ),
                                 ),
                               ),
@@ -261,6 +263,44 @@ class Sginup extends StatelessWidget {
                         onPressed: () {
                           controller.sginup();
                         },
+                      ),
+                      Text(StringsKeys.orSignInWith.tr),
+                      Container(
+                        height: 45.h,
+                        width: double.infinity,
+                        margin: EdgeInsets.symmetric(horizontal: 25.w),
+                        decoration: BoxDecoration(
+                          color: Appcolor.somgray,
+                          borderRadius: BorderRadius.circular(25.r),
+                        ),
+                        child: MaterialButton(
+                          onPressed: () {
+                            controller.signInWithGoogle();
+                          },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Image.asset(
+                                'assets/icon/google.png',
+                                height: 24.h,
+                                width: 24.w,
+                                errorBuilder: (_, __, ___) => Icon(
+                                  Icons.g_mobiledata,
+                                  color: Appcolor.primrycolor,
+                                  size: 28.sp,
+                                ),
+                              ),
+                              SizedBox(width: 10.w),
+                              Text(
+                                StringsKeys.google.tr,
+                                style: TextStyle(
+                                  color: Appcolor.primrycolor,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,

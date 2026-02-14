@@ -14,165 +14,226 @@ class CheckoutBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Get.put(CartControllerImpl());
     final currencyService = Get.find<CurrencyService>();
     return GetBuilder<CartControllerImpl>(
       id: "1",
       builder: (controller) => Container(
         width: double.infinity,
-        height: 180.h,
-        margin: const EdgeInsets.all(10),
-        padding: const EdgeInsets.all(10),
+        margin: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+        padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(25),
+          borderRadius: BorderRadius.circular(20.r),
           color: Appcolor.fourcolor,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.08),
+              blurRadius: 12,
+              offset: const Offset(0, -2),
+            ),
+          ],
         ),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
+            // ── Coupon Row ──
             Row(
               children: [
                 Expanded(
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(maxHeight: 55.h),
+                  child: SizedBox(
+                    height: 48.h,
                     child: TextFormField(
                       focusNode: controller.couponFocusNode,
                       controller: controller.couponController,
+                      style: TextStyle(fontSize: 14.sp),
                       decoration: InputDecoration(
                         isDense: true,
-                        errorMaxLines: 2,
+                        contentPadding: EdgeInsets.symmetric(
+                          horizontal: 16.w,
+                          vertical: 12.h,
+                        ),
+                        prefixIcon: Icon(
+                          Icons.local_offer_outlined,
+                          color: Appcolor.primrycolor,
+                          size: 20.sp,
+                        ),
+                        hintText: StringsKeys.couponCode.tr,
+                        hintStyle: TextStyle(
+                          color: Appcolor.primrycolor.withValues(alpha: 0.6),
+                          fontSize: 14.sp,
+                        ),
                         focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(25),
-                          borderSide: BorderSide(
+                          borderRadius: BorderRadius.circular(14.r),
+                          borderSide: const BorderSide(
                             color: Appcolor.primrycolor,
                             width: 2,
                           ),
                         ),
                         enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(25),
+                          borderRadius: BorderRadius.circular(14.r),
                           borderSide: BorderSide(
-                            color: Appcolor.primrycolor,
-                            width: 2,
+                            color: Appcolor.primrycolor.withValues(alpha: 0.4),
+                            width: 1.5,
                           ),
                         ),
                         border: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Appcolor.primrycolor,
-                            width: 2,
-                          ),
-
-                          borderRadius: BorderRadius.all(Radius.circular(20)),
-                        ),
-                        labelText: StringsKeys.couponCode.tr,
-                        labelStyle: TextStyle(
-                          color: Appcolor.primrycolor,
-                          fontSize: 20.sp,
-                          fontWeight: FontWeight.bold,
+                          borderRadius: BorderRadius.circular(14.r),
                         ),
                       ),
                     ),
                   ),
                 ),
-                SizedBox(width: 20.w),
-
+                SizedBox(width: 8.w),
                 GetBuilder<CartControllerImpl>(
                   id: 'coupon',
                   builder: (couponController) {
                     if (couponController.couPonstatusrequest ==
                         Statusrequest.loading) {
                       return loadingWidget();
-                    } else {
-                      return CustButtonBotton(
-                        onTap: () {
-                          controller.checkCoupon();
-                        },
-                        title: StringsKeys.apply.tr,
-                      );
                     }
+                    return CustButtonBotton(
+                      onTap: () => controller.checkCoupon(),
+                      title: StringsKeys.apply.tr,
+                    );
                   },
                 ),
-                IconButton(
-                  onPressed: () {
-                    diloginfo();
-                  },
-                  icon: Icon(Icons.quiz_outlined, color: Appcolor.primrycolor),
+                SizedBox(width: 2.w),
+                InkWell(
+                  onTap: () => _showCouponInfoDialog(),
+                  borderRadius: BorderRadius.circular(20.r),
+                  child: Padding(
+                    padding: EdgeInsets.all(6.w),
+                    child: Icon(
+                      Icons.help_outline_rounded,
+                      color: Appcolor.primrycolor,
+                      size: 22.sp,
+                    ),
+                  ),
                 ),
               ],
             ),
-            SizedBox(height: 5.h),
+
+            // ── Divider ──
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: 10.h),
+              child: Divider(
+                height: 1,
+                color: Appcolor.primrycolor.withValues(alpha: 0.15),
+              ),
+            ),
+
+            // ── Total & Checkout Row ──
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Column(
-                  children: [
-                    Text.rich(
-                      TextSpan(
-                        text: '${StringsKeys.total.tr}: ',
-                        style: const TextStyle(
-                          fontSize: 19,
-                          fontWeight: FontWeight.bold,
-                          color: Appcolor.black,
+                // Price column
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Old price (strikethrough)
+                      if (controller.discountAmount != null)
+                        Text(
+                          currencyService.convertAndFormat(
+                            amount: controller.getSubtotal(),
+                            from: 'USD',
+                          ),
+                          style: TextStyle(
+                            fontSize: 13.sp,
+                            color: Colors.grey,
+                            decoration: TextDecoration.lineThrough,
+                            decorationColor: Colors.grey.shade400,
+                            decorationThickness: 1.5,
+                          ),
                         ),
+                      // Total
+                      Row(
                         children: [
-                          TextSpan(
-                            text: currencyService.convertAndFormat(
-                              amount: controller.totalbuild,
-                              from: 'USD',
-                            ),
-                            style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
+                          Text(
+                            '${StringsKeys.total.tr}: ',
+                            style: TextStyle(
+                              fontSize: 15.sp,
+                              fontWeight: FontWeight.w600,
                               color: Appcolor.black,
-                              fontFamily: "asian",
+                            ),
+                          ),
+                          Flexible(
+                            child: Text(
+                              currencyService.convertAndFormat(
+                                amount: controller.totalbuild,
+                                from: 'USD',
+                              ),
+                              style: TextStyle(
+                                fontSize: 18.sp,
+                                fontWeight: FontWeight.bold,
+                                color: Appcolor.black,
+                                fontFamily: "asian",
+                              ),
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
                         ],
                       ),
-                    ),
-                    if (controller.discountAmount != null &&
-                        controller.discountPercentage != null)
-                      Text(
-                        "${StringsKeys.discount.tr}: ${controller.discountPercentage!.toInt()}%",
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.green,
-                          fontWeight: FontWeight.bold,
+                      // Discount badge
+                      if (controller.discountAmount != null &&
+                          controller.discountPercentage != null)
+                        Container(
+                          margin: EdgeInsets.only(top: 4.h),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 8.w,
+                            vertical: 3.h,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.green.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(8.r),
+                          ),
+                          child: Text(
+                            "${StringsKeys.discount.tr}: ${controller.discountPercentage!.toInt()}%",
+                            style: TextStyle(
+                              fontSize: 12.sp,
+                              color: Colors.green.shade700,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
-                      ),
-                    if (controller.discountAmount != null)
-                      Text(
-                        currencyService.convertAndFormat(
-                          amount: controller.getSubtotal(),
-                          from: 'USD',
-                        ),
-                        style: const TextStyle(
-                          fontSize: 16,
-                          color: Colors.grey,
-                          decoration: TextDecoration.lineThrough,
-                          decorationColor: Colors.grey,
-                          decorationThickness: 2.0,
-                          decorationStyle: TextDecorationStyle.solid,
-                        ),
-                      ),
-                  ],
+                    ],
+                  ),
                 ),
 
+                SizedBox(width: 12.w),
+
+                // Checkout button
                 ElevatedButton(
-                  onPressed: () {
-                    controller.goTOCheckout();
-                  },
+                  onPressed: () => controller.goTOCheckout(),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Appcolor.primrycolor,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 35,
-                      vertical: 8,
+                    elevation: 2,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 28.w,
+                      vertical: 12.h,
                     ),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(14.r),
                     ),
                   ),
-                  child: Text(
-                    StringsKeys.checkout.tr,
-                    style: TextStyle(fontSize: 18, color: Colors.white),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        StringsKeys.checkout.tr,
+                        style: TextStyle(
+                          fontSize: 16.sp,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      SizedBox(width: 6.w),
+                      Icon(
+                        Icons.arrow_forward_rounded,
+                        color: Colors.white,
+                        size: 18.sp,
+                      ),
+                    ],
                   ),
                 ),
               ],
@@ -184,28 +245,64 @@ class CheckoutBar extends StatelessWidget {
   }
 }
 
-void diloginfo() {
+void _showCouponInfoDialog() {
   Get.dialog(
     Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.all(24.w),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            Container(
+              padding: EdgeInsets.all(12.w),
+              decoration: BoxDecoration(
+                color: Appcolor.primrycolor.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.local_offer_rounded,
+                color: Appcolor.primrycolor,
+                size: 32.sp,
+              ),
+            ),
+            SizedBox(height: 16.h),
             Text(
               StringsKeys.howCouponWorks.tr,
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 15),
+            SizedBox(height: 12.h),
             Text(
               StringsKeys.couponExplanation.tr,
-              style: TextStyle(fontSize: 15, height: 1.5),
+              style: TextStyle(
+                fontSize: 14.sp,
+                height: 1.6,
+                color: Colors.grey.shade700,
+              ),
+              textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () => Get.back(),
-              child: Text(StringsKeys.okay.tr),
+            SizedBox(height: 20.h),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () => Get.back(),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Appcolor.primrycolor,
+                  padding: EdgeInsets.symmetric(vertical: 12.h),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12.r),
+                  ),
+                ),
+                child: Text(
+                  StringsKeys.okay.tr,
+                  style: TextStyle(
+                    fontSize: 15.sp,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
             ),
           ],
         ),

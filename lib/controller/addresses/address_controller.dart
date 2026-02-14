@@ -5,6 +5,7 @@ import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:e_comerece/core/servises/custom_getx_snak_bar.dart';
 import 'package:e_comerece/core/servises/location_servisess.dart';
+import 'package:e_comerece/core/class/api_service.dart';
 import 'package:e_comerece/core/servises/map_places_serviese.dart';
 import 'package:e_comerece/core/servises/serviese.dart';
 import 'package:e_comerece/data/model/address/address_model.dart';
@@ -31,7 +32,7 @@ class AddressControllerImpl extends AddressController {
   MyServises myServises = Get.find();
 
   AddressRepoImpl addressRepo = AddressRepoImpl(apiServices: Get.find());
-  MapPlacesServiese mapPlacesServiese = MapPlacesServiese(Get.find());
+  MapPlacesServiese mapPlacesServiese = MapPlacesServiese(Get.find<ApiService>());
 
   Statusrequest fetchAddressesstatusrequest = Statusrequest.loading;
   Statusrequest addAddressesstatusrequest = Statusrequest.none;
@@ -117,12 +118,6 @@ class AddressControllerImpl extends AddressController {
               '';
           administrativeArea = place.administrativeArea ?? '';
           street = place.street ?? place.name ?? '';
-
-          log(
-            "Placemark: locality=${place.locality}, subLocality=${place.subLocality}, "
-            "subAdministrativeArea=${place.subAdministrativeArea}, "
-            "administrativeArea=${place.administrativeArea}, street=${place.street}, name=${place.name}",
-          );
         }
       } catch (e) {
         log("error placemarks $e");
@@ -156,10 +151,10 @@ class AddressControllerImpl extends AddressController {
     );
 
     if (addresses.isNotEmpty) {
-      String? defaultAddressId = await myServises.getSecureData(
-        "default_address",
-      );
-      if (defaultAddressId == null && addresses.isNotEmpty) {
+      final defaultAddr = addresses.firstWhereOrNull((a) => a.isDefault == 1);
+      if (defaultAddr != null) {
+        await myServises.saveSecureData("default_address", defaultAddr.id!);
+      } else {
         await myServises.saveSecureData("default_address", addresses[0].id!);
       }
     }
@@ -255,7 +250,7 @@ class AddressControllerImpl extends AddressController {
 
     // Using simple logic for autocomplete status as it's not converted to repo yet
     if (response != null && response['status'] == 'OK') {
-      final places = MapPlacesModel.fromJson(response as Map<String, dynamic>);
+      final places = MapPlacesModel.fromJson(response);
       predictions.clear();
       predictions = places.predictions;
       autoCompletestatusrequest = Statusrequest.success;
@@ -272,7 +267,7 @@ class AddressControllerImpl extends AddressController {
 
     if (response != null && response['status'] == 'OK') {
       final details = MapPlacesDetailsModel.fromJson(
-        response as Map<String, dynamic>,
+        response 
       );
       resultDetails = details.result!;
       ubdataCameraPosition(

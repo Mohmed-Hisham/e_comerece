@@ -4,13 +4,7 @@ import 'package:flutter/material.dart';
 class CustCntainer extends StatelessWidget {
   final String text;
   final Color color;
-  final double? fontsize;
-  const CustCntainer({
-    super.key,
-    required this.text,
-    required this.color,
-    this.fontsize = 20,
-  });
+  const CustCntainer({super.key, required this.text, required this.color});
 
   @override
   Widget build(BuildContext context) {
@@ -21,13 +15,15 @@ class CustCntainer extends StatelessWidget {
         borderRadius: BorderRadius.circular(15),
       ),
       child: Center(
-        child: Text(
-          text,
-          maxLines: 1,
-          style: TextStyle(
-            color: Appcolor.white,
-            fontWeight: FontWeight.bold,
-            fontSize: fontsize,
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(
+            text,
+            maxLines: 1,
+            style: TextStyle(
+              color: Appcolor.white,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
       ),

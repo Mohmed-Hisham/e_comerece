@@ -3,6 +3,8 @@ import 'package:e_comerece/core/servises/currency_service.dart';
 import 'package:carousel_slider/carousel_controller.dart';
 import 'package:chewie/chewie.dart';
 import 'package:e_comerece/controller/cart/cart_from_detils.dart';
+import 'package:e_comerece/controller/mixins/cart_info_mixin.dart';
+import 'package:e_comerece/viwe/screen/our_products/widgets/bottom_add_to_cart_bar.dart';
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/funcations/handle_paging_response.dart';
@@ -25,7 +27,6 @@ import 'package:e_comerece/data/model/amazon_models/search_amazon_model.dart'
 abstract class ProductDetailsAmazonController extends GetxController {
   Future<void> fetchProductDetails();
   Future<void> initializeVideoPlayer();
-  Future<void> getquiqtity(String attributes);
   void loadMoreSearch();
   Future<void> searshText();
 
@@ -43,9 +44,10 @@ abstract class ProductDetailsAmazonController extends GetxController {
   void gotoditels({required asin, required lang, required title});
 }
 
-class ProductDetailsAmazonControllerImple
-    extends ProductDetailsAmazonController {
+class ProductDetailsAmazonControllerImple extends ProductDetailsAmazonController
+    with CartInfoMixin {
   AmazonRepoImpl amazonRepoImpl = AmazonRepoImpl(apiService: Get.find());
+  @override
   AddorrmoveControllerimple addorrmoveController = Get.put(
     AddorrmoveControllerimple(),
   );
@@ -59,8 +61,17 @@ class ProductDetailsAmazonControllerImple
   // Amazon variation management
   Map<String, String> selectedVariations = {};
   String? currentAsin;
+
+  /// Tracks which variation value is currently loading (e.g. "512 GB" or "وردي")
+  String? loadingVariationValue;
+  @override
   int quantity = 1;
+  @override
   int cartquantityDB = 0;
+  @override
+  bool isInfoLoading = true;
+  @override
+  CartButtonState cartButtonState = CartButtonState.addToCart;
   VideoPlayerController? videoPlayerController;
   ChewieController? chewieController;
   MyServises myServices = Get.find();
@@ -82,16 +93,13 @@ class ProductDetailsAmazonControllerImple
   List<search.Product> searchProducts = [];
   int loadSearchOne = 0;
 
+  @override
   bool isInCart = false;
+  @override
   bool isFavorite = false;
 
   // value for search
   bool hasMore = true;
-
-  changisfavorite() {
-    isFavorite = !isFavorite;
-    // update();
-  }
 
   final CarouselSliderController carouselController =
       CarouselSliderController();
@@ -133,7 +141,7 @@ class ProductDetailsAmazonControllerImple
       _buildUiSchemasFromModel();
       initializeDefaultVariations();
       statusrequest = Statusrequest.success;
-      getquiqtity(jsonEncode(selectedVariations));
+      getCartItemInfo();
     }
 
     update(['selectedVariations']);
@@ -226,32 +234,6 @@ class ProductDetailsAmazonControllerImple
   }
 
   @override
-  getquiqtity(attributes) async {
-    try {
-      // Convert ASIN to int for cart operations (assuming ASIN can be converted)
-      // int productId = int.tryParse(asin!) ?? 0;
-
-      final Map<String, dynamic> newQty = await addorrmoveController
-          .cartquintty(asin!, attributes);
-      log("newQty=>$newQty");
-      isFavorite = newQty['in_favorite'];
-      if (newQty['quantity'] != 0) {
-        quantity = newQty['quantity'];
-        cartquantityDB = newQty['quantity'];
-        update(['quantity']);
-        isInCart = true;
-      } else {
-        quantity = getMinQuantity();
-        cartquantityDB = 0;
-        isInCart = false;
-        update(['quantity']);
-      }
-    } catch (e) {
-      log("error=>$e");
-    }
-  }
-
-  @override
   indexchange(index) {
     currentIndex = index;
     // carouselController.animateToPage(index);
@@ -287,8 +269,6 @@ class ProductDetailsAmazonControllerImple
       detailsAmazonModel?.data?.topReviewsGlobal ?? [];
   List<FrequentlyBoughtTogether> get frequentlyBoughtTogether =>
       detailsAmazonModel?.data?.frequentlyBoughtTogether ?? [];
-  String? get couponDiscountPercentage =>
-      detailsAmazonModel?.data?.productOriginalPrice;
   bool? get hasVideo => detailsAmazonModel?.data?.hasVideo;
   List<ProductVideo> get productVideos =>
       detailsAmazonModel?.data?.productVideos ?? [];
@@ -309,6 +289,57 @@ class ProductDetailsAmazonControllerImple
     }
     if (detailsAmazonModel?.data?.productVariations != null) {
       productVariations = detailsAmazonModel!.data!.productVariations;
+    }
+  }
+
+  /// Silently refetch product details for a new variation ASIN.
+  /// Updates price, title, photos etc. without showing loading state.
+  Future<void> _silentRefetchForVariation(String newAsin) async {
+    try {
+      final response = await amazonRepoImpl.fetchProductDetails(newAsin, lang!);
+      final r = response.fold((l) => l, (r) => r);
+
+      if (r is DetailsAmazonModel) {
+        // Keep the current variations/allProductVariations (shared across ASINs)
+        final savedVariations = Map<String, String>.from(selectedVariations);
+        final savedAllProductVariations = Map<String, AllProductVariation>.from(
+          allProductVariations,
+        );
+        final savedDimensions = List<String>.from(productVariationsDimensions);
+        final savedProductVariations = productVariations;
+
+        detailsAmazonModel = r;
+        asin = newAsin;
+
+        // Update photos from new response
+        if (r.data?.productPhotos != null) {
+          productPhotos = r.data!.productPhotos;
+        }
+
+        // Restore shared variation data
+        selectedVariations = savedVariations;
+        allProductVariations = savedAllProductVariations;
+        productVariationsDimensions = savedDimensions;
+        productVariations = savedProductVariations;
+
+        // Reset quantity for new variation
+        quantity = 1;
+        cartquantityDB = 0;
+        isInCart = false;
+        cartButtonState = CartButtonState.addToCart;
+
+        // Update all UI
+        loadingVariationValue = null;
+        update();
+        update(['selectedVariations', 'quantity']);
+
+        // Fetch cart info for the new ASIN
+        getCartItemInfo();
+      }
+    } catch (e) {
+      log('_silentRefetchForVariation error: $e');
+      loadingVariationValue = null;
+      update(['selectedVariations']);
     }
   }
 
@@ -336,8 +367,19 @@ class ProductDetailsAmazonControllerImple
   @override
   void updateSelectedVariation(String dimension, String value) {
     selectedVariations[dimension] = value;
+    final oldAsin = currentAsin ?? asin;
     updateCurrentVariation();
-    getquiqtity(jsonEncode(selectedVariations));
+    final newAsin = currentAsin ?? asin;
+
+    // If ASIN changed, silently refetch product details
+    if (newAsin != oldAsin) {
+      loadingVariationValue = value;
+      update(['selectedVariations']);
+      _silentRefetchForVariation(newAsin!);
+    } else {
+      getCartItemInfo();
+    }
+
     update(['selectedVariations', 'quantity']);
   }
 
@@ -388,7 +430,7 @@ class ProductDetailsAmazonControllerImple
 
   @override
   String? getCurrentAsin() {
-    return asin;
+    return currentAsin ?? asin;
   }
 
   @override
@@ -401,11 +443,11 @@ class ProductDetailsAmazonControllerImple
   void incrementQuantity({int? pressedCount}) {
     if (pressedCount == null) {
       quantity++;
-      update(['quantity']);
     } else if (pressedCount >= getMinQuantity()) {
       quantity = pressedCount;
-      update(['quantity']);
     }
+    _updateButtonState();
+    update(['quantity']);
   }
 
   @override
@@ -413,14 +455,58 @@ class ProductDetailsAmazonControllerImple
     int minQty = getMinQuantity();
     if (quantity > minQty) {
       quantity--;
-      update(['quantity']);
+    }
+    _updateButtonState();
+    update(['quantity']);
+  }
+
+  void _updateButtonState() {
+    if (isInCart && quantity != cartquantityDB) {
+      cartButtonState = CartButtonState.updateInCart;
+    } else if (isInCart && quantity == cartquantityDB) {
+      cartButtonState = CartButtonState.added;
+    } else {
+      cartButtonState = CartButtonState.addToCart;
     }
   }
 
-  incart() {
-    isInCart = true;
+  void addToCart() async {
+    final productid = getCurrentAsin() ?? '';
+    final title = productTitle ?? '';
+    final imageUrl = productPhoto ?? '';
+    cartButtonState = CartButtonState.loadingAddButton;
     update(['quantity']);
+
+    try {
+      bool success = await addorrmoveController.add(
+        productid,
+        title,
+        imageUrl,
+        getRawUsdPrice(),
+        "Amazon",
+        quantity,
+        getSelectedAttributesJson(),
+        1000,
+        tier: '',
+        porductink: productUrl ?? '',
+      );
+      if (success) {
+        cartquantityDB = quantity;
+        isInCart = true;
+        cartButtonState = CartButtonState.added;
+        update(['quantity']);
+      }
+    } on Exception catch (e) {
+      log('addToCart error: $e');
+    }
   }
+
+  // Implementing methods required by CartInfoMixin
+  @override
+  String getProductId() => currentAsin ?? asin ?? '';
+
+  @override
+  String getSelectedAttributesJson() => jsonEncode(selectedVariations);
 
   // Additional Amazon-specific utility methods
   String getCurrentPriceFormatted() {

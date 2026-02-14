@@ -14,6 +14,10 @@ class ApisUrl {
       '$_baseUrl/Auth/confirm-phone-verification';
   static const String googleLogin = '$_baseUrl/Auth/google-login';
 
+  //                               UserProfile
+  static const String getUserProfile = '$_baseUrl/UserProfile';
+  static const String updateUserProfile = '$_baseUrl/UserProfile';
+
   //                               Favorit
   static const String addFavorite = '$_baseUrl/Favorite/Add';
   static String getUserFavorites({String? platform}) =>
@@ -58,7 +62,7 @@ class ApisUrl {
     required int pageSize,
   }) {
     String url =
-        '$_baseUrl/LocalService/GetServiceRequests?pageNumber=$page&pageSize=$pageSize';
+        '$_baseUrl/LocalService/GetRequestsByUser?page=$page&pageSize=$pageSize';
     if (status != null) {
       url += '&status=$status';
     }
@@ -85,8 +89,8 @@ class ApisUrl {
       ? '$_baseUrl/ImageSlider?platform=$platform'
       : '$_baseUrl/ImageSlider';
 
-  //                           Currency
-  static const String getCurrency = '$_baseUrl/Currency/GetRates';
+  //                           App Config (Currency + Settings)
+  static const String getAppConfig = '$_baseUrl/AppConfig/Get';
 
   //                           AboutUs
   static const String getAboutUs = '$_baseUrl/AboutUs';

@@ -7,25 +7,42 @@ import 'package:get/get.dart';
 class CustStateOrders extends StatelessWidget {
   const CustStateOrders({super.key});
 
+  IconData _getStatusIcon(OrderStatus status) {
+    switch (status) {
+      case OrderStatus.pending:
+        return Icons.hourglass_top_rounded;
+      case OrderStatus.actionRequired:
+        return Icons.notification_important_rounded;
+      case OrderStatus.processing:
+        return Icons.settings_rounded;
+      case OrderStatus.shipped:
+        return Icons.local_shipping_rounded;
+      case OrderStatus.completed:
+        return Icons.check_circle_rounded;
+      case OrderStatus.cancelled:
+        return Icons.cancel_rounded;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return GetBuilder<OrdersControllreImp>(
       builder: (controller) {
         return ListView.builder(
-          padding: EdgeInsets.zero,
+          padding: EdgeInsets.symmetric(horizontal: 8.w),
           controller: controller.scrollController,
           scrollDirection: Axis.horizontal,
           itemCount: OrderStatus.values.length,
           physics: const BouncingScrollPhysics(),
           itemBuilder: (context, index) {
             final status = OrderStatus.values[index];
+            final isSelected = controller.orderStatus == status;
             return GestureDetector(
               onTap: () {
                 controller.orderStatus = status;
                 controller.update();
                 controller.getOrders();
 
-                // Calculate scroll position only when tapping, after controller is attached
                 if (controller.scrollController.hasClients) {
                   final double target = index * 100.w;
                   final max =
@@ -33,7 +50,6 @@ class CustStateOrders extends StatelessWidget {
                   final min =
                       controller.scrollController.position.minScrollExtent;
                   final clampedTarget = target.clamp(min, max);
-
                   controller.scrollController.animateTo(
                     clampedTarget,
                     duration: const Duration(milliseconds: 500),
@@ -41,32 +57,47 @@ class CustStateOrders extends StatelessWidget {
                   );
                 }
               },
-              child: Container(
-                width: 120.w,
-                margin: EdgeInsets.symmetric(horizontal: 5.w),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 250),
+                curve: Curves.easeInOut,
+                margin: EdgeInsets.symmetric(horizontal: 4.w, vertical: 4.h),
+                padding: EdgeInsets.symmetric(horizontal: 14.w),
                 decoration: BoxDecoration(
-                  color: Appcolor.white,
-                  borderRadius: BorderRadius.circular(17.r),
-                  border: Border.all(
-                    color: controller.orderStatus == status
-                        ? Appcolor.primrycolor
-                        : Appcolor.black,
-                    width: 2.w,
-                  ),
+                  color: isSelected ? Appcolor.primrycolor : Colors.white,
+                  borderRadius: BorderRadius.circular(25.r),
+                  boxShadow: isSelected
+                      ? [
+                          BoxShadow(
+                            color: Appcolor.primrycolor.withValues(alpha: 0.3),
+                            blurRadius: 8,
+                            offset: const Offset(0, 3),
+                          ),
+                        ]
+                      : [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.06),
+                            blurRadius: 4,
+                            offset: const Offset(0, 1),
+                          ),
+                        ],
                 ),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Expanded(
-                      child: Text(
-                        controller.getStatusTitle(status),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 18.sp,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        textAlign: TextAlign.center,
+                    Icon(
+                      _getStatusIcon(status),
+                      size: 16.sp,
+                      color: isSelected ? Colors.white : Appcolor.gray,
+                    ),
+                    SizedBox(width: 6.w),
+                    Text(
+                      controller.getStatusTitle(status),
+                      style: TextStyle(
+                        fontSize: 13.sp,
+                        fontWeight: isSelected
+                            ? FontWeight.bold
+                            : FontWeight.w500,
+                        color: isSelected ? Colors.white : Appcolor.black,
                       ),
                     ),
                   ],

@@ -1,6 +1,10 @@
+import 'dart:developer';
+
 import 'package:e_comerece/core/class/failure.dart';
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/funcations/loading_dialog.dart';
+import 'package:e_comerece/core/helper/auth_success_handler.dart';
+import 'package:e_comerece/core/helper/google_sign_in_helper.dart';
 import 'package:e_comerece/core/helper/input_type_helper.dart';
 import 'package:e_comerece/core/helper/send_otp_helper.dart';
 import 'package:e_comerece/core/loacallization/strings_keys.dart';
@@ -37,10 +41,8 @@ class SginupControllerimplemnt extends SginupController {
 
   final GlobalKey<FormState> formState = GlobalKey<FormState>();
 
-  // 🔄 لكشف البلد ديناميكياً للهاتف
   String? detectedCountry;
 
-  // 📱 طريقة التحقق: true = هاتف، false = إيميل
   bool verifyViaPhone = false;
 
   @override
@@ -85,7 +87,6 @@ class SginupControllerimplemnt extends SginupController {
     update();
   }
 
-  /// تبديل طريقة التحقق
   @override
   void toggleVerificationMethod() {
     verifyViaPhone = !verifyViaPhone;
@@ -100,7 +101,6 @@ class SginupControllerimplemnt extends SginupController {
     }
   }
 
-  /// تنفيذ التسجيل بناءً على اختيار المستخدم
   Future<void> _proceedWithSignup() async {
     statusrequest = Statusrequest.loading;
     update();
@@ -108,7 +108,6 @@ class SginupControllerimplemnt extends SginupController {
       loadingDialog();
     }
 
-    // تحويل رقم الهاتف للصيغة الدولية
     final formattedPhone = InputTypeHelper.formatPhoneNumber(phone.text);
 
     final response = await authRepoImpl.sginup(
@@ -123,9 +122,7 @@ class SginupControllerimplemnt extends SginupController {
     final r = response.fold((l) => l, (r) => r);
 
     if (r is AuthModel && r.success == true) {
-      // التسجيل نجح، الآن نتعامل حسب اختيار التحقق
       if (verifyViaPhone) {
-        // إرسال OTP عبر Firebase SMS
         final otpResult = await SendOtpHelper.verifyPhone(formattedPhone);
 
         if (Get.isDialogOpen ?? false) Get.back();
@@ -145,7 +142,6 @@ class SginupControllerimplemnt extends SginupController {
             },
           );
         } else {
-          // فشل إرسال SMS، نستخدم الإيميل بدلاً منه
           showCustomGetSnack(
             isGreen: false,
             text:
@@ -157,7 +153,6 @@ class SginupControllerimplemnt extends SginupController {
           );
         }
       } else {
-        // التحقق عبر الإيميل (السيرفر أرسل الكود تلقائياً)
         if (Get.isDialogOpen ?? false) Get.back();
         showCustomGetSnack(isGreen: true, text: r.message!);
         Get.offNamed(
@@ -185,6 +180,43 @@ class SginupControllerimplemnt extends SginupController {
   @override
   goToSginin() {
     Get.offNamed(AppRoutesname.loginStepOne);
+  }
+
+  Future<void> signInWithGoogle() async {
+    statusrequest = Statusrequest.loading;
+    update();
+    loadingDialog();
+
+    final googleToken = await GoogleSignInHelper.signIn();
+
+    if (googleToken == null) {
+      if (Get.isDialogOpen ?? false) Get.back();
+      statusrequest = Statusrequest.none;
+      update();
+      return;
+    }
+
+    final response = await authRepoImpl.googleLogin(googleToken);
+
+    if (Get.isDialogOpen ?? false) Get.back();
+
+    final result = response.fold((l) => l, (r) => r);
+
+    if (result is AuthModel &&
+        result.success == true &&
+        result.authData != null) {
+      showCustomGetSnack(
+        isGreen: true,
+        text: result.message ?? 'تم تسجيل الدخول بنجاح',
+      );
+      await AuthSuccessHandler.handleAuthSuccess(result.authData!);
+    } else if (result is Failure) {
+      log("Google login failed: ${result.errorMessage}");
+      showCustomGetSnack(isGreen: false, text: result.errorMessage);
+    }
+
+    statusrequest = Statusrequest.none;
+    update();
   }
 
   @override

@@ -1,6 +1,5 @@
 import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/constant/string_const.dart';
-import 'package:e_comerece/core/funcations/sanitize_topic.dart';
 import 'package:e_comerece/core/servises/serviese.dart';
 import 'package:e_comerece/data/model/AuthModel/auth_model.dart';
 import 'package:e_comerece/data/repository/Auth_Repo/auth_repo_impl.dart';
@@ -8,8 +7,6 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-/// Helper لمعالجة نجاح تسجيل الدخول/التسجيل
-/// يُستخدم في LoginController و VeirfycodesignupController
 class AuthSuccessHandler {
   static final MyServises _myServises = Get.find();
   static final AuthRepoImpl _authRepoImpl = AuthRepoImpl(
@@ -46,12 +43,12 @@ class AuthSuccessHandler {
   /// الاشتراك في Firebase Messaging Topics
   static void _subscribeToTopics(String email) {
     FirebaseMessaging.instance.subscribeToTopic("users");
-    FirebaseMessaging.instance.subscribeToTopic(sanitizeTopic("user$email"));
+    // FirebaseMessaging.instance.subscribeToTopic(sanitizeTopic("user$email"));
   }
 
   /// الانتقال للصفحة المناسبة
   static void _navigateToNextScreen() {
-    if (_myServises.sharedPreferences.getString("step") == "1") {
+    if (_myServises.step == "1") {
       Get.offNamed(AppRoutesname.homepage);
     } else {
       Get.offNamed(AppRoutesname.onBoarding);
@@ -64,20 +61,17 @@ class AuthSuccessHandler {
     try {
       String? fcmToken = await FirebaseMessaging.instance.getToken();
 
-      if (fcmToken != null) {
-        String? savedToken = await _myServises.getSecureData("fcm_token");
-        if (savedToken != fcmToken) {
-          final response = await _authRepoImpl.updateFcmToken(fcmToken);
-          response.fold(
-            (failure) => debugPrint(
-              "Failed to update FCM token: ${failure.errorMessage}",
-            ),
-            (success) async {
-              await _myServises.saveSecureData("fcm_token", fcmToken);
-              debugPrint("FCM token updated successfully");
-            },
-          );
-        }
+      String? savedToken = await _myServises.getSecureData("fcm_token");
+      if (savedToken != fcmToken) {
+        final response = await _authRepoImpl.updateFcmToken(fcmToken!);
+        response.fold(
+          (failure) =>
+              debugPrint("Failed to update FCM token: ${failure.errorMessage}"),
+          (success) async {
+            await _myServises.saveSecureData("fcm_token", fcmToken);
+            debugPrint("FCM token updated successfully");
+          },
+        );
       }
     } catch (e) {
       debugPrint("Error updating token: $e");

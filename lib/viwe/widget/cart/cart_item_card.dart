@@ -7,6 +7,7 @@ import 'package:e_comerece/viwe/widget/cart/widget/cart_item_info.dart';
 import 'package:e_comerece/viwe/widget/cart/widget/cart_item_quantity.dart';
 import 'package:e_comerece/core/servises/currency_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 class CartItemCard extends StatelessWidget {
@@ -20,9 +21,22 @@ class CartItemCard extends StatelessWidget {
     final controller = Get.find<CartControllerImpl>();
     final currencyService = Get.find<CurrencyService>();
 
-    return Padding(
-      padding: const EdgeInsets.all(10.0),
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 12.w, vertical: 5.h),
+      padding: EdgeInsets.all(10.w),
+      decoration: BoxDecoration(
+        color: Colors.white.withAlpha(200),
+        borderRadius: BorderRadius.circular(14.r),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.06),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
       child: InkWell(
+        borderRadius: BorderRadius.circular(14.r),
         onTap: () {
           final plat = cartItem.cartPlatform!.toLowerCase();
           controller.gotoditels(
@@ -39,16 +53,17 @@ class CartItemCard extends StatelessWidget {
           );
         },
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Image and Delete Button
+            // Image
             CartItemImage(
               imageUrl: cartItem.productImage,
               onDelete: () => controller.removeItem(cartItem.id!),
             ),
 
-            const SizedBox(width: 15),
+            SizedBox(width: 12.w),
 
-            // Product Info (Title, Price, More)
+            // Info
             CartItemInfo(
               title: cartItem.productTitle!,
               price: currencyService.convertAndFormat(
@@ -58,7 +73,9 @@ class CartItemCard extends StatelessWidget {
               onShowMore: () => CartItemDetailsSheet.show(context, attributes),
             ),
 
-            // Quantity Controls
+            SizedBox(width: 8.w),
+
+            // Quantity
             CartItemQuantity(cartItem: cartItem, controller: controller),
           ],
         ),

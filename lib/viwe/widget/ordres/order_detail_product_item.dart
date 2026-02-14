@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:e_comerece/core/helper/custom_cached_image.dart';
+import 'package:e_comerece/core/servises/currency_service.dart';
 import 'package:e_comerece/data/model/ordres/order_details_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -33,7 +34,7 @@ class OrderDetailProductItem extends StatelessWidget {
       margin: EdgeInsets.only(bottom: 12.h),
       padding: EdgeInsets.all(12.w),
       decoration: BoxDecoration(
-        color: Appcolor.white,
+        color: Appcolor.white.withAlpha(200),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Appcolor.gray.withValues(alpha: 0.2)),
       ),
@@ -141,7 +142,10 @@ class OrderDetailProductItem extends StatelessWidget {
                       ],
                     ),
                     Text(
-                      '\$${total.toStringAsFixed(2)}',
+                      Get.find<CurrencyService>().convertAndFormat(
+                        amount: total,
+                        from: 'USD',
+                      ),
                       style: TextStyle(
                         fontSize: 16.sp,
                         fontWeight: FontWeight.bold,

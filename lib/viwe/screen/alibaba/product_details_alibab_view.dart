@@ -1,6 +1,6 @@
 import 'package:e_comerece/controller/alibaba/product_details_alibaba_controller.dart';
 import 'package:e_comerece/controller/cart/cart_from_detils.dart';
-import 'package:e_comerece/controller/favorite/toggle_favorite_controller.dart';
+
 import 'package:e_comerece/core/class/handlingdataviwe.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/loacallization/strings_keys.dart';
@@ -32,10 +32,7 @@ class ProductDetailsAlibabView extends StatelessWidget {
   Widget build(BuildContext context) {
     String? productId = Get.arguments['product_id']?.toString();
     Get.put(ProductDetailsAlibabaControllerImple(), tag: productId);
-    AddorrmoveControllerimple cartcontroller = Get.put(
-      AddorrmoveControllerimple(),
-    );
-    Get.put(TogglefavoriteController());
+    Get.put(AddorrmoveControllerimple());
     return Scaffold(
       body: GetBuilder<ProductDetailsAlibabaControllerImple>(
         tag: productId,
@@ -70,7 +67,6 @@ class ProductDetailsAlibabView extends StatelessWidget {
                           child: _buildProductDetails(
                             context,
                             controller,
-                            cartcontroller,
                             productId,
                           ),
                         ),
@@ -105,6 +101,8 @@ class ProductDetailsAlibabView extends StatelessWidget {
                 title: StringsKeys.productDetailsTitle.tr,
                 onPressed: Get.back,
               ),
+              AddToCartButtonAlibaba(tag: productId),
+
               PositionedSupport(
                 onPressed: () {
                   Get.toNamed(
@@ -132,7 +130,6 @@ class ProductDetailsAlibabView extends StatelessWidget {
   Widget _buildProductDetails(
     BuildContext context,
     ProductDetailsAlibabaControllerImple controller,
-    AddorrmoveControllerimple cartController,
     String? tag,
   ) {
     final html =
@@ -157,7 +154,6 @@ class ProductDetailsAlibabView extends StatelessWidget {
               const SizedBox(height: 16),
               QuantitySectionAlibaba(tag: tag),
               const SizedBox(height: 16),
-              AddToCartButtonAlibaba(cartController: cartController, tag: tag),
               const SizedBox(height: 16),
               ProductPropertiesAlibaba(controller: controller, tag: tag),
               const SizedBox(height: 16),

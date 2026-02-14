@@ -54,7 +54,7 @@ class LegalView extends StatelessWidget {
 
   Widget _buildLegalCard(item) {
     return Card(
-      color: Colors.white.withOpacity(0.8),
+      color: Colors.white.withValues(alpha: 0.8),
       elevation: 4,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
       child: Padding(

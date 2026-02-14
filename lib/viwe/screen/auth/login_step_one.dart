@@ -84,7 +84,9 @@ class LoginStepOne extends StatelessWidget {
                                       Container(
                                         height: 20.h,
                                         width: 1,
-                                        color: Appcolor.gray.withOpacity(0.5),
+                                        color: Appcolor.gray.withValues(
+                                          alpha: 0.5,
+                                        ),
                                       ),
                                     ],
                                   ),

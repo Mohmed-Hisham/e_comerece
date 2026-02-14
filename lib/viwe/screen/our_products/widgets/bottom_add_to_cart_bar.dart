@@ -1,25 +1,35 @@
 import 'package:e_comerece/core/constant/color.dart';
+import 'package:e_comerece/core/helper/circular_widget.dart';
 import 'package:e_comerece/core/loacallization/strings_keys.dart';
-import 'package:e_comerece/data/model/our_product_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+import 'package:shimmer/shimmer.dart';
+
+enum CartButtonState { addToCart, updateInCart, added, loadingAddButton }
+
+enum FavoritButtonState { addToFavorite, added }
 
 class BottomAddToCartBar extends StatelessWidget {
-  final LocalProductModel product;
   final int quantity;
   final VoidCallback onIncrement;
   final VoidCallback onDecrement;
   final VoidCallback onAddToCart;
+  final Widget onToggleFavorite;
+  final bool isLoading;
+  final CartButtonState buttonState;
 
   const BottomAddToCartBar({
     super.key,
-    required this.product,
     required this.quantity,
     required this.onIncrement,
     required this.onDecrement,
     required this.onAddToCart,
+    required this.onToggleFavorite,
+
+    this.isLoading = false,
+    this.buttonState = CartButtonState.addToCart,
   });
 
   @override
@@ -38,7 +48,7 @@ class BottomAddToCartBar extends StatelessWidget {
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
+              color: Colors.black.withValues(alpha: 0.1),
               blurRadius: 20,
               offset: const Offset(0, -5),
             ),
@@ -46,14 +56,63 @@ class BottomAddToCartBar extends StatelessWidget {
         ),
         child: SafeArea(
           top: false,
-          child: Row(
-            children: [
-              _buildQuantitySelector(),
-              SizedBox(width: 16.w),
-              _buildAddToCartButton(),
-            ],
-          ),
+          child: isLoading
+              ? _buildLoadingShimmer()
+              : Row(
+                  children: [
+                    onToggleFavorite,
+                    SizedBox(width: 10.w),
+
+                    _buildQuantitySelector(),
+                    SizedBox(width: 16.w),
+                    _buildAddToCartButton(),
+                  ],
+                ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildLoadingShimmer() {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey[300]!,
+      highlightColor: Colors.grey[100]!,
+      child: Row(
+        children: [
+          // Shimmer for quantity selector
+          Expanded(
+            child: Container(
+              height: 48.h,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12.r),
+              ),
+            ),
+          ),
+          SizedBox(width: 16.w),
+          Expanded(
+            child: Container(
+              height: 48.h,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12.r),
+              ),
+            ),
+          ),
+          SizedBox(width: 16.w),
+
+          Expanded(
+            flex: 2,
+
+            child: Container(
+              height: 48.h,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12.r),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -90,35 +149,61 @@ class BottomAddToCartBar extends StatelessWidget {
   Widget _buildAddToCartButton() {
     return Expanded(
       child: ElevatedButton(
-        onPressed: onAddToCart,
+        onPressed: buttonState == CartButtonState.added ? () {} : onAddToCart,
         style: ElevatedButton.styleFrom(
-          backgroundColor: Appcolor.primrycolor,
+          backgroundColor: buttonState == CartButtonState.added
+              ? Colors.green
+              : Appcolor.primrycolor,
           padding: EdgeInsets.symmetric(vertical: 14.h),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12.r),
           ),
           elevation: 0,
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            FaIcon(
-              FontAwesomeIcons.cartPlus,
-              color: Appcolor.white,
-              size: 18.sp,
-            ),
-            SizedBox(width: 8.w),
-            Text(
-              StringsKeys.addToCart.tr,
-              style: TextStyle(
-                fontSize: 16.sp,
-                fontWeight: FontWeight.bold,
-                color: Appcolor.white,
+        child: buttonState == CartButtonState.loadingAddButton
+            ? loadingWidget(color: Appcolor.white, height: 17.h, width: 17.w)
+            : Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  FaIcon(_getButtonIcon(), color: Appcolor.white, size: 18.sp),
+                  SizedBox(width: 8.w),
+                  Text(
+                    _getButtonText(),
+                    style: TextStyle(
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.bold,
+                      color: Appcolor.white,
+                    ),
+                  ),
+                ],
               ),
-            ),
-          ],
-        ),
       ),
     );
+  }
+
+  String _getButtonText() {
+    switch (buttonState) {
+      case CartButtonState.addToCart:
+        return StringsKeys.addToCart.tr;
+      case CartButtonState.updateInCart:
+        return StringsKeys.updateCart.tr;
+      case CartButtonState.added:
+        return StringsKeys.addedToCart.tr;
+      case CartButtonState.loadingAddButton:
+        return "".tr;
+    }
+  }
+
+  IconData _getButtonIcon() {
+    switch (buttonState) {
+      case CartButtonState.addToCart:
+        return FontAwesomeIcons.cartPlus;
+      case CartButtonState.updateInCart:
+        return FontAwesomeIcons.rotate;
+      case CartButtonState.added:
+        return FontAwesomeIcons.check;
+      case CartButtonState.loadingAddButton:
+        return FontAwesomeIcons.spinner;
+    }
   }
 }

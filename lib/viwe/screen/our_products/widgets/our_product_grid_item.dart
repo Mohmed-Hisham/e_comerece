@@ -29,9 +29,12 @@ class OurProductGridItem extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(15.r),
       child: Custgridviwe(
-        image: ClipRRect(
-          borderRadius: BorderRadius.circular(10),
-          child: CustomCachedImage(imageUrl: product.mainImage ?? ""),
+        image: Hero(
+          tag: product.id ?? "",
+          child: CustomCachedImage(
+            imageUrl: product.mainImage ?? "",
+            radius: 15.r,
+          ),
         ),
         disc: product.discountPercent != null
             ? "${product.discountPercent}%"

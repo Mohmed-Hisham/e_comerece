@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:e_comerece/core/class/api_service.dart';
@@ -95,7 +97,8 @@ class SheinRepoImpl implements SheinRepo {
       } else {
         return Left(ServerFailure(response.data["message"]));
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
+      log('fetchProductDetails error: $e ', stackTrace: stackTrace);
       if (e is DioException) {
         return Left(ServerFailure.fromDioError(e));
       }
@@ -117,7 +120,9 @@ class SheinRepoImpl implements SheinRepo {
       } else {
         return Left(ServerFailure(response.data["message"]));
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
+      log('fetchProductDetails error: $e ', stackTrace: stackTrace);
+
       if (e is DioException) {
         return Left(ServerFailure.fromDioError(e));
       }
@@ -139,7 +144,9 @@ class SheinRepoImpl implements SheinRepo {
       } else {
         return Left(ServerFailure(response.data["message"]));
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
+      log('fetchProductDetails error: $e ', stackTrace: stackTrace);
+
       if (e is DioException) {
         return Left(ServerFailure.fromDioError(e));
       }

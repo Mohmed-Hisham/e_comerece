@@ -1,3 +1,4 @@
+import 'package:e_comerece/controller/favorite/favorites_controller.dart';
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/servises/custom_getx_snak_bar.dart';
@@ -57,6 +58,7 @@ class FavoriteViewController extends GetxController {
 
   removeFavorite(String productId) {
     favorites.removeWhere((favorite) => favorite.productId == productId);
+    Get.find<FavoritesController>().setFavorite(productId, false);
     groupFavoritesByPlatform();
     update();
     showCustomGetSnack(
@@ -76,19 +78,28 @@ class FavoriteViewController extends GetxController {
     String? categoryid,
     String? asin,
     String? langamazon,
+    String? desc,
     required String langShein,
   }) {
     switch (platform) {
       case "Aliexpress":
         Get.toNamed(
           AppRoutesname.detelspage,
-          arguments: {"product_id": productId, "lang": lang, "title": title},
+          arguments: {
+            "product_id": int.parse(productId ?? '0'),
+            "lang": lang,
+            "title": title,
+          },
         );
         break;
       case "Alibaba":
         Get.toNamed(
           AppRoutesname.productDetailsAlibabView,
-          arguments: {"product_id": productId, "lang": lang, "title": title},
+          arguments: {
+            "product_id": int.parse(productId ?? '0'),
+            "lang": lang,
+            "title": title,
+          },
         );
         break;
       case "Amazon":
@@ -107,6 +118,11 @@ class FavoriteViewController extends GetxController {
             "category_id": categoryid,
             "lang": langShein,
           },
+        );
+      case "LocalProduct":
+        Get.toNamed(
+          AppRoutesname.ourProductDetails,
+          arguments: {'productid': productId, "attributes": desc},
         );
         break;
     }

@@ -1,4 +1,5 @@
 import 'package:e_comerece/core/class/statusrequest.dart';
+import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:e_comerece/core/servises/serviese.dart';
 import 'package:e_comerece/data/model/ordres/get_order_with_status_model.dart';
 import 'package:e_comerece/data/repository/orders/orders_repo_impl.dart';
@@ -47,17 +48,17 @@ class OrdersControllreImp extends OrdersControllre {
   String getStatusTitle(OrderStatus status) {
     switch (status) {
       case OrderStatus.pending:
-        return "قيد المراجعة";
+        return StringsKeys.orderStatusPending.tr;
       case OrderStatus.actionRequired:
-        return "بانتظار العميل";
+        return StringsKeys.orderStatusActionRequired.tr;
       case OrderStatus.processing:
-        return "قيد التنفيذ";
+        return StringsKeys.orderStatusProcessing.tr;
       case OrderStatus.shipped:
-        return "تم الشحن";
+        return StringsKeys.orderStatusShipped.tr;
       case OrderStatus.completed:
-        return "مكتمل";
+        return StringsKeys.orderStatusCompleted.tr;
       case OrderStatus.cancelled:
-        return "ملغي";
+        return StringsKeys.orderStatusCancelled.tr;
     }
   }
 

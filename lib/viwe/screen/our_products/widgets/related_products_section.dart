@@ -4,18 +4,26 @@ import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:e_comerece/core/servises/currency_service.dart';
 import 'package:e_comerece/viwe/screen/our_products/widgets/related_product_card.dart';
+import 'package:e_comerece/viwe/screen/our_products/widgets/shimmer_related_product_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:shimmer/shimmer.dart';
 
 class RelatedProductsSection extends StatelessWidget {
   final CurrencyService currencyService;
+  final String tag;
 
-  const RelatedProductsSection({super.key, required this.currencyService});
+  const RelatedProductsSection({
+    super.key,
+    required this.currencyService,
+    required this.tag,
+  });
 
   @override
   Widget build(BuildContext context) {
     return GetBuilder<OurProductDetailsController>(
+      tag: tag,
       id: 'relatedProducts',
       builder: (controller) {
         if (controller.relatedProducts.isEmpty &&
@@ -40,7 +48,7 @@ class RelatedProductsSection extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.w),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Text(
             StringsKeys.relatedProducts.tr,
@@ -50,16 +58,6 @@ class RelatedProductsSection extends StatelessWidget {
               color: Appcolor.black,
             ),
           ),
-          if (controller.hasMoreRelated)
-            TextButton(
-              onPressed: () {
-                // Navigate to see all related products
-              },
-              child: Text(
-                StringsKeys.seeAll.tr,
-                style: TextStyle(fontSize: 14.sp, color: Appcolor.primrycolor),
-              ),
-            ),
         ],
       ),
     );
@@ -69,8 +67,17 @@ class RelatedProductsSection extends StatelessWidget {
     return SizedBox(
       height: 260.h,
       child: controller.relatedProductsStatus == Statusrequest.loading
-          ? Center(
-              child: CircularProgressIndicator(color: Appcolor.primrycolor),
+          ? Shimmer.fromColors(
+              baseColor: Colors.grey[300]!,
+              highlightColor: Colors.grey[100]!,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                padding: EdgeInsets.symmetric(horizontal: 12.w),
+                itemCount: 5, // Number of shimmer items
+                itemBuilder: (context, index) {
+                  return const ShimmerRelatedProductCard();
+                },
+              ),
             )
           : ListView.builder(
               scrollDirection: Axis.horizontal,
@@ -82,7 +89,18 @@ class RelatedProductsSection extends StatelessWidget {
                 // Load more when reaching the end
                 if (index >= controller.relatedProducts.length) {
                   if (controller.isLoadingMore) {
-                    return _buildLoadingIndicator();
+                    return Shimmer.fromColors(
+                      baseColor: Colors.grey[300]!,
+                      highlightColor: Colors.grey[100]!,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        padding: EdgeInsets.symmetric(horizontal: 12.w),
+                        itemCount: 5, // Number of shimmer items
+                        itemBuilder: (context, index) {
+                          return const ShimmerRelatedProductCard();
+                        },
+                      ),
+                    );
                   }
                   controller.loadMoreRelatedProducts();
                   return const SizedBox.shrink();
@@ -94,18 +112,6 @@ class RelatedProductsSection extends StatelessWidget {
                 );
               },
             ),
-    );
-  }
-
-  Widget _buildLoadingIndicator() {
-    return Center(
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 20.w),
-        child: CircularProgressIndicator(
-          color: Appcolor.primrycolor,
-          strokeWidth: 2,
-        ),
-      ),
     );
   }
 }

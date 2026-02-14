@@ -1,6 +1,8 @@
 import 'package:e_comerece/core/constant/color.dart';
+import 'package:e_comerece/core/servises/currency_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 
 class OrderSectionCard extends StatelessWidget {
   final String title;
@@ -137,7 +139,7 @@ class OrderPriceRow extends StatelessWidget {
             style: TextStyle(fontSize: 14.sp, color: Appcolor.gray),
           ),
           Text(
-            '${isDiscount ? '-' : ''}\$${value.toStringAsFixed(2)}',
+            '${isDiscount ? '-' : ''}${Get.find<CurrencyService>().convertAndFormat(amount: value, from: 'USD')}',
             style: TextStyle(
               fontSize: 14.sp,
               fontWeight: FontWeight.w600,

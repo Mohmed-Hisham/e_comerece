@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'package:carousel_slider/carousel_controller.dart';
 import 'package:chewie/chewie.dart';
 import 'package:e_comerece/controller/cart/cart_from_detils.dart';
+import 'package:e_comerece/controller/mixins/cart_info_mixin.dart';
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/funcations/handle_paging_response.dart';
@@ -19,6 +20,7 @@ import 'package:e_comerece/data/model/shein_models/details_shein_size.dart'
     as shein_size;
 import 'package:e_comerece/data/model/shein_models/product_ditels_shein_model.dart'
     as shein_model;
+import 'package:e_comerece/viwe/screen/our_products/widgets/bottom_add_to_cart_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:video_player/video_player.dart';
@@ -28,7 +30,7 @@ import 'package:e_comerece/data/model/shein_models/searsh_shein_model.dart'
 abstract class ProductDetailsSheinController extends GetxController {
   Future<void> fetchProductDetails();
   Future<void> initializeVideoPlayer();
-  Future<void> getquiqtity(String attributes);
+  // Future<void> getquiqtity(String attributes);
   Future<void> searshText();
   Future<void> searshProduct({isLoadMore = false});
   // Selection and quantity
@@ -61,9 +63,11 @@ abstract class ProductDetailsSheinController extends GetxController {
   String getUnitName();
 }
 
-class ProductDetailsSheinControllerImple extends ProductDetailsSheinController {
+class ProductDetailsSheinControllerImple extends ProductDetailsSheinController
+    with CartInfoMixin {
   SheinRepoImpl sheinRepoImpl = SheinRepoImpl(apiService: Get.find());
 
+  @override
   AddorrmoveControllerimple addorrmoveController = Get.put(
     AddorrmoveControllerimple(),
   );
@@ -80,11 +84,19 @@ class ProductDetailsSheinControllerImple extends ProductDetailsSheinController {
   final PageController pageController = PageController(viewportFraction: 0.7);
 
   // Shein has variants list, pick one as current selection
+  @override
+  bool isInfoLoading = true;
   shein_model.Variant? currentVariant;
+  @override
   int quantity = 1;
+  @override
   int cartquantityDB = 0;
+  @override
   bool isInCart = false;
+  @override
   bool isFavorite = false;
+  @override
+  CartButtonState cartButtonState = CartButtonState.addToCart;
 
   VideoPlayerController? videoPlayerController;
   ChewieController? chewieController;
@@ -151,6 +163,7 @@ class ProductDetailsSheinControllerImple extends ProductDetailsSheinController {
       initializeDefaultAttributes();
       await fetchImageListFromApi();
       await fetchSizeProductDetails();
+      getCartItemInfo();
       statusrequest = Statusrequest.success;
     }
     update();
@@ -233,27 +246,27 @@ class ProductDetailsSheinControllerImple extends ProductDetailsSheinController {
     return;
   }
 
-  @override
-  getquiqtity(attributes) async {
-    try {
-      final Map<String, dynamic> newQty = await addorrmoveController
-          .cartquintty(goodssn!.toString(), attributes);
-      isFavorite = newQty['in_favorite'] == true;
-      if (newQty['quantity'] != 0) {
-        quantity = newQty['quantity'];
-        cartquantityDB = newQty['quantity'];
-        update(['quantity']);
-        isInCart = true;
-      } else {
-        quantity = getMinQuantity();
-        cartquantityDB = 0;
-        isInCart = false;
-        update(['quantity']);
-      }
-    } catch (e) {
-      log('getquiqtity error: $e');
-    }
-  }
+  // @override
+  // getquiqtity(attributes) async {
+  //   try {
+  //     final Map<String, dynamic> newQty = await addorrmoveController
+  //         .cartquintty(goodssn!.toString(), attributes);
+  //     isFavorite = newQty['in_favorite'] == true;
+  //     if (newQty['quantity'] != 0) {
+  //       quantity = newQty['quantity'];
+  //       cartquantityDB = newQty['quantity'];
+  //       update(['quantity']);
+  //       isInCart = true;
+  //     } else {
+  //       quantity = getMinQuantity();
+  //       cartquantityDB = 0;
+  //       isInCart = false;
+  //       update(['quantity']);
+  //     }
+  //   } catch (e) {
+  //     log('getquiqtity error: $e');
+  //   }
+  // }
 
   @override
   void indexchange(index) {
@@ -514,6 +527,52 @@ class ProductDetailsSheinControllerImple extends ProductDetailsSheinController {
     return quantity == 1 ? 'piece' : 'pieces';
   }
 
+  String _getSelectedAttributesJson() {
+    return '{"size":"$label", "model":"${imageListFromApi.isNotEmpty ? imageListFromApi.first : ''}"}';
+  }
+
+  void addToCart() async {
+    final productid = goodssn?.toString() ?? '';
+    final title = subject?.toString() ?? '';
+    final imageUrl = imageListFromApi.isNotEmpty ? imageListFromApi.first : '';
+
+    cartButtonState = CartButtonState.loadingAddButton;
+    update(['quantity']);
+
+    try {
+      bool success = await addorrmoveController.add(
+        productid,
+        title,
+        imageUrl,
+        getRawUsdPrice(),
+        'Shein',
+        quantity,
+        _getSelectedAttributesJson(),
+        1000, // stock
+        tier: "",
+        goodsSn: goodssn?.toString(),
+        categoryId: categoryid?.toString(),
+        porductink: productLink ?? "",
+      );
+      if (success) {
+        cartquantityDB = quantity;
+        isInCart = true;
+        cartButtonState = CartButtonState.added;
+        update(['quantity']);
+        // getquiqtity(_getSelectedAttributesJson());
+      }
+    } catch (e) {
+      log('addToCart error: $e');
+      cartButtonState = CartButtonState.addToCart;
+      update(['quantity']);
+    }
+  }
+
+  @override
+  String getProductId() => goodssn?.toString() ?? '';
+
+  @override
+  String getSelectedAttributesJson() => _getSelectedAttributesJson();
   @override
   void resetStateForNewProduct() {
     try {

@@ -6,6 +6,7 @@ import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/helper/pagination_listener.dart';
 import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:e_comerece/core/servises/currency_service.dart';
+import 'package:e_comerece/core/shared/widget_shared/shimmerbar.dart';
 import 'package:e_comerece/viwe/screen/our_products/widgets/our_product_grid_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -55,57 +56,61 @@ class OurProductsGrid extends GetView<OurProductsController> {
     return PaginationListener(
       onLoadMore: () => controller.loadMore(),
       fetchAtEnd: true,
+      child: CustomScrollView(
+        controller: controller.scrollController,
+        slivers: [
+          SliverPadding(
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+            sliver: SliverGrid(
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 12.w,
+                mainAxisSpacing: 12.h,
+                childAspectRatio: 0.58,
+              ),
+              delegate: SliverChildBuilderDelegate((context, index) {
+                final product = controller.products[index];
 
-      child: RefreshIndicator(
-        onRefresh: controller.refreshProducts,
-        color: Appcolor.primrycolor,
-        child: GridView.builder(
-          controller: controller.scrollController,
-          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: 12.w,
-            mainAxisSpacing: 12.h,
-            childAspectRatio: 0.58,
-          ),
-          itemCount: controller.products.length,
-          itemBuilder: (context, index) {
-            final product = controller.products[index];
+                return OurProductGridItem(
+                  product: product,
+                  currencyService: currencyService,
+                  onTap: () {
+                    Get.toNamed(
+                      AppRoutesname.ourProductDetails,
+                      arguments: {'product': product},
+                    );
+                  },
+                  favoriteButton: GetBuilder<FavoritesController>(
+                    builder: (favController) {
+                      final productId = product.id?.toString() ?? "";
+                      bool isFav = favController.isFavorite[productId] ?? false;
 
-            return OurProductGridItem(
-              product: product,
-              currencyService: currencyService,
-              onTap: () {
-                Get.toNamed(
-                  AppRoutesname.ourProductDetails,
-                  arguments: {'product': product},
-                );
-              },
-              favoriteButton: GetBuilder<FavoritesController>(
-                builder: (favController) {
-                  final productId = product.id?.toString() ?? "";
-                  bool isFav = favController.isFavorite[productId] ?? false;
-
-                  return OurProductFavoriteButton(
-                    isFavorite: isFav,
-                    onPressed: () {
-                      favController.toggleFavorite(
-                        productId,
-                        product.title ?? "",
-                        product.mainImage ?? "",
-                        (product.discountPrice ?? product.price ?? 0)
-                            .toString(),
-                        "LocalProduct",
-                        categoryid: product.categoryId?.toString(),
-                        goodsSn: "",
+                      return OurProductFavoriteButton(
+                        isFavorite: isFav,
+                        onPressed: () {
+                          favController.toggleFavorite(
+                            productId,
+                            product.title ?? "",
+                            product.mainImage ?? "",
+                            (product.discountPrice ?? product.price ?? 0)
+                                .toString(),
+                            "LocalProduct",
+                            categoryid: product.categoryId?.toString(),
+                            goodsSn: "",
+                          );
+                        },
                       );
                     },
-                  );
-                },
-              ),
-            );
-          },
-        ),
+                  ),
+                );
+              }, childCount: controller.products.length),
+            ),
+          ),
+          if (controller.hasMore && controller.isLoadingMore)
+            const SliverToBoxAdapter(
+              child: ShimmerBar(height: 8, animationDuration: 1),
+            ),
+        ],
       ),
     );
   }

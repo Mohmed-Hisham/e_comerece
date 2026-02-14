@@ -24,7 +24,7 @@ class AlibabaByimageView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Get.put(AlibabaByimageControllerllerImple());
-    Get.put(FavoritesController());
+    // Get.put(FavoritesController());
     return Scaffold(
       body: Stack(
         children: [

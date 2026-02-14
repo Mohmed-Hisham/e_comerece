@@ -1,18 +1,6 @@
 class AppImagesassets {
   static const String _rootimages = "assets/images";
-  // static const String _rootSvg = "assets/svg";
 
-  // static const String logo = "$_rootimages/logo.png";
-  // static const String logoapp = "$_rootimages/logoapp.png";
-  // static const String onboradingone = "$_rootimages/one.png";
-  // static const String onboradingtow = "$_rootimages/two.png";
-  // static const String onboradingthree = "$_rootimages/three.png";
-  // static const String background1 = "$_rootimages/background1.png";
-  // static const String background2 = "$_rootimages/background2.png";
-  // static const String shein = "$_rootimages/shein.png";
-  // static const String aliexpress = "$_rootimages/aliexp.png";
-  // static const String amazon = "$_rootimages/amazon.png";
-  // static const String alibab = "$_rootimages/alibaba.jpg";
   static const String applogo = "$_rootimages/applogo.png";
   static const String avatar = "$_rootimages/avtar.png";
 
@@ -23,7 +11,7 @@ class AppImagesassets {
   static const String woman4 = "$_rootimages/woman4.png";
 
   // test
-  static const String tset = "$_rootimages/test.jpg";
+  // static const String tset = "$_rootimages/test.jpg";
 
   // SVG
   static const String blibble = "assets/svg/bubble.svg";

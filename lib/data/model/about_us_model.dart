@@ -37,8 +37,8 @@ class AboutUsData {
     return AboutUsData(
       id: json["id"],
       title: json["title"],
-      body: json["body"],
-      image: json["image"],
+      body: json["content"],
+      image: json["imageUrl"],
     );
   }
 }

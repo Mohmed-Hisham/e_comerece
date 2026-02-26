@@ -121,7 +121,7 @@ class LLoginStepOneControllerimplment extends LoginStepOneController {
             smsVerificationData = otpResult.verificationData;
             showCustomGetSnack(
               isGreen: true,
-              text: r.message ?? 'تم إرسال رمز التحقق',
+              text: r.message ?? StringsKeys.verificationCodeSent.tr,
             );
             Get.toNamed(
               AppRoutesname.login,
@@ -198,7 +198,7 @@ class LLoginStepOneControllerimplment extends LoginStepOneController {
       // ✅ نجاح التسجيل/الدخول
       showCustomGetSnack(
         isGreen: true,
-        text: result.message ?? 'تم تسجيل الدخول بنجاح',
+        text: result.message ?? StringsKeys.loginSuccess.tr,
       );
       await AuthSuccessHandler.handleAuthSuccess(result.authData!);
     } else if (result is Failure) {

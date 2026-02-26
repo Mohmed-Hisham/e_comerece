@@ -3,6 +3,7 @@ import 'package:e_comerece/controller/favorite/favorites_controller.dart';
 import 'package:e_comerece/controller/home/homescreen_controller.dart';
 import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/funcations/calculate_discount.dart';
+import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:e_comerece/core/servises/safe_image_url.dart';
 import 'package:e_comerece/core/shared/widget_shared/loadingimage.dart';
 import 'package:e_comerece/core/shared/widget_shared/shimmer_image_product.dart';
@@ -112,7 +113,10 @@ class SearchShein extends StatelessWidget {
                     return Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 6.0),
                       child: Text(
-                        "all ${product.relatedColorNew.length} colors",
+                        StringsKeys.allColorsCount.tr.replaceAll(
+                          '@number',
+                          product.relatedColorNew.length.toString(),
+                        ),
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: Appcolor.primrycolor,
                           fontWeight: FontWeight.bold,

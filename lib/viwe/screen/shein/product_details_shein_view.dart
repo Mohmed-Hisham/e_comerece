@@ -111,7 +111,7 @@ class ProductDetailsSheinView extends StatelessWidget {
                             }
                           },
                         ),
-                        SliverSpacer(100.h),
+                        SliverSpacer(90.h),
                       ],
                     ),
                   ),

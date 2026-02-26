@@ -190,6 +190,7 @@ class StringsKeys {
   static const String unknown = "unknown";
   static const String aliexpress = "aliexpress";
   static const String specifications = "specifications";
+  static const String sizeChart = "sizeChart";
   static const String productDetailsTitle = "productDetailsTitle";
   static const String product = "product";
   static const String platform = "platform";
@@ -433,4 +434,24 @@ class StringsKeys {
   static const String platformAlibaba = 'platform_alibaba';
   static const String platformAliexpress = 'platform_aliexpress';
   static const String platformAmazon = 'platform_amazon';
+
+  // Additional Missing Keys
+  static const String pageNotFound = 'pageNotFound';
+  static const String aboutService = 'aboutService';
+  static const String more = 'more';
+  static const String allColorsCount = 'allColorsCount';
+  static const String country = 'country';
+
+  // OTP & Firebase Auth Errors
+  static const String invalidPhoneNumber = 'invalidPhoneNumber';
+  static const String tooManyRequests = 'tooManyRequests';
+  static const String quotaExceeded = 'quotaExceeded';
+  static const String verificationFailed = 'verificationFailed';
+  static const String sessionExpired = 'sessionExpired';
+  static const String invalidVerificationCode = 'invalidVerificationCode';
+  static const String invalidVerificationId = 'invalidVerificationId';
+  static const String otpSendFailedUseEmail = 'otpSendFailedUseEmail';
+  static const String otpTimeout = 'otpTimeout';
+  static const String autoVerificationDone = 'autoVerificationDone';
+  static const String unexpectedErrorTryAgain = 'unexpectedErrorTryAgain';
 }

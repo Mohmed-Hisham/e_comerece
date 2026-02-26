@@ -38,7 +38,7 @@ class ProductFromCat extends StatelessWidget {
           GetBuilder<ShearchnameControllerImple>(
             builder: (controller) {
               return PositionedAppBar(
-                title: controller.nameCat ?? 'Search',
+                title: controller.nameCat ?? StringsKeys.searchHint.tr,
                 onPressed: Get.back,
               );
             },

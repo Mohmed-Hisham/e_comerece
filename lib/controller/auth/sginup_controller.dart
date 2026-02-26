@@ -207,7 +207,7 @@ class SginupControllerimplemnt extends SginupController {
         result.authData != null) {
       showCustomGetSnack(
         isGreen: true,
-        text: result.message ?? 'تم تسجيل الدخول بنجاح',
+        text: result.message ?? StringsKeys.loginSuccess.tr,
       );
       await AuthSuccessHandler.handleAuthSuccess(result.authData!);
     } else if (result is Failure) {

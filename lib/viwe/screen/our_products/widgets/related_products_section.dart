@@ -1,7 +1,6 @@
 import 'package:e_comerece/controller/our_products/our_product_details_controller.dart';
 import 'package:e_comerece/core/class/statusrequest.dart';
-import 'package:e_comerece/core/constant/color.dart';
-import 'package:e_comerece/core/loacallization/strings_keys.dart';
+import 'package:e_comerece/core/helper/hepler.dart';
 import 'package:e_comerece/core/servises/currency_service.dart';
 import 'package:e_comerece/viwe/screen/our_products/widgets/related_product_card.dart';
 import 'package:e_comerece/viwe/screen/our_products/widgets/shimmer_related_product_card.dart';
@@ -35,31 +34,12 @@ class RelatedProductsSection extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: 20.h),
-            _buildHeader(controller),
+            buildHeader(),
             SizedBox(height: 12.h),
             _buildProductsList(controller),
           ],
         );
       },
-    );
-  }
-
-  Widget _buildHeader(OurProductDetailsController controller) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16.w),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Text(
-            StringsKeys.relatedProducts.tr,
-            style: TextStyle(
-              fontSize: 18.sp,
-              fontWeight: FontWeight.bold,
-              color: Appcolor.black,
-            ),
-          ),
-        ],
-      ),
     );
   }
 

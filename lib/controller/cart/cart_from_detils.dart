@@ -85,7 +85,10 @@ class AddorrmoveControllerimple extends AddorrmoveController {
       },
       (r) {
         log('Add to cart successful: $r');
-        showCustomGetSnack(isGreen: true, text: r);
+        showCustomGetSnack(
+          isGreen: true,
+          text: r.trim() == 'Success' ? StringsKeys.successSignUpTitle.tr : r,
+        );
         return true;
       },
     );

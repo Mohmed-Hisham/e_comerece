@@ -21,6 +21,7 @@ import 'package:e_comerece/data/model/alibaba_model/productalibaba_home_model.da
 import 'package:e_comerece/data/model/aliexpriess_model/hotproductmodel.dart';
 import 'package:e_comerece/data/repository/aliexpriss/alexpress_repo_impl.dart';
 import 'package:e_comerece/viwe/screen/cart/cart_view.dart';
+import 'package:e_comerece/controller/cart/cart_controller.dart';
 import 'package:e_comerece/viwe/screen/home/homepage.dart';
 import 'package:e_comerece/viwe/screen/local_serviess/local_serviess_screen.dart';
 import 'package:e_comerece/viwe/screen/orders/orders_screen.dart';
@@ -308,6 +309,15 @@ class HomescreenControllerImple extends HomescreenController {
     _navigationHistory.add(i);
     pageindexHome = i;
     pageIndex.value = i;
+
+    // Refresh cart data when navigating to Cart tab
+    if (i == 1) {
+      try {
+        final cartController = Get.find<CartControllerImpl>();
+        cartController.getCartItems();
+      } catch (_) {}
+    }
+
     Future.delayed(const Duration(milliseconds: 200), () {
       update(['bottomBar']);
     });

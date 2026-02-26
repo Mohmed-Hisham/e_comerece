@@ -2,7 +2,9 @@ import 'dart:async';
 import 'dart:developer';
 import 'package:dartz/dartz.dart';
 import 'package:e_comerece/core/helper/hepler.dart';
+import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:get/get.dart';
 
 enum VerificationMethod { sms, email }
 
@@ -61,7 +63,7 @@ class SendOtpHelper {
       if (!completer.isCompleted) {
         completer.complete(
           OtpResult.failure(
-            userFriendlyError: 'انتهت مهلة الانتظار، يرجى المحاولة مرة أخرى',
+            userFriendlyError: StringsKeys.otpTimeout.tr,
             technicalError: 'Timeout: no response from verification service.',
             shouldSuggestEmail: true,
           ),
@@ -83,7 +85,7 @@ class SendOtpHelper {
             // نعتبر التحقق التلقائي نجاح (حالة خاصة)
             completer.complete(
               OtpResult.failure(
-                userFriendlyError: 'تم التحقق تلقائياً',
+                userFriendlyError: StringsKeys.autoVerificationDone.tr,
                 technicalError: 'Automatic verification completed on device.',
                 shouldSuggestEmail: false,
               ),
@@ -135,8 +137,7 @@ class SendOtpHelper {
       if (!completer.isCompleted) {
         completer.complete(
           OtpResult.failure(
-            userFriendlyError:
-                'فشل إرسال رمز التحقق، يرجى المحاولة عبر البريد الإلكتروني',
+            userFriendlyError: StringsKeys.otpSendFailedUseEmail.tr,
             technicalError: 'Failed to start phone verification: $e',
             shouldSuggestEmail: true,
           ),
@@ -180,7 +181,7 @@ class SendOtpHelper {
       return Left(friendlyError);
     } catch (e, st) {
       log('Unknown error during signInWithSmsCode: $e\n$st');
-      return const Left('حدث خطأ غير متوقع، يرجى المحاولة مرة أخرى');
+      return Left(StringsKeys.unexpectedErrorTryAgain.tr);
     }
   }
 }

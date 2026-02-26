@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/loacallization/strings_keys.dart';
@@ -35,6 +34,7 @@ class CartControllerImpl extends CartController {
   MyServises myServises = Get.find();
   Statusrequest statusrequest = Statusrequest.none;
   Statusrequest couPonstatusrequest = Statusrequest.none;
+  bool isNoLoading = false;
 
   List<CartData> cartItems = [];
   String? couponCode;
@@ -132,7 +132,10 @@ class CartControllerImpl extends CartController {
         getCartItems();
       },
       (r) {
-        showCustomGetSnack(isGreen: true, text: r);
+        showCustomGetSnack(
+          isGreen: true,
+          text: r.trim() == 'Success' ? StringsKeys.successSignUpTitle.tr : r,
+        );
       },
     );
   }
@@ -408,9 +411,10 @@ class CartControllerImpl extends CartController {
     required goodsid,
     required categoryid,
     required platform,
-  }) {
-    log("platform: $platform, id: $id");
-    Get.toNamed(
+  }) async {
+    isNoLoading = true;
+    update();
+    await Get.toNamed(
       goTODetails(platform),
       arguments: {
         "product_id": id,
@@ -424,6 +428,7 @@ class CartControllerImpl extends CartController {
         "attributes": "",
       },
     );
+    getCartItems();
   }
 
   goTOCheckout() {

@@ -3,6 +3,7 @@ import 'package:e_comerece/controller/cart/cart_from_detils.dart';
 
 import 'package:e_comerece/core/class/handlingdataviwe.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
+import 'package:e_comerece/core/constant/sliver_spacer.dart';
 import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:e_comerece/core/helper/pagination_listener.dart';
 import 'package:e_comerece/core/loacallization/translate_data.dart';
@@ -10,6 +11,7 @@ import 'package:e_comerece/core/servises/extract_image_urls.dart';
 import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/shared/widget_shared/shimmerbar.dart';
 import 'package:e_comerece/viwe/screen/alibaba/product_for_page_detils_alibaba.dart';
+import 'package:e_comerece/viwe/screen/shein/cust_label_container.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_app_bar.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_right_1.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_right_2.dart';
@@ -61,7 +63,6 @@ class ProductDetailsAlibabView extends StatelessWidget {
                       }
                     },
                     child: CustomScrollView(
-                      physics: const BouncingScrollPhysics(),
                       slivers: [
                         SliverToBoxAdapter(
                           child: _buildProductDetails(
@@ -70,8 +71,19 @@ class ProductDetailsAlibabView extends StatelessWidget {
                             productId,
                           ),
                         ),
-                        ProductForPageDetilsAlibaba(tag: productId),
 
+                        SliverToBoxAdapter(
+                          child: Row(
+                            children: [
+                              CustLabelContainer(
+                                text: StringsKeys.relatedProducts.tr,
+                              ),
+                            ],
+                          ),
+                        ),
+                        SliverSpacer(10.h),
+
+                        ProductForPageDetilsAlibaba(tag: productId),
                         GetBuilder<ProductDetailsAlibabaControllerImple>(
                           tag: productId,
                           id: 'searshText',
@@ -92,6 +104,7 @@ class ProductDetailsAlibabView extends StatelessWidget {
                             }
                           },
                         ),
+                        SliverSpacer(90.h),
                       ],
                     ),
                   ),

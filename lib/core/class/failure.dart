@@ -1,4 +1,6 @@
 import 'package:dio/dio.dart';
+import 'package:e_comerece/core/loacallization/strings_keys.dart';
+import 'package:get/get.dart';
 
 abstract class Failure {
   final String errorMessage;
@@ -7,7 +9,31 @@ abstract class Failure {
 }
 
 class ServerFailure extends Failure {
-  ServerFailure(super.errorMessage);
+  ServerFailure(String errorMessage) : super(_localizeFallback(errorMessage));
+
+  static String _localizeFallback(String message) {
+    final normalized = message.trim();
+    if (normalized.isEmpty) return message;
+
+    switch (normalized) {
+      case 'Error occurred':
+      case 'An error occurred':
+      case 'Unknown Error!':
+      case 'Bad Response!':
+      case 'Bad Request!':
+      case 'Unexpected server response':
+      case 'Oops, something went wrong!':
+      case 'Internal Server Error!':
+      case 'Connection Timeout!':
+      case 'Send Timeout!':
+      case 'Receive Timeout!':
+        return StringsKeys.error.tr;
+      case 'Check Your Enternet Connection':
+        return StringsKeys.noInternetConnection.tr;
+      default:
+        return message;
+    }
+  }
 
   factory ServerFailure.fromDioError(DioException dioError) {
     switch (dioError.type) {

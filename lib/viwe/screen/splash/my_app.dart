@@ -13,21 +13,35 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     LocaleController localeController = Get.find<LocaleController>();
-    return ScreenUtilInit(
-      designSize: const Size(430, 932),
-      minTextAdapt: true,
-      splitScreenMode: true,
-      builder: (context, child) {
-        return GetMaterialApp(
-          scrollBehavior: AppScrollBehavior(),
-          debugShowCheckedModeBanner: false,
-          locale: localeController.language,
-          translations: MyTrenslition(),
-          theme: localeController.themeData,
-          initialBinding: Initialbinding(),
-          getPages: routes,
-        );
-      },
+
+    return MediaQuery(
+      data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(1.1)),
+      child: ScreenUtilInit(
+        designSize: const Size(430, 932),
+        minTextAdapt: true,
+        splitScreenMode: true,
+        builder: (context, child) {
+          return GetMaterialApp(
+            scrollBehavior: AppScrollBehavior(),
+            debugShowCheckedModeBanner: false,
+            locale: localeController.language,
+            translations: MyTrenslition(),
+            theme: localeController.themeData,
+            initialBinding: Initialbinding(),
+            getPages: routes,
+
+            // builder: (context, child) {
+            //   // Also override inside GetMaterialApp (it creates its own MediaQuery)
+            //   return MediaQuery(
+            //     data: MediaQuery.of(
+            //       context,
+            //     ).copyWith(textScaler: TextScaler.noScaling),
+            //     child: child!,
+            //   );
+            // },
+          );
+        },
+      ),
     );
   }
 }

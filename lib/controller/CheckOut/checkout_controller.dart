@@ -120,7 +120,7 @@ class CheckOutControllerImpl extends CheckOutController {
     if (addressId.isEmpty) {
       showCustomGetSnack(
         isGreen: false,
-        text: "Please select a delivery address",
+        text: StringsKeys.pleaseSelectAddress.tr,
       );
       statusrequest = Statusrequest.none;
       update();

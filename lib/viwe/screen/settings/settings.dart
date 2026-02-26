@@ -23,7 +23,7 @@ class Setting extends StatelessWidget {
     SettingsControllerImple controller = Get.put(SettingsControllerImple());
     final TextStyle styleAll = TextStyle(
       color: Appcolor.black,
-      fontSize: 19.sp,
+      fontSize: 18.sp,
       fontWeight: FontWeight.bold,
     );
     return Column(
@@ -60,7 +60,7 @@ class Setting extends StatelessWidget {
                   child: Column(
                     children: [
                       ListTile(
-                        onTap: () async {
+                        onTap: () {
                           controller.goToUpdateProfile();
                         },
                         title: Text(

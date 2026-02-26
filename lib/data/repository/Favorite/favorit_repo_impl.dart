@@ -4,9 +4,11 @@ import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:e_comerece/core/class/api_service.dart';
 import 'package:e_comerece/core/class/failure.dart';
+import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:e_comerece/data/Apis/apis_url.dart';
 import 'package:e_comerece/data/model/favorite_model.dart';
 import 'package:e_comerece/data/repository/Favorite/favorit_repo.dart';
+import 'package:get/get.dart';
 
 class FavoriteRepoImpl implements FavoriteRepo {
   final ApiService apiService;
@@ -68,7 +70,7 @@ class FavoriteRepoImpl implements FavoriteRepo {
         data: product.toJson(),
       );
       if (response.statusCode == 200) {
-        String msg = "Success";
+        String msg = StringsKeys.successSignUpTitle.tr;
         if (response.data is Map) {
           msg = response.data["message"] ?? msg;
         } else if (response.data is String) {
@@ -100,7 +102,7 @@ class FavoriteRepoImpl implements FavoriteRepo {
         endPoints: ApisUrl.favoritDelete(favoriteId),
       );
       if (response.statusCode == 200) {
-        String msg = "Success";
+        String msg = StringsKeys.successSignUpTitle.tr;
         if (response.data is Map) {
           msg = response.data["message"] ?? msg;
         } else if (response.data is String) {

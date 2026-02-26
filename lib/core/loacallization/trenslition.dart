@@ -256,6 +256,7 @@ class MyTrenslition extends Translations {
       "availableStock": "المخزون المتوفر",
       "reviews": "مراجعة",
       "specifications": "المواصفات",
+      "sizeChart": "جدول المقاسات",
       "availability": "التوفر",
       "delivery": "التوصيل",
       "prime": "برايم",
@@ -455,6 +456,43 @@ class MyTrenslition extends Translations {
       StringsKeys.productDetails: "تفاصيل المنتج",
       StringsKeys.addedToCart: "تمت الإضافة للسلة",
       StringsKeys.relatedProducts: "منتجات مشابهة",
+
+      // Wallet
+      StringsKeys.walletBalance: "رصيد المحفظة",
+      StringsKeys.walletTransactions: "معاملات المحفظة",
+      StringsKeys.walletNoTransactions: "لا توجد معاملات",
+      StringsKeys.walletRecharge: "شحن المحفظة",
+      StringsKeys.walletRechargeAmount: "مبلغ الشحن",
+      StringsKeys.walletRechargeHint: "أدخل المبلغ المراد شحنه",
+      StringsKeys.walletRechargeButton: "شحن الآن",
+      StringsKeys.walletRechargeSuccess: "تم شحن المحفظة بنجاح",
+      StringsKeys.walletRechargeFailed: "فشل شحن المحفظة",
+
+      // Shein Favorites
+      StringsKeys.sheinFavoriteTitle: "مفضلة شي إن",
+
+      // Additional Missing Keys
+      StringsKeys.pageNotFound: "الصفحة غير موجودة",
+      StringsKeys.aboutService: "عن الخدمة",
+      StringsKeys.more: "المزيد",
+      StringsKeys.allColorsCount: "جميع الـ @number ألوان",
+      StringsKeys.country: "الدولة",
+      StringsKeys.invalidPhoneNumber:
+          "رقم الهاتف غير صحيح، يرجى التأكد من الرقم",
+      StringsKeys.tooManyRequests: "تم إرسال طلبات كثيرة، يرجى المحاولة لاحقاً",
+      StringsKeys.quotaExceeded: "تم تجاوز الحد المسموح، يرجى المحاولة لاحقاً",
+      StringsKeys.verificationFailed:
+          "حدث خطأ في التحقق، يرجى المحاولة مرة أخرى",
+      StringsKeys.sessionExpired: "انتهت صلاحية الجلسة، يرجى المحاولة مرة أخرى",
+      StringsKeys.invalidVerificationCode: "رمز التحقق غير صحيح",
+      StringsKeys.invalidVerificationId:
+          "انتهت صلاحية الرمز، يرجى طلب رمز جديد",
+      StringsKeys.otpSendFailedUseEmail:
+          "فشل إرسال رمز التحقق، يرجى المحاولة عبر البريد الإلكتروني",
+      StringsKeys.otpTimeout: "انتهت مهلة الانتظار، يرجى المحاولة مرة أخرى",
+      StringsKeys.autoVerificationDone: "تم التحقق تلقائياً",
+      StringsKeys.unexpectedErrorTryAgain:
+          "حدث خطأ غير متوقع، يرجى المحاولة مرة أخرى",
     },
     "en": {
       // Splashscreen
@@ -709,6 +747,7 @@ class MyTrenslition extends Translations {
       "availableStock": "Available Stock",
       "reviews": "reviews",
       "specifications": "Specifications",
+      "sizeChart": "Size Chart",
       "availability": "Availability",
       "delivery": "Delivery",
       "prime": "PRIME",
@@ -909,6 +948,42 @@ class MyTrenslition extends Translations {
       StringsKeys.productDetails: "Product Details",
       StringsKeys.addedToCart: "Added to cart",
       StringsKeys.relatedProducts: "Related Products",
+
+      // Wallet
+      StringsKeys.walletBalance: "Wallet Balance",
+      StringsKeys.walletTransactions: "Wallet Transactions",
+      StringsKeys.walletNoTransactions: "No transactions",
+      StringsKeys.walletRecharge: "Recharge Wallet",
+      StringsKeys.walletRechargeAmount: "Recharge Amount",
+      StringsKeys.walletRechargeHint: "Enter the amount to recharge",
+      StringsKeys.walletRechargeButton: "Recharge Now",
+      StringsKeys.walletRechargeSuccess: "Wallet recharged successfully",
+      StringsKeys.walletRechargeFailed: "Wallet recharge failed",
+
+      // Shein Favorites
+      StringsKeys.sheinFavoriteTitle: "Shein Favorites",
+
+      // Additional Missing Keys
+      StringsKeys.pageNotFound: "Page Not Found",
+      StringsKeys.aboutService: "About Service",
+      StringsKeys.more: "More",
+      StringsKeys.allColorsCount: "all @number colors",
+      StringsKeys.country: "Country",
+      StringsKeys.invalidPhoneNumber:
+          "Invalid phone number, please check the number",
+      StringsKeys.tooManyRequests: "Too many requests, please try again later",
+      StringsKeys.quotaExceeded: "Quota exceeded, please try again later",
+      StringsKeys.verificationFailed: "Verification failed, please try again",
+      StringsKeys.sessionExpired: "Session expired, please try again",
+      StringsKeys.invalidVerificationCode: "Invalid verification code",
+      StringsKeys.invalidVerificationId:
+          "Verification code expired, please request a new one",
+      StringsKeys.otpSendFailedUseEmail:
+          "Failed to send verification code, please try email instead",
+      StringsKeys.otpTimeout: "Request timed out, please try again",
+      StringsKeys.autoVerificationDone: "Automatically verified",
+      StringsKeys.unexpectedErrorTryAgain:
+          "An unexpected error occurred, please try again",
     },
   };
 }

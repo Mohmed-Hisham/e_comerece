@@ -1,6 +1,8 @@
 import 'package:e_comerece/core/constant/color.dart';
+import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 
 class Custgridviwe extends StatelessWidget {
   final Widget image;
@@ -250,7 +252,7 @@ class Custgridviwe extends StatelessWidget {
                             const SizedBox(width: 3),
                             if (discprice != null && discprice!.isNotEmpty)
                               Text(
-                                "OFF",
+                                StringsKeys.off.tr,
                                 style: TextStyle(
                                   fontSize: 13,
                                   color: Appcolor.primrycolor,

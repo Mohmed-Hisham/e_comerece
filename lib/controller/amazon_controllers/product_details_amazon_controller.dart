@@ -8,6 +8,7 @@ import 'package:e_comerece/viwe/screen/our_products/widgets/bottom_add_to_cart_b
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/funcations/handle_paging_response.dart';
+import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:e_comerece/core/loacallization/translate_data.dart';
 import 'package:e_comerece/core/servises/serviese.dart';
 import 'package:e_comerece/data/repository/amazon/amazon_repo_impl.dart';
@@ -156,6 +157,9 @@ class ProductDetailsAmazonControllerImple extends ProductDetailsAmazonController
 
   @override
   searshText({bool isLoadMore = false, bool other = false}) async {
+    log(
+      "start searshText with title: $title, isLoadMore: $isLoadMore, other: $other",
+    );
     if (isLoadMore) {
       if (isLoading || !hasMore) return;
       isLoading = true;
@@ -197,6 +201,7 @@ class ProductDetailsAmazonControllerImple extends ProductDetailsAmazonController
         }
       },
     );
+    update(['product']);
   }
 
   @override
@@ -224,7 +229,8 @@ class ProductDetailsAmazonControllerImple extends ProductDetailsAmazonController
         autoPlay: false,
         looping: true,
         showControls: true,
-        errorBuilder: (context, error) => Center(child: Text('Error: $error')),
+        errorBuilder: (context, error) =>
+            Center(child: Text('${StringsKeys.error.tr}: $error')),
       );
     } on PlatformException catch (e) {
       debugPrint('PlatformException: ${e.code} - ${e.message} - ${e.details}');

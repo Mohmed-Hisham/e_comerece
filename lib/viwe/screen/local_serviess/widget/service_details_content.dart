@@ -1,7 +1,9 @@
 import 'package:e_comerece/controller/local_service/local_service_details_controller.dart';
 import 'package:e_comerece/core/constant/color.dart';
+import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 
 class ServiceDetailsContent extends StatelessWidget {
   final LocalServiceDetailsController controller;
@@ -113,7 +115,7 @@ class ServiceDetailsContent extends StatelessWidget {
 
                   // Description Title
                   Text(
-                    "About Service",
+                    StringsKeys.aboutService.tr,
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                       fontSize: 20.sp,

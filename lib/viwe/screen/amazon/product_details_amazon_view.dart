@@ -2,9 +2,11 @@ import 'package:e_comerece/controller/amazon_controllers/product_details_amazon_
 import 'package:e_comerece/core/class/handlingdataviwe.dart';
 import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
+import 'package:e_comerece/core/constant/sliver_spacer.dart';
 import 'package:e_comerece/core/helper/pagination_listener.dart';
 import 'package:e_comerece/core/shared/widget_shared/shimmerbar.dart';
 import 'package:e_comerece/viwe/screen/amazon/product_for_page_detils_amazon.dart';
+import 'package:e_comerece/viwe/screen/shein/cust_label_container.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_app_bar.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_right_1.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_right_2.dart';
@@ -62,7 +64,16 @@ class ProductDetailsAmazonView extends StatelessWidget {
                                   asin,
                                 ),
                               ),
-
+                              SliverToBoxAdapter(
+                                child: Row(
+                                  children: [
+                                    CustLabelContainer(
+                                      text: StringsKeys.relatedProducts.tr,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              SliverSpacer(10.h),
                               SliverPadding(
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 16.0,

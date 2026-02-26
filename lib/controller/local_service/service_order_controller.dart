@@ -133,8 +133,8 @@ class ServiceOrderController extends GetxController {
         }
 
         successDialog(
-          title: "Success",
-          body: "Order placed successfully",
+          title: StringsKeys.successSignUpTitle.tr,
+          body: StringsKeys.orderPlacedSuccessfully.tr,
           onBack: () {
             Get.back(); // close dialog
             Get.back(result: true); // go back to previous screen

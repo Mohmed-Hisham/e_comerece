@@ -1,4 +1,5 @@
 import 'package:e_comerece/core/servises/custom_getx_snak_bar.dart';
+import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:e_comerece/core/shared/widget_shared/likeanimationpage.dart';
 import 'package:e_comerece/data/model/favorite_model.dart';
 import 'package:e_comerece/data/repository/Favorite/favorit_repo_impl.dart';
@@ -24,7 +25,10 @@ class TogglefavoriteController extends GetxController {
       response.fold(
         (l) => showCustomGetSnack(isGreen: false, text: l.errorMessage),
         (r) {
-          showCustomGetSnack(isGreen: true, text: r);
+          showCustomGetSnack(
+            isGreen: true,
+            text: r.trim() == 'Success' ? StringsKeys.successSignUpTitle.tr : r,
+          );
         },
       );
     } else {

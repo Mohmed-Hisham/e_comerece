@@ -116,7 +116,7 @@ class _CustGoogleMapState extends State<AddAddress> {
                               ),
                               SizedBox(height: 10),
                               Text(
-                                "Country: ${getxcontroller.country}",
+                                "${StringsKeys.country.tr}: ${getxcontroller.country}",
                                 style: Theme.of(context).textTheme.bodyMedium
                                     ?.copyWith(
                                       color: Appcolor.black,
@@ -124,7 +124,7 @@ class _CustGoogleMapState extends State<AddAddress> {
                                     ),
                               ),
                               Text(
-                                "City: ${getxcontroller.city}",
+                                "${StringsKeys.city.tr}: ${getxcontroller.city}",
                                 style: Theme.of(context).textTheme.bodyMedium
                                     ?.copyWith(
                                       color: Appcolor.black,
@@ -132,7 +132,7 @@ class _CustGoogleMapState extends State<AddAddress> {
                                     ),
                               ),
                               Text(
-                                "street: ${getxcontroller.street}",
+                                "${StringsKeys.street.tr}: ${getxcontroller.street}",
                                 style: Theme.of(context).textTheme.bodyMedium
                                     ?.copyWith(
                                       color: Appcolor.black,
@@ -289,37 +289,40 @@ class Addlocattion extends StatelessWidget {
               children: [
                 // SizedBox(height: 20.h),
                 Custtextfeld(
-                  hint: "address title",
+                  hint: StringsKeys.addressTitle.tr,
                   controller: addressTitle,
                   validator: (val) {
                     return validateInput(val: val!, min: 3, max: 100);
                   },
                 ),
                 Custtextfeld(
-                  hint: "city",
+                  hint: StringsKeys.city.tr,
                   controller: city,
                   validator: (val) {
                     return validateInput(val: val!, min: 2, max: 100);
                   },
                 ),
                 Custtextfeld(
-                  hint: "street",
+                  hint: StringsKeys.street.tr,
                   controller: street,
                   validator: (val) {
                     return validateInput(val: val!, min: 2, max: 100);
                   },
                 ),
-                Custtextfeld(hint: "floor", controller: floor),
+                Custtextfeld(hint: StringsKeys.floor.tr, controller: floor),
                 Custtextfeld(
-                  hint: "building number",
+                  hint: StringsKeys.buildingNumber.tr,
                   controller: buildingNumber,
                 ),
-                Custtextfeld(hint: "apartment", controller: apartment),
-                Custtextfeld(hint: "phone", controller: phone),
+                Custtextfeld(
+                  hint: StringsKeys.apartment.tr,
+                  controller: apartment,
+                ),
+                Custtextfeld(hint: StringsKeys.phone.tr, controller: phone),
                 SizedBox(height: 20.h),
 
                 Custombuttonauth(
-                  inputtext: "Save",
+                  inputtext: StringsKeys.save.tr,
                   onPressed: () {
                     if (formkey.currentState!.validate()) {
                       AddressData address = AddressData(

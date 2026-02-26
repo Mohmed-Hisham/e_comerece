@@ -1,6 +1,7 @@
 import 'package:e_comerece/controller/cart/cart_controller.dart';
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/class/handlingdataviwe.dart';
+import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:e_comerece/data/model/cartmodel.dart';
@@ -33,46 +34,54 @@ class CartView extends StatelessWidget {
           PositionedAppBar(title: StringsKeys.cart.tr),
           GetBuilder<CartControllerImpl>(
             builder: (controller) {
-              return Handlingdataviwe(
-                statusrequest: controller.statusrequest,
-                widget: Column(
-                  children: [
-                    SizedBox(height: 90.h),
-                    Expanded(
-                      child: ListView.builder(
-                        padding: EdgeInsets.only(bottom: 200.h),
-                        itemCount: controller.cartByPlatform.keys.length,
-                        itemBuilder: (context, index) {
-                          String platform = controller.cartByPlatform.keys
-                              .elementAt(index);
-                          List<CartData> cartItems =
-                              controller.cartByPlatform[platform]!;
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              SizedBox(height: 10.h),
-                              Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 12.w),
-                                child: CustLabelContainer(text: platform),
-                              ),
-                              SizedBox(height: 6.h),
-                              ListView.builder(
-                                padding: EdgeInsets.zero,
-                                shrinkWrap: true,
-                                physics: const NeverScrollableScrollPhysics(),
-                                itemCount: cartItems.length,
-                                itemBuilder: (context, index) {
-                                  final cartItem = cartItems[index];
-                                  return CartItemCard(cartItem: cartItem);
-                                },
-                              ),
-                            ],
-                          );
-                        },
+              return RefreshIndicator(
+                color: Appcolor.primrycolor,
+                backgroundColor: Colors.transparent,
+                onRefresh: () => controller.getCartItems(),
+                child: Handlingdataviwe(
+                  // noLoading: controller.isNoLoading ,
+                  statusrequest: controller.statusrequest,
+                  widget: Column(
+                    children: [
+                      SizedBox(height: 90.h),
+                      Expanded(
+                        child: ListView.builder(
+                          padding: EdgeInsets.only(bottom: 200.h),
+                          itemCount: controller.cartByPlatform.keys.length,
+                          itemBuilder: (context, index) {
+                            String platform = controller.cartByPlatform.keys
+                                .elementAt(index);
+                            List<CartData> cartItems =
+                                controller.cartByPlatform[platform]!;
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                SizedBox(height: 10.h),
+                                Padding(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 12.w,
+                                  ),
+                                  child: CustLabelContainer(text: platform),
+                                ),
+                                SizedBox(height: 6.h),
+                                ListView.builder(
+                                  padding: EdgeInsets.zero,
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemCount: cartItems.length,
+                                  itemBuilder: (context, index) {
+                                    final cartItem = cartItems[index];
+                                    return CartItemCard(cartItem: cartItem);
+                                  },
+                                ),
+                              ],
+                            );
+                          },
+                        ),
                       ),
-                    ),
-                    SizedBox(height: 50.h),
-                  ],
+                      SizedBox(height: 50.h),
+                    ],
+                  ),
                 ),
               );
             },

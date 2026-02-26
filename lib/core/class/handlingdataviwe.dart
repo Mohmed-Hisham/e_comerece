@@ -17,6 +17,7 @@ class Handlingdataviwe extends StatelessWidget {
   final String? texttryagain;
   final bool isSizedBox;
   final double height;
+  final bool noLoading;
 
   const Handlingdataviwe({
     super.key,
@@ -29,6 +30,7 @@ class Handlingdataviwe extends StatelessWidget {
     this.texttryagain,
     this.isSizedBox = false,
     this.height = 220,
+    this.noLoading = false,
   });
 
   @override
@@ -104,11 +106,12 @@ class Handlingdataviwe extends StatelessWidget {
           return sliverChild(
             Column(
               children: [
-                Lottie.asset(
-                  Lottieassets.shoppingcart,
-                  width: 180,
-                  height: 180,
-                ),
+                if (!noLoading)
+                  Lottie.asset(
+                    Lottieassets.shoppingcart,
+                    width: 180,
+                    height: 180,
+                  ),
                 if (isproductdetails)
                   Center(
                     child: Padding(
@@ -164,11 +167,12 @@ class Handlingdataviwe extends StatelessWidget {
                   // crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Lottie.asset(
-                      Lottieassets.shoppingcart,
-                      width: 180,
-                      height: 180,
-                    ),
+                    if (!noLoading)
+                      Lottie.asset(
+                        Lottieassets.shoppingcart,
+                        width: 180,
+                        height: 180,
+                      ),
                     if (isproductdetails)
                       Center(
                         child: Padding(

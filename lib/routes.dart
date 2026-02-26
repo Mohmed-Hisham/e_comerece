@@ -43,9 +43,9 @@ import 'package:e_comerece/viwe/screen/settings/legal_view.dart';
 import 'package:e_comerece/viwe/screen/our_products/our_products_view.dart';
 import 'package:e_comerece/viwe/screen/our_products/our_product_details_view.dart';
 import 'package:e_comerece/viwe/screen/our_products/our_products_search_view.dart';
+import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get_navigation/src/routes/get_route.dart';
-import 'package:get/get_navigation/src/routes/transitions_type.dart';
+import 'package:get/get.dart';
 
 final int transitionDurations = 200;
 final Transition transitionType = Transition.fadeIn;
@@ -55,7 +55,7 @@ class UnKnownRoute extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(body: Center(child: Text("Page Not Found")));
+    return Scaffold(body: Center(child: Text(StringsKeys.pageNotFound.tr)));
   }
 }
 

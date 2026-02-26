@@ -104,7 +104,7 @@ class Forgetpassowrdlment extends Forgetpassowrd {
             smsVerificationData = otpResult.verificationData;
             showCustomGetSnack(
               isGreen: true,
-              text: r.message ?? 'تم إرسال رمز التحقق',
+              text: r.message ?? StringsKeys.verificationCodeSent.tr,
             );
             Get.toNamed(
               AppRoutesname.verFiyCode,

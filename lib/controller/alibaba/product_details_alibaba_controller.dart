@@ -10,6 +10,7 @@ import 'package:e_comerece/core/class/failure.dart';
 import 'package:e_comerece/core/class/statusrequest.dart';
 import 'package:e_comerece/core/constant/routesname.dart';
 import 'package:e_comerece/core/funcations/handle_paging_response.dart';
+import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:e_comerece/core/servises/custom_getx_snak_bar.dart';
 import 'package:e_comerece/core/servises/selected_attributes_tomap_fordb.dart';
 import 'package:e_comerece/core/servises/currency_service.dart';
@@ -179,7 +180,8 @@ class ProductDetailsAlibabaControllerImple
         autoPlay: false,
         looping: true,
         showControls: true,
-        errorBuilder: (context, error) => Center(child: Text('Error: $error')),
+        errorBuilder: (context, error) =>
+            Center(child: Text('${StringsKeys.error.tr}: $error')),
       );
     } on PlatformException catch (e) {
       debugPrint('PlatformException: ${e.code} - ${e.message} - ${e.details}');

@@ -1,4 +1,5 @@
 import 'package:e_comerece/core/constant/color.dart';
+import 'package:e_comerece/core/loacallization/strings_keys.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -56,7 +57,7 @@ class CartItemInfo extends StatelessWidget {
                 ),
               ),
               child: Text(
-                "more".tr,
+                StringsKeys.more.tr,
                 style: TextStyle(
                   fontSize: 12.sp,
                   fontWeight: FontWeight.w600,

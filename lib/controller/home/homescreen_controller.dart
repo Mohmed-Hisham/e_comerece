@@ -100,6 +100,16 @@ class HomescreenControllerImple extends HomescreenController {
     fetchOurProducts();
   }
 
+  Future<void> refreshHomePage() async {
+    await Future.wait([
+      fetchSliders(),
+      fetchOurProducts(),
+      aliexpressHomeController.fetchProductsAliExpress(),
+      alibabaHomeController.fethcProductsAlibaba(),
+      amazonHomeCon.fetchProducts(),
+      sheinHomController.fetchproducts(),
+    ]);
+  }
   // @override
   // void onClose() {
   //   searchProducts.clear();

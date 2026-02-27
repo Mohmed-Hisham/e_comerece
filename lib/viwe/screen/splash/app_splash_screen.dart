@@ -1,7 +1,7 @@
-import 'dart:developer';
 import 'package:e_comerece/core/constant/imagesassets.dart';
 import 'package:e_comerece/core/helper/circular_widget.dart';
 import 'package:e_comerece/core/loacallization/changelocal.dart';
+import 'package:e_comerece/core/logger/app_logger.dart';
 import 'package:e_comerece/core/servises/awesome/awesome_fcm_service.dart';
 import 'package:e_comerece/core/servises/awesome/awesome_notification_service.dart';
 import 'package:e_comerece/core/servises/awesome/notification_controller.dart';
@@ -50,27 +50,26 @@ class _AppSplashScreenState extends State<AppSplashScreen>
 
   Future<void> _initializeApp() async {
     try {
-      log('Starting app initialization...');
+      AppLogger.info('App initialization started');
 
       await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform,
       );
-      log('Firebase initialized');
+      AppLogger.info('Firebase initialized successfully');
 
       await AwesomeNotificationService.initialize();
       await AwesomeFcmService.initialize();
       NotificationController.initializeListeners();
-
-      log('Notifications initialized');
+      AppLogger.info('Notification services initialized successfully');
 
       await initlizserviese();
-      log('Services initialized');
+      AppLogger.info('Services initialized successfully');
 
       Get.put(LocaleController());
 
       // Initialize Currency Service
       await initCurrencyService();
-      log('Currency service initialized');
+      AppLogger.info('Currency service initialized');
 
       // Navigate immediately after initialization is complete
       if (mounted) {
@@ -79,8 +78,8 @@ class _AppSplashScreenState extends State<AppSplashScreen>
         });
       }
     } catch (e, stackTrace) {
-      log('Error during app initialization: $e');
-      log('Stack trace: $stackTrace');
+      AppLogger.error('Error during app initialization: $e');
+      AppLogger.error('Stack trace: $stackTrace');
       if (mounted) {
         setState(() {
           _isInitialized = true;

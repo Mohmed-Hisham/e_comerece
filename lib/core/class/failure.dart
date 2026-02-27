@@ -9,40 +9,16 @@ abstract class Failure {
 }
 
 class ServerFailure extends Failure {
-  ServerFailure(String errorMessage) : super(_localizeFallback(errorMessage));
-
-  static String _localizeFallback(String message) {
-    final normalized = message.trim();
-    if (normalized.isEmpty) return message;
-
-    switch (normalized) {
-      case 'Error occurred':
-      case 'An error occurred':
-      case 'Unknown Error!':
-      case 'Bad Response!':
-      case 'Bad Request!':
-      case 'Unexpected server response':
-      case 'Oops, something went wrong!':
-      case 'Internal Server Error!':
-      case 'Connection Timeout!':
-      case 'Send Timeout!':
-      case 'Receive Timeout!':
-        return StringsKeys.error.tr;
-      case 'Check Your Enternet Connection':
-        return StringsKeys.noInternetConnection.tr;
-      default:
-        return message;
-    }
-  }
+  ServerFailure(super.errorMessage);
 
   factory ServerFailure.fromDioError(DioException dioError) {
     switch (dioError.type) {
       case DioExceptionType.connectionTimeout:
-        return ServerFailure('Connection Timeout!');
+        return ServerFailure(StringsKeys.connectionTimeout.tr);
       case DioExceptionType.sendTimeout:
-        return ServerFailure('Send Timeout!');
+        return ServerFailure(StringsKeys.sendTimeout.tr);
       case DioExceptionType.receiveTimeout:
-        return ServerFailure('Receive Timeout!');
+        return ServerFailure(StringsKeys.receiveTimeout.tr);
       case DioExceptionType.badResponse:
         final statusCode = dioError.response?.statusCode;
         final data = dioError.response?.data;
@@ -52,75 +28,56 @@ class ServerFailure extends Failure {
             statusCode == 404 ||
             statusCode == 405) {
           if (statusCode == 401) {
-            return ServerFailure('Unauthorized, please login again');
+            return ServerFailure(StringsKeys.unauthorizedPleaseLogin.tr);
           }
-          // if (statusCode == 403) {
-          //   return ServerFailure('Access Forbidden!');
-          // }
 
           if (statusCode == 404) {
-            return ServerFailure('Not Found!');
+            return ServerFailure(StringsKeys.notFoundError.tr);
           }
 
           if (data is Map<String, dynamic>) {
             String? errorMessage;
 
-            if (data['errors'] != null && data['errors'] is Map) {
-              final Map<String, dynamic> errors = data['errors'];
-              final List<String> allErrors = [];
-              errors.forEach((key, value) {
-                if (value is List) {
-                  allErrors.addAll(value.map((e) => e.toString()));
-                } else if (value != null) {
-                  allErrors.add(value.toString());
-                }
-              });
-              if (allErrors.isNotEmpty) {
-                errorMessage = allErrors.join('. ');
-              }
-            }
-
             errorMessage ??= data['message']?.toString();
 
-            return ServerFailure(errorMessage ?? 'Unexpected server response');
+            return ServerFailure(
+              errorMessage ?? StringsKeys.unexpectedServerResponse.tr,
+            );
           }
 
           if (data is String) {
             return ServerFailure(data);
           }
 
-          return ServerFailure('Bad Response!');
+          return ServerFailure(StringsKeys.badResponse.tr);
         } else {
-          return ServerFailure('Bad Request!');
+          return ServerFailure(StringsKeys.badRequest.tr);
         }
       case DioExceptionType.cancel:
-        return ServerFailure('');
+        return ServerFailure(StringsKeys.requestCancelled.tr);
       case DioExceptionType.unknown:
-        return ServerFailure('Unknown Error!');
+        return ServerFailure(StringsKeys.unknownError.tr);
       default:
-        return ServerFailure('Check Your Enternet Connection');
+        return ServerFailure(StringsKeys.noInternetConnection.tr);
     }
   }
 
   factory ServerFailure.fromResponse(int? statusCode, dynamic response) {
     switch (statusCode) {
       case 400:
-        return ServerFailure(response['message'] ?? 'Bad Request!');
+        return ServerFailure(response['message'] ?? StringsKeys.badRequest.tr);
       case 401:
-        return ServerFailure('Unauthorized!');
+        return ServerFailure(StringsKeys.unauthorizedError.tr);
       case 403:
-        return ServerFailure('Forbidden!');
+        return ServerFailure(StringsKeys.forbiddenError.tr);
       case 404:
-        return ServerFailure('Not Found!');
+        return ServerFailure(StringsKeys.notFoundError.tr);
       case 405:
-        return ServerFailure('Banned');
+        return ServerFailure(StringsKeys.bannedError.tr);
       case 500:
-        return ServerFailure('Internal Server Error!');
+        return ServerFailure(StringsKeys.internalServerError.tr);
       default:
-        return ServerFailure('Oops, something went wrong!');
+        return ServerFailure(StringsKeys.somethingWentWrong.tr);
     }
   }
 }
-
-// vudc syhh dnhq uywj
-// nodemailer password in backend

@@ -34,7 +34,6 @@ class LocaleController extends GetxController {
 
     String? shardPrLang = myServises.lang;
     if (shardPrLang == null) {
-      // أول مرة — نحدد اللغة من الموبايل ونحفظها
       final deviceLang = Get.deviceLocale?.languageCode;
       shardPrLang = (deviceLang == "ar") ? "ar" : "en";
       myServises.saveSecureData("lang", shardPrLang);

@@ -431,6 +431,24 @@ class MyTrenslition extends Translations {
       StringsKeys.noInternetConnection: "الإنترنت غير متوفر الآن",
       StringsKeys.internetConnectionRestored: "تم استعادة الاتصال بالإنترنت",
 
+      // Failure / Server Error Keys
+      StringsKeys.connectionTimeout: "انتهت مهلة الاتصال!",
+      StringsKeys.sendTimeout: "انتهت مهلة الإرسال!",
+      StringsKeys.receiveTimeout: "انتهت مهلة الاستقبال!",
+      StringsKeys.unauthorizedPleaseLogin:
+          "غير مصرح، يرجى تسجيل الدخول مرة أخرى",
+      StringsKeys.notFoundError: "غير موجود!",
+      StringsKeys.unexpectedServerResponse: "استجابة غير متوقعة من الخادم",
+      StringsKeys.badResponse: "استجابة خاطئة!",
+      StringsKeys.badRequest: "طلب غير صالح!",
+      StringsKeys.unknownError: "خطأ غير معروف!",
+      StringsKeys.forbiddenError: "محظور!",
+      StringsKeys.bannedError: "محظور",
+      StringsKeys.internalServerError: "خطأ في الخادم الداخلي!",
+      StringsKeys.somethingWentWrong: "حدث خطأ ما!",
+      StringsKeys.requestCancelled: "تم إلغاء الطلب",
+      StringsKeys.unauthorizedError: "غير مصرح!",
+
       // Additional Keys - Service Order
       StringsKeys.serviceNotFound: "الخدمة غير موجودة",
       StringsKeys.pleaseSelectAddress: "يرجى اختيار عنوان",
@@ -922,6 +940,23 @@ class MyTrenslition extends Translations {
       // Additional Keys - Network
       StringsKeys.noInternetConnection: "No internet connection",
       StringsKeys.internetConnectionRestored: "Internet connection restored",
+
+      // Failure / Server Error Keys
+      StringsKeys.connectionTimeout: "Connection Timeout!",
+      StringsKeys.sendTimeout: "Send Timeout!",
+      StringsKeys.receiveTimeout: "Receive Timeout!",
+      StringsKeys.unauthorizedPleaseLogin: "Unauthorized, please login again",
+      StringsKeys.notFoundError: "Not Found!",
+      StringsKeys.unexpectedServerResponse: "Unexpected server response",
+      StringsKeys.badResponse: "Bad Response!",
+      StringsKeys.badRequest: "Bad Request!",
+      StringsKeys.unknownError: "Unknown Error!",
+      StringsKeys.forbiddenError: "Forbidden!",
+      StringsKeys.bannedError: "Banned",
+      StringsKeys.internalServerError: "Internal Server Error!",
+      StringsKeys.somethingWentWrong: "Oops, something went wrong!",
+      StringsKeys.requestCancelled: "Request cancelled",
+      StringsKeys.unauthorizedError: "Unauthorized!",
 
       // Additional Keys - Service Order
       StringsKeys.serviceNotFound: "Service not found",

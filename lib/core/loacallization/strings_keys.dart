@@ -454,4 +454,21 @@ class StringsKeys {
   static const String otpTimeout = 'otpTimeout';
   static const String autoVerificationDone = 'autoVerificationDone';
   static const String unexpectedErrorTryAgain = 'unexpectedErrorTryAgain';
+
+  // Failure / Server Error Keys
+  static const String connectionTimeout = 'connectionTimeout';
+  static const String sendTimeout = 'sendTimeout';
+  static const String receiveTimeout = 'receiveTimeout';
+  static const String unauthorizedPleaseLogin = 'unauthorizedPleaseLogin';
+  static const String notFoundError = 'notFoundError';
+  static const String unexpectedServerResponse = 'unexpectedServerResponse';
+  static const String badResponse = 'badResponse';
+  static const String badRequest = 'badRequest';
+  static const String unknownError = 'unknownError';
+  static const String forbiddenError = 'forbiddenError';
+  static const String bannedError = 'bannedError';
+  static const String internalServerError = 'internalServerError';
+  static const String somethingWentWrong = 'somethingWentWrong';
+  static const String requestCancelled = 'requestCancelled';
+  static const String unauthorizedError = 'unauthorizedError';
 }

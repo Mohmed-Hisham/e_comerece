@@ -52,49 +52,54 @@ class Homepage extends StatelessWidget {
                     },
                   ),
                   Expanded(
-                    child: PaginationListener(
-                      onLoadMore: () => controller.loadMoreOurProducts(),
-                      fetchAtEnd: true,
-                      isLoading: controller.isLoadingMoreOurProducts,
-                      child: CustomScrollView(
-                        slivers: <Widget>[
-                          SliverToBoxAdapter(
-                            child: GetBuilder<HomescreenControllerImple>(
-                              id: 'slider',
-                              builder: (controller) {
-                                if (controller.statusRequestSlider ==
-                                    Statusrequest.loading) {
-                                  return const SliderShimmer();
-                                }
-                                return Custcarouselslider(
-                                  currentIndex: controller.currentIndex,
-                                  onPageChanged: (index, reason) {
-                                    controller.indexchange(index);
-                                  },
-                                  items: controller.sliders
-                                      .map((e) => e.imageUrl ?? "")
-                                      .toList(),
-                                );
-                              },
+                    child: RefreshIndicator(
+                      color: Appcolor.primrycolor,
+                      backgroundColor: Colors.transparent,
+                      onRefresh: () => controller.refreshHomePage(),
+                      child: PaginationListener(
+                        onLoadMore: () => controller.loadMoreOurProducts(),
+                        fetchAtEnd: true,
+                        isLoading: controller.isLoadingMoreOurProducts,
+                        child: CustomScrollView(
+                          slivers: <Widget>[
+                            SliverToBoxAdapter(
+                              child: GetBuilder<HomescreenControllerImple>(
+                                id: 'slider',
+                                builder: (controller) {
+                                  if (controller.statusRequestSlider ==
+                                      Statusrequest.loading) {
+                                    return const SliderShimmer();
+                                  }
+                                  return Custcarouselslider(
+                                    currentIndex: controller.currentIndex,
+                                    onPageChanged: (index, reason) {
+                                      controller.indexchange(index);
+                                    },
+                                    items: controller.sliders
+                                        .map((e) => e.imageUrl ?? "")
+                                        .toList(),
+                                  );
+                                },
+                              ),
                             ),
-                          ),
-                          SliverSpacer(12.h),
-                          const HomePlatformsSection(),
-                          SliverSpacer(20.h),
+                            SliverSpacer(12.h),
+                            const HomePlatformsSection(),
+                            SliverSpacer(20.h),
 
-                          const HotProductAliexpriessHome(),
-                          SliverSpacer(10.h),
+                            const HotProductAliexpriessHome(),
+                            SliverSpacer(10.h),
 
-                          const HotProductAlibabaHome(),
-                          SliverSpacer(10.h),
+                            const HotProductAlibabaHome(),
+                            SliverSpacer(10.h),
 
-                          const HotProductAmazon(),
-                          SliverSpacer(10.h),
-                          const HotProductShein(),
-                          SliverSpacer(10.h),
-                          const OurProductsHomeSection(),
-                          SliverSpacer(100.h),
-                        ],
+                            const HotProductAmazon(),
+                            SliverSpacer(10.h),
+                            const HotProductShein(),
+                            SliverSpacer(10.h),
+                            const OurProductsHomeSection(),
+                            SliverSpacer(100.h),
+                          ],
+                        ),
                       ),
                     ),
                   ),

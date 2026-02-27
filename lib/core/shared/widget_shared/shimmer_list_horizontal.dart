@@ -44,7 +44,7 @@ class ShimmerListHorizontal extends StatelessWidget {
     if (isSlevr) {
       return SliverList.separated(
         itemCount: 6,
-        separatorBuilder: (_, __) => const SizedBox(width: 1),
+        separatorBuilder: (_, _) => const SizedBox(width: 1),
         itemBuilder: (context, index) {
           return widget;
         },
@@ -56,7 +56,7 @@ class ShimmerListHorizontal extends StatelessWidget {
           physics: const BouncingScrollPhysics(),
           scrollDirection: scrollDirection,
           itemCount: count,
-          separatorBuilder: (_, __) => const SizedBox(width: 1),
+          separatorBuilder: (_, _) => const SizedBox(width: 1),
           itemBuilder: (context, index) {
             return widget;
           },

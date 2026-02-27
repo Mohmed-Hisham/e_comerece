@@ -166,7 +166,7 @@ class CheckOutControllerImpl extends CheckOutController {
   //   }
   // }
 
-  getReviewFee() async {
+  Future<void> getReviewFee() async {
     final response = await checkoutRepo.getCheckOutReviewFee();
     response.fold(
       (failure) {

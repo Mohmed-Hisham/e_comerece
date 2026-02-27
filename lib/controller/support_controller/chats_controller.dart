@@ -16,7 +16,7 @@ class ChatsController extends GetxController {
     super.onInit();
   }
 
-  getChats() async {
+  Future<void> getChats() async {
     getChatsstatusrequest = Statusrequest.loading;
     update();
     try {

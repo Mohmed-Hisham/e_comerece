@@ -38,7 +38,7 @@ class LoginControllerimplment extends LoginController {
 
   GlobalKey<FormState> formState = GlobalKey<FormState>();
 
-  visibilityFun() {
+  void visibilityFun() {
     visibility = visibility == true ? visibility = false : visibility = true;
     update();
   }

@@ -339,7 +339,7 @@ class ProductDetailsControllerImple extends ProductDetailsController
     // searshText(titleReload: titleReload);
   }
 
-  chaing() {
+  void chaing() {
     searshText();
   }
 

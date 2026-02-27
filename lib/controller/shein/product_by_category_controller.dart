@@ -10,7 +10,7 @@ import 'package:e_comerece/data/repository/shein/shein_repo_impl.dart';
 import 'package:get/get.dart';
 
 abstract class ProductByCategoryController extends GetxController {
-  Future<void> fetchProductByCategory({isLoadMore = false});
+  Future<void> fetchProductByCategory({bool isLoadMore = false});
   void loadMoreSearch();
 }
 
@@ -38,7 +38,7 @@ class ProductByCategoryControllerImple extends ProductByCategoryController {
     fetchProductByCategory();
   }
 
-  changeCat(String valnaame, String valid, int index) {
+  void changeCat(String valnaame, String valid, int index) {
     if (categoryid == valid) return;
     title = valnaame;
     categoryid = valid;
@@ -48,7 +48,7 @@ class ProductByCategoryControllerImple extends ProductByCategoryController {
     update(['searchProducts']);
   }
 
-  gotoditels({
+  void gotoditels({
     required String goodssn,
     required String title,
     required String goodsid,

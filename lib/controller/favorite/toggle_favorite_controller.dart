@@ -11,7 +11,7 @@ class TogglefavoriteController extends GetxController {
 
   late bool currentStatus;
 
-  toggleFavorite(
+  void toggleFavorite(
     String productId,
     String productTitle,
     String productImage,

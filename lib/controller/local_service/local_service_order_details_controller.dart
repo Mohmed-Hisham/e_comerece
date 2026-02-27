@@ -1,6 +1,5 @@
-import 'dart:developer';
-
 import 'package:e_comerece/core/class/statusrequest.dart';
+import 'package:e_comerece/core/logger/app_logger.dart';
 import 'package:e_comerece/core/servises/custom_getx_snak_bar.dart';
 import 'package:e_comerece/data/model/local_service/service_request_details_model.dart';
 import 'package:e_comerece/data/model/local_service/service_request_model.dart';
@@ -27,14 +26,14 @@ class LocalServiceOrderDetailsController extends GetxController {
     super.onInit();
   }
 
-  getData({String? id}) async {
+  Future<void> getData({String? id}) async {
     if (id != null) {
       requestId = id;
     }
     if (requestId == null) return;
     statusrequest = Statusrequest.loading;
     update();
-    log("id $requestId");
+    AppLogger.info("Fetching service request details for ID: $requestId");
 
     final response = await localServiceRepoImpl.getServiceRequestDetails(
       requestId!,
@@ -57,7 +56,7 @@ class LocalServiceOrderDetailsController extends GetxController {
     update();
   }
 
-  goToChat() {
+  Future<void> goToChat() async {
     if (requestDetails == null) return;
     Get.toNamed(
       AppRoutesname.messagesScreen,

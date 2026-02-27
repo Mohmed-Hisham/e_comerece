@@ -57,7 +57,7 @@ class HomePageControllerImpl extends AliexpriseHomeController {
   List<SliderModel> sliders = [];
   Statusrequest statusRequestSlider = Statusrequest.none;
 
-  fetchSliders() async {
+  Future<void> fetchSliders() async {
     statusRequestSlider = Statusrequest.loading;
     update(['slider']);
     var response = await sliderRepoImpl.getSliders(platform: 'aliexpress');
@@ -259,7 +259,7 @@ class HomePageControllerImpl extends AliexpriseHomeController {
     update();
   }
 
-  whenstartSearch(String q) async {
+  void whenstartSearch(String q) {
     if (q != "") {
       showClose = true;
       update();
@@ -269,7 +269,7 @@ class HomePageControllerImpl extends AliexpriseHomeController {
     }
   }
 
-  onCloseSearch() {
+  void onCloseSearch() {
     if (isSearch) {
       isSearch = false;
       focusNode.unfocus();

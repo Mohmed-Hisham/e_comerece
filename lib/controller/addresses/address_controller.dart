@@ -32,7 +32,9 @@ class AddressControllerImpl extends AddressController {
   MyServises myServises = Get.find();
 
   AddressRepoImpl addressRepo = AddressRepoImpl(apiServices: Get.find());
-  MapPlacesServiese mapPlacesServiese = MapPlacesServiese(Get.find<ApiService>());
+  MapPlacesServiese mapPlacesServiese = MapPlacesServiese(
+    Get.find<ApiService>(),
+  );
 
   Statusrequest fetchAddressesstatusrequest = Statusrequest.loading;
   Statusrequest addAddressesstatusrequest = Statusrequest.none;
@@ -238,7 +240,7 @@ class AddressControllerImpl extends AddressController {
     Get.toNamed(AppRoutesname.addAddresses);
   }
 
-  placesAutocomplete(String text) async {
+  Future<void> placesAutocomplete(String text) async {
     autoCompletestatusrequest = Statusrequest.loading;
     sessionToken ??= const Uuid().v4();
 
@@ -261,14 +263,12 @@ class AddressControllerImpl extends AddressController {
     update(['search']);
   }
 
-  fetchPlaceDetails(String id) async {
+  Future<void> fetchPlaceDetails(String id) async {
     placeDetailsstatusrequest = Statusrequest.loading;
     var response = await mapPlacesServiese.getPlaceDetails(id, sessionToken!);
 
     if (response != null && response['status'] == 'OK') {
-      final details = MapPlacesDetailsModel.fromJson(
-        response 
-      );
+      final details = MapPlacesDetailsModel.fromJson(response);
       resultDetails = details.result!;
       ubdataCameraPosition(
         isontap: true,
@@ -286,7 +286,7 @@ class AddressControllerImpl extends AddressController {
     update();
   }
 
-  search(String text) {
+  void search(String text) {
     if (text.length % 2 == 0 && text.isNotEmpty) {
       placesAutocomplete(text);
     }
@@ -297,7 +297,7 @@ class AddressControllerImpl extends AddressController {
     }
   }
 
-  closeSearch() {
+  void closeSearch() {
     if (isSearch) {
       isSearch = false;
       initShow = false;
@@ -307,7 +307,7 @@ class AddressControllerImpl extends AddressController {
 
   bool initShow = false;
 
-  startInitShow({int delayMs = 160}) {
+  void startInitShow({int delayMs = 160}) {
     Future.delayed(Duration(milliseconds: delayMs), () {
       if (!initShow) {
         initShow = true;

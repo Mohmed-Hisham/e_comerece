@@ -1,15 +1,6 @@
 import 'package:e_comerece/core/servises/serviese.dart';
 import 'package:get/get.dart';
 
-translateData(columnen, columnar) {
-  MyServises myServises = Get.find();
-  if (myServises.lang == "ar") {
-    return columnar;
-  } else {
-    return columnen;
-  }
-}
-
 String enOrAr({bool isArSA = false}) {
   MyServises myServises = Get.find();
   if (myServises.lang == "ar") {

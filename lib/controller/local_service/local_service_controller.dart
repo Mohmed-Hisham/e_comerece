@@ -21,7 +21,7 @@ class LocalServiceController extends GetxController {
   bool isLoading = false;
   bool showClose = false;
 
-  checkSearch(val) {
+  void checkSearch(String val) {
     if (val == "") {
       searchstatusrequest = Statusrequest.none;
       isSearch = false;
@@ -29,13 +29,13 @@ class LocalServiceController extends GetxController {
     update();
   }
 
-  onSearchItems() {
+  void onSearchItems() {
     isSearch = true;
     searchLocalServices();
     update();
   }
 
-  searchLocalServices() async {
+  Future<void> searchLocalServices() async {
     searchstatusrequest = Statusrequest.loading;
     update();
     var response = await localServiceRepoImpl.searchLocalService(
@@ -109,7 +109,7 @@ class LocalServiceController extends GetxController {
     update();
   }
 
-  onCloseSearch() {
+  void onCloseSearch() {
     if (isSearch) {
       isSearch = false;
       searchController.clear();
@@ -123,7 +123,7 @@ class LocalServiceController extends GetxController {
     }
   }
 
-  whenstartSearch(String q) async {
+  void whenstartSearch(String q) {
     if (q != "") {
       showClose = true;
       update();

@@ -60,7 +60,7 @@ class ColorVariationsWidget extends StatelessWidget {
             scrollDirection: Axis.horizontal,
             physics: const BouncingScrollPhysics(),
             itemCount: colors.length,
-            separatorBuilder: (_, __) => SizedBox(width: 10.w),
+            separatorBuilder: (_, _) => SizedBox(width: 10.w),
             itemBuilder: (context, index) {
               final color = colors[index];
               final isSelected = controller.isVariationSelected(

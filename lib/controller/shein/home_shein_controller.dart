@@ -20,7 +20,7 @@ abstract class HomeSheinController extends GetxController {
   Future<void> fetchCategories();
   void loadMore();
   Future<void> searshProduct({
-    isLoadMore = false,
+    bool isLoadMore = false,
     String startPrice,
     String endPrice,
   });
@@ -36,7 +36,7 @@ abstract class HomeSheinController extends GetxController {
     required String lang,
   });
   void indexchange(int index);
-  custprice(String endPrice, String startPrice);
+  void custprice(String endPrice, String startPrice);
 }
 
 class HomeSheinControllerImpl extends HomeSheinController {
@@ -58,7 +58,7 @@ class HomeSheinControllerImpl extends HomeSheinController {
   List<SliderModel> sliders = [];
   Statusrequest statusRequestSlider = Statusrequest.none;
 
-  fetchSliders() async {
+  Future<void> fetchSliders() async {
     statusRequestSlider = Statusrequest.loading;
     update(['slider']);
     var response = await sliderRepoImpl.getSliders(platform: 'shein');
@@ -88,7 +88,7 @@ class HomeSheinControllerImpl extends HomeSheinController {
   int currentIndex = 0;
   FocusNode searchFocusNode = FocusNode();
 
-  goTOProductByCat(String catId, String catName) {
+  void goTOProductByCat(String catId, String catName) {
     Get.toNamed(
       AppRoutesname.productByCategoryShein,
       arguments: {
@@ -290,7 +290,7 @@ class HomeSheinControllerImpl extends HomeSheinController {
     }
   }
 
-  onCloseSearch() {
+  void onCloseSearch() {
     if (isSearch) {
       isSearch = false;
       searchController.clear();
@@ -304,7 +304,7 @@ class HomeSheinControllerImpl extends HomeSheinController {
     }
   }
 
-  whenstartSearch(String q) async {
+  void whenstartSearch(String q) {
     if (q != "") {
       showClose = true;
       update();

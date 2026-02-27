@@ -12,8 +12,8 @@ import 'package:get/get.dart';
 
 abstract class VerifycodeController extends GetxController {
   late String code;
-  ckeckCode(String verifycodeSignup);
-  goback() => Get.back();
+  void ckeckCode(String verifycodeSignup);
+  void goback() => Get.back();
 }
 
 class VerifycodeControllerImp extends VerifycodeController {

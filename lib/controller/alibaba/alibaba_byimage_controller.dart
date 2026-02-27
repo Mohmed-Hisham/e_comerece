@@ -122,7 +122,7 @@ class AlibabaByimageControllerllerImple extends AlibabaByimageController {
     );
   }
 
-  showPicker(double height) {
+  void showPicker(double height) {
     if (height >= 75 && height <= 300) {
       viewport = true;
       update(["viewport"]);

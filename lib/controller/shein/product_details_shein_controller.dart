@@ -32,7 +32,7 @@ abstract class ProductDetailsSheinController extends GetxController {
   Future<void> initializeVideoPlayer();
   // Future<void> getquiqtity(String attributes);
   Future<void> searshText();
-  Future<void> searshProduct({isLoadMore = false});
+  Future<void> searshProduct({bool isLoadMore = false});
   // Selection and quantity
   void initializeDefaultAttributes();
   void updateSelectedVariant(shein_model.Variant variant);
@@ -47,11 +47,11 @@ abstract class ProductDetailsSheinController extends GetxController {
   void loadMoreSearch();
   void chaingPruduct({required String id, required String titleReload});
   void resetStateForNewProduct();
-  gotoditels({
-    required goodssn,
-    required title,
-    required goodsid,
-    required categoryid,
+  void gotoditels({
+    required String goodssn,
+    required String title,
+    required String goodsid,
+    required String categoryid,
   });
 
   // Simple getters for UI
@@ -112,7 +112,7 @@ class ProductDetailsSheinControllerImple extends ProductDetailsSheinController
   int pageIndexSearch = 0;
   Statusrequest statusrequestsearch = Statusrequest.loading;
 
-  changisfavorite() {
+  void changisfavorite() {
     isFavorite = !isFavorite;
   }
 
@@ -169,7 +169,7 @@ class ProductDetailsSheinControllerImple extends ProductDetailsSheinController
     update();
   }
 
-  fetchImageListFromApi() async {
+  Future<void> fetchImageListFromApi() async {
     statusrequestImagesList = Statusrequest.loading;
     update(['imagesList']);
     final response = await sheinRepoImpl.fetchProductDetailsImageList(
@@ -189,7 +189,7 @@ class ProductDetailsSheinControllerImple extends ProductDetailsSheinController
     update(['imagesList']);
   }
 
-  fetchSizeProductDetails() async {
+  Future<void> fetchSizeProductDetails() async {
     statusrequestSize = Statusrequest.loading;
     update();
     final response = await sheinRepoImpl.fetchProductDetailsSize(

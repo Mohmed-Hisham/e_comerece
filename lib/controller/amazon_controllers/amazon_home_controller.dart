@@ -27,7 +27,7 @@ abstract class AmazonHomeController extends GetxController {
   void onTapSearch();
   void onChangeSearch(String value);
   void goTofavorite();
-  loadMoreOtherProduct();
+  void loadMoreOtherProduct();
   void gotoditels({
     required String asin,
     required String lang,
@@ -61,7 +61,7 @@ class AmazonHomeControllerImpl extends AmazonHomeController {
   List<search.Product> otherProduct = [];
   List<SliderModel> sliders = [];
 
-  fetchSliders() async {
+  Future<void> fetchSliders() async {
     statusRequestSlider = Statusrequest.loading;
     update(['slider']);
     var response = await sliderRepoImpl.getSliders(platform: 'amazon');
@@ -228,7 +228,7 @@ class AmazonHomeControllerImpl extends AmazonHomeController {
     }
   }
 
-  whenstartSearch(String q) async {
+  void whenstartSearch(String q) {
     if (q != "") {
       showClose = true;
       update();
@@ -244,7 +244,7 @@ class AmazonHomeControllerImpl extends AmazonHomeController {
     update();
   }
 
-  onCloseSearch() {
+  void onCloseSearch() {
     if (isSearch) {
       isSearch = false;
       searchController.clear();
@@ -318,7 +318,7 @@ class AmazonHomeControllerImpl extends AmazonHomeController {
     otherProducts(isLoadMore: true);
   }
 
-  goTOProductFromCategory(String categoryid, String categoryName) {
+  void goTOProductFromCategory(String categoryid, String categoryName) {
     Get.toNamed(
       AppRoutesname.productFromCatView,
       arguments: {

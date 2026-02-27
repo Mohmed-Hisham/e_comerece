@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 
 enum ValidateType { username, email, emailOrPhone }
 
-validateInput({
+String? validateInput({
   required String val,
   required int min,
   required int max,
@@ -37,4 +37,5 @@ validateInput({
   if (val.length > max) {
     return "${StringsKeys.cantBeLargerThan.tr} $max";
   }
+  return null;
 }

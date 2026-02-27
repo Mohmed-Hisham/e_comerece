@@ -101,7 +101,7 @@ class ProductDetailsAlibabaControllerImple
   @override
   CartButtonState cartButtonState = CartButtonState.addToCart;
 
-  changisfavorite() {
+  void changisfavorite() {
     isFavorite = !isFavorite;
     // update();
   }
@@ -258,7 +258,7 @@ class ProductDetailsAlibabaControllerImple
     );
   }
 
-  chaing() {
+  void chaing() {
     searshText();
   }
 

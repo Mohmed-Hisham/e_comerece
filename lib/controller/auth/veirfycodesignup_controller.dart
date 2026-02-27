@@ -14,9 +14,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 abstract class VeirfycodesignupController extends GetxController {
-  resend();
-  goTosuccesssginup(String verifycodeSignup);
-  goTOSignup();
+  void resend();
+  void goTosuccesssginup(String verifycodeSignup);
+  void goTOSignup();
 }
 
 class VerifycodesignupControllerImp extends VeirfycodesignupController {

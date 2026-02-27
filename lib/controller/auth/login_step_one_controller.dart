@@ -17,9 +17,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 abstract class LoginStepOneController extends GetxController {
-  goToSginup();
-  loginStepOne();
-  signInWithGoogle();
+  void goToSginup();
+  void loginStepOne();
+  void signInWithGoogle();
 }
 
 class LLoginStepOneControllerimplment extends LoginStepOneController {

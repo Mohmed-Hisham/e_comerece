@@ -56,6 +56,6 @@ class MyServises extends GetxService {
   }
 }
 
-initlizserviese() async {
+Future<void> initlizserviese() async {
   await Get.putAsync(() => MyServises().init());
 }

@@ -10,8 +10,8 @@ import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 
 abstract class ResetcodeController extends GetxController {
-  resetPassword();
-  goback() => Get.back();
+  void resetPassword();
+  void goback() => Get.back();
 }
 
 class ResetpasswordIemeent extends ResetcodeController {

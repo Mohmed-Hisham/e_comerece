@@ -25,7 +25,7 @@ class AmazonHomeCon extends GetxController {
   //   fetchProducts();
   // }
 
-  fetchProducts({isLoadMore = false}) async {
+  Future<void> fetchProducts({bool isLoadMore = false}) async {
     if (!AppConfigService.to.showAmazon) {
       return;
     }

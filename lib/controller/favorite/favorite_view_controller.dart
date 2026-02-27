@@ -20,7 +20,7 @@ class FavoriteViewController extends GetxController {
     getFavorites();
   }
 
-  getFavorites() async {
+  Future<void> getFavorites() async {
     statusrequest = Statusrequest.loading;
     update();
     var response = await favoriteRepoImpl.getAll();
@@ -44,7 +44,7 @@ class FavoriteViewController extends GetxController {
     update();
   }
 
-  groupFavoritesByPlatform() {
+  void groupFavoritesByPlatform() {
     favoritesByPlatform = {};
     for (var favorite in favorites) {
       String platform = favorite.favoritePlatform ?? 'Uncategorized';
@@ -56,7 +56,7 @@ class FavoriteViewController extends GetxController {
     }
   }
 
-  removeFavorite(String productId) {
+  void removeFavorite(String productId) {
     favorites.removeWhere((favorite) => favorite.productId == productId);
     Get.find<FavoritesController>().setFavorite(productId, false);
     groupFavoritesByPlatform();
@@ -68,7 +68,7 @@ class FavoriteViewController extends GetxController {
     favoriteRepoImpl.delete(productId);
   }
 
-  goToProductDetails({
+  void goToProductDetails({
     String? productId,
     String? lang,
     required String title,

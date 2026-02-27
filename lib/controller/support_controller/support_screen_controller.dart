@@ -470,7 +470,7 @@ class SupportScreenControllerImp extends SupportScreenController {
     update();
   }
 
-  getServiceData() async {
+  Future<void> getServiceData() async {
     serviceDetailsStatusRequest = Statusrequest.loading;
     update();
     var response = await localServiceRepoImpl.getLocalServiceById(serviceid!);
@@ -495,7 +495,7 @@ class SupportScreenControllerImp extends SupportScreenController {
     // The previous implementation used Supabase directly.
   }
 
-  getData({String? id}) async {
+  Future<void> getData({String? id}) async {
     final response = await localServiceRepoImpl.getServiceRequestDetails(id!);
 
     response.fold((failure) {}, (model) {

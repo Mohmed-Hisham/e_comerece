@@ -74,7 +74,7 @@ class ImagesCarouselHtml extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 12),
             scrollDirection: Axis.horizontal,
             itemCount: images.length,
-            separatorBuilder: (_, __) => const SizedBox(width: 8),
+            separatorBuilder: (_, _) => const SizedBox(width: 8),
             itemBuilder: (ctx, i) {
               final url = images[i];
               return GestureDetector(
@@ -106,8 +106,7 @@ class ImagesCarouselHtml extends StatelessWidget {
 
                       imageUrl: url,
                       fit: BoxFit.cover,
-                      errorWidget: (_, __, ___) =>
-                          const Icon(Icons.broken_image),
+                      errorWidget: (_, _, _) => const Icon(Icons.broken_image),
                     ),
                   ),
                 ),

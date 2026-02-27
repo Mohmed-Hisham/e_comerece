@@ -26,11 +26,11 @@ class SheinHomController extends GetxController {
     fetchproducts();
   }
 
-  loadMoreproductShein() {
+  void loadMoreproductShein() {
     fetchproducts(isLoadMore: true);
   }
 
-  fetchproducts({bool isLoadMore = false}) async {
+  Future<void> fetchproducts({bool isLoadMore = false}) async {
     if (!AppConfigService.to.showShein) {
       return;
     }

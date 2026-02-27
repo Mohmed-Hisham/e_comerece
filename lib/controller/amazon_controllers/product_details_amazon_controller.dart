@@ -42,7 +42,11 @@ abstract class ProductDetailsAmazonController extends GetxController {
   int getMinQuantity();
   void indexchange(int index);
   void resetStateForNewProduct();
-  void gotoditels({required asin, required lang, required title});
+  void gotoditels({
+    required String asin,
+    required String lang,
+    required String title,
+  });
 }
 
 class ProductDetailsAmazonControllerImple extends ProductDetailsAmazonController

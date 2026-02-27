@@ -29,12 +29,12 @@ class FavoritesController extends GetxController {
     update();
   }
 
-  setFavorite(String productId, bool value) {
+  void setFavorite(String productId, bool value) {
     isFavorite[productId] = value;
     update();
   }
 
-  toggleFavorite(
+  Future<void> toggleFavorite(
     String productId,
     String productTitle,
     String productImage,

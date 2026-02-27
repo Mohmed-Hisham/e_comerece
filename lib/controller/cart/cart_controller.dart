@@ -14,7 +14,7 @@ import 'package:get/get.dart';
 abstract class CartController extends GetxController {
   Future<void> getCartItems();
   void gotoditels({
-    required id,
+    required dynamic id,
     required String lang,
     required String title,
     required String asin,
@@ -51,7 +51,7 @@ class CartControllerImpl extends CartController {
     super.onClose();
   }
 
-  groupcartByPlatform() {
+  void groupcartByPlatform() {
     cartByPlatform = {};
     for (var cartitem in cartItems) {
       String platform = cartitem.cartPlatform ?? 'Uncategorized';
@@ -114,7 +114,7 @@ class CartControllerImpl extends CartController {
     update(['1']);
   }
 
-  removeItem(String cartId) async {
+  Future<void> removeItem(String cartId) async {
     // Remove from list immediately
     cartItems.removeWhere((item) => item.id == cartId);
     groupcartByPlatform();
@@ -181,7 +181,7 @@ class CartControllerImpl extends CartController {
     return selectedPrice;
   }
 
-  addprise({required CartData cartData}) async {
+  Future<void> addprise({required CartData cartData}) async {
     int availableQuantity = cartData.cartAvailableQuantity ?? 0;
     int currentTotalInCart = cartData.cartQuantity ?? 0;
 
@@ -255,7 +255,7 @@ class CartControllerImpl extends CartController {
     );
   }
 
-  removprise({required CartData cartData}) async {
+  Future<void> removprise({required CartData cartData}) async {
     int currentQuantity = cartData.cartQuantity ?? 0;
     if (currentQuantity > 1) {
       var response = await cartRepo.decreaseQuantity(
@@ -302,7 +302,7 @@ class CartControllerImpl extends CartController {
     }
   }
 
-  checkCoupon() async {
+  Future<void> checkCoupon() async {
     if (couponController.text.trim().isEmpty) {
       showCustomGetSnack(isGreen: false, text: StringsKeys.couponEmpty.tr);
       return;
@@ -431,7 +431,7 @@ class CartControllerImpl extends CartController {
     getCartItems();
   }
 
-  goTOCheckout() {
+  void goTOCheckout() {
     if (cartItems.isEmpty) {
       showCustomGetSnack(
         isGreen: false,

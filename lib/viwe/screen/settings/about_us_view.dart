@@ -3,6 +3,7 @@ import 'package:e_comerece/controller/about_us_controller.dart';
 import 'package:e_comerece/core/class/handlingdataviwe.dart';
 import 'package:e_comerece/core/constant/color.dart';
 import 'package:e_comerece/core/loacallization/strings_keys.dart';
+import 'package:e_comerece/data/model/about_us_model.dart';
 import 'package:e_comerece/viwe/widget/Positioned/Positioned_left_1.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_app_bar.dart';
 import 'package:e_comerece/viwe/widget/Positioned/positioned_right_3.dart';
@@ -63,7 +64,7 @@ class AboutUsView extends StatelessWidget {
     );
   }
 
-  Widget _buildCard(item) {
+  Widget _buildCard(AboutUsData item) {
     return Card(
       color: Colors.white.withValues(alpha: 0.7),
       elevation: 4,

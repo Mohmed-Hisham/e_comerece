@@ -22,6 +22,7 @@ class CustomCachedImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final w = width ?? MediaQuery.of(context).size.width;
+    final int memCacheW = (w * MediaQuery.of(context).devicePixelRatio).toInt();
 
     return RepaintBoundary(
       child: ClipRRect(
@@ -31,6 +32,8 @@ class CustomCachedImage extends StatelessWidget {
           width: width ?? double.infinity,
           height: height,
           fit: fit,
+          memCacheWidth: memCacheW,
+          fadeInDuration: const Duration(milliseconds: 200),
           placeholder: (context, url) {
             return Container(
               width: width ?? double.infinity,
@@ -44,21 +47,6 @@ class CustomCachedImage extends StatelessWidget {
               height: height ?? 200.h,
               color: Colors.grey.shade200,
               child: const Icon(Icons.error),
-            );
-          },
-          imageBuilder: (context, imageProvider) {
-            final int decodeWidth =
-                (w * MediaQuery.of(context).devicePixelRatio).toInt();
-            final ImageProvider resized = ResizeImage(
-              imageProvider,
-              width: decodeWidth,
-            );
-
-            return Image(
-              image: resized,
-              width: width ?? double.infinity,
-              height: height,
-              fit: fit,
             );
           },
         ),

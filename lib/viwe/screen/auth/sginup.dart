@@ -284,7 +284,7 @@ class Sginup extends StatelessWidget {
                                 'assets/icon/google.png',
                                 height: 24.h,
                                 width: 24.w,
-                                errorBuilder: (_, __, ___) => Icon(
+                                errorBuilder: (_, _, _) => Icon(
                                   Icons.g_mobiledata,
                                   color: Appcolor.primrycolor,
                                   size: 28.sp,

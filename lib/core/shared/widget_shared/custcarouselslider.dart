@@ -1,6 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:e_comerece/core/constant/color.dart';
-import 'package:e_comerece/viwe/widget/custom_cached_image.dart';
+import 'package:e_comerece/core/helper/custom_cached_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 

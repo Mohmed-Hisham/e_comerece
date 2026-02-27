@@ -28,7 +28,7 @@ class AliexpressHomeController extends GetxController {
     fetchProductsAliExpress();
   }
 
-  fetchProductsAliExpress({isLoadMore = false}) async {
+  Future<void> fetchProductsAliExpress({bool isLoadMore = false}) async {
     if (!AppConfigService.to.showAliExpress) {
       return;
     }

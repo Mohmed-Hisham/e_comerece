@@ -53,7 +53,7 @@ class HomescreenControllerImple extends HomescreenController {
 
   final ScrollController scrollContr = ScrollController();
 
-  moveproduct() {
+  void moveproduct() {
     // Wait for 2 frames to ensure the UI is fully rebuilt
     WidgetsBinding.instance.addPostFrameCallback((_) {
       WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -187,7 +187,7 @@ class HomescreenControllerImple extends HomescreenController {
 
   List<SliderModel> sliders = [];
 
-  fetchSliders() async {
+  Future<void> fetchSliders() async {
     statusRequestSlider = Statusrequest.loading;
     update(['slider']);
     var response = await sliderRepoImpl.getSliders();
@@ -205,7 +205,7 @@ class HomescreenControllerImple extends HomescreenController {
   }
 
   // Fetch Our Products (Featured) from API
-  fetchOurProducts() async {
+  Future<void> fetchOurProducts() async {
     if (!AppConfigService.to.showLocalProducts) {
       return;
     }
@@ -240,7 +240,7 @@ class HomescreenControllerImple extends HomescreenController {
   }
 
   // Load more Our Products (Pagination)
-  loadMoreOurProducts() async {
+  Future<void> loadMoreOurProducts() async {
     if (!AppConfigService.to.showLocalProducts) {
       return;
     }
@@ -280,7 +280,7 @@ class HomescreenControllerImple extends HomescreenController {
 
   bool showClose = false;
 
-  startInitShow({int delayMs = 160}) {
+  void startInitShow({int delayMs = 160}) {
     Future.delayed(Duration(milliseconds: delayMs), () {
       if (!initShow) {
         initShow = true;
@@ -289,7 +289,7 @@ class HomescreenControllerImple extends HomescreenController {
     });
   }
 
-  stopInitShow() {
+  void stopInitShow() {
     if (initShow) {
       initShow = false;
       update(['initShow']);
@@ -378,7 +378,7 @@ class HomescreenControllerImple extends HomescreenController {
     update(['amazon']);
   }
 
-  chngelengthAliexpress({bool showless = false}) async {
+  Future<void> chngelengthAliexpress({bool showless = false}) async {
     if (showless) {
       lengthAliexpress = 10;
     } else if (lengthAliexpress == searchProductsAliExpress.length) {
@@ -391,7 +391,7 @@ class HomescreenControllerImple extends HomescreenController {
     update(['aliexpress']);
   }
 
-  chngelengthAlibaba({bool showless = false}) async {
+  Future<void> chngelengthAlibaba({bool showless = false}) async {
     if (showless) {
       lengthAlibaba = 10;
     } else if (lengthAlibaba == searchProductsAlibaba.length) {
@@ -404,7 +404,7 @@ class HomescreenControllerImple extends HomescreenController {
     update(['alibaba']);
   }
 
-  chngelengthAmazon({bool showless = false}) async {
+  Future<void> chngelengthAmazon({bool showless = false}) async {
     if (showless) {
       lengthAmazon = 10;
     } else if (lengthAmazon == searchProducts.length) {
@@ -417,7 +417,7 @@ class HomescreenControllerImple extends HomescreenController {
     update(['amazon']);
   }
 
-  chngelengthShein({bool showless = false}) async {
+  Future<void> chngelengthShein({bool showless = false}) async {
     if (showless) {
       lengthShein = 10;
     } else if (lengthShein == searchProductsShein.length) {
@@ -431,14 +431,14 @@ class HomescreenControllerImple extends HomescreenController {
   }
 
   bool isSearch = false;
-  onChangeSearch(String val) {
+  void onChangeSearch(String val) {
     if (val == "") {
       isSearch = false;
       update();
     }
   }
 
-  searshAll() async {
+  Future<void> searshAll() async {
     lengthAliexpress = 10;
     lengthAlibaba = 10;
     lengthAmazon = 10;
@@ -455,7 +455,7 @@ class HomescreenControllerImple extends HomescreenController {
     update();
   }
 
-  onCloseSearch() {
+  void onCloseSearch() {
     if (isSearch) {
       isSearch = false;
       lengthAliexpress = 10;
@@ -477,7 +477,7 @@ class HomescreenControllerImple extends HomescreenController {
     }
   }
 
-  whenstartSearch(String q) async {
+  void whenstartSearch(String q) {
     if (q != "") {
       showClose = true;
       update(['initShow']);
@@ -493,7 +493,7 @@ class HomescreenControllerImple extends HomescreenController {
   bool isLoadingAliExpress = false;
   Statusrequest statusrequestAliExpress = Statusrequest.loading;
 
-  searsAliexpress({bool isLoadMore = false}) async {
+  Future<void> searsAliexpress({bool isLoadMore = false}) async {
     if (!AppConfigService.to.showAliExpress) {
       return;
     }
@@ -547,10 +547,10 @@ class HomescreenControllerImple extends HomescreenController {
   //   Get.find(),
   // );
 
-  searshAlibaba({
-    isLoadMore = false,
-    startPrice = "1",
-    endPrice = "1000000",
+  Future<void> searshAlibaba({
+    bool isLoadMore = false,
+    String startPrice = "1",
+    String endPrice = "1000000",
   }) async {
     if (!AppConfigService.to.showAlibaba) {
       return;
@@ -607,7 +607,10 @@ class HomescreenControllerImple extends HomescreenController {
   int pageIndexSearchAmazon = 0;
   List<search.Product> searchProducts = [];
 
-  searshAmazon({bool isLoadMore = false, bool other = false}) async {
+  Future<void> searshAmazon({
+    bool isLoadMore = false,
+    bool other = false,
+  }) async {
     if (!AppConfigService.to.showAmazon) {
       return;
     }
@@ -668,10 +671,10 @@ class HomescreenControllerImple extends HomescreenController {
   List<searshshein.Product> searchProductsShein = [];
   // SearchSheinData searchSheinDataShein = SearchSheinData(Get.find());
 
-  searshShein({
-    isLoadMore = false,
-    startPrice = "1",
-    endPrice = "1000000",
+  Future<void> searshShein({
+    bool isLoadMore = false,
+    String startPrice = "1",
+    String endPrice = "1000000",
   }) async {
     if (!AppConfigService.to.showShein) {
       return;
@@ -725,10 +728,10 @@ class HomescreenControllerImple extends HomescreenController {
     update(['shein']);
   }
 
-  gotoditels({
-    id,
-    required lang,
-    required title,
+  void gotoditels({
+    dynamic id,
+    required String lang,
+    required String title,
     String? asin,
     required PlatformSource platform,
   }) {
@@ -738,7 +741,7 @@ class HomescreenControllerImple extends HomescreenController {
     );
   }
 
-  gotoditelsShein({
+  void gotoditelsShein({
     required String goodssn,
     required String title,
     required String goodsid,

@@ -72,7 +72,7 @@ class ViewOrdersLocalServiceController extends GetxController {
     super.onInit();
   }
 
-  getOrders() async {
+  Future<void> getOrders() async {
     currentPage = 1;
     data.clear();
     hasMoreData = true;
@@ -106,7 +106,7 @@ class ViewOrdersLocalServiceController extends GetxController {
     update();
   }
 
-  loadMore() async {
+  Future<void> loadMore() async {
     isLoadMore = true;
     currentPage++;
     update();

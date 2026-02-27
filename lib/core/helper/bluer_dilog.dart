@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:d_dialog/d_dialog.dart';
 
-blurDilog(Widget content, BuildContext context) {
+void blurDilog(Widget content, BuildContext context) {
   DialogBackground(
     blur: 5,
     barrierColor: Colors.black.withValues(alpha: 0.2),

@@ -27,7 +27,7 @@ class AlibabaHomeController extends GetxController {
     fethcProductsAlibaba();
   }
 
-  Future<void> fethcProductsAlibaba({isLoadMore = false}) async {
+  Future<void> fethcProductsAlibaba({bool isLoadMore = false}) async {
     if (!AppConfigService.to.showAlibaba) {
       return;
     }

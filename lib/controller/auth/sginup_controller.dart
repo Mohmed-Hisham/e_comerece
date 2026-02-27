@@ -82,7 +82,7 @@ class SginupControllerimplemnt extends SginupController {
     }
   }
 
-  visibilityFun() {
+  void visibilityFun() {
     visibility = visibility == true ? visibility = false : visibility = true;
     update();
   }

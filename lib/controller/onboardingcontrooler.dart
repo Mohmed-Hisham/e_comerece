@@ -5,8 +5,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 
 abstract class OnBoardingControoler extends GetxController {
-  next();
-  onPageChanged(int index);
+  void next();
+  void onPageChanged(int index);
 }
 
 class Onboardingcontroolerimplement extends OnBoardingControoler {

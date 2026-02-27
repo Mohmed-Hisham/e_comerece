@@ -38,7 +38,7 @@ abstract class ProductAlibabaHomeController extends GetxController {
   });
   void startInitShow({int delayMs});
   void stopInitShow();
-  custprice(String endPrice, String startPrice);
+  void custprice(String endPrice, String startPrice);
 }
 
 class ProductAlibabaHomeControllerImp extends ProductAlibabaHomeController {
@@ -65,7 +65,7 @@ class ProductAlibabaHomeControllerImp extends ProductAlibabaHomeController {
   List<SliderModel> sliders = [];
   Statusrequest statusRequestSlider = Statusrequest.none;
 
-  fetchSliders() async {
+  Future<void> fetchSliders() async {
     statusRequestSlider = Statusrequest.loading;
     update(['slider']);
     var response = await sliderRepoImpl.getSliders(platform: 'alibaba');
@@ -251,7 +251,7 @@ class ProductAlibabaHomeControllerImp extends ProductAlibabaHomeController {
     );
   }
 
-  whenstartSearch(String q) async {
+  void whenstartSearch(String q) {
     if (q != "") {
       showClose = true;
       update();
@@ -261,7 +261,7 @@ class ProductAlibabaHomeControllerImp extends ProductAlibabaHomeController {
     }
   }
 
-  onCloseSearch() {
+  void onCloseSearch() {
     if (isSearch) {
       isSearch = false;
       focusNode.unfocus();

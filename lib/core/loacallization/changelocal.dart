@@ -10,7 +10,7 @@ class LocaleController extends GetxController {
 
   late MyServises myServises;
 
-  changelang(String langcode) async {
+  Future<void> changelang(String langcode) async {
     Locale locale = Locale(langcode);
     await myServises.saveSecureData("lang", langcode);
     themeData = langcode == "ar" ? themeAr : themeEn;
@@ -49,9 +49,7 @@ class LocaleController extends GetxController {
         scaffoldBackgroundColor: Appcolor.white2,
         textSelectionTheme: TextSelectionThemeData(
           cursorColor: Colors.red,
-          selectionColor: Colors.orange.withValues(
-            alpha: 0.4,
-          ), 
+          selectionColor: Colors.orange.withValues(alpha: 0.4),
           selectionHandleColor: Colors.orange,
         ),
       );
@@ -60,11 +58,9 @@ class LocaleController extends GetxController {
       themeData = themeEn.copyWith(
         scaffoldBackgroundColor: Appcolor.white2,
         textSelectionTheme: TextSelectionThemeData(
-          cursorColor: Colors.red, 
-          selectionColor: Colors.orange.withValues(
-            alpha: 0.4,
-          ), 
-          selectionHandleColor: Colors.orange, 
+          cursorColor: Colors.red,
+          selectionColor: Colors.orange.withValues(alpha: 0.4),
+          selectionHandleColor: Colors.orange,
         ),
       );
     } else {
@@ -74,11 +70,9 @@ class LocaleController extends GetxController {
       themeData = (isAr ? themeAr : themeEn).copyWith(
         scaffoldBackgroundColor: Appcolor.white2,
         textSelectionTheme: TextSelectionThemeData(
-          cursorColor: Colors.red, 
-          selectionColor: Colors.orange.withValues(
-            alpha: 0.4,
-          ), 
-          selectionHandleColor: Colors.orange, 
+          cursorColor: Colors.red,
+          selectionColor: Colors.orange.withValues(alpha: 0.4),
+          selectionHandleColor: Colors.orange,
         ),
       );
     }

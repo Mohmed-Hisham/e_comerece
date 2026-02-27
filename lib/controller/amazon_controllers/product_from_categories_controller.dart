@@ -10,10 +10,10 @@ import 'package:e_comerece/data/model/amazon_models/search_amazon_model.dart'
 import 'package:e_comerece/core/loacallization/translate_data.dart';
 
 abstract class ProductFromCategoriesController extends GetxController {
-  changeCat(String valnaame, String valid, int index);
+  void changeCat(String valnaame, String valid, int index);
   Future<void> otherProducts({bool isLoadMore = false});
   void loadMoreOtherProduct();
-  gotoditels({
+  void gotoditels({
     required String asin,
     required String lang,
     required String title,

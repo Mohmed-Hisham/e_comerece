@@ -72,7 +72,7 @@ class OurProductsHomeSection extends StatelessWidget {
     );
   }
 
-  Widget _buildProductItem(product, CurrencyService currencyService) {
+  Widget _buildProductItem(dynamic product, CurrencyService currencyService) {
     return InkWell(
       onTap: () {
         Get.toNamed(
